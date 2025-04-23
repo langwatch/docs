@@ -33,12 +33,6 @@
     "type": "github",
     "url": "https://github.com/langwatch/langwatch"
   },
-  "tabs": [
-    {
-      "name": "LangEvals",
-      "url": "langevals"
-    }
-  ],
   "anchors": [
     {
       "name": "Open Dashboard",
@@ -57,81 +51,94 @@
       "pages": ["introduction", "self-hosting"]
     },
     {
-      "group": "Optimization Studio",
-      "pages": [
-        "optimization-studio/overview",
-        "optimization-studio/llm-nodes",
-        "optimization-studio/datasets",
-        "optimization-studio/evaluating",
-        "optimization-studio/optimizing"
-      ]
-    },
-    {
-      "group": "Monitoring Integration",
+      "group": "LLM Observability",
       "pages": [
         "integration/overview",
-        {
-          "group": "Python",
-          "pages": ["integration/python/guide", "integration/python/reference"]
-        },
-        {
-          "group": "TypeScript",
-          "pages": ["integration/typescript/guide"]
-        },
-        {
-          "group": "OpenTelemetry",
-          "pages": ["integration/opentelemetry/guide"]
-        },
-        "integration/langflow",
-        "integration/flowise",
-        "integration/rest-api",
-        "integration/rags-context-tracking",
         "concepts",
-        "integration/cookbooks",
-        "integration/mcp"
-      ]
-    },
-    {
-      "group": "Evaluations",
-      "pages": [
-        "evaluations/overview",
-        "evaluations/custom-evaluator-integration"
-      ]
-    },
-    {
-      "group": "Guardrails",
-      "pages": ["guardrails/overview", "guardrails/setting-up-guardrails"]
-    },
-    {
-      "group": "User Events",
-      "pages": [
-        "user-events/overview",
         {
-          "group": "Events",
+          "group": "Language APIs & SDKs",
           "pages": [
-            "user-events/thumbs-up-down",
-            "user-events/waited-to-finish",
-            "user-events/selected-text",
-            "user-events/custom"
+            {
+              "group": "Python",
+              "pages": [
+                "integration/python/guide",
+                "integration/python/reference"
+              ]
+            },
+            {
+              "group": "TypeScript",
+              "pages": ["integration/typescript/guide"]
+            },
+            {
+              "group": "OpenTelemetry",
+              "pages": ["integration/opentelemetry/guide"]
+            },
+            "integration/rags-context-tracking",
+            "integration/langflow",
+            "integration/flowise",
+            "integration/rest-api"
           ]
-        }
+        },
+        {
+          "group": "User Events",
+          "pages": [
+            "user-events/overview",
+            {
+              "group": "Events",
+              "pages": [
+                "user-events/thumbs-up-down",
+                "user-events/waited-to-finish",
+                "user-events/selected-text",
+                "user-events/custom"
+              ]
+            }
+          ]
+        },
+        {
+          "group": "Monitoring & Alerts",
+          "pages": ["features/triggers", "features/embedded-analytics"]
+        },
+        "integration/code-examples"
       ]
     },
     {
-      "group": "DSPy Visualization",
+      "group": "LLM Evaluation",
       "pages": [
-        "dspy-visualization/quickstart",
-        "dspy-visualization/custom-optimizer",
-        "dspy-visualization/rag-visualization"
-      ]
-    },
-    {
-      "group": "More Features",
-      "pages": [
-        "features/triggers",
-        "features/annotations",
+        {
+          "group": "Evaluation",
+          "pages": [
+            "llm-evaluation/offline-evaluation",
+            "llm-evaluation/real-time-evaluation",
+            "evaluations/overview",
+            "evaluations/custom-evaluator-integration"
+          ]
+        },
         "features/datasets",
-        "features/embedded-analytics"
+        "features/annotations"
+      ]
+    },
+    {
+      "group": "LLM Development",
+      "pages": [
+        {
+          "group": "Prompt Optimization Studio",
+          "pages": [
+            "optimization-studio/overview",
+            "optimization-studio/llm-nodes",
+            "optimization-studio/datasets",
+            "optimization-studio/evaluating",
+            "optimization-studio/optimizing"
+          ]
+        },
+        {
+          "group": "DSPy Visualization",
+          "pages": [
+            "dspy-visualization/quickstart",
+            "dspy-visualization/custom-optimizer",
+            "dspy-visualization/rag-visualization"
+          ]
+        },
+        "integration/mcp"
       ]
     },
     {
@@ -161,58 +168,8 @@
         },
         {
           "group": "Datasets",
-          "pages": [
-            "api-reference/datasets/post-dataset-entries"
-          ]
+          "pages": ["api-reference/datasets/post-dataset-entries"]
         }
-      ]
-    },
-    {
-      "group": "Documentation",
-      "pages": [
-        "langevals/documentation/introduction",
-        "langevals/documentation/evaluators",
-        "langevals/documentation/unit-tests",
-        "langevals/documentation/API-example",
-        "langevals/how-to-choose-your-evaluator",
-        {
-          "group": "Modular Architecture",
-          "pages": ["langevals/documentation/modular-architecture/contributing"]
-        }
-      ]
-    },
-    {
-      "group": "Tutorials",
-      "pages": [
-        "langevals/tutorials/extensive-unit-testing",
-        "langevals/tutorials/rag-evaluation",
-        "langevals/tutorials/ci-cd-pipeline-evaluation"
-      ]
-    },
-    {
-      "group": "API Endpoints",
-      "pages": [
-        "langevals/api-reference/endpoint/lingua-language-detection",
-        "langevals/api-reference/endpoint/openai-moderation",
-        "langevals/api-reference/endpoint/google-cloud-dlp-pii-detection",
-        "langevals/api-reference/endpoint/content-safety",
-        "langevals/api-reference/endpoint/azure-jailbreak-detection",
-        "langevals/api-reference/endpoint/azure-prompt-injection-detection",
-        "langevals/api-reference/endpoint/competitor-detection-llm",
-        "langevals/api-reference/endpoint/competitor-blocklist",
-        "langevals/api-reference/endpoint/off-topic-detection",
-        "langevals/api-reference/endpoint/ragas-answer-relevancy",
-        "langevals/api-reference/endpoint/ragas-context-precision",
-        "langevals/api-reference/endpoint/ragas-context-recall",
-        "langevals/api-reference/endpoint/ragas-context-relevancy",
-        "langevals/api-reference/endpoint/ragas-context-utilization",
-        "langevals/api-reference/endpoint/ragas-faithfulness",
-        "langevals/api-reference/endpoint/haystack-faithfulness",
-        "langevals/api-reference/endpoint/llm-boolean-evaluator",
-        "langevals/api-reference/endpoint/llm-score-evaluator",
-        "langevals/api-reference/endpoint/llm-basic-evaluator",
-        "langevals/api-reference/endpoint/llm-similarity-evaluator",
-        "langevals/api-reference/endpoint/llama-guard"
       ]
     },
     {
@@ -222,8 +179,25 @@
   ],
   "footerSocials": {
     "github": "https://github.com/langwatch/langwatch",
-    "linkedin": "https://www.linkedin.com/company/langwatch/"
+    "website": "https://langwatch.ai",
+    "x-twitter": "https://x.com/langwatchai",
+    "linkedin": "https://www.linkedin.com/company/langwatch/",
+    "youtube": "https://www.youtube.com/@LangWatch"
   },
+  "redirects": [
+    {
+      "source": "/langevals/:path*",
+      "destination": "https://github.com/langwatch/langevals"
+    },
+    {
+      "source": "/integration/cookbooks",
+      "destination": "/integration/code-examples"
+    },
+    {
+      "source": "/guardrails/:path*",
+      "destination": "/llm-evaluation/real-time-evaluation"
+    }
+  ],
   "modeToggle": {
     "default": "light"
   }
