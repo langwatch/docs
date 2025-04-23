@@ -1,5 +1,5 @@
 <AccordionGroup>
-  <Accordion title="Expected Answer Evaluation">
+  <Accordion title="Expected Answer Evaluation" description="For when you have the golden answer and want to measure how correct the LLM gets it">
     | Evaluator                                | Description                |
     | -----------------------------------------|----------------------------|
     | Exact Match Evaluator | A simple evaluator that checks if the output matches the expected_output exactly. |
@@ -9,7 +9,7 @@
     | ROUGE Score | Traditional NLP metric. ROUGE score for evaluating the similarity between two strings. |
     | BLEU Score | Traditional NLP metric. BLEU score for evaluating the similarity between two strings. |
   </Accordion>
-  <Accordion title="LLM-as-Judge">
+  <Accordion title="LLM-as-Judge" description="For when you don't have a golden answer, but have a set of rules for another LLM to evaluate quality">
     | Evaluator                                | Description                |
     | -----------------------------------------|----------------------------|
     | LLM-as-a-Judge Boolean Evaluator | Use an LLM as a judge with a custom prompt to do a true/false boolean evaluation of the message. |
@@ -17,7 +17,7 @@
     | LLM-as-a-Judge Category Evaluator | Use an LLM as a judge with a custom prompt to classify the message into custom defined categories. |
     | Rubrics Based Scoring | Rubric-based evaluation metric that is used to evaluate responses. The rubric consists of descriptions for each score, typically ranging from 1 to 5 |
   </Accordion>
-  <Accordion title="RAG Quality">
+  <Accordion title="RAG Quality" description="For measuring the quality of your RAG, check for hallucinations with faithfulness and precision/recall">
     | Evaluator                                | Description                |
     | -----------------------------------------|----------------------------|
     | Ragas Faithfulness | This evaluator assesses the extent to which the generated answer is consistent with the provided context. Higher scores indicate better faithfulness to the context, useful for detecting hallucinations. |
@@ -28,14 +28,14 @@
     | Context Precision | Measures how accurate is the retrieval compared to expected contexts, increasing it means less noise in the retrieval. Uses traditional string distance metrics. |
     | Context Recall | Measures how many relevant contexts were retrieved compared to expected contexts, increasing it means more signal in the retrieval. Uses traditional string distance metrics. |
   </Accordion>
-  <Accordion title="Quality Aspects Evaluation">
+  <Accordion title="Quality Aspects Evaluation" description="For when you want to check the language, structure, style and other general quality metrics">
     | Evaluator                                | Description                |
     | -----------------------------------------|----------------------------|
     | Lingua Language Detection | This evaluator detects the language of the input and output text to check for example if the generated answer is in the same language as the prompt, or if it's in a specific expected language. |
     | Summarization Score | Measures how well the summary captures important information from the retrieved contexts. |
     | Valid Format Evaluator | Allows you to check if the output is a valid json, markdown, python, sql, etc. For JSON, can optionally validate against a provided schema. |
   </Accordion>
-  <Accordion title="Safety">
+  <Accordion title="Safety" description="Check for PII, prompt injection attempts and toxic content">
     | Evaluator                                | Description                |
     | -----------------------------------------|----------------------------|
     | PII Detection | Detects personally identifiable information in text, including phone numbers, email addresses, and social security numbers. It allows customization of the detection threshold and the specific types of PII to check. |

@@ -75,15 +75,21 @@ for url in $urls; do
 
     # Check the response code
     if [ "$http_code" -eq 200 ]; then
-        # echo "OK: $full_url - Status code: $http_code"
-        printf ""
+        # If status is 200, check for the meta description tag
+        # Fetch page content and check for the meta tag quietly
+        if curl -s "$full_url" | grep -q '<meta name="description"'; then
+            # Meta tag found, success
+            printf ""
+        else
+            # Meta tag NOT found
+            echo "FAILED (Missing Meta Description): $full_url - Status code: $http_code"
+        fi
     # Check if it's a redirect (status code starts with 3)
     elif [[ "$http_code" =~ ^3[0-9]{2}$ ]]; then
         # Extract the path from the redirect URL by removing the BASE_URL
         redirect_path=${redirect_url#"$BASE_URL"}
         # Check if redirect URL is not empty and the path is not /introduction
         if [ -n "$redirect_url" ] && [ "$redirect_path" != "/introduction" ]; then
-            # echo "REDIRECT OK: $full_url -> $redirect_url (Status: $http_code)"
             printf ""
         else
             # Fail if redirect is empty or targets /introduction
@@ -94,3 +100,5 @@ for url in $urls; do
         echo "FAILED: $full_url - Status code: $http_code"
     fi
 done
+
+echo "Done"

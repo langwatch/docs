@@ -5,3 +5,22 @@
 a[href="https://github.com/langwatch/langwatch"] .text-sm {
   white-space: nowrap;
 }
+
+[aria-controls~="accordion"] {
+  padding-right: 8px;
+  padding-left: 8px;
+  align-items: start;
+}
+
+[aria-controls~="accordion"] p:last-child {
+  font-size: 14px;
+  margin-top: 0.5rem;
+}
+
+[aria-controls~="accordion"] [class="mr-0.5"] {
+  margin-top: 5px;
+}
+
+[aria-controls~="accordion"][aria-expanded="true"] [class="mr-0.5"] {
+  margin-top: 8px;
+}

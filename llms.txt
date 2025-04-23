@@ -4,9 +4,8 @@
 
 ---
 title: Introduction
+description: Welcome to LangWatch, the all-in-one [open-source](https://github.com/langwatch/langwatch) LLMops platform.
 ---
-
-Welcome to LangWatch, the all-in-one [open-source](https://github.com/langwatch/langwatch) LLMops platform.
 
 LangWatch allows you to track, monitor, guardrail and evaluate your LLMs apps for measuring quality and alert on issues.
 
@@ -39,6 +38,7 @@ to report bugs and request features, or join our [Discord](https://discord.gg/kT
 
 ---
 title: Concepts
+description: LLM tracing and observability conceptual guide
 ---
 
 Understanding LangWatch concepts can be made easier with two practical examples: an AI travel assistant and a tool for generating blog posts. Let's dive into how each core concept of LangWatch applies to these examples.
@@ -92,6 +92,11 @@ version as `v1.0.0`, then do a prompt engineering to improve the AI travel plann
 
 # FILE: ./integration/overview.mdx
 
+---
+title: Overview
+description: Easily integrate LangWatch with your Python, TypeScript, or REST API projects.
+---
+
 Integrating LangWatch into your projects is designed to be a straightforward process. Regardless of the language or LLM model you are using, you can set up LangWatch with minimal configuration and start gathering valuable insights into your LLM's performance and user interactions.
 
 <CardGroup cols={2}>
@@ -107,6 +112,7 @@ Integrating LangWatch into your projects is designed to be a straightforward pro
 ---
 title: Python SDK Reference
 sidebarTitle: Reference
+description: LangWatch Python SDK reference
 ---
 
 This page contains the low-level reference for the Python SDK components, for guide on integrating LangWatch into your Python project, see [Python Integration Guide](/integration/python/guide).
@@ -236,6 +242,7 @@ Both on the span creation function, `.update()` and `.end()` functions you can s
 ---
 title: Python Integration Guide
 sidebarTitle: Guide
+description: LangWatch Python SDK integration guide
 ---
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
@@ -735,6 +742,7 @@ def main():
 ---
 title: TypeScript Integration Guide
 sidebarTitle: Guide
+description: LangWatch TypeScript SDK integration guide
 ---
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
@@ -1251,6 +1259,7 @@ The evaluation `name` is required and must be a string. The other fields are opt
 
 ---
 title: REST API Integration
+description: Integrate LangWatch with any language by using the REST API
 ---
 
 If your preferred programming language or platform is not directly supported by the existing LangWatch libraries, you can use the REST API with `curl` to send trace data. This guide will walk you through how to integrate LangWatch with any system that allows HTTP requests.
@@ -1357,6 +1366,7 @@ After following the above guide, your interactions with LLMs should now be captu
 ---
 title: OpenTelemetry Integration Guide
 sidebarTitle: Guide
+description: Use OpenTelemetry to capture LLM traces and send them to LangWatch
 ---
 
 OpenTelemetry is a standard protocol for tracing, and LangWatch is fully compatible with OpenTelemetry, you can use any OpenTelemetry compatible library to capture your LLM traces and send them to LangWatch.
@@ -1757,6 +1767,7 @@ def main():
 
 ---
 title: "RAG Context Tracking"
+description: Capture the RAG documents used in your LLM pipelines
 ---
 
 Retrieval Augmented Generation (RAGs) is a common way to augment the generation of your LLM by retrieving a set of documents based on the user query and giving it to the LLM to use as context for answering, either by using a vector database, getting responses from an API, or integrated agent files and memory.
@@ -2073,6 +2084,7 @@ Ensure that you return the `output` as some evaluations may require it. As you c
 
 ---
 title: Alerts and Triggers
+description: Be alerted when something goes wrong and trigger actions automatically
 ---
 
 ## Create triggers based on LangWatch filters
@@ -2116,6 +2128,7 @@ Once the trigger is created, you will receive an alert whenever a message meets 
 
 ---
 title: Exporting Analytics
+description: Build and integrate LangWatch graphs on your own systems and applications
 ---
 
 ## Export Analytics with REST Endpoint
@@ -2183,6 +2196,7 @@ If you encounter any hurdles or have questions, our support team is eager to ass
 
 ---
 title: Annotations
+description: Collaborate with domain experts using annotations
 ---
 
 ## Create annotations on messages
@@ -2270,6 +2284,7 @@ Thats it! You can now annotate messages and add your custom score metrics to the
 
 ---
 title: Datasets
+description: Create and manage datasets with LangWatch
 ---
 
 ## Create datasets
@@ -2354,91 +2369,11 @@ To add data by CSV upload, go to your datasets page and select the dataset you w
 
 ---
 
-# FILE: ./evaluations/overview.mdx
-
----
-title: List of Evaluators
----
-
-LangWatch offers an extensive library of evaluators to help you evaluate the quality and guarantee the safety of your LLM apps.
-
-
-## Evaluators List
-
-<AccordionGroup>
-  <Accordion title="Expected Answer Evaluation">
-    | Evaluator                                | Description                |
-    | -----------------------------------------|----------------------------|
-    | Exact Match Evaluator | A simple evaluator that checks if the output matches the expected_output exactly. |
-    | LLM Answer Match | Uses an LLM to check if the generated output answers a question correctly the same way as the expected output, even if their style is different. |
-    | LLM Factual Match | Computes with an LLM how factually similar the generated answer is to the expected output. |
-    | SQL Query Equivalence | Checks if the SQL query is equivalent to a reference one by using an LLM to infer if it would generate the same results given the table schemas. |
-    | ROUGE Score | Traditional NLP metric. ROUGE score for evaluating the similarity between two strings. |
-    | BLEU Score | Traditional NLP metric. BLEU score for evaluating the similarity between two strings. |
-  </Accordion>
-  <Accordion title="LLM-as-Judge">
-    | Evaluator                                | Description                |
-    | -----------------------------------------|----------------------------|
-    | LLM-as-a-Judge Boolean Evaluator | Use an LLM as a judge with a custom prompt to do a true/false boolean evaluation of the message. |
-    | LLM-as-a-Judge Score Evaluator | Use an LLM as a judge with custom prompt to do a numeric score evaluation of the message. |
-    | LLM-as-a-Judge Category Evaluator | Use an LLM as a judge with a custom prompt to classify the message into custom defined categories. |
-    | Rubrics Based Scoring | Rubric-based evaluation metric that is used to evaluate responses. The rubric consists of descriptions for each score, typically ranging from 1 to 5 |
-  </Accordion>
-  <Accordion title="RAG Quality">
-    | Evaluator                                | Description                |
-    | -----------------------------------------|----------------------------|
-    | Ragas Faithfulness | This evaluator assesses the extent to which the generated answer is consistent with the provided context. Higher scores indicate better faithfulness to the context, useful for detecting hallucinations. |
-    | Ragas Response Relevancy | Evaluates how pertinent the generated answer is to the given prompt. Higher scores indicate better relevancy. |
-    | Ragas Response Context Recall | Uses an LLM to measure how many of relevant documents attributable the claims in the output were successfully retrieved in order to generate an expected output. |
-    | Ragas Response Context Precision | Uses an LLM to measure the proportion of chunks in the retrieved context that were relevant to generate the output or the expected output. |
-    | Context F1 | Balances between precision and recall for context retrieval, increasing it means a better signal-to-noise ratio. Uses traditional string distance metrics. |
-    | Context Precision | Measures how accurate is the retrieval compared to expected contexts, increasing it means less noise in the retrieval. Uses traditional string distance metrics. |
-    | Context Recall | Measures how many relevant contexts were retrieved compared to expected contexts, increasing it means more signal in the retrieval. Uses traditional string distance metrics. |
-  </Accordion>
-  <Accordion title="Quality Aspects Evaluation">
-    | Evaluator                                | Description                |
-    | -----------------------------------------|----------------------------|
-    | Lingua Language Detection | This evaluator detects the language of the input and output text to check for example if the generated answer is in the same language as the prompt, or if it's in a specific expected language. |
-    | Summarization Score | Measures how well the summary captures important information from the retrieved contexts. |
-    | Valid Format Evaluator | Allows you to check if the output is a valid json, markdown, python, sql, etc. For JSON, can optionally validate against a provided schema. |
-  </Accordion>
-  <Accordion title="Safety">
-    | Evaluator                                | Description                |
-    | -----------------------------------------|----------------------------|
-    | PII Detection | Detects personally identifiable information in text, including phone numbers, email addresses, and social security numbers. It allows customization of the detection threshold and the specific types of PII to check. |
-    | Prompt Injection / Jailbreak Detection | Detect prompt injection attempts and jailbreak attempts in the input |
-    | Content Safety | Detect potentially unsafe content in text, including hate speech, self-harm, sexual content, and violence. It allows customization of the severity threshold and the specific categories to check. |
-  </Accordion>
-</AccordionGroup>
-
-## Running Evaluations
-
-Set up your first evaluation using the [Evaluation Wizard](https://app.langwatch.ai/@project/evaluations):
-
-<a href="https://app.langwatch.ai/@project/evaluations" target="_blank">
-<Frame>
-<img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.53.38.png" alt="" style={{ maxWidth: '400px' }} noZoom />
-</Frame>
-</a>
-
-## Instrumenting Custom Evaluator
-
-If you have a custom evaluator built in-house, you can follow the guide below to integrate.
-
-<CardGroup cols={1}>
-  <Card
-    title="Instrumenting Custom Evaluator"
-    icon="link"
-    href="./custom-evaluator-integration"
-  />
-</CardGroup>
-
----
-
 # FILE: ./evaluations/custom-evaluator-integration.mdx
 
 ---
 title: Instrumenting Custom Evaluator
+description: Add your own evaluation results into LangWatch trace
 ---
 
 If you have a custom evaluator built in-house which run on your own code, either during the LLM pipeline or after, you can still capture the evaluation results

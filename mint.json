@@ -109,7 +109,7 @@
           "pages": [
             "llm-evaluation/offline-evaluation",
             "llm-evaluation/real-time-evaluation",
-            "evaluations/overview",
+            "llm-evaluation/list",
             "evaluations/custom-evaluator-integration"
           ]
         },
@@ -196,6 +196,10 @@
     {
       "source": "/guardrails/:path*",
       "destination": "/llm-evaluation/real-time-evaluation"
+    },
+    {
+      "source": "/evaluations/overview",
+      "destination": "/llm-evaluation/list"
     }
   ],
   "modeToggle": {
