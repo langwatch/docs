@@ -1,0 +1,95 @@
+---
+title: Setup for Azure AD
+description: SSO Hybrid Setup for LangWatch Azure AD
+---
+
+# OnPrem SSO Setup: Azure AD
+
+This guide walks you through registering LangWatch as an application in Azure Active Directory (Azure AD) to enable SSO authentication.
+
+---
+### Step 1: Access the Azure Portal
+
+1. Navigate to the [Azure Portal](https://portal.azure.com).
+2. In the left sidebar, go to:
+   - **Azure Active Directory** > **App registrations**
+
+---
+
+### Step 2: Register a New Application
+
+1. Click **+ New registration**.
+2. Fill out the registration form:
+
+   - **Name**: `YourApp-SSO`
+   - **Supported account types**:
+     - Select **Single tenant** if the app is only used within your organization.
+     - Select **Multi-tenant** if the app will be used by multiple organizations.
+   - **Redirect URI**:
+     - **Type**: `Web`
+     - **URI**: `https://your-custom-domain.com/api/auth/callback/azure-ad`  
+       *(Replace with your actual domain)*
+
+3. Click **Register**.
+
+---
+
+### Step 3: Record Important Information
+
+After registration, **copy the following values** for later use:
+
+- **Application (Client) ID**
+- **Directory (Tenant) ID**
+
+You will need these when configuring the connection with environment variables.
+
+---
+
+### Step 4: Create a Client Secret
+
+1. In the left-hand menu of your registered app, click **Certificates & secrets**.
+2. Under **Client secrets**, click **+ New client secret**.
+3. Add a description (e.g., `Auth0 Secret`) and set an expiration period.
+4. Click **Add**.
+5. **Copy the value immediately** — it will be hidden after you leave the page.
+
+---
+
+### Step 5: Add to `.env`
+
+Once you have all these details, add them to your `.env` file as shown below:
+
+```env
+NEXTAUTH_PROVIDER="azure-ad"
+AZURE_CLIENT_ID="***client-id***"
+AZURE_CLIENT_SECRET="**client-secret**"
+AZURE_TENANT_ID=**tenant-id**
+```
+
+---
+
+### Step 6: USER DB TABLE
+
+For users who have not yet transitioned from basic authentication, one final step is required:
+
+Set the `pendingSsoSetup` column to `TRUE` in the user database.
+
+Once the user logs in using the new SSO flow, the system will automatically update their account to use the new method and reset the column back to `FALSE`.
+
+✅ That’s it — you’re all set!
+
+
+## Support
+
+For any queries or issues, feel free to reach out to us. We are available via:
+
+- **Email**: [support@langwatch.ai](mailto:support@langwatch.ai)
+- **Slack**: Connect with us directly on Slack for real-time support and assistance.
+
+---
+
+We look forward to helping you set up LangWatch seamlessly and efficiently.
+
+
+
+

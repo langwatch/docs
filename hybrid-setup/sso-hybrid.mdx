@@ -1,0 +1,72 @@
+---
+title: SSO Setup - Azure AD
+description: SSO Setup for LangWatch Hybrid Deployment
+---
+
+# Hybrid SSO Setup: Registering an Application in Azure AD
+
+This guide walks you through registering LangWatch as an application in Azure Active Directory (Azure AD) to enable hybrid SSO authentication.
+
+---
+
+## Step 1: Access the Azure Portal
+
+1. Navigate to the [Azure Portal](https://portal.azure.com).
+2. In the left sidebar, go to **Azure Active Directory** > **App registrations**.
+
+---
+
+## Step 2: Register a New Application
+
+1. Click **+ New registration**.
+2. Fill out the registration form:
+   - **Name**: `YourApp-SSO`
+   - **Supported account types**:
+     - Select **Single tenant** if the app is only used within your organization.
+     - Select **Multi-tenant** if the app will be used by multiple organizations.
+   - **Redirect URI**:
+     - **Type**: Web  
+     - **URI**: `https://langwatch.eu.auth0.com/login/callback`  
+       *(Replace with your actual Auth0 domain if different)*
+
+3. Click **Register**.
+
+---
+
+## Step 3: Record Important Information
+
+After registration, copy the following values for later use:
+
+- **Application (Client) ID**
+- **Directory (Tenant) ID**
+
+You will need these when configuring the connection in Auth0.
+
+---
+
+## Step 4: Create a Client Secret
+
+1. In the left-hand menu of your registered app, click **Certificates & secrets**.
+2. Under **Client secrets**, click **+ New client secret**.
+3. Add a description (e.g., `LangWatch Secret`) and set an expiration period.
+4. Click **Add**.
+5. **Copy the value immediately** — it will be hidden after you leave the page.
+
+---
+
+## Step 5: Contact Us
+
+Once you have all these details, please contact us so we can set them up from our side.
+
+---
+
+## Support
+
+For any queries or issues, feel free to reach out to us. We are available via:
+
+- **Email**: [support@langwatch.ai](mailto:support@langwatch.ai)
+- **Slack**: Connect with us directly on Slack for real-time support and assistance.
+
+---
+
+We look forward to helping you set up LangWatch seamlessly and efficiently.

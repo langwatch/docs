@@ -48,8 +48,24 @@
   "navigation": [
     {
       "group": "",
-      "pages": ["introduction", "self-hosting"]
+      "pages": [
+        "introduction",
+        {
+          "group": "Self Hosting",
+          "pages": ["/self-hosting/overview", "/self-hosting/sso-hybrid"]
+        },
+        {
+          "group": "Hybrid Setup",
+          "pages": [
+            "/hybrid-setup/overview",
+            "/hybrid-setup/elasticsearch",
+            "/hybrid-setup/s3-storage",
+            "/hybrid-setup/sso-hybrid"
+          ]
+        }
+      ]
     },
+
     {
       "group": "LLM Observability",
       "pages": [
