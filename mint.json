@@ -62,6 +62,10 @@
             "/hybrid-setup/s3-storage",
             "/hybrid-setup/sso-hybrid"
           ]
+        },
+        {
+          "group": "Cookbooks",
+          "pages": ["/cookbooks/build-a-simple-rag-app"]
         }
       ]
     },
