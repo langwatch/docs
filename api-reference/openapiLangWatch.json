@@ -419,7 +419,9 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": ["cccd21e0b70c706034dfd9f7772816a3"]
+                      "example": [
+                        "cccd21e0b70c706034dfd9f7772816a3"
+                      ]
                     },
                     "spans": {
                       "type": "array",
@@ -649,7 +651,9 @@
                                 "items": {
                                   "type": "string"
                                 },
-                                "example": ["TypeError: fetch failed"]
+                                "example": [
+                                  "TypeError: fetch failed"
+                                ]
                               },
                               "message": {
                                 "type": "string",
@@ -686,7 +690,9 @@
       "post": {
         "summary": "Search traces",
         "description": "Search for traces based on given criteria",
-        "tags": ["Traces"],
+        "tags": [
+          "Traces"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -834,7 +840,7 @@
         "responses": {},
         "operationId": "postApiPrompts",
         "parameters": [],
-        "description": "Create a new prompt",
+        "description": "Create a new prompt with default initial version",
         "requestBody": {
           "content": {
             "application/json": {
@@ -846,7 +852,9 @@
                     "minLength": 1
                   }
                 },
-                "required": ["name"]
+                "required": [
+                  "name"
+                ]
               }
             }
           }
@@ -952,7 +960,10 @@
                 "type": "object",
                 "properties": {
                   "authorId": {
-                    "type": ["string", "null"]
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   },
                   "projectId": {
                     "type": "string",
@@ -973,8 +984,9 @@
                     "type": "object",
                     "properties": {
                       "version": {
-                        "type": "string",
-                        "const": "1.0"
+                        "type": "number",
+                        "const": "1.0",
+                        "minimum": 1
                       },
                       "prompt": {
                         "type": "string",
@@ -995,10 +1007,20 @@
                             },
                             "type": {
                               "type": "string",
-                              "minLength": 1
+                              "minLength": 1,
+                              "enum": [
+                                "str",
+                                "float",
+                                "bool",
+                                "image",
+                                "list[str]"
+                              ]
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -1013,10 +1035,18 @@
                             },
                             "type": {
                               "type": "string",
-                              "minLength": 1
+                              "minLength": 1,
+                              "enum": [
+                                "str",
+                                "float",
+                                "bool"
+                              ]
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -1034,40 +1064,89 @@
                                 },
                                 "type": {
                                   "type": "string",
+                                  "minLength": 1,
+                                  "enum": [
+                                    "string",
+                                    "boolean",
+                                    "number",
+                                    "date",
+                                    "list",
+                                    "json",
+                                    "spans",
+                                    "rag_contexts",
+                                    "chat_messages",
+                                    "annotations",
+                                    "evaluations"
+                                  ]
+                                },
+                                "id": {
+                                  "type": "string",
                                   "minLength": 1
                                 }
                               },
-                              "required": ["name", "type"]
+                              "required": [
+                                "id",
+                                "name",
+                                "type"
+                              ]
                             }
                           },
                           "rows": {
                             "type": "array",
                             "items": {
                               "type": "object",
-                              "additionalProperties": {}
+                              "additionalProperties": {},
+                              "allOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "required": [
+                                    "id"
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                }
+                              ]
                             },
                             "default": []
                           }
                         },
-                        "required": ["columns"]
+                        "required": [
+                          "columns"
+                        ]
+                      },
+                      "temperature": {
+                        "type": "number"
+                      },
+                      "max_tokens": {
+                        "type": "number"
                       }
                     },
                     "required": [
-                      "version",
                       "prompt",
-                      "model",
                       "inputs",
                       "outputs",
+                      "model",
                       "demonstrations"
                     ]
+                  },
+                  "version": {
+                    "type": "number"
                   }
                 },
                 "required": [
-                  "authorId",
                   "projectId",
                   "configId",
                   "schemaVersion",
                   "commitMessage",
+                  "version",
                   "configData"
                 ]
               }
@@ -1080,7 +1159,9 @@
   "components": {
     "schemas": {
       "Annotation": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -1122,7 +1203,10 @@
         }
       },
       "Error": {
-        "required": ["error", "message"],
+        "required": [
+          "error",
+          "message"
+        ],
         "type": "object",
         "properties": {
           "error": {
@@ -1372,7 +1456,9 @@
             ]
           }
         },
-        "required": ["entries"]
+        "required": [
+          "entries"
+        ]
       }
     },
     "securitySchemes": {
