@@ -65,7 +65,7 @@
         },
         {
           "group": "Cookbooks",
-          "pages": ["/cookbooks/build-a-simple-rag-app"]
+          "pages": ["/cookbooks/build-a-simple-rag-app", "/cookbooks/finetuning-embedding-models"]
         }
       ]
     },
