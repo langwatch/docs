@@ -161,7 +161,8 @@
             "dspy-visualization/rag-visualization"
           ]
         },
-        "integration/mcp"
+        "integration/mcp",
+        "features/prompt-versioning"
       ]
     },
     {
