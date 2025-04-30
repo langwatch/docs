@@ -65,7 +65,9 @@
         },
         {
           "group": "Cookbooks",
+
           "pages": ["/cookbooks/build-a-simple-rag-app", "/cookbooks/finetuning-embedding-models", "/cookbooks/metadata-filtering"]
+
         }
       ]
     },
@@ -172,6 +174,19 @@
             "api-reference/traces/search-traces",
             "api-reference/traces/create-public-trace-path",
             "api-reference/traces/delete-public-trace-path"
+          ]
+        },
+        {
+          "group": "Prompts",
+          "pages": [
+            "api-reference/prompts/overview",
+            "api-reference/prompts/get-prompts",
+            "api-reference/prompts/create-prompt",
+            "api-reference/prompts/get-prompt",
+            "api-reference/prompts/update-prompt",
+            "api-reference/prompts/delete-prompt",
+            "api-reference/prompts/get-prompt-versions",
+            "api-reference/prompts/create-prompt-version"
           ]
         },
         {
