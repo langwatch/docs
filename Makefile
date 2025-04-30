@@ -9,3 +9,8 @@ sync-api-spec:
 	@mkdir -p $(DOCS_DIR)
 	@curl -s $(GITHUB_RAW_URL) > $(DOCS_DIR)/$(API_SPEC_FILE)
 	@echo "✅ API specification synced successfully to $(DOCS_DIR)/$(API_SPEC_FILE)"
+
+.PHONY: view-docs
+preview:
+	@echo "Viewing docs..."
+	@npx mintlify dev
