@@ -66,8 +66,11 @@
         {
           "group": "Cookbooks",
 
-          "pages": ["/cookbooks/build-a-simple-rag-app", "/cookbooks/finetuning-embedding-models", "/cookbooks/vector-vs-hybrid-search"]
-
+          "pages": [
+            "/cookbooks/build-a-simple-rag-app",
+            "/cookbooks/finetuning-embedding-models",
+            "/cookbooks/vector-vs-hybrid-search"
+          ]
         }
       ]
     },
@@ -127,15 +130,28 @@
       "group": "LLM Evaluation",
       "pages": [
         {
-          "group": "Evaluation",
+          "group": "Offline Evaluation",
           "pages": [
-            "llm-evaluation/offline-evaluation",
-            "llm-evaluation/real-time-evaluation",
-            "llm-evaluation/list",
+            "llm-evaluation/offline/platform/answer-correctness",
+            "llm-evaluation/offline/platform/llm-as-a-judge"
+          ]
+        },
+        {
+          "group": "Real-Time Evaluation",
+          "pages": [
+            "llm-evaluation/realtime/setup",
             "evaluations/custom-evaluator-integration"
           ]
         },
-        "features/datasets",
+        "llm-evaluation/list",
+        {
+          "group": "Datasets",
+          "pages": [
+            "datasets/overview",
+            "datasets/ai-dataset-generation",
+            "datasets/automatically-from-traces"
+          ]
+        },
         "features/annotations"
       ]
     },
@@ -236,6 +252,18 @@
     {
       "source": "/evaluations/overview",
       "destination": "/llm-evaluation/list"
+    },
+    {
+      "source": "/llm-evaluation/offline-evaluation",
+      "destination": "/llm-evaluation/offline-evaluation/platform/answer-correctness"
+    },
+    {
+      "source": "/llm-evaluation/real-time-evaluation",
+      "destination": "/llm-evaluation/realtime/setup"
+    },
+    {
+      "source": "/features/datasets",
+      "destination": "/datasets/quickstart"
     }
   ],
   "modeToggle": {
