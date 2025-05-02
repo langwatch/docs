@@ -125,15 +125,28 @@
       "group": "LLM Evaluation",
       "pages": [
         {
-          "group": "Evaluation",
+          "group": "Offline Evaluation",
           "pages": [
-            "llm-evaluation/offline-evaluation",
-            "llm-evaluation/real-time-evaluation",
-            "llm-evaluation/list",
+            "llm-evaluation/offline/platform/answer-correctness",
+            "llm-evaluation/offline/platform/llm-as-a-judge"
+          ]
+        },
+        {
+          "group": "Real-Time Evaluation",
+          "pages": [
+            "llm-evaluation/realtime/setup",
             "evaluations/custom-evaluator-integration"
           ]
         },
-        "features/datasets",
+        "llm-evaluation/list",
+        {
+          "group": "Datasets",
+          "pages": [
+            "datasets/overview",
+            "datasets/ai-dataset-generation",
+            "datasets/automatically-from-traces"
+          ]
+        },
         "features/annotations"
       ]
     },
@@ -158,7 +171,8 @@
             "dspy-visualization/rag-visualization"
           ]
         },
-        "integration/mcp"
+        "integration/mcp",
+        "features/prompt-versioning"
       ]
     },
     {
@@ -172,6 +186,19 @@
             "api-reference/traces/search-traces",
             "api-reference/traces/create-public-trace-path",
             "api-reference/traces/delete-public-trace-path"
+          ]
+        },
+        {
+          "group": "Prompts",
+          "pages": [
+            "api-reference/prompts/overview",
+            "api-reference/prompts/get-prompts",
+            "api-reference/prompts/create-prompt",
+            "api-reference/prompts/get-prompt",
+            "api-reference/prompts/update-prompt",
+            "api-reference/prompts/delete-prompt",
+            "api-reference/prompts/get-prompt-versions",
+            "api-reference/prompts/create-prompt-version"
           ]
         },
         {
@@ -220,6 +247,18 @@
     {
       "source": "/evaluations/overview",
       "destination": "/llm-evaluation/list"
+    },
+    {
+      "source": "/llm-evaluation/offline-evaluation",
+      "destination": "/llm-evaluation/offline-evaluation/platform/answer-correctness"
+    },
+    {
+      "source": "/llm-evaluation/real-time-evaluation",
+      "destination": "/llm-evaluation/realtime/setup"
+    },
+    {
+      "source": "/features/datasets",
+      "destination": "/datasets/quickstart"
     }
   ],
   "modeToggle": {

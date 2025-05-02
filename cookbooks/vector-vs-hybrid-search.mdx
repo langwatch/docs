@@ -8,7 +8,7 @@ In this cookbook, we demonstrate how to enhance retrieval performance by impleme
 
 When users search for products, documents, or other content, they often have specific attributes in mind. For example, a shopper might want "red dresses for summer occasions" or a researcher might need "papers on climate change published after 2020." Pure semantic search might miss these nuances, but metadata filtering allows you to combine the power of vector search with explicit attribute filtering.
 
-Like always, we'll focus on data-driven approaches to measure and improve retrieval performance. 
+Like always, we'll focus on data-driven approaches to measure and improve retrieval performance.
 
 ## Requirements
 
@@ -48,30 +48,49 @@ Here's what our taxonomy structure looks like:
 
 ```json
 {
-    "taxonomy_map": {
-        "Women": {
-            "Tops": {
-                "product_type": ["T-Shirts", "Blouses", "Sweaters", "Cardigans", "Tank Tops", "Hoodies", "Sweatshirts"],
-                "attributes": {
-                    "Sleeve Length": ["Sleeveless", "Short Sleeve", "3/4 Sleeve", "Long Sleeve"],
-                    "Neckline": ["Crew Neck", "V-Neck", "Turtleneck", "Scoop Neck", "Cowl Neck"],
-                    "Fit": ["Regular", "Slim", "Oversized", "Cropped"]
-                }
-            },
-            "Bottoms": {
-                "product_type": ["Pants", "Jeans", "Shorts", "Skirts", "Leggings"],
-                "attributes": {
-                    // Additional attributes...
-                }
-            }
+  "taxonomy_map": {
+    "Women": {
+      "Tops": {
+        "product_type": [
+          "T-Shirts",
+          "Blouses",
+          "Sweaters",
+          "Cardigans",
+          "Tank Tops",
+          "Hoodies",
+          "Sweatshirts"
+        ],
+        "attributes": {
+          "Sleeve Length": [
+            "Sleeveless",
+            "Short Sleeve",
+            "3/4 Sleeve",
+            "Long Sleeve"
+          ],
+          "Neckline": [
+            "Crew Neck",
+            "V-Neck",
+            "Turtleneck",
+            "Scoop Neck",
+            "Cowl Neck"
+          ],
+          "Fit": ["Regular", "Slim", "Oversized", "Cropped"]
         }
+      },
+      "Bottoms": {
+        "product_type": ["Pants", "Jeans", "Shorts", "Skirts", "Leggings"],
+        "attributes": {
+          // Additional attributes...
+        }
+      }
     }
+  }
 }
 ```
 
-Having well-structured metadata enables more precise filtering and can significantly improve search relevance, especially for domain-specific applications where users have particular attributes in mind. This data might come from manual tagging by product managers or automated processes with LLMs. 
+Having well-structured metadata enables more precise filtering and can significantly improve search relevance, especially for domain-specific applications where users have particular attributes in mind. This data might come from manual tagging by product managers or automated processes with LLMs.
 
-Let's first load the dataset from Huggingface: 
+Let's first load the dataset from Huggingface:
 
 ```python
 from datasets import load_dataset
@@ -79,7 +98,7 @@ from datasets import load_dataset
 labelled_dataset = load_dataset("ivanleomk/labelled-ecommerce-taxonomy")["train"]
 ```
 
-Now we can load it into our Chroma vector database. 
+Now we can load it into our Chroma vector database.
 
 ```python
 import chromadb
@@ -125,6 +144,7 @@ We've now loaded our product catalog into a Chroma vector database with the foll
 2. **Metadata**: Structured attributes like category, price, material, etc., that can be used for filtering
 
 This setup allows us to perform both:
+
 - **Pure semantic search**: Finding products based on the meaning of their descriptions
 - **Hybrid search**: Combining semantic similarity with explicit metadata filters
 
@@ -132,7 +152,7 @@ The embeddings are generated using OpenAI's embedding model, which creates high-
 
 ## Generating Synthetic Data
 
-When you don't have production data to start with, you can generate synthetic data to simulate a real-world scenario. We already have the 'output', which is the clothing item we just embedded. We now want to generate synthetic queries that would be relevant to the clothing item. 
+When you don't have production data to start with, you can generate synthetic data to simulate a real-world scenario. We already have the 'output', which is the clothing item we just embedded. We now want to generate synthetic queries that would be relevant to the clothing item.
 
 In this case, we'll use GPT-4 to generate realistic user queries that would naturally lead to each product in our catalog. This gives us query-product pairs where we know the ground truth relevance.
 
@@ -142,7 +162,7 @@ from openai import OpenAI
 from tqdm import tqdm
 
 # Initialize OpenAI client
-client = OpenAI(api_key=openai.api_key)  
+client = OpenAI(api_key=openai.api_key)
 
 # Define query types to generate variety
 query_types = [
@@ -155,14 +175,14 @@ query_types = [
 
 def generate_synthetic_query(item):
     """Generate a realistic search query for a clothing item"""
-    
+
     # Select a random query type
     query_type = random.choice(query_types)
-    
+
     # Create prompt for the LLM
     prompt = f"""
     Generate a realistic search query that would lead someone to find this specific clothing item:
-    
+
     Item Details:
     - Title: {item["title"]}
     - Description: {item["description"]}
@@ -173,26 +193,26 @@ def generate_synthetic_query(item):
     - Material: {item["material"]}
     - Attributes: {item["attributes"]}
     - Occasions: {item["occasions"]}
-    
+
     The query should be in a conversational tone, about 10-20 words, and focus on a {query_type.lower()}.
     Don't mention the exact product name, but include specific details that would make this item a perfect match.
-    
+
     Example: For a $120 silk blouse with long sleeves, a query might be:
     "Looking for an elegant silk top with long sleeves for work, under $150"
     """
-    
+
     # Generate query using OpenAI
     response = client.chat.completions.create(
-        model="gpt-4o-mini", 
+        model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that generates realistic shopping queries."},
             {"role": "user", "content": prompt}
         ]
     )
-    
+
     # Extract the generated query
     query = response.choices[0].message.content.strip().strip('"')
-    
+
     return {"query": query, **item}
 
 # Generate queries
@@ -202,7 +222,7 @@ for item in tqdm(labelled_dataset, desc="Generating queries"):
     synthetic_queries.append(query_data)
 ```
 
-Let's visualize what this looks like: 
+Let's visualize what this looks like:
 
 ```python
 from rich import print
@@ -212,13 +232,13 @@ print(synthetic_queries[0])
 
 ```json
 {
-    'query': 'Searching for a sleeveless top with lace detailing at the neckline for casual outings and dinner 
+    'query': 'Searching for a sleeveless top with lace detailing at the neckline for casual outings and dinner
 dates.',
     'image': <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=768x1024 at 0x13E0BB230>,
     'title': 'Lace Detail Sleeveless Top',
     'brand': 'H&M',
-    'description': "Elevate your casual wardrobe with this elegant sleeveless top featuring intricate lace 
-detailing at the neckline. Perfect for both day and night, it's crafted from a soft, breathable fabric for all-day 
+    'description': "Elevate your casual wardrobe with this elegant sleeveless top featuring intricate lace
+detailing at the neckline. Perfect for both day and night, it's crafted from a soft, breathable fabric for all-day
 comfort.",
     'category': 'Women',
     'subcategory': 'Tops',
@@ -261,7 +281,7 @@ class QueryFilters(BaseModel):
     occasions: list[str]
 ```
 
-With these models in place, we can start extracting query filters from all queries. We need to let the LLM know what the possible taxonomies are. We'll use the taxonomy.json file for this. 
+With these models in place, we can start extracting query filters from all queries. We need to let the LLM know what the possible taxonomies are. We'll use the taxonomy.json file for this.
 
 ```python
 import json
@@ -272,15 +292,15 @@ from tqdm import tqdm
 taxonomy = json.load(open("../data/taxonomy.json"))
 
 # Initialize OpenAI client
-client = OpenAI(api_key=openai.api_key)  
+client = OpenAI(api_key=openai.api_key)
 
 def extract_filters(item):
     """Extract filters from item metadata"""
-    
+
     # Create prompt for the LLM
     prompt = f"""
     Extract shopping filters from this query: "{item['query']}"
-    
+
     Return ONLY a JSON object with these possible keys:
     - category: The clothing category (e.g., "Women")
     - subcategory: The subcategory (e.g., "Tops", "Bottoms")
@@ -289,11 +309,11 @@ def extract_filters(item):
     - min_price: Minimum price as a number (no $ symbol)
     - material: The material (e.g., "Cotton", "Polyester")
     - occasion: The occasion (e.g., "Casual", "Formal")
-    
+
     Only include keys that are explicitly mentioned in the query.
     Use ONLY values from the taxonomy I'll provide
     """
-    
+
     # Get completion from OpenAI
     response = client.responses.parse(
         model="gpt-4o",
@@ -304,10 +324,10 @@ def extract_filters(item):
         ],
         text_format=QueryFilters
     )
-    
+
     # Extract the generated query
     filters = response.output_parsed
-    
+
     return filters
 
 # Extract Filters
@@ -324,6 +344,7 @@ Now comes the critical part - evaluating how well each retrieval method performs
 2. **Mean Reciprocal Rank (MRR)**: How high relevant items appear in our results
 
 These metrics help us understand different aspects of retrieval quality:
+
 - High recall means we're finding most of the relevant items
 - High MRR means we're ranking relevant items near the top of the results
 
@@ -349,7 +370,7 @@ def evaluate_retrieval(retrieved_ids, expected_ids):
     """Evaluate retrieval performance using recall and MRR"""
     recall = calculate_recall(retrieved_ids, expected_ids)
     mrr = calculate_mrr(retrieved_ids, expected_ids)
-    
+
     return {"recall": recall, "mrr": mrr}
 ```
 
@@ -370,9 +391,9 @@ def pure_semantic_search(query, collection, k=5):
         query_texts=[query],
         n_results=k
     )
-    
+
     retrieved_ids = results['ids'][0]
-    
+
     return retrieved_ids
 
 # Define a function for semantic search with metadata filtering
@@ -380,10 +401,10 @@ def semantic_search_with_metadata(query, collection, filters, k=5):
     """Perform semantic search with metadata filtering"""
     # Only proceed with filtering if filters are provided
     where_clause = None
-    
+
     if filters:
         where_conditions = []
-        
+
         # Add filters for each attribute
         where_conditions.append({"category": filters.category}) if filters.category else None
         where_conditions.append({"subcategory": filters.subcategory}) if filters.subcategory else None
@@ -391,7 +412,7 @@ def semantic_search_with_metadata(query, collection, filters, k=5):
         where_conditions.append({"material": {"$in": filters.material}}) if filters.material else None
         where_conditions.append({"price": {"$gte": filters.min_price}}) if filters.min_price else None
         where_conditions.append({"price": {"$lte": filters.max_price}}) if filters.max_price else None
-        
+
         # Combine all conditions with $and operator if we have multiple conditions
         if len(where_conditions) > 1:
             where_clause = {
@@ -399,16 +420,16 @@ def semantic_search_with_metadata(query, collection, filters, k=5):
             }
         elif len(where_conditions) == 1:
             where_clause = where_conditions[0]
-    
+
     # Perform the query with filters
     results = collection.query(
         query_texts=[query],
         n_results=k,
         where=where_clause
     )
-    
+
     retrieved_ids = results['ids'][0]
-    
+
     return retrieved_ids
 ```
 
@@ -419,32 +440,32 @@ Now we can run the evals:
 def run_evaluation(queries, expected_ids, collection, k_values=[3, 5, 10]):
     """Run evaluation for both retrieval methods across different k values"""
     results = []
-    
+
     for k in tqdm(k_values, desc="Evaluating k values"):
         pure_semantic_metrics = []
         metadata_filtering_metrics = []
-        
+
         for i, (query, expected) in enumerate(tqdm(zip(queries, expected_ids), desc=f"Evaluating queries for k={k}", total=len(queries))):
             # Get the filters for this query
             query_filters = filters[i] if i < len(filters) else None
-            
+
             # Run pure semantic search
             pure_semantic_results = pure_semantic_search(query, collection, k=k)
             pure_semantic_eval = evaluate_retrieval(pure_semantic_results, expected)
             pure_semantic_metrics.append(pure_semantic_eval)
-            
+
             # Run semantic search with metadata filtering
             metadata_results = semantic_search_with_metadata(query, collection, query_filters, k=k)
             metadata_eval = evaluate_retrieval(metadata_results, expected)
             metadata_filtering_metrics.append(metadata_eval)
-        
+
         # Calculate average metrics
         avg_pure_recall = np.mean([m["recall"] for m in pure_semantic_metrics])
         avg_pure_mrr = np.mean([m["mrr"] for m in pure_semantic_metrics])
-        
+
         avg_metadata_recall = np.mean([m["recall"] for m in metadata_filtering_metrics])
         avg_metadata_mrr = np.mean([m["mrr"] for m in metadata_filtering_metrics])
-        
+
         # Store results
         results.append({
             "k": k,
@@ -452,14 +473,14 @@ def run_evaluation(queries, expected_ids, collection, k_values=[3, 5, 10]):
             "avg_recall": avg_pure_recall,
             "avg_mrr": avg_pure_mrr
         })
-        
+
         results.append({
             "k": k,
             "method": "metadata_filtering",
             "avg_recall": avg_metadata_recall,
             "avg_mrr": avg_metadata_mrr
         })
-    
+
     return pd.DataFrame(results)
 ```
 
@@ -475,19 +496,18 @@ results_df = run_evaluation(queries, expected_ids, collection, k_values)
 print(results_df)
 ```
 
-| k   | method              | avg_recall | avg_mrr   |
-|-----|---------------------|------------|-----------|
-| 3   | pure_semantic       | 0.921466   | 0.846422  |
-| 3   | metadata_filtering  | 0.816754   | 0.779232  |
-| 5   | pure_semantic       | 0.926702   | 0.847731  |
-| 5   | metadata_filtering  | 0.837696   | 0.784206  |
-| 10  | pure_semantic       | 0.942408   | 0.849913  |
-| 10  | metadata_filtering  | 0.858639   | 0.787354  |
-
+| k   | method             | avg_recall | avg_mrr  |
+| --- | ------------------ | ---------- | -------- |
+| 3   | pure_semantic      | 0.921466   | 0.846422 |
+| 3   | metadata_filtering | 0.816754   | 0.779232 |
+| 5   | pure_semantic      | 0.926702   | 0.847731 |
+| 5   | metadata_filtering | 0.837696   | 0.784206 |
+| 10  | pure_semantic      | 0.942408   | 0.849913 |
+| 10  | metadata_filtering | 0.858639   | 0.787354 |
 
 ## Conclusion
 
-Whilst writing this cookbook, I had secretly 'hoped' that hybrid search would outperform pure semantic search. Most people default to vector embeddings, but in production I found that structured metadata extraction consistently delivered better results. 
+Whilst writing this cookbook, I had secretly 'hoped' that hybrid search would outperform pure semantic search. Most people default to vector embeddings, but in production I found that structured metadata extraction consistently delivered better results.
 
 However, this analysis shows that no application is the same. There is no 'universal' best method for doing things - it depends on the specific use case and the data at hand. In our particular experiment:
 
@@ -501,6 +521,6 @@ This highlights the importance of empirical evaluation rather than assuming one 
 2. The metadata extraction might need refinement to better capture query intent
 3. The dataset might not have enough attribute diversity to showcase the benefits of filtering
 
-I hope this analysis helps you make informed decisions about the best approach for your own use case. 
+I hope this analysis helps you make informed decisions about the best approach for your own use case.
 
 For the full notebook, check it out on: [GitHub](https://github.com/langwatch/cookbooks/blob/main/notebooks/metadata-filtering.ipynb).

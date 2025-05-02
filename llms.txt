@@ -2032,6 +2032,85 @@ EOF
 
 ---
 
+# FILE: ./features/prompt-versioning.mdx
+
+---
+title: Prompt Versioning
+description: Manage and version your prompts for consistent AI interactions
+---
+
+## Prompt Versioning
+
+LangWatch provides a robust prompt versioning system that allows you to manage and track changes to your prompts over time. This feature ensures consistency and enables team collaboration when working with AI models.
+
+### Using Prompts in the Optimization Studio
+
+<img className="block" src="/images/prompts/prompt-versions-in-studio.png" alt="LangWatch Prompt Versions in Studio" />
+
+To get started with prompt versioning in the Optimization Studio:
+
+1. Create a new workflow or open an existing one
+2. Drag a signature node onto the workspace
+3. Click on the node to access configuration options in the right side panel
+4. Make your desired changes to the prompt configuration
+5. Save your changes as a new version
+
+
+### Managing Prompt Versions
+
+Once you've created a prompt version, you can:
+
+- Restore previous versions by clicking the time icon
+- Rename your prompts for better organization
+- Reuse prompts across different workflows
+- View version history and track changes
+
+### Prompt Management Table
+
+The Prompt Management table provides a centralized location to manage all your prompts:
+
+1. Access the prompt table from the main menu
+2. Create new prompts or edit existing ones
+3. Save different versions of your prompts
+4. View all saved versions in a list format
+5. See who created each version (team collaboration)
+
+<img className="block" src="/images/prompts/prompt-manager-edit.png" alt="LangWatch Prompt Editor" />
+
+### Team Collaboration
+
+All prompts and their versions are shared across your project team:
+
+- Any prompt created in the table is available in the studio
+- Changes made in the studio are reflected in the prompt table
+- Team members can see who created each version
+- Prompts can be reused across different workflows
+
+<img className="block" src="/images/prompts/prompt-manager.png" alt="LangWatch Prompt Manager" />
+
+### API Integration
+
+LangWatch provides a comprehensive API for managing prompts programmatically. You can use the API to:
+
+- List all prompts for a project
+- Create new prompts
+- Update existing prompts
+- Manage prompt versions
+- Delete prompts
+
+To use the Prompts API, you'll need to authenticate using your LangWatch API key. For detailed information about the API endpoints and authentication, see the [Prompts API Reference](/api-reference/prompts/overview).
+
+The API supports the following operations:
+- `GET /api/prompts` - Get all prompts for a project
+- `POST /api/prompts` - Create a new prompt
+- `GET /api/prompts/:id` - Get a specific prompt
+- `PUT /api/prompts/:id` - Update a prompt
+- `DELETE /api/prompts/:id` - Delete a prompt
+- `GET /api/prompts/:id/versions` - Get all versions for a prompt
+- `POST /api/prompts/:id/versions` - Create a new version for a prompt
+
+---
+
 # FILE: ./features/batch-evaluations.mdx
 
 ---
@@ -2277,95 +2356,6 @@ When annotating a message, you will see the score options below the comment inpu
 
 Thats it! You can now annotate messages and add your custom score metrics to them.
 
-
----
-
-# FILE: ./features/datasets.mdx
-
----
-title: Datasets
-description: Create and manage datasets with LangWatch
----
-
-## Create datasets
-
-LangWatch allows you to create and manage datasets, with a built-in excel-like interface for collaborating with your team.
-
-* Import datasets in any format you want, manage columns and data types
-* Keep populating the dataset with data traced from production
-* Create new datasets from scratch with AI assistance
-* Generate synthetic data from documents
-* Import, export and manage versions
-
-### Usage
-
-To create a dataset, simply go to the datasets page and click the "Upload or Create Dataset" button. You will be able to select the type of dataset you want as well as the columns you want to include.
-
-<img
-  className="block"
-  src="/images/dataset-screenshot-new.png"
-  alt="LangWatch"
-/>
-
-## Adding data
-
-There are a couple ways to add data to a dataset;
-
-- **Manually**: You can add data on a per message basis.
-- **From traces**: You can fill the dataset by selecting a group of messages already captured.
-- **CSV Upload**: You can fill the dataset by uploading a CSV file.
-- **Continuously populate**: You can continuously populate the dataset with data traced from production.
-
-### Manually
-
-To add data manually, click the "Add to Dataset" button on the messages page after selecting a message. You will then be able to choose the dataset type and preview the data that will be added.
-
-<img
-  className="block"
-  src="/images/dataset-screenshot-single.png"
-  alt="LangWatch"
-/>
-
-### From traces
-
-To add data by selecting a group, simply click the "Add to Dataset" button after choosing the desired messages in the table view. You'll then be able to select the type of dataset you wish to add to and preview the data that will be included.
-
-<img
-  className="block"
-  src="/images/dataset-screenshot-group.png"
-  alt="LangWatch"
-/>
-
-### Continuously
-
-You can keep continously populating the dataset with new data arriving from production by using **Triggers**. Simply go to the Messages page and select a filter (for example, by model), the Add Trigger button will be enabled:
-
-<img
-  className="block"
-  src="/images/add-trigger.png"
-  alt="LangWatch"
-  style={{ maxWidth: "300px" }}
-/>
-
-For Action, select **Add To Dataset**, and chose the right fields to map from the trace to the dataset:
-
-<img
-  className="block"
-  src="/images/add-to-dataset-trigger.png"
-  alt="LangWatch"
-/>
-
-Hit save, and that's it! Now every time a new message matches the filter, the trigger will be fired and the dataset will be populated with the new row.
-
-### CSV Upload
-
-To add data by CSV upload, go to your datasets page and select the dataset you want to update. Click the "Upload CSV" button and upload your CSV or JSONL file. You can then map the columns from your file to the appropriate fields in the dataset based on the dataset type.
-
-<img
-  className="block"
-  src="/images/dataset-screenshot-csv.png"
-  alt="LangWatch"
-/>
 
 ---
 
