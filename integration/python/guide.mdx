@@ -1,71 +1,70 @@
 ---
 title: Python Integration Guide
-sidebarTitle: Guide
+sidebarTitle: Getting Started
 description: LangWatch Python SDK integration guide
 ---
 
+import LLMsTxtProtip from "/snippets/llms-txt-protip.mdx";
+
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
   <div>
-  <a href="https://github.com/langwatch/langwatch/tree/main/python-sdk" target="_blank">
-    <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch Python Repo" />
-  </a>
+    <a href="https://github.com/langwatch/langwatch/tree/main/python-sdk" target="_blank">
+      <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch Python Repo" />
+    </a>
   </div>
 
   <div>
-  <a href="https://pypi.org/project/langwatch/" target="_blank">
-    <img src="https://img.shields.io/pypi/v/langwatch?color=007EC6" noZoom alt="LangWatch Python SDK version" />
-  </a>
+    <a href="https://pypi.org/project/langwatch/" target="_blank">
+      <img src="https://img.shields.io/pypi/v/langwatch?color=007EC6" noZoom alt="LangWatch Python SDK version" />
+    </a>
   </div>
 </div>
 
-LangWatch library is the easiest way to integrate your Python application with LangWatch, the messages are synced on the background so it doesn't intercept or block your LLM calls.
-
-import LLMsTxtProtip from "/snippets/llms-txt-protip.mdx";
+Integrate LangWatch into your Python application to start observing your LLM interactions. This guide covers the setup and basic usage of the LangWatch Python SDK.
 
 <LLMsTxtProtip />
 
-import Prerequisites from "/snippets/prerequests.mdx";
-import PythonRAGSpan from "/snippets/python-rag-span.mdx";
-import PythonLangChainRAG from "/snippets/python-langchain-rag.mdx";
+## Get your LangWatch API Key
 
-<Prerequisites />
+First, you need a LangWatch API key. Sign up at [app.langwatch.ai](https://app.langwatch.ai) and find your API key in your project settings. The SDK will automatically use the `LANGWATCH_API_KEY` environment variable if it is set.
+
+## Start Instrumenting
+
+First, ensure you have the SDK installed:
+
+```bash
+pip install langwatch
+```
+
+Initialize LangWatch early in your application, typically where you configure services:
+
+```python
+import langwatch
+import os
+
+langwatch.setup()
+
+# Your application code...
+```
+
+<Note>
+  If you have an existing OpenTelemetry setup in your application, please see the [Already using OpenTelemetry?](#already-using-opentelemetry) section below.
+</Note>
 
 
 ## Capturing Messages
 
-- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
-- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
+- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces-one-task-end-to-end).
+- A [Trace](/concepts#traces-one-task-end-to-end) contains multiple [Spans](/concepts#spans-the-building-blocks), which are the steps inside your pipeline.
   - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
-  - Different types of [Spans](/concepts#spans) capture different parameters.
-  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
-- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
+  - Different types of [Spans](/concepts#spans-the-building-blocks) capture different parameters.
+  - [Spans](/concepts#spans-the-building-blocks) can be nested to capture the pipeline structure.
+- [Traces](/concepts#traces-one-task-end-to-end) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads-the-whole-conversation) in their metadata, making the individual messages become part of a conversation.
   - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
 
-## Create a Trace
+### Creating a Trace
 
-To capture traces and spans, start by adding the `@langwatch.trace()` decorator to the function that starts your LLM pipeline. Here it is represented by the `main()` function, but it can be your endpoint call or your class method that triggers the whole generation.
-
-```python
-import langwatch
-
-@langwatch.trace()
-def main():
-    ...
-```
-
-This is the main entry point for your trace, and all spans called from here will be collected automatically to LangWatch in the background.
-
-<Note>
-On short-live environments like Lambdas or Serverless Functions, be sure to call <br /> `langwatch.get_current_trace().send_spans()` before your trace function ends to wait for all pending requests to be sent before the runtime is destroyed.
-</Note>
-
-## Capturing LLM Spans
-
-LangWatch provides some utilities to automatically capture spans for popular LLM frameworks.
-
-<Tabs>
-<Tab title="OpenAI">
-For OpenAI, you can use the `autotrack_openai_calls()` function to automatically capture LLM spans for OpenAI calls for the current trace.
+To capture an end-to-end operation, like processing a user message, you can wrap the main function or entry point with the `@langwatch.trace()` decorator. This automatically creates a root span for the entire operation.
 
 ```python
 import langwatch
@@ -74,245 +73,156 @@ from openai import OpenAI
 client = OpenAI()
 
 @langwatch.trace()
-def main():
-    langwatch.get_current_trace().autotrack_openai_calls(client)
-    ...
+async def handle_message(message: cl.Message):
+    # This whole function execution is now a single trace
+    langwatch.get_current_trace().autotrack_openai_calls(client) # Automatically capture OpenAI calls
+
+    # ... rest of your message handling logic ...
+    pass
+
 ```
 
-That's enough to have your OpenAI calls collected and visible on LangWatch dashboard:
+You can customize the trace name and add initial metadata if needed:
 
-![OpenAI Spans](/images/integration/openai.png)
-</Tab>
-<Tab title="Azure">
-For Azure OpenAI, you can use the `autotrack_openai_calls()` function to automatically capture LLM spans for Azure OpenAI calls for the current trace.
+```python
+@langwatch.trace(name="My Custom Trace Name", metadata={"user_query": message.content})
+async def handle_message(message: cl.Message):
+    # ...
+    pass
+```
+
+Within a traced function, you can access the current trace context using `langwatch.get_current_trace()`.
+
+### Capturing a Span
+
+To instrument specific parts of your pipeline within a trace (like an llm operation, rag retrieval, or external api call), use the `@langwatch.span()` decorator.
 
 ```python
 import langwatch
-from openai import AzureOpenAI
+from langwatch.types import RAGChunk
 
-client = AzureOpenAI()
+@langwatch.span(type="rag", name="RAG Document Retrieval") # Add type and custom name
+def rag_retrieval(query: str):
+    # ... logic to retrieve documents ...
+    search_results = [
+        {"id": "doc-1", "content": "..." },
+        {"id": "doc-2", "content": "..." }
+    ]
 
-@langwatch.trace()
-def main():
-    langwatch.get_current_trace().autotrack_openai_calls(client)
-    ...
-```
-
-That's enough to have your Azure OpenAI calls collected and visible on LangWatch dashboard:
-
-![Azure OpenAI Spans](/images/integration/azure.png)
-</Tab>
-<Tab title="LiteLLM">
-You can use [LiteLLM](https://github.com/BerriAI/litellm) to call OpenAI, Anthropic, Gemini, Groq Llama 3 and over 100+ LLM models.
-
-And for tracking it all with LangWatch, you can use the `autotrack_litellm_calls()` function to automatically capture LLM spans for LiteLLM calls for the current trace.
-
-```python
-import langwatch
-import litellm
-
-@langwatch.trace()
-def main():
-    langwatch.get_current_trace().autotrack_litellm_calls(litellm)
-
-    response = litellm.completion(
-        ...
+    # Add specific context data to the span
+    langwatch.get_current_span().update(
+        contexts=[
+            RAGChunk(document_id=doc["id"], content=doc["content"])
+            for doc in search_results
+        ],
+        metadata={"retrieval_strategy": "vector_search"} # Add custom metadata
     )
+
+    return search_results
+
+@langwatch.trace()
+async def handle_message(message: cl.Message):
+    # ...
+    retrieved_docs = rag_retrieval(message.content) # This call creates a nested span
+    # ...
 ```
 
 <Note>
-Since we patch the `completion` method of the `litellm` module, you must use `litellm.completion()` instead of just `completion()` when calling your LLM, otherwise LangWatch will not be able to capture the spans.
+The `@langwatch.span()` decorator automatically captures the decorated function's arguments as the span's `input` and its return value as the `output`. This behavior can be controlled via the `capture_input` and `capture_output` arguments (both default to `True`).
 </Note>
 
-That's enough to have your LiteLLM calls collected and visible on LangWatch dashboard:
+Spans created within a function **decorated** with `@langwatch.trace()` will automatically be nested under the main trace span. You can add additional `type`, `name`, `metadata`, and `events`, or override the automatic input/output using decorator arguments or the `update()` method on the span object obtained via `langwatch.get_current_span()`.
 
-![LiteLLM Spans](/images/integration/litellm.png)
-</Tab>
-<Tab title="DSPy">
-[DSPy](https://github.com/stanfordnlp/dspy) is the LLM framework that automatically optimizes prompts, you can use LangWatch both for [visualizing](/dspy-visualization/quickstart) the
-optimization process, and for tracking the calls during inference as this guide shows.
+For detailed guidance on manually creating traces and spans using context managers or direct start/end calls, see the [Manual Instrumentation Tutorial](/integration/python/tutorials/manual-instrumentation).
 
-To track DSPy programs, you can use the `autotrack_dspy()` function to automatically capture DSPy modules forward pass, retrievers and LLM calls for the current trace.
+## Full Setup
 
 ```python
+import os
+
 import langwatch
-import dspy
+from langwatch.attributes import AttributeName
+from langwatch.domain import SpanProcessingExcludeRule
 
-@langwatch.trace()
-def main():
-    langwatch.get_current_trace().autotrack_dspy()
+from community.instrumentors import OpenAIInstrumentor # Example instrumentor
 
-    program = MyDspyProgram()
-    response = program(
-        ...
-    )
+from opentelemetry.sdk.trace import TracerProvider
+
+# Example: Providing an existing TracerProvider
+# existing_provider = TracerProvider()
+
+# Example: Defining exclude rules
+exclude_rules = [
+    SpanProcessingExcludeRule(
+      field_name=["span_name"],
+      match_value="GET /health_check",
+      match_operation="exact_match"
+    ),
+]
+
+langwatch.setup(
+    api_key=os.getenv("LANGWATCH_API_KEY"),
+    endpoint_url="https://your-langwatch-instance.com", # Optional: Defaults to env var or cloud
+    base_attributes={
+      AttributeName.ServiceName: "my-awesome-service",
+      AttributeName.ServiceVersion: "1.2.3",
+      # Add other custom attributes here
+    },
+    instrumentors=[OpenAIInstrumentor()], # Optional: List of instrumentors that conform to the `Instrumentor` protocol
+    # tracer_provider=existing_provider, # Optional: Provide your own TracerProvider
+    debug=True, # Optional: Enable debug logging
+    disable_sending=False, # Optional: Disable sending traces
+    flush_on_exit=True, # Optional: Flush traces on exit (default: True)
+    span_exclude_rules=exclude_rules, # Optional: Rules to exclude spans
+    ignore_global_tracer_provider_override_warning=False # Optional: Silence warning if global provider exists
+)
+
+# Your application code...
 ```
 
-That's enough to have your DSPy traces collected and visible on LangWatch dashboard:
+### Options
 
-![DSPy Spans](/images/integration/dspy.png)
-</Tab>
-<Tab title="LangChain">
-For LangChain, you can automatically capture every step of your chain as a span by getting a LangChain callback for the current trace with `get_langchain_callback()`.
+<ParamField path="api_key" type="str | None">
+  Your LangWatch API key. If not provided, it uses the `LANGWATCH_API_KEY` environment variable.
+</ParamField>
 
-```python
-import langwatch
+<ParamField path="endpoint_url" type="str | None">
+  The LangWatch endpoint URL. Defaults to the `LANGWATCH_ENDPOINT` environment variable or `https://app.langwatch.ai`.
+</ParamField>
 
-@langwatch.trace()
-def main():
-    ...
-    chain.invoke(
-        {"input": user_input},
-        # Add the LangWatch callback when invoking your chain
-        {"callbacks": [langwatch.get_current_trace().get_langchain_callback()]},
-    )
-```
+<ParamField path="base_attributes" type="dict[str, Any] | None">
+  A dictionary of attributes to add to all spans (e.g., service name, version). Automatically includes SDK name, version, and language.
+</ParamField>
 
-That's enough to have your LangChain calls collected and visible on LangWatch dashboard:
+<ParamField path="instrumentors" type="Sequence[Instrumentor] | None">
+  A list of automatic instrumentors (e.g., `OpenAIInstrumentor`, `LangChainInstrumentor`) to capture data from supported libraries.
+</ParamField>
 
-![LangChain Spans](/images/integration/langchain.png)
-</Tab>
-</Tabs>
+<ParamField path="tracer_provider" type="TracerProvider | None">
+  An existing OpenTelemetry `TracerProvider`. If provided, LangWatch will use it (adding its exporter) instead of creating a new one. If not provided, LangWatch checks the global provider or creates a new one.
+</ParamField>
 
-Check out for more python integration examples on the [examples folder on our GitHub repo](https://github.com/langwatch/langwatch/tree/main/python-sdk/examples).
+<ParamField path="debug" type="bool" default="False">
+  Enable debug logging for LangWatch. Defaults to `False` or checks if the `LANGWATCH_DEBUG` environment variable is set to `"true"`.
+</ParamField>
 
-## Adding metadata
+<ParamField path="disable_sending" type="bool" default="False">
+  If `True`, disables sending traces to the LangWatch server. Useful for testing or development.
+</ParamField>
 
-You can add metadata to track the user_id and current conversation thread_id, this is highly recommended to unlock better conversation grouping and user analytics on LangWatch.
+<ParamField path="flush_on_exit" type="bool" default="True">
+  If `True` (the default), the tracer provider will attempt to flush all pending spans when the program exits via `atexit`.
+</ParamField>
 
-```python
-import langwatch
+<ParamField path="span_exclude_rules" type="List[SpanProcessingExcludeRule] | None">
+  If provided, the SDK will exclude spans from being exported to LangWatch based on the rules defined in the list (e.g., matching span names).
+</ParamField>
 
-@langwatch.trace()
-def main():
-    langwatch.get_current_trace().update(metadata={"user_id": "user_id", "thread_id": "thread_id"})
-    ...
-```
+<ParamField path="ignore_global_tracer_provider_override_warning" type="bool" default="False">
+  If `True`, suppresses the warning message logged when an existing global `TracerProvider` is detected and LangWatch attaches its exporter to it instead of overriding it.
+</ParamField>
 
-You can also add custom labels to your trace to help you better filter and group your traces, or even trigger specific evaluations and alerts.
 
-```python
-import langwatch
+## Integrations
 
-@langwatch.trace()
-def main():
-    langwatch.get_current_trace().update(metadata={"labels": ["production"]})
-    ...
-```
-
-Check out the [reference](./reference#trace) to see all the available trace properties.
-
-## Changing the Message Input and Output
-
-By default, the main input and output of the trace displayed on LangWatch is captured from the arguments and return value of
-the top-level decorated function and heuristics try to extract the human-readable message from it automatically.
-
-However, sometimes more complex structures are used and the messages might not end up very human-readable on LangWatch, for example:
-
-![Raw Input and Output](/images/integration/message-raw-input-output.png)
-
-To make the messages really easy to read in the list and through the whole conversation, you can manually set what
-should the input and output of the trace be, by calling `.update(input=...)` and `.update(output=...)` on the current trace:
-
-```python
-import langwatch
-
-@langwatch.trace()
-def main(inputs):
-    # Update the input of the trace with the user message or any other human-readable text
-    langwatch.get_current_trace().update(input=inputs.question)
-
-    ...
-
-    # Then, before returning, update the output of the trace with final response
-    langwatch.get_current_trace().update(output=response)
-
-    return response
-```
-
-This will make the messages on LangWatch look like this:
-
-![Custom Input and Output](/images/integration/message-custom-input-output.png)
-
-## Capturing a RAG span
-
-RAG is a combination of a retrieval and a generation step, LangWatch provides a special span type for RAG that captures both steps separately which allows to capture the `contexts` being used by the LLM on your pipeline.
-By capturing the `contexts`, you unlock various uses of it on LangWatch, like RAG evaluators such as Faitfhfulness and Context Relevancy, and analytics on which documents are being used the most.
-
-<Tabs>
-<Tab title="RAG Span">
-<PythonRAGSpan />
-</Tab>
-<Tab title="LangChain">
-<PythonLangChainRAG />
-</Tab>
-</Tabs>
-
-## Capturing other spans
-
-To be able to inspect and debug each step of your pipeline along with the LLM calls, you can use the `@langwatch.span()` decorator. You can pass in different `type`s to categorize your spans.
-
-```python
-import langwatch
-
-@langwatch.span()
-def database_query():
-    ...
-
-@langwatch.span(type="tool")
-def weather_forecast(city: str):
-    ...
-
-@langwatch.span(type="rag")
-def rag_retrieval():
-    ...
-
-# You can manually track llm calls too if the automatic capture is not enough for your use case
-@langwatch.span(type="llm")
-def llm_call():
-    ...
-
-@langwatch.trace()
-def main():
-    ...
-```
-
-The input and output of the decorated function are automatically captured in the span, to disable that, you can set `capture_input` and `capture_output` to `False`:
-
-```python
-@langwatch.span(capture_input=False, capture_output=False)
-def database_query():
-    ...
-```
-
-You can also modify the current spans attributes, either on the decorator by using `.update()` on the current span:
-
-```python
-@langwatch.span(type="llm", name="custom_name")
-def llm_call():
-    langwatch.get_current_span().update(model="my-custom-model")
-    ...
-```
-
-Check out the [reference](./reference#span) to see all the available span properties.
-
-## Capturing custom evaluation results
-
-[LangWatch Evaluators](/llm-evaluation/list) can run automatically on your traces, but if you have an in-house custom evaluator, you can also capture the evaluation
-results of your custom evaluator on the current trace or span by using the `.add_evaluation` method:
-
-import PythonCustomEvaluation from "/snippets/python-custom-evaluation.mdx"
-
-<PythonCustomEvaluation />
-
-## Synchronizing your message IDs with LangWatch traces
-
-If you store the messages in a database on your side as well, you set the `trace_id` of the current trace to the same one of the message on your side, this way your system will be in sync with LangWatch traces, making it easier to investigate later on.
-
-```python
-@langwatch.trace()
-def main():
-    ...
-    langwatch.get_current_trace().update(trace_id=message_id)
-    ...
-```
+*(Content to be added)*
