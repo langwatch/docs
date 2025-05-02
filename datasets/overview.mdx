@@ -1,5 +1,6 @@
 ---
 title: Datasets
+sidebarTitle: Overview
 description: Create and manage datasets with LangWatch
 ---
 
@@ -54,24 +55,8 @@ To add data by selecting a group, simply click the "Add to Dataset" button after
 
 ### Continuously
 
-You can keep continously populating the dataset with new data arriving from production by using **Triggers**. Simply go to the Messages page and select a filter (for example, by model), the Add Trigger button will be enabled:
+You can keep continously populating the dataset with new data arriving from production by using **Triggers**. See [Automatically building a dataset from traces](/datasets/automatically-from-traces) for more details.
 
-<img
-  className="block"
-  src="/images/add-trigger.png"
-  alt="LangWatch"
-  style={{ maxWidth: "300px" }}
-/>
-
-For Action, select **Add To Dataset**, and chose the right fields to map from the trace to the dataset:
-
-<img
-  className="block"
-  src="/images/add-to-dataset-trigger.png"
-  alt="LangWatch"
-/>
-
-Hit save, and that's it! Now every time a new message matches the filter, the trigger will be fired and the dataset will be populated with the new row.
 
 ### CSV Upload
 

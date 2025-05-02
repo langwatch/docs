@@ -1,4 +1,4 @@
-const expandables = ["Language APIs & SDKs", "Evaluation"];
+const expandables = ["Language APIs & SDKs"];
 let expanded = [];
 
 const originalPath = window.location.pathname;
