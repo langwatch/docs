@@ -3,49 +3,60 @@ title: Concepts
 description: LLM tracing and observability conceptual guide
 ---
 
-Understanding LangWatch concepts can be made easier with two practical examples: an AI travel assistant and a tool for generating blog posts. Let's dive into how each core concept of LangWatch applies to these examples.
+Understanding the core concepts of LangWatch is essential for effective observability in your LLM applications. This guide explains key terms and their relationships using practical examples, like building an AI travel assistant or a text generation service.
 
-Imagine you've created an AI travel assistant that helps users plan their trips by conversing with them to suggest destinations, find the best prices for flights, and assist with bookings. On the other hand, you also have a platform that assists users in generating, and refining blog posts, including SEO optimization.
-
-### Threads
+### Threads: The Whole Conversation
 
 Field: `thread_id`
 
-A **thread** in the context of the AI travel assistant represents a complete conversation, that is, the group of all traces. It's the entire chat that groups all back-and-forth messages as the user inquires about different aspects of their travel plan. For the blog post tool, a thread could be for example the creation process of a new blog post, encapsulating all interactions that contribute to its completion—from headline generation to the final SEO adjustments.
+Think of a **Thread** as the entire journey a user takes in a single session. It's the complete chat with your AI travel buddy, from "Where should I go?" to booking the flight. For the blog post generator, a `thread_id` bundles up the whole session – from brainstorming headlines to polishing the final SEO-optimized draft. It groups *all* the back-and-forth interactions (Traces) for a specific task or conversation.
 
-### Traces
+### Traces: One Task, End-to-End
 
 Field: `trace_id`
 
-A **trace** in the travel assistant's example is each distinct message, for example when a user asks for the best prices for a destination, or asks if pets are allowed in the hotel.
+<Note>While previously LangWatch allowed you to pass in a custom `trace_id`, we now generate it for you automatically, and provide no way to pass in your own.</Note>
 
-In the blog post tool case, a trace could be for example each time a new generation of a catchy headline option happens, or the generation of a draft for the body, or the SEO keywords generation.
+Zooming in from Threads, a **Trace** represents a single, complete task performed by your AI. It's one round trip.
 
-It does not matter how many steps are inside, each trace is a full end-to-end generation handled by the AI.
+* **Travel Bot:** A user asking, "What are the cheapest flights to Bali in July?" is one Trace. Asking, "Does the hotel allow llamas?" is another Trace.
+* **Blog Tool:** Generating headline options? That's a Trace. Drafting the intro paragraph? Another Trace. Optimizing for keywords? You guessed it – a Trace.
 
-The `trace_id` is by default randomly generated if you don't provide one, however, to keep control of your traces and connect them to events like [Thumbs Up/Down](./user-events/thumbs-up-down), we recommend generating a random id on your side, using, for example the [nanoid](https://pypi.org/project/nanoid/) library.
+Each `trace_id` captures an entire end-to-end generation, no matter how many internal steps (Spans) it takes.
 
-### Spans
+### Spans: The Building Blocks
 
 Field: `span_id`
 
-Within each trace, **spans** represent the individual steps taken to achieve the outcome. In the travel bot scenario, a span could be a call to the LLM to suggest potential destinations, another span for querying the airline price API, and a final span for formatting the response to present to the user. For the blog post tool, one span might be the initial text generation, followed by a subsequent span for LLM to self-critiquing the content, and another span for the third LLM call refining the text based on the critique.
+<Note>While previously LangWatch allowed you to pass in a custom `span_id`, we now generate it for you automatically, and provide no way to pass in your own.</Note>
 
-### User ID
+Now, let's get granular! **Spans** are the individual steps or operations *within* a single Trace. Think of them as the building blocks of getting the job done.
+
+* **Travel Bot Trace:** Might have a Span for the LLM call figuring out destinations, another Span querying an airline API for prices, and a final Span formatting the response.
+* **Blog Tool Trace:** Could involve a Span for the initial text generation, a second Span where the LLM critiques its own work (clever!), and a third Span refining the text based on that critique.
+
+Each `span_id` pinpoints a specific action taken by your system or an LLM call.
+
+### User ID: Who's Using the App?
 
 Field: `user_id`
 
-The **user id** identifies the ID of the final user of the product. In the context of both the AI travel assistant and the tool for generating blog posts, it's the ID that identifies the person using the app, usually their user account ID, this allows LangWatch to track how end users are using the product.
+Simple but crucial: The **User ID** identifies the actual end-user interacting with your product. Whether they're planning trips or writing posts, this `user_id` (usually their account ID in your system) links the activity back to a real person, helping you see how different users experience your AI features.
 
-### Customer ID
+### Customer ID: For Platform Builders
 
 Field: `customer_id`
 
-The **customer id** is used when you provide a platform for your customers to build LLM apps for their end users. For example, it would be if your are building a platform that allow _others_ to build AI assistants for _their_ users. Having the **customer id** allows LangWatch to group all metrics and messages per customer, which allows you to access LangWatch data through our APIs to build a custom analytics dashboard for your customers, so they can see how their own LLM assistants are behaving.
+Are you building a platform *for other companies* to create *their own* LLM apps? That's where the **Customer ID** shines. If you're providing the tools for others (your customers) to build AI assistants for *their* users, the `customer_id` lets you (and them!) track usage and performance per customer account. It's perfect for offering custom analytics dashboards, showing your customers how *their* AI implementations are doing.
 
-### Labels
+### Labels: Your Organizational Superpowers
 
 Field: `labels`
 
-You can use **labels** to organize and compare the traces sent to LangWatch for any comparison you want to do. You can for example apply different labels for different actions, for example a label `blogpost_title` for generating the blog post title and another `blogpost_keywords`, for generating keywords. You can use it for versioning as well, for example label the first implementation
-version as `v1.0.0`, then do a prompt engineering to improve the AI travel planner itenerary builder, and label it as `v1.0.1`. This way you can easily focus on each different functionality or compare versions on LangWatch dashboard.
+Think of **Labels** as flexible tags you can slap onto Traces to organize, filter, and compare anything you want! They're your secret weapon for slicing and dicing your data.
+
+* **Categorize Actions:** Use labels like `blogpost_title` or `blogpost_keywords`.
+* **Track Versions:** Label traces with `version:v1.0.0`, then deploy an improved prompt and label new traces `version:v1.0.1`.
+* **Run Experiments:** Tag traces with `experiment:prompt_a` vs. `experiment:prompt_b`.
+
+Labels make it easy to zoom in on specific features or A/B test different approaches right within the LangWatch dashboard.
