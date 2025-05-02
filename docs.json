@@ -75,6 +75,13 @@
                     "group": "Python",
                     "pages": [
                       "integration/python/guide",
+                      {
+                        "group": "Tutorials",
+                        "pages": [
+                          "integration/python/tutorials/manual-instrumentation",
+                          "integration/python/tutorials/open-telemetry"
+                        ]
+                      },
                       "integration/python/reference"
                     ]
                   },
