@@ -81,6 +81,7 @@
                         "group": "Integrations",
                         "pages": [
                           "integration/python/integrations/open-ai",
+                          "integration/python/integrations/open-ai-agents",
                           "integration/python/integrations/open-ai-azure",
                           "integration/python/integrations/azure-ai",
                           "integration/python/integrations/lite-llm",
