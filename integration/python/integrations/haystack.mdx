@@ -40,7 +40,7 @@ prompt_template = PromptTemplate(
     output_parser=None # Or specify an output parser
 )
 prompt_node = PromptNode(
-    model_name_or_path="gpt-3.5-turbo", # Replace with your desired model
+    model_name_or_path="gpt-4o-mini", # Replace with your desired model
     api_key=os.environ.get("OPENAI_API_KEY"),
     default_prompt_template=prompt_template
 )
@@ -82,7 +82,7 @@ langwatch.setup(
 document_store = InMemoryDocumentStore(use_bm25=True)
 prompt_template = PromptTemplate(prompt="Answer the question: {query}")
 prompt_node = PromptNode(
-    model_name_or_path="gpt-3.5-turbo",
+    model_name_or_path="gpt-4o-mini",
     api_key=os.environ.get("OPENAI_API_KEY"),
     default_prompt_template=prompt_template
 )
@@ -138,7 +138,7 @@ HaystackInstrumentor().instrument()
 document_store = InMemoryDocumentStore(use_bm25=True)
 prompt_template = PromptTemplate(prompt="Summarize this for a 5-year old: {query}")
 prompt_node = PromptNode(
-    model_name_or_path="gpt-3.5-turbo",
+    model_name_or_path="gpt-4o-mini",
     api_key=os.environ.get("OPENAI_API_KEY"),
     default_prompt_template=prompt_template
 )
@@ -178,7 +178,7 @@ HaystackInstrumentor().instrument()
 document_store = InMemoryDocumentStore(use_bm25=True)
 prompt_template = PromptTemplate(prompt="Translate to French: {query}")
 prompt_node = PromptNode(
-    model_name_or_path="gpt-3.5-turbo",
+    model_name_or_path="gpt-4o-mini",
     api_key=os.environ.get("OPENAI_API_KEY"),
     default_prompt_template=prompt_template
 )
