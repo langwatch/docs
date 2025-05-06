@@ -43,13 +43,16 @@ To enable this, simply ensure you have installed and configured the relevant Ope
 
 Let's illustrate this with a simplified example involving a web request that performs RAG, calls OpenAI, and triggers a background Celery task.
 
-```python
-# requirements.txt:
-# langwatch
-# openai
-# celery
-# opentelemetry-instrumentation-celery
+<CodeGroup>
 
+```txt requirements.txt
+langwatch
+openai
+celery
+opentelemetry-instrumentation-celery
+```
+
+```python example.py
 import langwatch
 import os
 import asyncio
@@ -141,6 +144,8 @@ if __name__ == "__main__":
     # 2. Run this Python script.
     # 3. Observe the logs and the trace in LangWatch/OTel backend.
 ```
+
+</CodeGroup>
 
 In this example:
 - The `handle_request` function is the main trace.
@@ -243,6 +248,80 @@ with tracer.start_as_current_span("Process User Request") as span:
 ```
 
 Refer to the `SpanProcessingExcludeRule` definition for all available fields (`span_name`, `attribute`, `library_name`) and operations (`exact_match`, `contains`, `starts_with`, `ends_with`, `regex`).
+
+## Debugging with Console Exporter
+
+When developing or troubleshooting your OpenTelemetry integration, it's often helpful to see the spans being generated locally without sending them to a backend. The OpenTelemetry SDK provides a `ConsoleSpanExporter` for this purpose.
+
+You can add it to your `TracerProvider` like this:
+
+<CodeGroup>
+
+```python Scenario 1: Managed Provider (Recommended)
+import langwatch
+import os
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
+
+# Create your own TracerProvider
+my_tracer_provider = TracerProvider()
+
+# Add the ConsoleSpanExporter for debugging
+my_tracer_provider.add_span_processor(
+    SimpleSpanProcessor(ConsoleSpanExporter())
+)
+
+# Now, setup LangWatch with your pre-configured provider
+langwatch.setup(
+    tracer_provider=my_tracer_provider,
+    # If you are providing your own tracer_provider that might be global,
+    # you might want to set this to True if you see warnings.
+    # ignore_global_tracer_provider_override_warning=True
+)
+
+# Spans created via LangWatch or directly via OTel API using this provider
+# will now also be printed to the console.
+
+# Example of creating a span to test
+tracer = my_tracer_provider.get_tracer("my.debug.tracer")
+with tracer.start_as_current_span("My Test Span"):
+    print("This span should appear in the console.")
+```
+
+```python Scenario 2: Global Provider (Illustrative)
+# Ensure necessary imports if running this snippet standalone
+import os
+import langwatch
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider # Needed for isinstance check
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
+
+# In this case, you might try to get the global provider and add the exporter.
+# Note: This can be less predictable if other libraries also manipulate the global provider.
+
+langwatch.setup(
+    ignore_global_tracer_provider_override_warning=True # If a global provider exists
+)
+
+# Try to get the globally configured TracerProvider
+global_provider = trace.get_tracer_provider()
+
+# Check if it's an SDK TracerProvider instance that we can add a processor to
+if isinstance(global_provider, TracerProvider):
+    global_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
+
+# Example span after attempting to modify global provider
+# Note: get_tracer from the global trace module
+global_otel_tracer = trace.get_tracer("my.app.tracer.global")
+
+with global_otel_tracer.start_as_current_span("Test Span with Global Provider"):
+    print("This span should appear in console if global provider was successfully modified.")
+```
+
+</CodeGroup>
+
+This will print all created spans to your console
 
 ## Accessing the OpenTelemetry Span API
 
