@@ -1,0 +1,211 @@
+---
+title: Haystack Instrumentation
+sidebarTitle: Haystack
+description: Learn how to instrument Haystack pipelines with LangWatch using community OpenTelemetry instrumentors.
+keywords: haystack, deepset, instrumentation, openinference, openllmetry, LangWatch, Python
+---
+
+LangWatch does not have a built-in auto-tracking integration for Haystack from deepset.ai. However, you can leverage community-provided OpenTelemetry instrumentors to integrate your Haystack pipelines with LangWatch.
+
+## Integrating Community Instrumentors with LangWatch
+
+Community-provided OpenTelemetry instrumentors for Haystack allow you to automatically capture detailed trace data from your Haystack pipeline components (Nodes, Pipelines, etc.). LangWatch can seamlessly integrate with these instrumentors.
+
+There are two main ways to integrate these:
+
+### 1. Via `langwatch.setup()`
+
+You can pass an instance of the Haystack instrumentor to the `instrumentors` list in the `langwatch.setup()` call. LangWatch will then manage the lifecycle of this instrumentor.
+
+<CodeGroup>
+
+```python openinference_setup.py
+import langwatch
+import os
+from haystack.document_stores import InMemoryDocumentStore
+from haystack.nodes import PromptNode, PromptTemplate
+from haystack.pipelines import Pipeline
+from openinference.instrumentation.haystack import HaystackInstrumentor # Assuming this is the correct import
+
+langwatch.setup(
+    instrumentors=[HaystackInstrumentor()]
+)
+
+# Initialize Haystack components
+document_store = InMemoryDocumentStore(use_bm25=True)
+# You can add documents to the store here if needed
+
+prompt_template = PromptTemplate(
+    prompt="Answer the question based on the context: {query}",
+    output_parser=None # Or specify an output parser
+)
+prompt_node = PromptNode(
+    model_name_or_path="gpt-3.5-turbo", # Replace with your desired model
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    default_prompt_template=prompt_template
+)
+
+pipeline = Pipeline()
+pipeline.add_node(component=prompt_node, name="PromptNode", inputs=["Query"])
+
+@langwatch.trace(name="Haystack Pipeline with OpenInference (Setup)")
+def run_haystack_pipeline_oi_setup(query: str):
+    # The OpenInference instrumentor, when configured via langwatch.setup(),
+    # should automatically capture Haystack operations.
+    result = pipeline.run(query=query)
+    return result
+
+if __name__ == "__main__":
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("Please set the OPENAI_API_KEY environment variable.")
+    else:
+        user_query = "What is the capital of France?"
+        print(f"Running Haystack pipeline with OpenInference (setup) for query: {user_query}")
+        output = run_haystack_pipeline_oi_setup(user_query)
+        print("\n\nHaystack Pipeline Output:")
+        print(output)
+```
+
+```python openllmetry_setup.py
+import langwatch
+import os
+from haystack.document_stores import InMemoryDocumentStore
+from haystack.nodes import PromptNode, PromptTemplate
+from haystack.pipelines import Pipeline
+from opentelemetry_instrumentation_haystack import HaystackInstrumentor # Assuming this is the correct import
+
+langwatch.setup(
+    instrumentors=[HaystackInstrumentor()]
+)
+
+# Initialize Haystack components
+document_store = InMemoryDocumentStore(use_bm25=True)
+prompt_template = PromptTemplate(prompt="Answer the question: {query}")
+prompt_node = PromptNode(
+    model_name_or_path="gpt-3.5-turbo",
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    default_prompt_template=prompt_template
+)
+pipeline = Pipeline()
+pipeline.add_node(component=prompt_node, name="MyPromptNode", inputs=["Query"])
+
+@langwatch.trace(name="Haystack Pipeline with OpenLLMetry (Setup)")
+def run_haystack_pipeline_ollm_setup(query: str):
+    # The OpenLLMetry instrumentor should automatically capture Haystack operations.
+    result = pipeline.run(query=query)
+    return result
+
+if __name__ == "__main__":
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("Please set the OPENAI_API_KEY environment variable.")
+    else:
+        user_query = "What is deep learning?"
+        print(f"Running Haystack pipeline with OpenLLMetry (setup) for query: {user_query}")
+        output = run_haystack_pipeline_ollm_setup(user_query)
+        print("\n\nHaystack Pipeline Output:")
+        print(output)
+```
+
+</CodeGroup>
+
+<Note>
+  Ensure you have the respective community instrumentation library installed:
+  - For OpenInference: `pip install openinference-instrumentation-haystack`
+  - For OpenLLMetry: `pip install opentelemetry-instrumentation-haystack`
+  You'll also need Haystack: `pip install farm-haystack[openai]` (if using OpenAI models).
+  Consult the specific library's documentation for the exact package name and instrumentor class if the above assumptions are incorrect.
+</Note>
+
+### 2. Direct Instrumentation
+
+If you have an existing OpenTelemetry `TracerProvider` configured in your application (or if LangWatch is configured to use the global provider), you can use the community instrumentor's `instrument()` method directly. LangWatch will automatically pick up the spans generated by these instrumentors as long as its exporter is part of the active `TracerProvider`.
+
+<CodeGroup>
+
+```python openinference_direct.py
+import langwatch
+import os
+from haystack.document_stores import InMemoryDocumentStore
+from haystack.nodes import PromptNode, PromptTemplate
+from haystack.pipelines import Pipeline
+from openinference.instrumentation.haystack import HaystackInstrumentor # Assuming this is the correct import
+
+langwatch.setup()
+
+# Instrument Haystack directly using OpenInference
+HaystackInstrumentor().instrument()
+
+document_store = InMemoryDocumentStore(use_bm25=True)
+prompt_template = PromptTemplate(prompt="Summarize this for a 5-year old: {query}")
+prompt_node = PromptNode(
+    model_name_or_path="gpt-3.5-turbo",
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    default_prompt_template=prompt_template
+)
+pipeline = Pipeline()
+pipeline.add_node(component=prompt_node, name="SummarizerNode", inputs=["Query"])
+
+@langwatch.trace(name="Haystack Pipeline with OpenInference (Direct)")
+def run_haystack_pipeline_oi_direct(query: str):
+    # Spans from Haystack operations should be captured by the directly configured instrumentor.
+    result = pipeline.run(query=query)
+    return result
+
+if __name__ == "__main__":
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("Please set the OPENAI_API_KEY environment variable.")
+    else:
+        user_query = "The quick brown fox jumps over the lazy dog."
+        print(f"Running Haystack pipeline with OpenInference (direct) for query: {user_query}")
+        output = run_haystack_pipeline_oi_direct(user_query)
+        print("\n\nHaystack Pipeline Output:")
+        print(output)
+```
+
+```python openllmetry_direct.py
+import langwatch
+import os
+from haystack.document_stores import InMemoryDocumentStore
+from haystack.nodes import PromptNode, PromptTemplate
+from haystack.pipelines import Pipeline
+from opentelemetry_instrumentation_haystack import HaystackInstrumentor # Assuming this is the correct import
+
+langwatch.setup()
+
+# Instrument Haystack directly using OpenLLMetry
+HaystackInstrumentor().instrument()
+
+document_store = InMemoryDocumentStore(use_bm25=True)
+prompt_template = PromptTemplate(prompt="Translate to French: {query}")
+prompt_node = PromptNode(
+    model_name_or_path="gpt-3.5-turbo",
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    default_prompt_template=prompt_template
+)
+pipeline = Pipeline()
+pipeline.add_node(component=prompt_node, name="TranslatorNode", inputs=["Query"])
+
+@langwatch.trace(name="Haystack Pipeline with OpenLLMetry (Direct)")
+def run_haystack_pipeline_ollm_direct(query: str):
+    result = pipeline.run(query=query)
+    return result
+
+if __name__ == "__main__":
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("Please set the OPENAI_API_KEY environment variable.")
+    else:
+        user_query = "Hello, how are you?"
+        print(f"Running Haystack pipeline with OpenLLMetry (direct) for query: {user_query}")
+        output = run_haystack_pipeline_ollm_direct(user_query)
+        print("\n\nHaystack Pipeline Output:")
+        print(output)
+```
+
+</CodeGroup>
+
+### Key points for community instrumentors:
+-   These instrumentors typically patch Haystack at a global level or integrate deeply with its execution flow (e.g., via `BaseComponent` or `Pipeline` hooks), meaning most Haystack operations should be captured once instrumented.
+-   If using `langwatch.setup(instrumentors=[...])`, LangWatch handles the setup and lifecycle of the instrumentor.
+-   If instrumenting directly (e.g., `HaystackInstrumentor().instrument()`), ensure that the `TracerProvider` used by the instrumentor is the same one LangWatch is exporting from. This usually means LangWatch is configured to use an existing global provider or one you explicitly pass to `langwatch.setup()`.
+-   Always refer to the specific documentation of the community instrumentor (OpenInference or OpenLLMetry) for the most accurate and up-to-date installation and usage instructions, including the correct class names for instrumentors and any specific setup requirements for different Haystack versions or components.
+-   The examples use a `PromptNode` with an OpenAI model for simplicity. Ensure you have the necessary API keys (e.g., `OPENAI_API_KEY`) set in your environment if you run these examples.
