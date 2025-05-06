@@ -1,0 +1,297 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "LangWatch",
+  "colors": {
+    "primary": "#ed8926",
+    "light": "#f2a65a",
+    "dark": "#ed8926"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "anchors": [
+      {
+        "anchor": "Documentation",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "",
+            "pages": [
+              "introduction",
+              {
+                "group": "Self Hosting",
+                "pages": [
+                  "self-hosting/overview",
+                  "self-hosting/sso-hybrid"
+                ]
+              },
+              {
+                "group": "Hybrid Setup",
+                "pages": [
+                  "hybrid-setup/overview",
+                  "hybrid-setup/elasticsearch",
+                  "hybrid-setup/s3-storage",
+                  "hybrid-setup/sso-hybrid"
+                ]
+              },
+              {
+                "group": "Cookbooks",
+                "pages": [
+                  "cookbooks/build-a-simple-rag-app",
+                  "cookbooks/finetuning-embedding-models",
+                  "cookbooks/vector-vs-hybrid-search",
+                  "cookbooks/tool-selection"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "LLM Observability",
+            "pages": [
+              "integration/overview",
+              "concepts",
+              {
+                "group": "Language APIs & SDKs",
+                "pages": [
+                  {
+                    "group": "Python",
+                    "pages": [
+                      "integration/python/guide",
+                      "integration/python/reference"
+                    ]
+                  },
+                  {
+                    "group": "TypeScript",
+                    "pages": [
+                      "integration/typescript/guide"
+                    ]
+                  },
+                  {
+                    "group": "OpenTelemetry",
+                    "pages": [
+                      "integration/opentelemetry/guide"
+                    ]
+                  },
+                  "integration/rags-context-tracking",
+                  "integration/langflow",
+                  "integration/flowise",
+                  "integration/rest-api"
+                ]
+              },
+              {
+                "group": "User Events",
+                "pages": [
+                  "user-events/overview",
+                  {
+                    "group": "Events",
+                    "pages": [
+                      "user-events/thumbs-up-down",
+                      "user-events/waited-to-finish",
+                      "user-events/selected-text",
+                      "user-events/custom"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Monitoring & Alerts",
+                "pages": [
+                  "features/triggers",
+                  "features/embedded-analytics"
+                ]
+              },
+              "integration/code-examples"
+            ]
+          },
+          {
+            "group": "LLM Evaluation",
+            "pages": [
+              {
+                "group": "Offline Evaluation",
+                "pages": [
+                  "llm-evaluation/offline/platform/answer-correctness",
+                  "llm-evaluation/offline/platform/llm-as-a-judge"
+                ]
+              },
+              {
+                "group": "Real-Time Evaluation",
+                "pages": [
+                  "llm-evaluation/realtime/setup",
+                  "evaluations/custom-evaluator-integration"
+                ]
+              },
+              "llm-evaluation/list",
+              {
+                "group": "Datasets",
+                "pages": [
+                  "datasets/overview",
+                  "datasets/ai-dataset-generation",
+                  "datasets/automatically-from-traces"
+                ]
+              },
+              "features/annotations"
+            ]
+          },
+          {
+            "group": "LLM Development",
+            "pages": [
+              {
+                "group": "Prompt Optimization Studio",
+                "pages": [
+                  "optimization-studio/overview",
+                  "optimization-studio/llm-nodes",
+                  "optimization-studio/datasets",
+                  "optimization-studio/evaluating",
+                  "optimization-studio/optimizing"
+                ]
+              },
+              {
+                "group": "DSPy Visualization",
+                "pages": [
+                  "dspy-visualization/quickstart",
+                  "dspy-visualization/custom-optimizer",
+                  "dspy-visualization/rag-visualization"
+                ]
+              },
+              "integration/mcp",
+              "features/prompt-versioning"
+            ]
+          },
+          {
+            "group": "API Endpoints",
+            "pages": [
+              {
+                "group": "Traces",
+                "pages": [
+                  "api-reference/traces/overview",
+                  "api-reference/traces/get-trace-details",
+                  "api-reference/traces/search-traces",
+                  "api-reference/traces/create-public-trace-path",
+                  "api-reference/traces/delete-public-trace-path"
+                ]
+              },
+              {
+                "group": "Prompts",
+                "pages": [
+                  "api-reference/prompts/overview",
+                  "api-reference/prompts/get-prompts",
+                  "api-reference/prompts/create-prompt",
+                  "api-reference/prompts/get-prompt",
+                  "api-reference/prompts/update-prompt",
+                  "api-reference/prompts/delete-prompt",
+                  "api-reference/prompts/get-prompt-versions",
+                  "api-reference/prompts/create-prompt-version"
+                ]
+              },
+              {
+                "group": "Annotations",
+                "pages": [
+                  "api-reference/annotations/overview",
+                  "api-reference/annotations/get-annotation",
+                  "api-reference/annotations/get-single-annotation",
+                  "api-reference/annotations/delete-annotation",
+                  "api-reference/annotations/patch-annotation",
+                  "api-reference/annotations/get-all-annotations-trace",
+                  "api-reference/annotations/create-annotation-trace"
+                ]
+              },
+              {
+                "group": "Datasets",
+                "pages": [
+                  "api-reference/datasets/post-dataset-entries"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "support",
+              "status"
+            ]
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Open Dashboard",
+          "href": "https://app.langwatch.ai",
+          "icon": "link"
+        },
+        {
+          "anchor": "GitHub Repo",
+          "href": "https://github.com/langwatch/langwatch",
+          "icon": "github"
+        }
+      ]
+    }
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "appearance": {
+    "default": "light"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "llms.txt",
+        "href": "https://docs.langwatch.ai/llms.txt"
+      },
+      {
+        "label": "Support",
+        "href": "/support#email-support"
+      },
+      {
+        "label": "Dashboard",
+        "href": "https://app.langwatch.ai"
+      }
+    ],
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/langwatch/langwatch"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/langwatch/langwatch",
+      "website": "https://langwatch.ai",
+      "x-twitter": "https://x.com/langwatchai",
+      "linkedin": "https://www.linkedin.com/company/langwatch/",
+      "youtube": "https://www.youtube.com/@LangWatch"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/langevals/:path*",
+      "destination": "https://github.com/langwatch/langevals"
+    },
+    {
+      "source": "/integration/cookbooks",
+      "destination": "/integration/code-examples"
+    },
+    {
+      "source": "/guardrails/:path*",
+      "destination": "/llm-evaluation/real-time-evaluation"
+    },
+    {
+      "source": "/evaluations/overview",
+      "destination": "/llm-evaluation/list"
+    },
+    {
+      "source": "/llm-evaluation/offline-evaluation",
+      "destination": "/llm-evaluation/offline-evaluation/platform/answer-correctness"
+    },
+    {
+      "source": "/llm-evaluation/real-time-evaluation",
+      "destination": "/llm-evaluation/realtime/setup"
+    },
+    {
+      "source": "/features/datasets",
+      "destination": "/datasets/quickstart"
+    }
+  ]
+}
