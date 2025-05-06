@@ -50,7 +50,7 @@ Agent.instrument_all()
 # as it aligns with OTel semantic conventions for capturing message events.
 # The default mode might use a custom attribute format for events.
 instrumentation_settings_for_langwatch = InstrumentationSettings(event_mode='logs')
-agent = Agent(model_name='openai:gpt-3.5-turbo', instrument=instrumentation_settings_for_langwatch)
+agent = Agent(model_name='openai:gpt-4o-mini', instrument=instrumentation_settings_for_langwatch)
 
 @langwatch.trace(name="PydanticAI - City Capital Query")
 async def get_capital_city(country: str):
