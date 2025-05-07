@@ -100,7 +100,9 @@
                           "integration/python/tutorials/manual-instrumentation",
                           "integration/python/tutorials/open-telemetry",
                           "integration/python/tutorials/capturing-rag",
-                          "integration/python/tutorials/capturing-evaluations-guardrails"
+                          "integration/python/tutorials/capturing-evaluations-guardrails",
+                          "integration/python/tutorials/capturing-metadata",
+                          "integration/python/tutorials/capturing-mapping-input-output"
                         ]
                       },
                       "integration/python/reference"
