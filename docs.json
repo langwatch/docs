@@ -76,7 +76,6 @@
                     "group": "Python",
                     "pages": [
                       "integration/python/guide",
-                      "integration/python/guide-old",
                       {
                         "group": "Integrations",
                         "pages": [
@@ -85,9 +84,14 @@
                           "integration/python/integrations/open-ai-azure",
                           "integration/python/integrations/azure-ai",
                           "integration/python/integrations/lite-llm",
+                          "integration/python/integrations/dspy",
                           "integration/python/integrations/langchain",
                           "integration/python/integrations/pydantic-ai",
-                          "integration/python/integrations/aws-bedrock"
+                          "integration/python/integrations/aws-bedrock",
+                          "integration/python/integrations/google-adk",
+                          "integration/python/integrations/crew-ai",
+                          "integration/python/integrations/haystack",
+                          "integration/python/integrations/other"
                         ]
                       },
                       {
@@ -95,12 +99,8 @@
                         "pages": [
                           "integration/python/tutorials/manual-instrumentation",
                           "integration/python/tutorials/open-telemetry",
-                          "llm-observability/api-sdk/python/tutorial/capturing-rag",
-                          "llm-observability/api-sdk/python/tutorial/observing-tool-calls",
-                          "llm-observability/api-sdk/python/tutorial/instrumenting-agents",
-                          "llm-observability/api-sdk/python/tutorial/capturing-user-feedback",
-                          "llm-observability/api-sdk/python/tutorial/capturing-user-events",
-                          "llm-observability/api-sdk/python/tutorial/capturing-custom-evaluations"
+                          "integration/python/tutorials/capturing-rag",
+                          "integration/python/tutorials/capturing-evaluations-guardrails"
                         ]
                       },
                       "integration/python/reference"
