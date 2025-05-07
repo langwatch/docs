@@ -243,7 +243,7 @@ advanced_chat_example()
 
 *   **Redacting Sensitive Information**: If your function arguments or return values contain sensitive data (PII, API keys), disable automatic capture (`capture_input=False`, `capture_output=False`) and explicitly set sanitized versions using `input`/`output` parameters or `update()`.
 *   **Mapping Complex Objects**: If your inputs/outputs are complex Python objects, map them to a dictionary or a simplified string representation for clearer display in LangWatch.
-*   **Improving Readability**: For long text inputs/outputs (e.g., full documents), consider capturing a summary or metadata instead of the entire content to reduce noise, unless the full content is essential for debugging.
+*   **Improving Readability**: For long text inputs/outputs (e.g., full documents), consider capturing a summary or metadata instead of the entire content to reduce noise, unless the full content is essential for debugging or evaluating.
 *   **Clearing Captured Data**: You can set `input=None` or `output=None` via the `update()` method to remove previously captured (or auto-captured) data if it's no longer relevant or was captured in error.
 
 ```python
