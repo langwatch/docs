@@ -53,10 +53,11 @@
               {
                 "group": "Cookbooks",
                 "pages": [
-                  "cookbooks/build-a-simple-rag-app",
-                  "cookbooks/finetuning-embedding-models",
-                  "cookbooks/vector-vs-hybrid-search",
-                  "cookbooks/tool-selection"
+                  "/cookbooks/build-a-simple-rag-app",
+                  "/cookbooks/finetuning-embedding-models",
+                  "/cookbooks/vector-vs-hybrid-search",
+                  "/cookbooks/tool-selection",
+                  "/cookbooks/finetuning-agents"
                 ]
               }
             ]
