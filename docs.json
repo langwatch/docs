@@ -7,7 +7,23 @@
     "light": "#f2a65a",
     "dark": "#ed8926"
   },
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
   "favicon": "/favicon.svg",
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
   "navigation": {
     "anchors": [
       {
@@ -227,13 +243,6 @@
         }
       ]
     }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "appearance": {
-    "default": "light"
   },
   "navbar": {
     "links": [
