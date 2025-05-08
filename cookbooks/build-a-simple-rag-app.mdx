@@ -286,7 +286,9 @@ plt.savefig("embedding_comparison.png")
 plt.show()
 ```
 
-<img src="/images/output.png" alt="comparison plot" style={{marginTop: "50px"}} />
+<Frame caption="Comparison plot between Recall@K and MRR@K for different large/small embedding models">
+<img src="/images/output.png" alt="comparison plot" />
+</Frame>
 
 We can see that the best configuration for recall is the small embedding model with k=10. This is surprising, as we would expect the large embedding model to perform better. Although, if we cared a lot more about citations, the large embedding model might be preferred. 
 

@@ -8,6 +8,7 @@ The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) 
 
 This server facilitates LLM development by allowing the agent to search for traces, understand all the steps in between a problematic output and try to fix the issue.
 
+<Frame>
 <iframe
   width="720"
   height="460"
@@ -17,6 +18,7 @@ This server facilitates LLM development by allowing the agent to search for trac
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowFullScreen
 ></iframe>
+</Frame>
 
 ## Setup in your Codebase
 
@@ -32,10 +34,14 @@ Check out [the integration guides](/integration/overview) to start tracking your
 - `--apiKey`: Your LangWatch API key. This is mandatory and must be provided.
 - `--endpoint`: *Optional* The endpoint for the LangWatch API. Defaults to `https://app.langwatch.ai` if not specified.
 
-> [!TIP]
-> To aid in securing your keys, the MCP will first look at the global system environment variables `LANGWATCH_API_KEY` and `LANGWATCH_ENDPOINT` to check if they have values as well as looking at arguments passed into the server on start.
 
-<img alt="LangWatch MCP Setup" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-setup.light.webp" width="900" />
+<Tip>
+To aid in securing your keys, the MCP will first look at the global system environment variables `LANGWATCH_API_KEY` and `LANGWATCH_ENDPOINT` to check if they have values as well as looking at arguments passed into the server on start.
+</Tip>
+
+<Frame>
+<img alt="LangWatch MCP Setup" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-setup.light.webp" />
+</Frame>
 
 ## Tools
 
@@ -68,8 +74,10 @@ To use these tools within Cursor, follow these steps:
 
 > "I just ran into an issue while debugging, can you check the latest traces and fix it?"
 
-<img alt="LangWatch MCP Example" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-example.light.webp" width="900" />
 
+<Frame>
+<img alt="LangWatch MCP Example" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-example.light.webp" />
+</Frame>
 
 ## 🛟 Support
 

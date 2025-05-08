@@ -93,11 +93,14 @@ compiled_rag = teleprompter.compile(RAG(), trainset=trainset)
 ```
 
 The result of optimization can be found on your LangWatch dashboard. On the graph you can see how many demos were boostrapped during the first optimization step.
+<Frame caption="DSPy Experiment Dashboard">
 <img className="block" src="/images/screenshot-rag-dspy-tutorial.png" alt="DSPy Experiment Dashboard" />
-
+</Frame>
 
 Additionally, you can see each LLM call that has been done during the optimization with the corresponding costs and token counts.
+<Frame caption="DSPy LLM calls">
 <img className="block" src="/images/screenshot-dspy-llm-calls.png" alt="DSPy LLM calls" />
+</Frame>
 
 
 <Card title="Open in Notebook" icon="github" href="https://github.com/langwatch/langevals/blob/main/notebooks/tutorials/dspy_rag.ipynb">
