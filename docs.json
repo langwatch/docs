@@ -296,6 +296,10 @@
     {
       "source": "/features/datasets",
       "destination": "/datasets/quickstart"
+    },
+    {
+      "source": "/self-hosting/sso-hybrid",
+      "destination": "/hybrid-setup/sso-setup-langwatch"
     }
   ]
 }
