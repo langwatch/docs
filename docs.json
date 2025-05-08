@@ -75,11 +75,15 @@
                   },
                   {
                     "group": "TypeScript",
-                    "pages": ["integration/typescript/guide"]
+                    "pages": [
+                      "integration/typescript/guide"
+                    ]
                   },
                   {
                     "group": "OpenTelemetry",
-                    "pages": ["integration/opentelemetry/guide"]
+                    "pages": [
+                      "integration/opentelemetry/guide"
+                    ]
                   },
                   "integration/rags-context-tracking",
                   "integration/langflow",
@@ -104,7 +108,10 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": ["features/triggers", "features/embedded-analytics"]
+                "pages": [
+                  "features/triggers",
+                  "features/embedded-analytics"
+                ]
               },
               "integration/code-examples"
             ]
@@ -209,7 +216,10 @@
           },
           {
             "group": "Support",
-            "pages": ["support", "status"]
+            "pages": [
+              "support", 
+              "status"
+            ]
           }
         ]
       }
