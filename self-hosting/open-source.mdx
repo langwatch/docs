@@ -1,0 +1,74 @@
+---
+title: Open Source
+description: LangWatch offers a fully open source version of the platform.
+---
+
+## Docker Compose
+
+LangWatch is available as a Docker Compose setup for easy deployment on your local machine. This section provides instructions for installing the Langwatch Docker Compose setup.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+```bash
+git clone https://github.com/langwatch/langwatch.git
+cp langwatch/.env.example langwatch/.env
+docker compose up -d --wait --build
+open http://localhost:5560
+```
+
+## Local Development
+
+To run the project locally, you need to start the databases and LangWatch services.
+Start just the databases using docker and leave it running:
+
+```bash
+docker compose up redis postgres opensearch
+```
+Then, on another terminal, install the dependencies and start LangWatch:
+
+```bash
+make install
+make start
+```
+
+## Helm Chart for LangWatch
+
+LangWatch is available as a Helm chart for easy deployment on Kubernetes. This section provides instructions for installing the Langwatch Helm chart.
+
+### Installing Langwatch Helm Chart
+
+To deploy the Langwatch Helm chart, ensure you have the following tools installed:
+
+- [Helm](https://helm.sh/docs/intro/install/) – Package manager for Kubernetes.
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) – Local Kubernetes cluster for testing and development.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) – Command-line tool to interact with your Kubernetes cluster.
+
+## Required Values
+
+When installing this chart, the following environment variables must be provided:
+
+- `app.env.NEXTAUTH_SECRET`: A random string used to hash tokens, sign cookies, and generate cryptographic keys. **Required** for authentication to work.
+- `app.env.API_TOKEN_JWT_SECRET`: A random string used to securely store API tokens.
+- `app.env.BASE_HOST`: The base URL of the application (e.g., `http://localhost:5560`).
+- `app.env.NEXTAUTH_URL`: The URL of the authentication service (usually same as `BASE_HOST`).
+
+## Example Setup
+
+```bash
+# Generate secure secrets
+export NEXTAUTH_SECRET=$(openssl rand -base64 32)
+export API_TOKEN_JWT_SECRET=$(openssl rand -base64 32)
+
+# Set application URLs
+export BASE_HOST="http://localhost:5560"
+export NEXTAUTH_URL="http://localhost:5560"
+
+# Install the chart
+helm install langwatch ./langwatch \
+  --set app.env.NEXTAUTH_SECRET=$NEXTAUTH_SECRET \
+  --set app.env.API_TOKEN_JWT_SECRET=$API_TOKEN_JWT_SECRET \
+  --set app.env.BASE_HOST=$BASE_HOST \
+  --set app.env.NEXTAUTH_URL=$NEXTAUTH_URL

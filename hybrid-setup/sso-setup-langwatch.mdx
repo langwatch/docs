@@ -1,0 +1,50 @@
+---
+title: SSO
+description: SSO Setup for LangWatch
+---
+
+# Single Sign-On (SSO)
+
+LangWatch supports sign-in via various SSO providers. There are two ways to set up SSO:
+
+1. **Self-Hosted Deployment**: You can use any SSO provider that is supported by NextAuth.js. See the [NextAuth.js documentation](https://next-auth.js.org/configuration/providers) for the full list of supported providers.
+
+2. **Managed Service (app.langwatch.ai)**: We currently support the following SSO providers:
+
+### Azure AD / Entra ID
+
+- 📄 [Azure AD Docs](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
+
+| Configuration      | Value                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| Required Variables | `AUTH_AZURE_AD_CLIENT_ID`<br />`AUTH_AZURE_AD_CLIENT_SECRET`<br />`AUTH_AZURE_AD_TENANT_ID` |
+| Redirect URL | `https://langwatch.eu.auth0.com/login/callback`                                                           |
+
+
+### Okta
+
+- 📄 [Okta Docs](https://developer.okta.com/docs/reference/api/oidc)
+
+| Configuration      | Value                                                                    |
+| ------------------ | ------------------------------------------------------------------------ |
+| Required Variables | `AUTH_OKTA_CLIENT_ID`<br />`AUTH_OKTA_CLIENT_SECRET`<br />`AUTH_OKTA_ISSUER` |
+| Redirect URL | `https://langwatch.eu.auth0.com/login/callback`                                                |
+                                                                 
+
+
+## Contact Us
+
+Once you have all these details, please contact us so we can set them up from our side.
+
+---
+
+## Support
+
+For any queries or issues, feel free to reach out to us. We are available via:
+
+- **Email**: [support@langwatch.ai](mailto:support@langwatch.ai)
+- **Slack**: Connect with us directly on Slack for real-time support and assistance.
+
+---
+
+We look forward to helping you set up LangWatch seamlessly and efficiently.
