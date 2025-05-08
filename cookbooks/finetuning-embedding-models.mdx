@@ -411,7 +411,9 @@ results_df['collection'] = results_df['collection'].astype(str)
 results_df.pivot(index='k', columns='collection', values=['avg_recall']).plot(kind='bar', figsize=(12, 6))
 ```
 
-<img src="/images/mrr_recall_finetuned_embeddings.png" alt="mrr_recall_finetuned_embeddings" style={{marginTop: "50px"}}/>
+<Frame caption="Comparison between base and finetuned models">
+<img src="/images/mrr_recall_finetuned_embeddings.png" alt="Comparison between base and finetuned models" />
+</Frame>
 
 ## Conclusion
 
