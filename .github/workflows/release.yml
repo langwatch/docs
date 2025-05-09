@@ -1,4 +1,4 @@
-name: Release docs.langwatch.ai
+name: Release
 
 on:
   workflow_dispatch:
