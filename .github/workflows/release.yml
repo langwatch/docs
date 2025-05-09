@@ -1,4 +1,4 @@
-name: Release
+name: release
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: 'General'
 
 jobs:
-  release-docs:
+  docs:
     runs-on: ubuntu-latest
 
     steps:
