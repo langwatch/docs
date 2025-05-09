@@ -16,10 +16,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          # We don't need to specify token here as we'll use SSH with deploy key
+          token: ${{ secrets.RELEASE_DOCS_TOKEN }}
           submodules: true
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_DOCS_PAT }}
 
       - name: Configure Git
         run: |
