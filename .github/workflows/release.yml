@@ -1,4 +1,4 @@
-name: Release docs.langwatch.ai
+name: release
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: 'General'
 
 jobs:
-  release-docs:
+  docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,20 +19,12 @@ jobs:
           # We don't need to specify token here as we'll use SSH with deploy key
           submodules: true
           fetch-depth: 0
-
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          # ssh-private-key: ${{ secrets.UPDATE_SUBMODULES_KEY }}
-          ssh-private-key: ${{ secrets.RELEASE_DOCS_KEY }}
+          token: ${{ secrets.RELEASE_DOCS_PAT }}
 
       - name: Configure Git
         run: |
           git config --global user.name "LangWatch Docs Bot"
           git config --global user.email "y.budnyk789@gmail.com"
-
-          # Configure Git to use SSH instead of HTTPS
-          git remote set-url origin git@github.com:${{ github.repository }}.git
 
       - name: Trigger Release
         run: |
