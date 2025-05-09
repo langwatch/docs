@@ -39,5 +39,6 @@ jobs:
 
       - name: Trigger Release
         run: |
-          git commit --allow-empty -m "Release docs (${{ github.event.inputs.release_reason }})"
+          git add docs.json
+          git commit -m "Release docs (${{ github.event.inputs.release_reason }})"
           git push origin HEAD:main
