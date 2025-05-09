@@ -20,6 +20,18 @@ jobs:
           submodules: true
           fetch-depth: 0
 
+      - name: Update cache buster redirect
+        run: |
+          CURRENT_TIME=$(date +%s)
+          jq --arg current_time_val "$CURRENT_TIME" \
+            'if (.redirects[0].source | startswith("/ci/cache/busted/")) then 
+              .redirects[0].source = ("/ci/cache/busted/" + $current_time_val) 
+            else 
+              error("Error: .redirects[0].source does not start with /ci/cache/busted/") 
+            end' \
+            docs.json > docs.json.tmp && \
+          mv docs.json.tmp docs.json
+
       - name: Configure Git
         run: |
           git config --global user.name "LangWatch Docs Bot"

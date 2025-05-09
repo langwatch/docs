@@ -17,7 +17,12 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "navigation": {
     "anchors": [
@@ -210,14 +215,16 @@
               },
               {
                 "group": "Datasets",
-                "pages": ["api-reference/datasets/post-dataset-entries"]
+                "pages": [
+                  "api-reference/datasets/post-dataset-entries"
+                ]
               }
             ]
           },
           {
             "group": "Support",
             "pages": [
-              "support", 
+              "support",
               "status"
             ]
           }
@@ -269,6 +276,10 @@
     }
   },
   "redirects": [
+    {
+      "source": "/ci/cache/busted/1746822384",
+      "destination": "/"
+    },
     {
       "source": "/langevals/:path*",
       "destination": "https://github.com/langwatch/langevals"
