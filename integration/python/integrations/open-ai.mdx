@@ -21,7 +21,6 @@ You typically call this method on the trace object obtained via `langwatch.get_c
 ```python
 import langwatch
 from openai import OpenAI
-import os
 
 # Ensure LANGWATCH_API_KEY is set in your environment, or set it in `setup`
 langwatch.setup()
@@ -73,7 +72,7 @@ from openai import OpenAI
 import os
 
 # Example using OpenInference's OpenAIInstrumentor
-from openinference-instrumentation-openai import OpenAIInstrumentor
+from openinference.instrumentation.openai import OpenAIInstrumentor
 
 # Initialize LangWatch with the OpenAIInstrumentor
 langwatch.setup(
