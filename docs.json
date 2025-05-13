@@ -86,6 +86,7 @@
                           "integration/python/integrations/lite-llm",
                           "integration/python/integrations/dspy",
                           "integration/python/integrations/langchain",
+                          "integration/python/integrations/langgraph",
                           "integration/python/integrations/pydantic-ai",
                           "integration/python/integrations/aws-bedrock",
                           "integration/python/integrations/crew-ai",
