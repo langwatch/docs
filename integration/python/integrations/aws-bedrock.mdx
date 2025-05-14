@@ -63,7 +63,7 @@ async def invoke_claude(prompt_text: str):
         return None
 
     current_span = langwatch.get_current_span()
-    current_span.update(metadata={"model_id": "anthropic.claude-v2", "action": "invoke_model"})
+    current_span.update(model_id="anthropic.claude-v2", action="invoke_model")
 
     try:
         body = json.dumps({

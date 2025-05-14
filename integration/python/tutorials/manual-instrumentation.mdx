@@ -37,23 +37,20 @@ async def rag_retrieval_manual(query: str):
                 RAGChunk(document_id=doc["id"], content=doc["content"])
                 for doc in search_results
             ],
-            metadata={"strategy": "manual_vector_search"},
-            output=search_results
+            output=search_results,
+            strategy="manual_vector_search"
         )
         return search_results
 
 async def handle_user_query_manual(query: str):
     # Use async with for the trace
-    async with langwatch.trace(name="Manual User Query Handling") as trace:
-        trace.set_metadata({"user_id": "manual-user", "query": query}) # Set initial trace metadata
-
+    async with langwatch.trace(name="Manual User Query Handling", metadata={"user_id": "manual-user", "query": query}) as trace:
         # Call the manually instrumented RAG function
         retrieved_docs = await rag_retrieval_manual(query)
 
         # --- Simulate LLM Call Step (manual span) ---
         llm_response = ""
-        async with langwatch.span(name="Manual LLM Generation") as llm_span:
-            llm_span.set_attribute(AttributeKey.LANGWATCH_SPAN_TYPE, "llm") # Set span type
+        async with langwatch.span(type="llm", name="Manual LLM Generation") as llm_span:
             llm_input = {"role": "user", "content": f"Context: {retrieved_docs}\nQuery: {query}"}
             llm_metadata = {"model_name": "gpt-4o-mini"}
 
@@ -65,8 +62,8 @@ async def handle_user_query_manual(query: str):
             # Set input, metadata and output via update
             llm_span.update(
                 input=llm_input,
-                metadata=llm_metadata,
                 output=llm_output
+                llm_metadata=llm_metadata,
             )
 
         # Set final trace output via update
@@ -85,7 +82,7 @@ Key points for manual instrumentation with context managers:
 - Use `with langwatch.trace(...)` or `async with langwatch.trace(...)` to start a trace.
 - Use `with langwatch.span(...)` or `async with langwatch.span(...)` inside a trace block to create nested spans.
 - The trace or span object is available in the `as trace:` or `as span:` part of the `with` statement.
-- Use methods like `trace.set_metadata()`, `span.add_event()`, and primarily `span.update(...)` / `trace.update(...)` to add details. The `update()` method is flexible for adding structured data like `input`, `output`, `metadata`, and `contexts`.
+- Use methods like `span.add_event()`, and primarily `span.update(...)` / `trace.update(...)` to add details. The `update()` method is flexible for adding structured data like `input`, `output`, `metadata`, and `contexts`.
 - This approach gives explicit control over the start and end of each instrumented block, as the context manager handles ending the span automatically.
 
 ### Direct Span Creation (`span.end()`)
