@@ -1,17 +1,15 @@
 ---
-title: Quick start
+title: Quick Start
 mode: "wide"
 ---
 
-Ready to plug LangWatch into your project and start seeing what your LLM is *really* thinking? Awesome! LangWatch helps you understand every user interaction (**Thread**), each individual AI task (**Trace**), and all the underlying steps (**Span**) involved. We've made getting started super smooth.
-
-No matter your tech stack – Python, Node.js, Go, or something else – or which LLM you're rocking (OpenAI, Anthropic, Cohere, local models, you name it!), integrating LangWatch is a breeze.
+LangWatch helps you understand every user interaction (**Thread**), each individual AI task (**Trace**), and all the underlying steps (**Span**) involved. We've made getting started super smooth.
 
 Let's get cracking.
 
 <Steps>
   <Step title="Create your LangWatch account">
-    First step: grab your LangWatch account. Head over to [langwatch.ai](https://app.langwatch.ai), sign up, and get your API key ready.
+    First step: if you haven't already, grab your LangWatch account. Head over to [langwatch.ai](https://app.langwatch.ai), sign up, and get your API key ready.
 
     <img src="/images/llm-observability/quick-start/setup-full.webp" />
   </Step>
@@ -22,6 +20,8 @@ Let's get cracking.
     <CodeGroup>
 ```bash Python
 pip install langwatch
+# or
+uv add langwatch
 ```
 ```bash JavaScript
 npm install langwatch @vercel/otel @opentelemetry/api-logs @opentelemetry/instrumentation @opentelemetry/sdk-logs
