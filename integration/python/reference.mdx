@@ -103,7 +103,6 @@ langwatch.setup()
 @langwatch.trace(name="MyRequestHandler", metadata={"user_id": "123"})
 def handle_request(query: str):
     # ... your logic ...
-    # langwatch.get_current_trace().set_metadata({"key": "value"})
     # langwatch.get_current_span().update(output=response)
     return f"Processed: {query}"
 
@@ -118,7 +117,6 @@ langwatch.setup()
 def process_data(data: str):
     with langwatch.trace(name="DataProcessingFlow", input={"data_input": data}) as current_trace:
         # ... your logic ...
-        # current_trace.set_metadata({"flow_step": "initial"})
         # langwatch.get_current_span().update(output={"status": "success"})
         result = f"Processed data: {data}"
         if langwatch.get_current_span(): # Check if span exists
@@ -224,7 +222,7 @@ The following parameters are used to configure the root span that is automatical
 When used as a context manager, `langwatch.trace()` returns a `LangWatchTrace` object.
 
 <ResponseField name="current_trace" type="LangWatchTrace">
-  The `LangWatchTrace` instance. You can use this object to call methods like `current_trace.set_metadata()` or `current_trace.add_evaluation()`.
+  The `LangWatchTrace` instance. You can use this object to call methods like `current_trace.add_evaluation()`.
 </ResponseField>
 
 #### `LangWatchTrace` Object Methods
@@ -615,8 +613,6 @@ def some_utility_function(detail: str):
     current_trace = langwatch.get_current_trace()
     if current_trace:
         current_trace.update(metadata={"utility_info": detail})
-        # Or using the older set_metadata if preferred for some reason
-        # current_trace.set_metadata({"utility_info_alt": detail})
 
 @langwatch.trace(name="MainOperation")
 def main_operation():

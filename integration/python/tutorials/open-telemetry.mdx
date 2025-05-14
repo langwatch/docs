@@ -106,7 +106,7 @@ def retrieve_documents(query: str) -> list:
 def handle_request(user_query: str):
     # This is the root span for the request
     langwatch.get_current_trace().autotrack_openai_calls(client)
-    langwatch.get_current_trace().set_metadata({"user_query": user_query})
+    langwatch.get_current_trace().update(metadata={"user_query": user_query})
 
     context_docs = retrieve_documents(user_query)
 
@@ -336,22 +336,22 @@ from opentelemetry.trace import Status, StatusCode
 
 langwatch.setup() # Assume setup is done
 
-with langwatch.span(name="MyInitialSpanName") as lw_span:
+with langwatch.span(name="MyInitialSpanName") as span:
 
-    # Use standard OpenTelemetry Span API methods directly on lw_span:
-    lw_span.set_attribute("my.custom.otel.attribute", "value")
-    lw_span.add_event("Specific OTel Event", {"detail": "more info"})
-    lw_span.set_status(Status(StatusCode.ERROR, description="Something went wrong"))
-    lw_span.update_name("MyUpdatedSpanName") # Renaming the span
+    # Use standard OpenTelemetry Span API methods directly on span:
+    span.set_attribute("my.custom.otel.attribute", "value")
+    span.add_event("Specific OTel Event", {"detail": "more info"})
+    span.set_status(Status(StatusCode.ERROR, description="Something went wrong"))
+    span.update_name("MyUpdatedSpanName") # Renaming the span
 
-    print(f"Is Recording? {lw_span.is_recording()}")
-    print(f"OTel Span Context: {lw_span.get_span_context()}")
+    print(f"Is Recording? {span.is_recording()}")
+    print(f"OTel Span Context: {span.get_span_context()}")
 
     # You can still use LangWatch-specific methods like update()
-    lw_span.update(metadata={"langwatch_info": "extra data"})
+    span.update(langwatch_info="extra data")
 ```
 
-This allows full flexibility, letting you use both LangWatch's structured data methods (`update`, `set_metadata`, etc.) and the standard OpenTelemetry span manipulation methods on the same object.
+This allows full flexibility, letting you use both LangWatch's structured data methods (`update`, etc.) and the standard OpenTelemetry span manipulation methods on the same object.
 
 ## Understanding `ignore_global_tracer_provider_override_warning`
 

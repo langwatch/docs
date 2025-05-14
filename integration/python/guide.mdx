@@ -116,7 +116,7 @@ def rag_retrieval(query: str):
             RAGChunk(document_id=doc["id"], content=doc["content"])
             for doc in search_results
         ],
-        metadata={"retrieval_strategy": "vector_search"} # Add custom metadata
+        retrieval_strategy="vector_search",
     )
 
     return search_results
