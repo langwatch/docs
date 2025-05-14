@@ -247,7 +247,7 @@ description: LangWatch Python SDK integration guide
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
   <div>
-  <a href="https://github.com/langwatch/langwatch/tree/main/python-sdk" target="_blank">
+  <a href="https://github.com/langwatch/langwatch/tree/main/sdk-python" target="_blank">
     <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch Python Repo" />
   </a>
   </div>
@@ -450,7 +450,7 @@ That's enough to have your LangChain calls collected and visible on LangWatch da
 
 ![LangChain Spans](/images/integration/langchain.png)
 
-Check out for more python integration examples on the [examples folder on our GitHub repo](https://github.com/langwatch/langwatch/tree/main/python-sdk/examples).
+Check out for more python integration examples on the [examples folder on our GitHub repo](https://github.com/langwatch/langwatch/tree/main/sdk-python/examples).
 
 ## Adding metadata
 
@@ -1347,7 +1347,7 @@ EOF
 
 Replace the placeholders with your actual data. The `@-` tells `curl` to read the JSON data from the standard input, which we provide via the `EOF`-delimited here-document.
 
-For the type reference of how a `span` should look like, check out our [types definitions](https://github.com/langwatch/langwatch/blob/main/python-sdk/langwatch/types.py#L118).
+For the type reference of how a `span` should look like, check out our [types definitions](https://github.com/langwatch/langwatch/blob/main/sdk-python/langwatch/types.py#L118).
 
 It's optional but highly recommended to pass the `user_id` on the metadata if you want to leverage user-specific analytics and the `thread_id` to group related traces together. To connect it to an event later on. Read more about those and other concepts [here](../concepts).
 
