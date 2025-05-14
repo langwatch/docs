@@ -83,7 +83,7 @@ The `add_evaluation()` method is available on both `LangWatchSpan` and `LangWatc
 
 ## 2. Server-Side Managed Evaluations (`evaluate` & `async_evaluate`)
 
-LangWatch allows you to trigger evaluations that are performed by the LangWatch backend. These can be [built-in evaluators](/llm-evaluation/list) (e.g., for faithfulness, relevance) or [custom evaluators you define](/llm-evaluation/custom-evaluator-integration) in your LangWatch project settings.
+LangWatch allows you to trigger evaluations that are performed by the LangWatch backend. These can be [built-in evaluators](/llm-evaluation/list) (e.g., for faithfulness, relevance) or [custom evaluators you define](/evaluations/custom-evaluator-integration) in your LangWatch project settings.
 
 You use the `evaluate()` (synchronous) or `async_evaluate()` (asynchronous) functions for this. These functions send the necessary data to the LangWatch API, which then processes the evaluation. These server-side evaluations are a core part of setting up [real-time monitoring and evaluations in production](/llm-evaluation/realtime/setup).
 
