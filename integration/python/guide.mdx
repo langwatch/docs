@@ -142,7 +142,7 @@ For detailed guidance on manually creating traces and spans using context manage
 import os
 
 import langwatch
-from langwatch.attributes import AttributeName
+from langwatch.attributes import AttributeKey
 from langwatch.domain import SpanProcessingExcludeRule
 
 from community.instrumentors import OpenAIInstrumentor # Example instrumentor
@@ -165,8 +165,8 @@ langwatch.setup(
     api_key=os.getenv("LANGWATCH_API_KEY"),
     endpoint_url="https://your-langwatch-instance.com", # Optional: Defaults to env var or cloud
     base_attributes={
-      AttributeName.ServiceName: "my-awesome-service",
-      AttributeName.ServiceVersion: "1.2.3",
+      AttributeKey.ServiceName: "my-awesome-service",
+      AttributeKey.ServiceVersion: "1.2.3",
       # Add other custom attributes here
     },
     instrumentors=[OpenAIInstrumentor()], # Optional: List of instrumentors that conform to the `Instrumentor` protocol

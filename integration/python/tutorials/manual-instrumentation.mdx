@@ -15,7 +15,7 @@ Here's how you can achieve the same instrumentation as the decorator examples, b
 ```python
 import langwatch
 from langwatch.types import RAGChunk
-from langwatch.attributes import AttributeName # For semantic attribute keys
+from langwatch.attributes import AttributeKey # For semantic attribute keys
 import asyncio # Assuming async operation
 
 langwatch.setup()
@@ -53,7 +53,7 @@ async def handle_user_query_manual(query: str):
         # --- Simulate LLM Call Step (manual span) ---
         llm_response = ""
         async with langwatch.span(name="Manual LLM Generation") as llm_span:
-            llm_span.set_attribute(AttributeName.LANGWATCH_SPAN_TYPE, "llm") # Set span type
+            llm_span.set_attribute(AttributeKey.LANGWATCH_SPAN_TYPE, "llm") # Set span type
             llm_input = {"role": "user", "content": f"Context: {retrieved_docs}\nQuery: {query}"}
             llm_metadata = {"model_name": "gpt-4o-mini"}
 
