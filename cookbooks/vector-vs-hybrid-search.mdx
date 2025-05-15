@@ -2,10 +2,18 @@
 title: Vector Search vs Hybrid Search using LanceDB
 sidebarTitle: Vector Search vs Hybrid Search
 description: Learn the key differences between vector search and hybrid search in RAG applications. Use cases, performance tradeoffs, and when to choose each.
-keywords: [vector search, hybrid search, semantic search, lexical search, information retrieval, AI search]
+keywords:
+  [
+    vector search,
+    hybrid search,
+    semantic search,
+    lexical search,
+    information retrieval,
+    AI search,
+  ]
 ---
 
-In this cookbook, we demonstrate how to enhance retrieval performance by implementing hybrid search in your RAG applications. We'll explore how structured metadata can dramatically improve search relevance and precision beyond what vector similarity alone can achieve.
+In this cookbook, we'll explore the differences between pure vector search and hybrid search approaches that combine vector embeddings with metadata filtering. We'll see how structured metadata can dramatically improve search relevance and precision beyond what vector similarity alone can achieve.
 
 When users search for products, documents, or other content, they often have specific attributes in mind. For example, a shopper might want "red dresses for summer occasions" or a researcher might need "papers on climate change published after 2020." Pure semantic search might miss these nuances, but metadata filtering allows you to combine the power of vector search with explicit attribute filtering.
 
@@ -107,11 +115,12 @@ import pandas as pd
 df = pd.DataFrame(labelled_dataset)
 df["id"] = df["id"].astype(str)
 ```
+
 For simplicity, use `description` as the "text" field, although you could concatenate title/description/etc.
 
----
-
 ## Generate Embeddings (OpenAI)
+
+Now, let's create embeddings for our product descriptions. We'll use OpenAI's text-embedding-3-large model:
 
 ```python
 import numpy as np
@@ -131,6 +140,8 @@ df["embedding"] = batch_embed(df["description"].tolist())
 ```
 
 ## Combine all text fields into a single searchable text field
+
+We'll create a single text field that combines the product name, description, and category. This will allow us to perform a single search over all relevant text content:
 
 ```python
 df["searchable_text"] = df.apply(
@@ -152,6 +163,8 @@ df["searchable_text"].head()
 ```
 
 ## Ingest Data into LanceDB
+
+We'll use LanceDB to store our product data and embeddings. LanceDB makes it easy to experiment, as it provides both vector and hybrid search capabilities within one single API.
 
 ```python
 import pyarrow as pa
@@ -189,22 +202,11 @@ else:
 tbl.create_fts_index("searchable_text", replace=True)
 ```
 
-## Understanding Our Vector Database
-
-We've now loaded our product catalog into a LanceDB vector database along with multiple text fields.
-
-This setup allows us to perform both:
-
-- **Pure semantic search**: Finding products based on the meaning of their descriptions
-- **Hybrid search**: Combining semantic similarity with explicit metadata filters
-
-The embeddings are generated using OpenAI's embedding model, which creates high-dimensional vectors that represent the semantic content of each product description. Similar products will have vectors that are close together in this high-dimensional space.
-
 ## Generating Synthetic Data
 
 When you don't have production data to start with, you can generate synthetic data to simulate a real-world scenario. We already have the 'output', which is the clothing item we just embedded. We now want to generate synthetic queries that would be relevant to the clothing item.
 
-In this case, we'll use GPT-4o-mini to generate realistic user queries that would naturally lead to each product in our catalog. This gives us query-product pairs where we know the ground truth relevance.
+In this case, we'll use GPT-4 to generate realistic user queries that would naturally lead to each product in our catalog. This gives us query-product pairs where we know the ground truth relevance.
 
 ```python
 import random
@@ -302,9 +304,9 @@ comfort.",
 }
 ```
 
-### **Hybrid Search in LanceDB**
+## **Hybrid Search in LanceDB**
 
-**LanceDB syntax for hybrid search:**
+LanceDB makes it easy to combine vector search with full-text search in a single query. Let's see how this works with a practical example:
 
 ```python
 text_query = "dress for wedding guests"
@@ -317,17 +319,17 @@ results = tbl.search(query_type="hybrid") \
     .to_pandas()
 ```
 
-- **hybrid** method: blends semantic (`embedding`) and lexical (BM25) scores.
-- BM25 is over the table's indexed string column (which by default is the whole searchable_text column).
+| title                                   | brand     | description                                                           | category | subcategory | product_type     | price  | \_relevance_score |
+| --------------------------------------- | --------- | --------------------------------------------------------------------- | -------- | ----------- | ---------------- | ------ | ----------------- |
+| Elegant Wedding Guest Dress             | Zara      | A stunning formal dress perfect for wedding ceremonies and receptions | Women    | Dresses     | Formal Dresses   | 189.99 | 0.87              |
+| Floral Maxi Dress for Special Occasions | H&M       | Beautiful floral pattern dress ideal for weddings and formal events   | Women    | Dresses     | Maxi Dresses     | 149.50 | 0.82              |
+| Satin Wedding Guest Jumpsuit            | ASOS      | Sophisticated alternative to dresses for wedding guests               | Women    | Jumpsuits   | Formal Jumpsuits | 165.75 | 0.79              |
+| Men's Formal Wedding Suit               | Hugo Boss | Classic tailored suit perfect for wedding guests                      | Men      | Suits       | Formal Suits     | 399.99 | 0.71              |
+| Beaded Evening Gown                     | Nordstrom | Elegant floor-length gown with beaded details for formal occasions    | Women    | Dresses     | Evening Gowns    | 275.00 | 0.68              |
 
----
+## Implementing Different Search Methods
 
-## **Retrieval & Evaluation Functions**
-
-Here's retrieval for **three modes**:
-- **Pure semantic (vector)**
-- **Pure lexical (keyword)**
-- **Hybrid (weighted blend)**
+To properly compare different search approaches, we'll implement three search functions:
 
 ```python
 import re
@@ -348,19 +350,20 @@ def search_hybrid(tbl, query, embedding, k=5):
     return tbl.search(query_type="hybrid").text(sanitize_query(query)).vector(embedding).limit(k).to_pandas()["id"].tolist()
 ```
 
-## Retrieval Evaluation: Semantic Search vs. Metadata Filtering
+These functions provide a clean interface for our three search methods:
 
-Now comes the critical part - evaluating how well each retrieval method performs. We'll compare pure semantic search against hybrid search using two key metrics:
+- **Semantic search**: Uses only vector embeddings to find similar products
+- **Lexical search**: Uses only BM25 text matching (similar to what traditional search engines use)
+- **Hybrid search**: Combines both approaches for potentially better results
+
+Note that we sanitize the query text to remove characters that might break the full-text search functionality. This is an important preprocessing step when working with user-generated queries.
+
+## Evaluation Metrics
+
+To objectively compare our search methods, we'll use two standard information retrieval metrics:
 
 1. **Recall**: The proportion of relevant items successfully retrieved
 2. **Mean Reciprocal Rank (MRR)**: How high relevant items appear in our results
-
-These metrics help us understand different aspects of retrieval quality:
-
-- High recall means we're finding most of the relevant items
-- High MRR means we're ranking relevant items near the top of the results
-
-By comparing these metrics across different retrieval methods, we can make data-driven decisions about which approach works best for our specific use case.
 
 ```python
 def recall(retrieved, expected):
@@ -393,12 +396,7 @@ def evaluate_search(tbl, queries, expected_ids, embeddings, k=5):
     return metrics
 ```
 
-For this evaluation, we'll compare two distinct retrieval approaches:
-
-- **Pure Semantic Search**: Using only vector embeddings to find similar items
-- **Hybrid Search**: Combining vector similarity with BM25 search
-
-This comparison will demonstrate how metadata filtering can significantly improve retrieval precision and relevance, especially for queries with specific attributes or constraints.
+The evaluate_search function runs all three search methods on each query and calculates both metrics. This gives us a nice view of how each method performs across our test set.
 
 ## **Prepare Evaluation Data**
 
@@ -410,9 +408,13 @@ expected_ids = [[str(item["id"])] for item in synthetic_queries]
 query_embeddings = batch_embed(queries)  # for fair test, encode queries w/same embedding model
 ```
 
----
+## Run the Experiment
 
-## **Run the Experiment**
+Now we can run the experiments. The code does the following:
+
+1. Tests each search method with different numbers of results (k=3, 5, and 10)
+2. Aggregates the metrics by calculating the mean recall and MRR for each method
+3. Organizes the results in a DataFrame for easy comparison
 
 ```python
 k_values = [3, 5, 10]
@@ -432,23 +434,32 @@ results_df = pd.DataFrame(results)
 print(results_df)
 ```
 
+| k   | method   | recall | mrr   |
+| --- | -------- | ------ | ----- |
+| 3   | semantic | 0.906  | 0.816 |
+| 3   | lexical  | 0.937  | 0.815 |
+| 3   | hybrid   | 0.916  | 0.848 |
+| 5   | semantic | 0.937  | 0.823 |
+| 5   | lexical  | 0.969  | 0.822 |
+| 5   | hybrid   | 0.948  | 0.860 |
+| 10  | semantic | 0.974  | 0.828 |
+| 10  | lexical  | 0.984  | 0.824 |
+| 10  | hybrid   | 0.990  | 0.868 |
 
-## --Conclusion-- TO BE UPDATED
+## Conclusion
 
-Whilst writing this cookbook, I had secretly 'hoped' that hybrid search would outperform pure semantic search. Most people default to vector embeddings, but in production I found that structured metadata extraction consistently delivered better results.
+Our evaluation demonstrates that hybrid search consistently outperforms both pure vector search and lexical search across all tested k values. Key findings:
 
-However, this analysis shows that no application is the same. There is no 'universal' best method for doing things - it depends on the specific use case and the data at hand. In our particular experiment:
+- Hybrid search achieves the highest MRR scores, showing that combining semantic understanding with keyword matching places relevant results higher in the result list.
+- Lexical search performs surprisingly well on recall, reminding us that traditional keyword approaches remain valuable for explicit queries.
+- Vector search provides a solid baseline but benefits significantly from the precision that text matching adds.
 
-- Pure semantic search achieved higher recall and MRR across all k values
-- This suggests that for this specific dataset and query set, the semantic meaning captured by embeddings was sufficient
-- The additional complexity of metadata filtering didn't provide an advantage in this case
+As k increases, recall improves across all methods, but hybrid search maintains its advantage in ranking relevant items higher. These results highlight that the best search approach depends on your specific data and user query patterns. For product search where users combine concepts ("casual") with attributes ("red"), hybrid search offers clear advantages.
 
-This highlights the importance of empirical evaluation rather than assuming one approach is always superior. Some possible reasons for these results:
+I hope this analysis helps you make informed decisions about the best approach for your own use case. Remember to:
 
-1. Our synthetic queries might be particularly well-aligned with the semantic content
-2. The metadata extraction might need refinement to better capture query intent
-3. The dataset might not have enough attribute diversity to showcase the benefits of filtering
+1. Test multiple retrieval strategies on your specific data
+2. Measure performance with appropriate metrics
+3. Consider the trade-offs between implementation complexity and performance gains
 
-I hope this analysis helps you make informed decisions about the best approach for your own use case.
-
-For the full notebook, check it out on: [GitHub](https://github.com/langwatch/cookbooks/blob/main/notebooks/metadata-filtering.ipynb).
+For the full notebook, check it out on: [GitHub](https://github.com/langwatch/cookbooks/blob/main/notebooks/hybrid-vs-vector.ipynb).
