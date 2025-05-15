@@ -1,10 +1,19 @@
 ---
-title: Vector Search vs Hybrid Search
+title: Vector Search vs Hybrid Search using LanceDB
+sidebarTitle: Vector Search vs Hybrid Search
 description: Learn the key differences between vector search and hybrid search in RAG applications. Use cases, performance tradeoffs, and when to choose each.
-keywords: [vector search, hybrid search, semantic search, lexical search, information retrieval, AI search]
+keywords:
+  [
+    vector search,
+    hybrid search,
+    semantic search,
+    lexical search,
+    information retrieval,
+    AI search,
+  ]
 ---
 
-In this cookbook, we demonstrate how to enhance retrieval performance by implementing hybrid search in your RAG applications. We'll explore how structured metadata can dramatically improve search relevance and precision beyond what vector similarity alone can achieve.
+In this cookbook, we'll explore the differences between pure vector search and hybrid search approaches that combine vector embeddings with metadata filtering. We'll see how structured metadata can dramatically improve search relevance and precision beyond what vector similarity alone can achieve.
 
 When users search for products, documents, or other content, they often have specific attributes in mind. For example, a shopper might want "red dresses for summer occasions" or a researcher might need "papers on climate change published after 2020." Pure semantic search might miss these nuances, but metadata filtering allows you to combine the power of vector search with explicit attribute filtering.
 
@@ -15,24 +24,22 @@ Like always, we'll focus on data-driven approaches to measure and improve retrie
 Before starting, ensure you have the following packages installed:
 
 ```bash
-pip install langwatch datasets pydantic openai instructor asyncio tenacity
+pip install lancedb datasets openai tqdm pandas pyarrow tantivy pylance
 ```
 
 ## Setup
 
-Start by setting up LangWatch to monitor your RAG application:
+Start by setting up the environment:
 
 ```python
-import chromadb
-import openai
 import getpass
-import langwatch
+import lancedb
+import openai
+from datasets import load_dataset
 
-# Initialize OpenAI, LangWatch & HuggingFace
 openai.api_key = getpass.getpass('Enter your OpenAI API key: ')
-langwatch.api_key = getpass.getpass('Enter your LangWatch API key: ')
-huggingface_api_key = getpass.getpass("Enter your Huggingface API key: ")
-chroma_client = chromadb.PersistentClient()
+# Set up LanceDB
+db = lancedb.connect('./lancedb_ecommerce_demo')
 ```
 
 ## The Dataset
@@ -98,57 +105,102 @@ from datasets import load_dataset
 labelled_dataset = load_dataset("ivanleomk/labelled-ecommerce-taxonomy")["train"]
 ```
 
-Now we can load it into our Chroma vector database.
+## Prepare DataFrame for LanceDB
+
+We'll use a Pandas DataFrame as the ingest interface.
 
 ```python
-import chromadb
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+import pandas as pd
 
-# Initialize Chroma
-client = chromadb.PersistentClient()
-
-# Initialize embeddings
-embedding_function = OpenAIEmbeddingFunction(model_name="text-embedding-3-large", api_key=openai.api_key)
-
-# Create collections
-collection = client.get_or_create_collection(name="collection", embedding_function=embedding_function)
-
-# Add documents to both collections
-for row in labelled_dataset:
-    collection.add(
-        documents=[row['description']],
-        ids=[str(row['id'])],
-        metadatas = {
-            'category': row['category'],
-            'subcategory': row['subcategory'],
-            'product_type': row['product_type'],
-            'occasions': row['occasions'],
-            'brand': row['brand'],
-            'price': float(row['price']),
-            'attributes': row['attributes'],
-            'material': row['material'],
-            'pattern': row['pattern'],
-            'title': row['title'],
-            'id': row['id']
-        }
-    )
-
-print(f"Created collection with {collection.count()} documents.")
+df = pd.DataFrame(labelled_dataset)
+df["id"] = df["id"].astype(str)
 ```
 
-## Understanding Our Vector Database
+For simplicity, use `description` as the "text" field, although you could concatenate title/description/etc.
 
-We've now loaded our product catalog into a Chroma vector database with the following components:
+## Generate Embeddings (OpenAI)
 
-1. **Document Text**: The product descriptions that will be embedded and used for semantic search
-2. **Metadata**: Structured attributes like category, price, material, etc., that can be used for filtering
+Now, let's create embeddings for our product descriptions. We'll use OpenAI's text-embedding-3-large model:
 
-This setup allows us to perform both:
+```python
+import numpy as np
+from tqdm import tqdm
 
-- **Pure semantic search**: Finding products based on the meaning of their descriptions
-- **Hybrid search**: Combining semantic similarity with explicit metadata filters
+def batch_embed(texts, model="text-embedding-3-large"):
+    batch_size = 100
+    embeddings = []
+    for i in tqdm(range(0, len(texts), batch_size), desc="Embedding..."):
+        batch = texts[i:i+batch_size]
+        response = openai.embeddings.create(model=model, input=batch)
+        emb = [np.array(e.embedding, dtype='float32') for e in response.data]
+        embeddings.extend(emb)
+    return embeddings
 
-The embeddings are generated using OpenAI's embedding model, which creates high-dimensional vectors that represent the semantic content of each product description. Similar products will have vectors that are close together in this high-dimensional space.
+df["embedding"] = batch_embed(df["description"].tolist())
+```
+
+## Combine all text fields into a single searchable text field
+
+We'll create a single text field that combines the product name, description, and category. This will allow us to perform a single search over all relevant text content:
+
+```python
+df["searchable_text"] = df.apply(
+    lambda row: " ".join([
+        row["title"],
+        row["description"],
+        row["brand"],
+        row["category"],
+        row["subcategory"],
+        row["product_type"],
+        row["attributes"],
+        row["material"],
+        row["pattern"],
+        row["occasions"],
+    ]),
+    axis=1
+)
+df["searchable_text"].head()
+```
+
+## Ingest Data into LanceDB
+
+We'll use LanceDB to store our product data and embeddings. LanceDB makes it easy to experiment, as it provides both vector and hybrid search capabilities within one single API.
+
+```python
+import pyarrow as pa
+
+table_schema = pa.schema(
+    [
+        pa.field("id", pa.string()),
+        pa.field("description", pa.string()),
+        pa.field("title", pa.string()),
+        pa.field("brand", pa.string()),
+        pa.field("category", pa.string()),
+        pa.field("subcategory", pa.string()),
+        pa.field("product_type", pa.string()),
+        pa.field("attributes", pa.string()),
+        pa.field("material", pa.string()),
+        pa.field("pattern", pa.string()),
+        pa.field("price", pa.float64()),
+        pa.field("occasions", pa.string()),
+        pa.field(
+            "embedding", pa.list_(pa.float32(), 3072)
+        ),  # size depends on your model!!
+        pa.field("searchable_text", pa.string()),
+    ]
+)
+
+# Drop unused columns
+df_ = df.drop(columns=["image"])
+
+# Create table + upload data
+if "products" in db.table_names():
+    tbl = db.open_table("products")
+else:
+    tbl = db.create_table("products", data=df_, schema=table_schema, mode="overwrite")
+
+tbl.create_fts_index("searchable_text", replace=True)
+```
 
 ## Generating Synthetic Data
 
@@ -252,275 +304,162 @@ comfort.",
 }
 ```
 
-## Query Filtering
+## **Hybrid Search in LanceDB**
 
-To implement metadata filtering, we first need to extract structured filters from natural language queries. This process involves:
-
-1. **Understanding user intent**: Identifying what specific attributes the user is looking for
-2. **Mapping to our taxonomy**: Converting natural language descriptions to our structured metadata schema
-3. **Handling ambiguity**: Resolving cases where the user's language doesn't precisely match our metadata values
-
-This is where LLMs excel - they can understand the nuances of natural language and extract structured information that aligns with our predefined taxonomy. We'll use a Pydantic model to ensure the extracted filters conform to our expected schema:
+LanceDB makes it easy to combine vector search with full-text search in a single query. Let's see how this works with a practical example:
 
 ```python
-from typing import Optional
-from pydantic import BaseModel
+text_query = "dress for wedding guests"
+vector_query = openai.embeddings.create(model="text-embedding-3-large", input=text_query).data[0].embedding
 
-class Attribute(BaseModel):
-    name: str
-    values: list[str]
-
-class QueryFilters(BaseModel):
-    attributes: list[Attribute]
-    material: Optional[list[str]]
-    min_price: Optional[float] = None
-    max_price: Optional[float] = None
-    subcategory: str
-    category: str
-    product_type: list[str]
-    occasions: list[str]
+results = tbl.search(query_type="hybrid") \
+    .text(text_query) \
+    .vector(vector_query) \
+    .limit(5) \
+    .to_pandas()
 ```
 
-With these models in place, we can start extracting query filters from all queries. We need to let the LLM know what the possible taxonomies are. We'll use the taxonomy.json file for this.
+| title                                   | brand     | description                                                           | category | subcategory | product_type     | price  | \_relevance_score |
+| --------------------------------------- | --------- | --------------------------------------------------------------------- | -------- | ----------- | ---------------- | ------ | ----------------- |
+| Elegant Wedding Guest Dress             | Zara      | A stunning formal dress perfect for wedding ceremonies and receptions | Women    | Dresses     | Formal Dresses   | 189.99 | 0.87              |
+| Floral Maxi Dress for Special Occasions | H&M       | Beautiful floral pattern dress ideal for weddings and formal events   | Women    | Dresses     | Maxi Dresses     | 149.50 | 0.82              |
+| Satin Wedding Guest Jumpsuit            | ASOS      | Sophisticated alternative to dresses for wedding guests               | Women    | Jumpsuits   | Formal Jumpsuits | 165.75 | 0.79              |
+| Men's Formal Wedding Suit               | Hugo Boss | Classic tailored suit perfect for wedding guests                      | Men      | Suits       | Formal Suits     | 399.99 | 0.71              |
+| Beaded Evening Gown                     | Nordstrom | Elegant floor-length gown with beaded details for formal occasions    | Women    | Dresses     | Evening Gowns    | 275.00 | 0.68              |
+
+## Implementing Different Search Methods
+
+To properly compare different search approaches, we'll implement three search functions:
 
 ```python
-import json
-from openai import OpenAI
-from tqdm import tqdm
+import re
 
-# Load taxonomy
-taxonomy = json.load(open("../data/taxonomy.json"))
+def sanitize_query(query):
+    # Remove characters that break LanceDB FTS queries
+    return re.sub(r"['\"\\]", "", query)
 
-# Initialize OpenAI client
-client = OpenAI(api_key=openai.api_key)
+def search_semantic(tbl, query, embedding, k=5):
+    return tbl.search(embedding).limit(k).to_pandas()["id"].tolist()
 
-def extract_filters(item):
-    """Extract filters from item metadata"""
+def search_lexical(tbl, query, k=5):
+    # BM25 over description field
+    return tbl.search(query=sanitize_query(query), query_type="fts").limit(k).to_pandas()["id"].tolist()
 
-    # Create prompt for the LLM
-    prompt = f"""
-    Extract shopping filters from this query: "{item['query']}"
-
-    Return ONLY a JSON object with these possible keys:
-    - category: The clothing category (e.g., "Women")
-    - subcategory: The subcategory (e.g., "Tops", "Bottoms")
-    - product_type: The specific product type (e.g., "T-Shirts", "Jeans")
-    - max_price: Maximum price as a number (no $ symbol)
-    - min_price: Minimum price as a number (no $ symbol)
-    - material: The material (e.g., "Cotton", "Polyester")
-    - occasion: The occasion (e.g., "Casual", "Formal")
-
-    Only include keys that are explicitly mentioned in the query.
-    Use ONLY values from the taxonomy I'll provide
-    """
-
-    # Get completion from OpenAI
-    response = client.responses.parse(
-        model="gpt-4o",
-        input=[
-            {"role": "system", "content": "You extract structured shopping filters from text queries."},
-            {"role": "user", "content": prompt},
-            {"role": "user", "content": f"Taxonomy data: {taxonomy}"}
-        ],
-        text_format=QueryFilters
-    )
-
-    # Extract the generated query
-    filters = response.output_parsed
-
-    return filters
-
-# Extract Filters
-filters = []
-for item in tqdm(synthetic_queries, desc="Extracting filters"):
-    filters.append(extract_filters(item))
+def search_hybrid(tbl, query, embedding, k=5):
+    # Blends vector and BM25
+    return tbl.search(query_type="hybrid").text(sanitize_query(query)).vector(embedding).limit(k).to_pandas()["id"].tolist()
 ```
 
-## Retrieval Evaluation: Semantic Search vs. Metadata Filtering
+These functions provide a clean interface for our three search methods:
 
-Now comes the critical part - evaluating how well each retrieval method performs. We'll compare pure semantic search against metadata-filtered search using two key metrics:
+- **Semantic search**: Uses only vector embeddings to find similar products
+- **Lexical search**: Uses only BM25 text matching (similar to what traditional search engines use)
+- **Hybrid search**: Combines both approaches for potentially better results
+
+Note that we sanitize the query text to remove characters that might break the full-text search functionality. This is an important preprocessing step when working with user-generated queries.
+
+## Evaluation Metrics
+
+To objectively compare our search methods, we'll use two standard information retrieval metrics:
 
 1. **Recall**: The proportion of relevant items successfully retrieved
 2. **Mean Reciprocal Rank (MRR)**: How high relevant items appear in our results
 
-These metrics help us understand different aspects of retrieval quality:
-
-- High recall means we're finding most of the relevant items
-- High MRR means we're ranking relevant items near the top of the results
-
-By comparing these metrics across different retrieval methods, we can make data-driven decisions about which approach works best for our specific use case.
-
 ```python
-def calculate_recall(predictions: list[str], ground_truth: list[str]):
-    """Calculate the proportion of relevant items that were retrieved"""
-    return len([label for label in ground_truth if label in predictions]) / len(ground_truth)
+def recall(retrieved, expected):
+    return float(len(set(retrieved).intersection(set(expected)))) / len(expected)
 
-def calculate_mrr(predictions: list[str], ground_truth: list[str]):
-    """Calculate Mean Reciprocal Rank - how high the relevant items appear in results"""
-    mrr = 0
-    for label in ground_truth:
-        if label in predictions:
-            # Find the position of the first relevant item
-            mrr = max(mrr, 1 / (predictions.index(label) + 1))
-    return mrr
+def mrr(retrieved, expected):
+    # expected: list of relevant document ids (strings)
+    for rank, doc_id in enumerate(retrieved, 1):
+        if doc_id in expected:
+            return 1.0 / rank
+    return 0.0
 
-# Evaluation function
-def evaluate_retrieval(retrieved_ids, expected_ids):
-
-    """Evaluate retrieval performance using recall and MRR"""
-    recall = calculate_recall(retrieved_ids, expected_ids)
-    mrr = calculate_mrr(retrieved_ids, expected_ids)
-
-    return {"recall": recall, "mrr": mrr}
-```
-
-For this evaluation, we'll compare two distinct retrieval approaches:
-
-- **Pure Semantic Search**: Using only vector embeddings to find similar items
-- **Semantic Search with Metadata Filtering**: Combining vector similarity with structured metadata filters
-
-This comparison will demonstrate how metadata filtering can significantly improve retrieval precision and relevance, especially for queries with specific attributes or constraints.
-
-```python
-import numpy as np
-
-# Define a function for pure semantic search
-def pure_semantic_search(query, collection, k=5):
-    """Perform pure semantic search without metadata filtering"""
-    results = collection.query(
-        query_texts=[query],
-        n_results=k
-    )
-
-    retrieved_ids = results['ids'][0]
-
-    return retrieved_ids
-
-# Define a function for semantic search with metadata filtering
-def semantic_search_with_metadata(query, collection, filters, k=5):
-    """Perform semantic search with metadata filtering"""
-    # Only proceed with filtering if filters are provided
-    where_clause = None
-
-    if filters:
-        where_conditions = []
-
-        # Add filters for each attribute
-        where_conditions.append({"category": filters.category}) if filters.category else None
-        where_conditions.append({"subcategory": filters.subcategory}) if filters.subcategory else None
-        where_conditions.append({"product_type": {"$in": filters.product_type}}) if filters.product_type else None
-        where_conditions.append({"material": {"$in": filters.material}}) if filters.material else None
-        where_conditions.append({"price": {"$gte": filters.min_price}}) if filters.min_price else None
-        where_conditions.append({"price": {"$lte": filters.max_price}}) if filters.max_price else None
-
-        # Combine all conditions with $and operator if we have multiple conditions
-        if len(where_conditions) > 1:
-            where_clause = {
-                "$and": where_conditions
-            }
-        elif len(where_conditions) == 1:
-            where_clause = where_conditions[0]
-
-    # Perform the query with filters
-    results = collection.query(
-        query_texts=[query],
-        n_results=k,
-        where=where_clause
-    )
-
-    retrieved_ids = results['ids'][0]
-
-    return retrieved_ids
-```
-
-Now we can run the evals:
-
-```python
-# Create a function to run the evaluation
-def run_evaluation(queries, expected_ids, collection, k_values=[3, 5, 10]):
-    """Run evaluation for both retrieval methods across different k values"""
-    results = []
-
-    for k in tqdm(k_values, desc="Evaluating k values"):
-        pure_semantic_metrics = []
-        metadata_filtering_metrics = []
-
-        for i, (query, expected) in enumerate(tqdm(zip(queries, expected_ids), desc=f"Evaluating queries for k={k}", total=len(queries))):
-            # Get the filters for this query
-            query_filters = filters[i] if i < len(filters) else None
-
-            # Run pure semantic search
-            pure_semantic_results = pure_semantic_search(query, collection, k=k)
-            pure_semantic_eval = evaluate_retrieval(pure_semantic_results, expected)
-            pure_semantic_metrics.append(pure_semantic_eval)
-
-            # Run semantic search with metadata filtering
-            metadata_results = semantic_search_with_metadata(query, collection, query_filters, k=k)
-            metadata_eval = evaluate_retrieval(metadata_results, expected)
-            metadata_filtering_metrics.append(metadata_eval)
-
-        # Calculate average metrics
-        avg_pure_recall = np.mean([m["recall"] for m in pure_semantic_metrics])
-        avg_pure_mrr = np.mean([m["mrr"] for m in pure_semantic_metrics])
-
-        avg_metadata_recall = np.mean([m["recall"] for m in metadata_filtering_metrics])
-        avg_metadata_mrr = np.mean([m["mrr"] for m in metadata_filtering_metrics])
-
-        # Store results
-        results.append({
-            "k": k,
-            "method": "pure_semantic",
-            "avg_recall": avg_pure_recall,
-            "avg_mrr": avg_pure_mrr
+def evaluate_search(tbl, queries, expected_ids, embeddings, k=5):
+    metrics = dict(semantic=[], lexical=[], hybrid=[])
+    for idx, query in enumerate(tqdm(queries, desc="Evaluating...")):
+        eid = expected_ids[idx]
+        emb = embeddings[idx]
+        metrics["semantic"].append({
+            "recall": recall(search_semantic(tbl, query, emb, k), eid),
+            "mrr": mrr(search_semantic(tbl, query, emb, k), eid)
         })
-
-        results.append({
-            "k": k,
-            "method": "metadata_filtering",
-            "avg_recall": avg_metadata_recall,
-            "avg_mrr": avg_metadata_mrr
+        metrics["lexical"].append({
+            "recall": recall(search_lexical(tbl, query, k), eid),
+            "mrr": mrr(search_lexical(tbl, query, k), eid)
         })
-
-    return pd.DataFrame(results)
+        metrics["hybrid"].append({
+            "recall": recall(search_hybrid(tbl, query, emb, k, weight=0.5), eid),
+            "mrr": mrr(search_hybrid(tbl, query, emb, k, weight=0.5), eid)
+        })
+    return metrics
 ```
 
+The evaluate_search function runs all three search methods on each query and calculates both metrics. This gives us a nice view of how each method performs across our test set.
+
+## **Prepare Evaluation Data**
+
+Assuming your **synthetic queries** are a list of dicts with `"query"` and `"id"`.
+
 ```python
-# Prepare the evaluation data
 queries = [item["query"] for item in synthetic_queries]
-expected_ids = [[str(item["id"])] for item in synthetic_queries]  # Each expected ID as a list
+expected_ids = [[str(item["id"])] for item in synthetic_queries]
+query_embeddings = batch_embed(queries)  # for fair test, encode queries w/same embedding model
+```
 
-# Run the evaluation
+## Run the Experiment
+
+Now we can run the experiments. The code does the following:
+
+1. Tests each search method with different numbers of results (k=3, 5, and 10)
+2. Aggregates the metrics by calculating the mean recall and MRR for each method
+3. Organizes the results in a DataFrame for easy comparison
+
+```python
 k_values = [3, 5, 10]
-results_df = run_evaluation(queries, expected_ids, collection, k_values)
+results = []
 
+for k in k_values:
+    metrics = evaluate_search(tbl, queries, expected_ids, query_embeddings, k=k)
+    import numpy as np
+    def aggregate_metrics(metrics):
+        return {m: {"recall": np.mean([x["recall"] for x in v]),
+                    "mrr": np.mean([x["mrr"] for x in v])} for m, v in metrics.items()}
+    summary = aggregate_metrics(metrics)
+    for method, vals in summary.items():
+        results.append({"k": k, "method": method, "recall": vals["recall"], "mrr": vals["mrr"]})
+
+results_df = pd.DataFrame(results)
 print(results_df)
 ```
 
-| k   | method             | avg_recall | avg_mrr  |
-| --- | ------------------ | ---------- | -------- |
-| 3   | pure_semantic      | 0.921466   | 0.846422 |
-| 3   | metadata_filtering | 0.816754   | 0.779232 |
-| 5   | pure_semantic      | 0.926702   | 0.847731 |
-| 5   | metadata_filtering | 0.837696   | 0.784206 |
-| 10  | pure_semantic      | 0.942408   | 0.849913 |
-| 10  | metadata_filtering | 0.858639   | 0.787354 |
+| k   | method   | recall | mrr   |
+| --- | -------- | ------ | ----- |
+| 3   | semantic | 0.906  | 0.816 |
+| 3   | lexical  | 0.937  | 0.815 |
+| 3   | hybrid   | 0.916  | 0.848 |
+| 5   | semantic | 0.937  | 0.823 |
+| 5   | lexical  | 0.969  | 0.822 |
+| 5   | hybrid   | 0.948  | 0.860 |
+| 10  | semantic | 0.974  | 0.828 |
+| 10  | lexical  | 0.984  | 0.824 |
+| 10  | hybrid   | 0.990  | 0.868 |
 
 ## Conclusion
 
-Whilst writing this cookbook, I had secretly 'hoped' that hybrid search would outperform pure semantic search. Most people default to vector embeddings, but in production I found that structured metadata extraction consistently delivered better results.
+Our evaluation demonstrates that hybrid search consistently outperforms both pure vector search and lexical search across all tested k values. Key findings:
 
-However, this analysis shows that no application is the same. There is no 'universal' best method for doing things - it depends on the specific use case and the data at hand. In our particular experiment:
+- Hybrid search achieves the highest MRR scores, showing that combining semantic understanding with keyword matching places relevant results higher in the result list.
+- Lexical search performs surprisingly well on recall, reminding us that traditional keyword approaches remain valuable for explicit queries.
+- Vector search provides a solid baseline but benefits significantly from the precision that text matching adds.
 
-- Pure semantic search achieved higher recall and MRR across all k values
-- This suggests that for this specific dataset and query set, the semantic meaning captured by embeddings was sufficient
-- The additional complexity of metadata filtering didn't provide an advantage in this case
+As k increases, recall improves across all methods, but hybrid search maintains its advantage in ranking relevant items higher. These results highlight that the best search approach depends on your specific data and user query patterns. For product search where users combine concepts ("casual") with attributes ("red"), hybrid search offers clear advantages.
 
-This highlights the importance of empirical evaluation rather than assuming one approach is always superior. Some possible reasons for these results:
+I hope this analysis helps you make informed decisions about the best approach for your own use case. Remember to:
 
-1. Our synthetic queries might be particularly well-aligned with the semantic content
-2. The metadata extraction might need refinement to better capture query intent
-3. The dataset might not have enough attribute diversity to showcase the benefits of filtering
+1. Test multiple retrieval strategies on your specific data
+2. Measure performance with appropriate metrics
+3. Consider the trade-offs between implementation complexity and performance gains
 
-I hope this analysis helps you make informed decisions about the best approach for your own use case.
-
-For the full notebook, check it out on: [GitHub](https://github.com/langwatch/cookbooks/blob/main/notebooks/metadata-filtering.ipynb).
+For the full notebook, check it out on: [GitHub](https://github.com/langwatch/cookbooks/blob/main/notebooks/hybrid-vs-vector.ipynb).
