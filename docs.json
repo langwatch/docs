@@ -248,6 +248,12 @@
                 "pages": [
                   "api-reference/datasets/post-dataset-entries"
                 ]
+              },
+              {
+                "group": "Triggers",
+                "pages": [
+                  "api-reference/triggers/create-slack-trigger"
+                ]
               }
             ]
           },
