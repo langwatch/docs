@@ -2905,45 +2905,39 @@
           "filters": {
             "type": "object",
             "properties": {
-              "metadata": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "thread_id": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "customer_id": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "labels": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "custom_value": {
-                    "type": "object",
-                    "additionalProperties": true
-                  }
+              "metadata.user_id": {
+                "type": "array",
+                "items": {
+                  "type": "string"
                 }
+              },
+              "metadata.thread_id": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "metadata.customer_id": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "metadata.labels": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "metadata.custom_value": {
+                "type": "object",
+                "additionalProperties": true
               }
-            },
-            "required": ["metadata"]
+            }
           },
           "alert_type": {
             "type": "string",
-            "enum": ["INFO", "CRITICAL", "WARNING"]
+            "enum": ["ERROR", "WARNING", "INFO"]
           }
         },
         "required": ["slack_webhook", "name", "filters", "alert_type"]
