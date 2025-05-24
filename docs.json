@@ -154,10 +154,11 @@
           {
             "group": "LLM Evaluation",
             "pages": [
+              "llm-evaluation/overview",
               {
                 "group": "Offline Evaluation",
                 "pages": [
-                  "llm-evaluation/offline/code/evaluations-api",
+                  "llm-evaluation/offline/code/evaluation-api",
                   {
                     "group": "On the platform",
                     "pages": [

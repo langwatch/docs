@@ -1,5 +1,5 @@
 ---
-title: Evaluations API
+title: Evaluation Tracking API
 description: Evaluate and visualize your LLM evals with LangWatch
 ---
 
@@ -111,7 +111,7 @@ evaluation.log("helpfulness",
                score=0.88,
                data={
                   "response": result["text"],
-                  "confidence": result["confidence"]
+                  "contexts": result["contexts"]
                })
 ```
 
@@ -140,7 +140,7 @@ for index, row in evaluation.loop(df.iterrows()):
 
 ## Parallel Execution
 
-LLM calls are slow. To speed up your evaluations, you can use the built-in parallelization,
+LLM calls can be slow. To speed up your evaluations, you can use the built-in parallelization,
 by putting the content of the loop in a function and submitting it to the evaluation for
 parallel execution:
 
@@ -202,7 +202,7 @@ for index, row in evaluation.loop(df.iterrows()):
         )
 
         # Log custom metrics alongside
-        evaluation.log("latency", index=index, score=response.latency)
+        evaluation.log("confidence", index=index, score=response.confidence)
 
     evaluation.submit(evaluate, index, row)
 ```
