@@ -1,7 +1,12 @@
 ---
 title: Open Source
-description: LangWatch offers a fully open source version of the platform.
+description: LangWatch offers a fully open source version of the platform
 ---
+
+<Note>
+While the open-source version is available for local use and experimentation, for commercial use please reach out for a [demo call with our team](https://get.langwatch.ai/request-a-demo).
+</Note>
+
 
 ## Docker Compose
 
@@ -38,14 +43,6 @@ make start
 
 LangWatch is available as a Helm chart for easy deployment on Kubernetes. This section provides instructions for installing the Langwatch Helm chart.
 
-### Installing Langwatch Helm Chart
-
-To deploy the Langwatch Helm chart, ensure you have the following tools installed:
-
-- [Helm](https://helm.sh/docs/intro/install/) – Package manager for Kubernetes.
-- [Minikube](https://minikube.sigs.k8s.io/docs/start/) – Local Kubernetes cluster for testing and development.
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) – Command-line tool to interact with your Kubernetes cluster.
-
 ## Required Values
 
 When installing this chart, the following environment variables must be provided:
@@ -66,13 +63,14 @@ export API_TOKEN_JWT_SECRET=$(openssl rand -base64 32)
 export BASE_HOST="http://localhost:5560"
 export NEXTAUTH_URL="http://localhost:5560"
 
+# Add LangWatch Helm repository
+helm repo add langwatch https://langwatch.github.io/langwatch/
+helm repo update
+
 # Install the chart
-helm install langwatch ./langwatch \
+helm install langwatch langwatch/langwatch-helm \
   --set app.env.NEXTAUTH_SECRET=$NEXTAUTH_SECRET \
   --set app.env.API_TOKEN_JWT_SECRET=$API_TOKEN_JWT_SECRET \
   --set app.env.BASE_HOST=$BASE_HOST \
   --set app.env.NEXTAUTH_URL=$NEXTAUTH_URL
 ```
-
-
-

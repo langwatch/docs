@@ -38,8 +38,8 @@
                 "group": "Self Hosting",
                 "pages": [
                   "self-hosting/overview",
-                  "/self-hosting/onprem",
-                  "/hybrid-setup/sso-setup-langwatch",
+                  "self-hosting/open-source",
+                  "self-hosting/onprem",
                   {
                     "group": "Hybrid Setup",
                     "pages": [
@@ -48,7 +48,7 @@
                       "hybrid-setup/s3-storage"
                     ]
                   },
-                  "self-hosting/open-source"
+                  "hybrid-setup/sso-setup-langwatch"
                 ]
               },
               {
