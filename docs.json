@@ -157,8 +157,14 @@
               {
                 "group": "Offline Evaluation",
                 "pages": [
-                  "llm-evaluation/offline/platform/answer-correctness",
-                  "llm-evaluation/offline/platform/llm-as-a-judge"
+                  "llm-evaluation/offline/code/evaluations-api",
+                  {
+                    "group": "On the platform",
+                    "pages": [
+                      "llm-evaluation/offline/platform/answer-correctness",
+                      "llm-evaluation/offline/platform/llm-as-a-judge"
+                    ]
+                  }
                 ]
               },
               {

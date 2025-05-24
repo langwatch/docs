@@ -2,7 +2,8 @@
   overflow-x: visible !important;
 }
 
-a[href="https://github.com/langwatch/langwatch"] .text-sm {
+a[href="https://github.com/langwatch/langwatch"] .text-sm
+{
   white-space: nowrap;
 }
 
@@ -23,4 +24,17 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm {
 
 [aria-controls~="accordion"][aria-expanded="true"] [class="mr-0.5"] {
   margin-top: 8px;
+}
+
+.line-highlight {
+  background: rgb(85 215 153 / 0.2) !important;
+}
+
+.line-highlight:before {
+  background: rgb(85 215 153 / 0.2) !important;
+  border-left: 4px solid rgb(85 215 153) !important;
+}
+
+.line-highlight:after {
+  background: rgb(85 215 153 / 0.2) !important;
 }

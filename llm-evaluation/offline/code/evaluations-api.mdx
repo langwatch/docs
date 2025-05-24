@@ -1,0 +1,273 @@
+---
+title: Evaluations API
+description: Evaluate and visualize your LLM evals with LangWatch
+---
+
+LangWatch makes it incredibly easy to add evaluation tracking to your existing workflows.
+You can keep using pandas and your favorite tools, just add a few lines to start tracking your experiments.
+
+## Quickstart
+
+### 1. Install the Python library
+
+```bash
+pip install langwatch
+```
+
+### 2. Login to LangWatch
+
+Import and authenticate the LangWatch SDK:
+
+<Tabs>
+  <Tab title="Notebook">
+```python
+import langwatch
+
+langwatch.login()
+```
+
+Be sure to login or create an account on the link that will be displayed, then provide your API key when prompted.
+  </Tab>
+  <Tab title="Command Line">
+```bash
+export LANGWATCH_API_KEY=your_api_key
+```
+  </Tab>
+</Tabs>
+
+### 3. Start tracking
+
+```python
+import langwatch
+import pandas as pd
+
+# Load your dataset
+df = pd.read_csv("my_dataset.csv")
+
+# Initialize a new experiment
+evaluation = langwatch.evaluation.init("my-experiment")
+
+# Wrap your loop with evaluation.loop(), and iterate as usual
+for idx, row in evaluation.loop(df.iterrows()):
+    # Run your model or pipeline
+    response = my_agent(row["question"])
+
+    # Log a metric for this sample
+    evaluation.log("sample_metric", index=idx, score=0.95)
+```
+
+That's it! Your evaluation metrics are now being tracked and visualized in LangWatch.
+
+<Frame>
+<img src="/images/offline-evaluation/evaluation-sample.png" alt="Evaluation Results Sample" />
+</Frame>
+
+## Core Concepts
+
+### Evaluation Initialization
+
+The evaluation is started by creating an evaluation session with a descriptive name:
+
+```python
+evaluation = langwatch.evaluation.init("rag-pipeline-openai-vs-claude")
+```
+
+### Loop wrapping
+
+Use `evaluation.loop()` around your iterator so the entries are tracked:
+
+```python
+for index, row in evaluation.loop(df.iterrows()):
+    # Your existing evaluation code
+```
+
+### Metrics logging
+
+Track any metric you want with `evaluation.log()`:
+
+```python
+# Numeric scores
+evaluation.log("relevance", index=index, score=0.85)
+
+# Boolean pass/fail
+evaluation.log("contains_citation", index=index, passed=True)
+
+# Include additional data for debugging
+evaluation.log("coherence", index=index, score=0.9,
+               data={"output": result["text"], "tokens": result["token_count"]})
+```
+
+## Capture Full Pipeline
+
+### Add Custom Data
+
+Beyond just metrics, you can capture outputs and other relevant data for analysis:
+
+```python
+result = agent(row["question"])
+
+evaluation.log("helpfulness",
+               index=index,
+               score=0.88,
+               data={
+                  "response": result["text"],
+                  "confidence": result["confidence"]
+               })
+```
+
+### Trace Your LLM Pipeline
+
+To get complete visibility into your LLM pipeline, trace your agent with the `@langwatch.trace()` decorator:
+
+```python
+@langwatch.trace()
+def agent(question):
+    # Your RAG pipeline, chain, or agent logic
+    context = retrieve_documents(question)
+    completion = llm.generate(question, context)
+    return {"text": completion.text, "context": context}
+
+for index, row in evaluation.loop(df.iterrows()):
+    result = agent(row["question"])
+    evaluation.log("accuracy", index=index, score=0.9)
+```
+
+<Info>
+  With tracing enabled, you can click through from any evaluation result to see the complete execution trace, including all LLM calls, prompts, and intermediate steps.
+
+  Learn more in our [Python Integration Guide](/integration/python/guide).
+</Info>
+
+## Parallel Execution
+
+LLM calls are slow. To speed up your evaluations, you can use the built-in parallelization,
+by putting the content of the loop in a function and submitting it to the evaluation for
+parallel execution:
+
+```python {4,8}
+evaluation = langwatch.evaluation.init("parallel-eval-example")
+
+for index, row in evaluation.loop(df.iterrows(), threads=4):
+    def evaluate(index, row):
+        result = agent(row["question"])  # Runs in parallel
+        evaluation.log("response_quality", index=index, score=0.92)
+
+    evaluation.submit(evaluate, index, row)
+```
+
+<Note>
+  By default, `threads=4`. Adjust based on your API rate limits and system resources.
+</Note>
+
+## Use LangWatch Datasets
+
+Collaborate with your team using datasets stored in LangWatch:
+
+```python
+# Load dataset from LangWatch
+df = langwatch.dataset.get_dataset("dataset-id").to_pandas()
+
+evaluation = langwatch.evaluation.init("team-shared-eval")
+
+for index, row in evaluation.loop(df.iterrows()):
+    # Your evaluation logic
+```
+
+<Info>
+  Create and manage datasets in the LangWatch UI. See our [Datasets Overview](/datasets/overview) for more details.
+</Info>
+
+## Built-in Evaluators
+
+LangWatch provides a comprehensive suite of evaluation metrics out of the box. Use `evaluation.run()` to leverage pre-built evaluators:
+
+```python
+for index, row in evaluation.loop(df.iterrows()):
+    def evaluate(index, row):
+        response, contexts = execute_rag_pipeline(row["question"])
+
+        # Use built-in RAGAS faithfulness evaluator
+        evaluation.run(
+            "ragas/faithfulness",
+            index=index,
+            data={
+                "input": row["question"],
+                "output": response,
+                "contexts": contexts,
+            },
+            settings={
+                "model": "openai/gpt-4o-mini",
+                "max_tokens": 2048,
+            }
+        )
+
+        # Log custom metrics alongside
+        evaluation.log("latency", index=index, score=response.latency)
+
+    evaluation.submit(evaluate, index, row)
+```
+
+<Info>
+  Browse our complete list of [available evaluators](/llm-evaluation/list) including metrics for RAG quality, hallucination detection, safety, and more.
+</Info>
+
+## Complete Example
+
+Here's a full example combining all the features:
+
+```python
+import langwatch
+
+# Load dataset from LangWatch
+df = langwatch.dataset.get_dataset("your-dataset-id").to_pandas()
+
+# Initialize evaluation
+evaluation = langwatch.evaluation.init("rag-pipeline-evaluation-v2")
+
+# Run evaluation with parallelization
+for index, row in evaluation.loop(df.iterrows(), threads=8):
+    def evaluate(index, row):
+        # Execute your RAG pipeline
+        response, contexts = execute_rag_pipeline(row["question"])
+
+        # Use LangWatch evaluators
+        evaluation.run(
+            "ragas/faithfulness",
+            index=index,
+            data={
+                "input": row["question"],
+                "output": response,
+                "contexts": contexts,
+            },
+            settings={
+                "model": "openai/gpt-4o-mini",
+                "max_tokens": 2048,
+                "autodetect_dont_know": True,
+            }
+        )
+
+        # Log custom metrics
+        evaluation.log(
+            "response_time",
+            index=index,
+            score=response.duration_ms,
+            data={"timestamp": response.timestamp}
+        )
+
+    evaluation.submit(evaluate, index, row)
+```
+
+## What's Next?
+
+- **[View Evaluators](/llm-evaluation/list)** - Explore all available evaluation metrics
+- **[Python Integration](/integration/python/guide)** - Set up comprehensive tracing
+- **[Datasets](/datasets/overview)** - Learn about dataset management
+
+<CardGroup cols={2}>
+  <Card title="Join our Community" icon="discord" href="https://discord.gg/kT4PhDS2gH">
+    Get help and share feedback
+  </Card>
+  <Card title="View Examples" icon="github" href="/cookbooks/build-a-simple-rag-app">
+    Check out example notebooks
+  </Card>
+</CardGroup>
