@@ -58,7 +58,8 @@
                   "/cookbooks/finetuning-embedding-models",
                   "/cookbooks/vector-vs-hybrid-search",
                   "/cookbooks/tool-selection",
-                  "/cookbooks/finetuning-agents"
+                  "/cookbooks/finetuning-agents",
+                  "/cookbooks/evaluating-multi-turn-conversations"
                 ]
               }
             ]
