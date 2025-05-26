@@ -1,12 +1,22 @@
 ---
 title: Measuring RAG Performance
 description: Discover how to measure the performance of Retrieval-Augmented Generation (RAG) systems using metrics like retrieval precision, answer accuracy, and latency.
-keywords: [RAG performance, evaluate RAG, retrieval metrics, answer accuracy, LLM evaluation, latency, information retrieval, RAG benchmarking]
+keywords:
+  [
+    RAG performance,
+    evaluate RAG,
+    retrieval metrics,
+    answer accuracy,
+    LLM evaluation,
+    latency,
+    information retrieval,
+    RAG benchmarking,
+  ]
 ---
 
 In this cookbook, we demonstrate how to build a RAG application and apply a systematic evaluation framework using LangWatch. We'll focus on data-driven approaches to measure and improve retrieval performance.
 
-Traditionally, RAG evaluation emphasizes the quality of the generated answers. However, this approach has major drawbacks: it’s slow (you must wait for the LLM to generate responses), expensive (LLM usage costs add up quickly), and subjective (evaluating answer quality can be inconsistent). Instead, we focus on evaluating retrieval, which is fast, cheap, and objective. 
+Traditionally, RAG evaluation emphasizes the quality of the generated answers. However, this approach has major drawbacks: it’s slow (you must wait for the LLM to generate responses), expensive (LLM usage costs add up quickly), and subjective (evaluating answer quality can be inconsistent). Instead, we focus on evaluating retrieval, which is fast, cheap, and objective.
 
 ## Requirements
 
@@ -25,9 +35,9 @@ import os
 import openai
 import langwatch
 
-# Set your LangWatch API key
-os.environ["LANGWATCH_API_KEY"] = "your_api_key_here"
-os.environ["OPENAI_API_KEY"] = "your_api_key_here"  
+# Set your OpenAI and LangWatch API Key's:
+os.environ["OPENAI_API_KEY"] = "your_api_key_here"
+langwatch.login()
 ```
 
 ## Retrieval Metrics
@@ -101,7 +111,7 @@ Example queries:
 5. details on the evaluation conditions for GPT-3's in-context learning abilities
 ```
 
-Notice how the questions even look like they could be from a real user! This is because we provided example queries that resembled user behavior. This is a quick way to get started with evaluating your RAG application. As you start collecting real-world data, you can use provide those as example_queries and generate more useful data. 
+Notice how the questions even look like they could be from a real user! This is because we provided example queries that resembled user behavior. This is a quick way to get started with evaluating your RAG application. As you start collecting real-world data, you can use provide those as example_queries and generate more useful data.
 
 ## Setting up a Vector Database
 
@@ -143,107 +153,78 @@ print(f"Created collection large with {large_collection.count()} documents.")
 
 The key to running quick experiments is to parametrize the retrieval pipeline. This makes it easy to swap different retrieval methods as your RAG system evolves. In this example, we’ll compare a small and large embedding model based on recall and MRR. We’ll also vary the number of retrieved documents (k) to see how performance changes.
 
-First, we’ll define two functions: one for retrieving documents and one for evaluating retrieval performance.
+First, we’ll define a function to retrieve documents.
 
 ```python
 import pandas as pd
 import langwatch
 
-# Define a simple retrieval function with LangWatch tracing
-@langwatch.span(type="rag")
+# Initialize a new evaluation experiment
+evaluation = langwatch.evaluation.init("rag-retrieval-evaluation")
+
 def retrieve(query, collection, k=5):
     """Retrieve documents from a collection based on a query"""
     results = collection.query(query_texts=[query], n_results=k)
-    
+
     # Get the document IDs from the results
     retrieved_ids = results['ids'][0]
-    
-    # Log the retrieved documents in LangWatch
-    langwatch.get_current_span().update(contexts=[
-        {"id": doc_id, "content": doc} 
-        for doc_id, doc in zip(retrieved_ids, results['documents'][0])
-    ])
-    
-    return retrieved_ids
 
-# Evaluation function
-@langwatch.span(type="evaluation")
-def evaluate_retrieval(retrieved_ids, expected_ids):
-    """Evaluate retrieval performance using recall and MRR"""
-    recall = calculate_recall(retrieved_ids, expected_ids)
-    mrr = calculate_mrr(retrieved_ids, expected_ids)
-    
-    # Log metrics to LangWatch
-    langwatch.get_current_span().add_evaluation(
-        name="recall",
-        score=recall,
-        details=f"Recall: {recall:.4f}"
-    )
-    
-    langwatch.get_current_span().add_evaluation(
-        name="mrr",
-        score=mrr,
-        details=f"MRR: {mrr:.4f}"
-    )
-    
-    return {"recall": recall, "mrr": mrr}
+    return retrieved_ids
 ```
 
 Now we can set up our parametrized retrieval pipeline.
 
 ```python
 # Main evaluation function
-@langwatch.trace()
 def run_evaluation(k_values=[1, 3, 5, 10]):
     """Run evaluation across different k values and embedding models"""
     results = []
-    
+
     # Sample a subset of queries for evaluation
     eval_sample = eval_df.sample(min(50, len(eval_df)))
-    
+
     for k in k_values:
         for model_name, collection in [("small", small_collection), ("large", large_collection)]:
-            # Update trace metadata
-            langwatch.get_current_trace().update(
-                metadata={"model": model_name, "k": k}
-            )
-            
+
             model_results = []
-            for _, row in eval_sample.iterrows():
+
+            # Use evaluation.loop() but process results synchronously
+            for index, row in evaluation.loop(eval_sample.iterrows()):
                 query = row['query']
                 expected_ids = [row['id']]  # The document ID that should be retrieved
-                
-                # Update trace with query
-                langwatch.get_current_trace().update(input=query)
-                
+
                 # Retrieve documents
                 retrieved_ids = retrieve(query, collection, k)
-                
-                # Evaluate retrieval
-                metrics = evaluate_retrieval(retrieved_ids, expected_ids)
-                
+
+                # Calculate metrics
+                recall = calculate_recall(retrieved_ids, expected_ids)
+                mrr = calculate_mrr(retrieved_ids, expected_ids)
+
+                # Log metrics to LangWatch
+                evaluation.log("recall", index=index, score=recall,
+                              data={"model": model_name, "k": k, "query": query})
+
+                evaluation.log("mrr", index=index, score=mrr,
+                              data={"model": model_name, "k": k, "query": query})
+
+                # Store results for this query
                 model_results.append({
-                    "query": query,
-                    "model": model_name,
-                    "k": k,
-                    "recall": metrics["recall"],
-                    "mrr": metrics["mrr"]
+                    "recall": recall,
+                    "mrr": mrr
                 })
-            
+
             # Calculate average metrics
-            avg_recall = sum(r["recall"] for r in model_results) / len(model_results)
-            avg_mrr = sum(r["mrr"] for r in model_results) / len(model_results)
-            
+            avg_recall = sum(r["recall"] for r in model_results) / len(model_results) if model_results else 0
+            avg_mrr = sum(r["mrr"] for r in model_results) / len(model_results) if model_results else 0
+
             results.append({
                 "model": model_name,
                 "k": k,
                 "avg_recall": avg_recall,
                 "avg_mrr": avg_mrr
             })
-            
+
             print(f"Model: {model_name}, k={k}, Recall={avg_recall:.4f}, MRR={avg_mrr:.4f}")
-    
-    langwatch.get_current_trace().send_spans()
 
     return pd.DataFrame(results)
 
@@ -287,10 +268,10 @@ plt.show()
 ```
 
 <Frame caption="Comparison plot between Recall@K and MRR@K for different large/small embedding models">
-<img src="/images/output.png" alt="comparison plot" />
+  <img src="/images/output.png" alt="comparison plot" />
 </Frame>
 
-We can see that the best configuration for recall is the small embedding model with k=10. This is surprising, as we would expect the large embedding model to perform better. Although, if we cared a lot more about citations, the large embedding model might be preferred. 
+We can see that the best configuration for recall is the small embedding model with k=10. This is surprising, as we would expect the large embedding model to perform better. Although, if we cared a lot more about citations, the large embedding model might be preferred.
 
 ## Conclusion
 

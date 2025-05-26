@@ -1,7 +1,17 @@
 ---
 title: Evaluating Tool Selection
 description: Understand how to evaluate tools and components in your RAG pipeline—covering retrievers, embedding models, chunking strategies, and vector stores.
-keywords: [RAG tools, RAG stack, tool selection, retriever evaluation, embedding models, chunking, vector stores, LLM architecture]
+keywords:
+  [
+    RAG tools,
+    RAG stack,
+    tool selection,
+    retriever evaluation,
+    embedding models,
+    chunking,
+    vector stores,
+    LLM architecture,
+  ]
 ---
 
 In this cookbook, we demonstrate how to evaluate tool calling capabilities in LLM applications using objective metrics. Like always, we'll focus on data-driven approaches to measure and improve tool selection performance.
@@ -32,7 +42,7 @@ import pandas as pd
 
 # Initialize OpenAI and LangWatch
 openai.api_key = getpass.getpass('Enter your OpenAI API key: ')
-langwatch.api_key = getpass.getpass('Enter your LangWatch API key: ')
+langwatch.login()
 ```
 
 ## Metrics
@@ -197,22 +207,58 @@ def extract_tool_calls(response):
 
     return tool_calls
 
-coros = [process_user_query(query) for query, _ in tests]
-results = await asyncio.gather(*coros)
+# Initialize a new experiment
+evaluation = langwatch.evaluation.init("tool-calling-evaluation")
 
-df = pd.DataFrame(
-    [
-        {
-            "query": test_item[0],
-            "expected": [tool.__name__ for tool in test_item[1]],
-            "actual": extract_tool_calls(result["response"]),
-            "time": round(result["time"], 2),
-        }
-        for test_item, result in zip(tests, results)
-    ]
-)
+# Create a DataFrame from the test data for easier processing
+test_df = pd.DataFrame([
+    {
+        "query": test_item[0],
+        "expected": [tool.__name__ for tool in test_item[1]]
+    }
+    for test_item in tests
+])
 
-df = calculate_precision_recall_for_queries(df)
+# Wrap your loop with evaluation.loop(), and iterate as usual
+results = []
+for idx, row in evaluation.loop(test_df.iterrows()):
+    # Run your model
+    result = await process_user_query(row["query"])
+
+    # Extract tool calls
+    actual_tools = extract_tool_calls(result["response"])
+
+    # Calculate metrics
+    precision = calculate_precision(actual_tools, row["expected"])
+    recall = calculate_recall(actual_tools, row["expected"])
+
+    # Log metrics for this sample
+    evaluation.log("precision", index=idx, score=precision)
+    evaluation.log("recall", index=idx, score=recall)
+
+    # Include additional data for debugging
+    evaluation.log("tool_selection",
+                  index=idx,
+                  score=recall,  # Using recall as the primary score
+                  data={
+                      "query": row["query"],
+                      "expected_tools": row["expected"],
+                      "actual_tools": actual_tools,
+                      "response_time": round(result["time"], 2)
+                  })
+
+    # Store results for local analysis
+    results.append({
+        "query": row["query"],
+        "expected": row["expected"],
+        "actual": actual_tools,
+        "time": round(result["time"], 2),
+        "precision": precision,
+        "recall": recall
+    })
+
+# Create DataFrame for local analysis
+df = pd.DataFrame(results)
 df
 ```
 
@@ -246,8 +292,8 @@ def calculate_per_tool_recall(df):
     correct_calls = {tool: 0 for tool in all_tools}
     expected_calls = {tool: 0 for tool in all_tools}
 
-    # Count when each tool should have been called vs. when it was correctly called
-    for _, row in df.iterrows():
+    # Use evaluation.loop() to wrap the iteration
+    for idx, row in evaluation.loop(df.iterrows()):
         expected = set(row["expected"])
         actual = set(row["actual"])
 
@@ -256,9 +302,21 @@ def calculate_per_tool_recall(df):
             if tool in actual:
                 correct_calls[tool] += 1
 
+            # Log each tool's performance for this specific query
+            evaluation.log(
+                f"tool_{tool}_query_{idx}",
+                index=idx,
+                score=1.0 if tool in actual else 0.0,
+                data={
+                    "query": row["query"],
+                    "tool": tool,
+                    "was_called": tool in actual
+                }
+            )
+
     # Build results dataframe
     results = []
-    for tool in all_tools:
+    for tool_idx, tool in enumerate(all_tools):
         recall = correct_calls[tool] / expected_calls[tool] if expected_calls[tool] > 0 else 0
         results.append({
             "tool": tool,
@@ -267,9 +325,21 @@ def calculate_per_tool_recall(df):
             "recall": recall
         })
 
+        # Log the overall recall for each tool
+        evaluation.log(
+            f"tool_recall_{tool}",
+            index=tool_idx,
+            score=recall,
+            data={
+                "tool": tool,
+                "correct_calls": int(correct_calls[tool]),
+                "expected_calls": int(expected_calls[tool])
+            }
+        )
+
     return pd.DataFrame(results).sort_values("recall", ascending=False).round(2)
 
-# Calculate per-tool recall metrics
+# Calculate per-tool recall metrics and log to LangWatch
 tool_recall_df = calculate_per_tool_recall(df)
 tool_recall_df
 ```
