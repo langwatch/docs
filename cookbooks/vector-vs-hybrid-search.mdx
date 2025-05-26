@@ -24,7 +24,7 @@ Like always, we'll focus on data-driven approaches to measure and improve retrie
 Before starting, ensure you have the following packages installed:
 
 ```bash
-pip install lancedb datasets openai tqdm pandas pyarrow tantivy pylance
+pip install langwatch lancedb datasets openai tqdm pandas pyarrow tantivy pylance
 ```
 
 ## Setup
@@ -36,9 +36,10 @@ import getpass
 import lancedb
 import openai
 from datasets import load_dataset
+import langwatch
 
 openai.api_key = getpass.getpass('Enter your OpenAI API key: ')
-# Set up LanceDB
+langwatch.login()
 db = lancedb.connect('./lancedb_ecommerce_demo')
 ```
 
@@ -377,22 +378,91 @@ def mrr(retrieved, expected):
     return 0.0
 
 def evaluate_search(tbl, queries, expected_ids, embeddings, k=5):
+    # Initialize a new LangWatch evaluation experiment
+    evaluation = langwatch.evaluation.init("search-methods-comparison")
+
     metrics = dict(semantic=[], lexical=[], hybrid=[])
-    for idx, query in enumerate(tqdm(queries, desc="Evaluating...")):
+
+    # Use evaluation.loop() to track the iteration
+    for idx, query in evaluation.loop(enumerate(tqdm(queries, desc="Evaluating..."))):
         eid = expected_ids[idx]
         emb = embeddings[idx]
+
+        # Semantic search
+        semantic_results = search_semantic(tbl, query, emb, k)
+        semantic_recall = recall(semantic_results, eid)
+        semantic_mrr = mrr(semantic_results, eid)
+
+        # Log semantic search results to LangWatch
+        evaluation.log(
+            "semantic_search",
+            index=idx,
+            score=semantic_recall,  # Using recall as the primary score
+            data={
+                "query": query,
+                "expected_id": eid,
+                "retrieved_ids": semantic_results,
+                "recall": semantic_recall,
+                "mrr": semantic_mrr,
+                "k": k
+            }
+        )
+
         metrics["semantic"].append({
-            "recall": recall(search_semantic(tbl, query, emb, k), eid),
-            "mrr": mrr(search_semantic(tbl, query, emb, k), eid)
+            "recall": semantic_recall,
+            "mrr": semantic_mrr
         })
+
+        # Lexical search
+        lexical_results = search_lexical(tbl, query, k)
+        lexical_recall = recall(lexical_results, eid)
+        lexical_mrr = mrr(lexical_results, eid)
+
+        # Log lexical search results to LangWatch
+        evaluation.log(
+            "lexical_search",
+            index=idx,
+            score=lexical_recall,
+            data={
+                "query": query,
+                "expected_id": eid,
+                "retrieved_ids": lexical_results,
+                "recall": lexical_recall,
+                "mrr": lexical_mrr,
+                "k": k
+            }
+        )
+
         metrics["lexical"].append({
-            "recall": recall(search_lexical(tbl, query, k), eid),
-            "mrr": mrr(search_lexical(tbl, query, k), eid)
+            "recall": lexical_recall,
+            "mrr": lexical_mrr
         })
+
+        # Hybrid search
+        hybrid_results = search_hybrid(tbl, query, emb, k)
+        hybrid_recall = recall(hybrid_results, eid)
+        hybrid_mrr = mrr(hybrid_results, eid)
+
+        # Log hybrid search results to LangWatch
+        evaluation.log(
+            "hybrid_search",
+            index=idx,
+            score=hybrid_recall,
+            data={
+                "query": query,
+                "expected_id": eid,
+                "retrieved_ids": hybrid_results,
+                "recall": hybrid_recall,
+                "mrr": hybrid_mrr,
+                "k": k
+            }
+        )
+
         metrics["hybrid"].append({
-            "recall": recall(search_hybrid(tbl, query, emb, k, weight=0.5), eid),
-            "mrr": mrr(search_hybrid(tbl, query, emb, k, weight=0.5), eid)
+            "recall": hybrid_recall,
+            "mrr": hybrid_mrr
         })
+
     return metrics
 ```
 
@@ -420,14 +490,33 @@ Now we can run the experiments. The code does the following:
 k_values = [3, 5, 10]
 results = []
 
+# Initialize a new LangWatch evaluation for the overall comparison
+comparison_eval = langwatch.evaluation.init("search-methods-comparison-summary")
+
 for k in k_values:
     metrics = evaluate_search(tbl, queries, expected_ids, query_embeddings, k=k)
     import numpy as np
+
     def aggregate_metrics(metrics):
         return {m: {"recall": np.mean([x["recall"] for x in v]),
                     "mrr": np.mean([x["mrr"] for x in v])} for m, v in metrics.items()}
+
     summary = aggregate_metrics(metrics)
-    for method, vals in summary.items():
+
+    # Log aggregated metrics to LangWatch
+    for i, (method, vals) in enumerate(summary.items()):
+        comparison_eval.log(
+            f"aggregated_{method}_k{k}",
+            index=i,
+            score=vals["recall"],  # Using recall as the primary score
+            data={
+                "k": k,
+                "method": method,
+                "avg_recall": vals["recall"],
+                "avg_mrr": vals["mrr"]
+            }
+        )
+
         results.append({"k": k, "method": method, "recall": vals["recall"], "mrr": vals["mrr"]})
 
 results_df = pd.DataFrame(results)

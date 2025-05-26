@@ -1,25 +1,35 @@
 ---
 title: Optimizing Embeddings
 description: Learn how to optimize embedding models for better retrieval in RAG systems—covering model selection, dimensionality, and domain-specific tuning.
-keywords: [RAG embeddings, optimize embeddings, embedding models, vector search, retrieval quality, LLM performance, semantic search]
+keywords:
+  [
+    RAG embeddings,
+    optimize embeddings,
+    embedding models,
+    vector search,
+    retrieval quality,
+    LLM performance,
+    semantic search,
+  ]
 ---
 
 In this cookbook, we demonstrate how to fine-tune open-source embedding models using sentence-transformer and then evaluating its performance. Like always, we'll focus on data-driven approaches to measure and improve retrieval performance.
 
 Imagine you’re building a dating app. Two users fill in their bios:
+
 - “I love coffee.”
 - “I hate coffee.”
 
-From a linguistic standpoint, these statements are opposites. But from a recommendation perspective, there’s a case to be made that they belong together. Both are expressing strong food preferences. Both might be ‘foodies’ which is why they mentioned their preferences. 
+From a linguistic standpoint, these statements are opposites. But from a recommendation perspective, there’s a case to be made that they belong together. Both are expressing strong food preferences. Both might be ‘foodies’ which is why they mentioned their preferences.
 
-The point here is subtle, but important: semantic similarity is not the same as task relevance. That’s why fine-tuning your embedding model, even on a small number of labeled pairs, can make a noticeable difference. I’ve often seen teams improve their recall by 10-15% by fine-tuning their embedding models with just a couple hundred examples. 
+The point here is subtle, but important: semantic similarity is not the same as task relevance. That’s why fine-tuning your embedding model, even on a small number of labeled pairs, can make a noticeable difference. I’ve often seen teams improve their recall by 10-15% by fine-tuning their embedding models with just a couple hundred examples.
 
 ## Requirements
 
 Before starting, ensure you have the following packages installed:
 
 ```bash
-pip install langwatch openai chromadb pandas matplotlib datasets
+pip install langwatch openai chromadb pandas matplotlib datasets sentence-transformers
 ```
 
 ## Setup
@@ -35,9 +45,9 @@ import langwatch
 
 # Initialize OpenAI, LangWatch & HuggingFace
 openai.api_key = getpass.getpass('Enter your OpenAI API key: ')
-langwatch.api_key = getpass.getpass('Enter your LangWatch API key: ')
 huggingface_api_key = getpass.getpass("Enter your Huggingface API key: ")
 chroma_client = chromadb.PersistentClient()
+langwatch.login()
 ```
 
 ## Generating Synthetic Data
@@ -193,7 +203,7 @@ transactions = [
 
 ## Setting up a Vector Database
 
-Let's set up a vector database to store our embeddings of categories. 
+Let's set up a vector database to store our embeddings of categories.
 
 ```python
 import chromadb
@@ -245,20 +255,20 @@ def calculate_mrr(predictions: list[str], ground_truth: list[str]):
     return mrr
 ```
 
-The case for recall is obvious, since it's the main thing you'd want to track when evaluating your retrieval performance. The case for MRR is more subtle. In Ramp's application, the end-user is shown a number of categories for their transaction and is asked to pick the most relevant one. We want the first category to be the most relevant, so we care about MRR. 
+The case for recall is obvious, since it's the main thing you'd want to track when evaluating your retrieval performance. The case for MRR is more subtle. In Ramp's application, the end-user is shown a number of categories for their transaction and is asked to pick the most relevant one. We want the first category to be the most relevant, so we care about MRR.
 
-Sidenote: You don't need 100 different metrics. Think about what you care about in your application and track that. You want to keep the signal-to-noise ratio high. 
+Sidenote: You don't need 100 different metrics. Think about what you care about in your application and track that. You want to keep the signal-to-noise ratio high.
 
-Before we move on to define both the retrieval function and the evaluation function, let's first structure our data. 
+Before we move on to define both the retrieval function and the evaluation function, let's first structure our data.
 
 ```python
 def retrieve(query, collection, k=5):
     """Retrieve documents from a collection based on a query"""
     results = collection.query(query_texts=[query], n_results=k)
-    
+
     # Get the document IDs from the results
     retrieved_docs = results['documents'][0]
-    
+
     return retrieved_docs
 
 # Evaluation function
@@ -266,7 +276,7 @@ def evaluate_retrieval(retrieved_ids, expected_ids):
     """Evaluate retrieval performance using recall and MRR"""
     recall = calculate_recall(retrieved_ids, expected_ids)
     mrr = calculate_mrr(retrieved_ids, expected_ids)
-    
+
     return {"recall": recall, "mrr": mrr}
 ```
 
@@ -281,45 +291,75 @@ datasets = [("train", train_transactions), ("evals", evals_transactions)]
 Now we can set up our parametrized retrieval pipeline. I'll vary the number of retrieved documents to see how it affects recall and MRR. Note that you can easily vary other parameters (like the embedding models or rerankers) as well with this parametrized pipeline.
 
 ```python
-def run_evaluation(collections=None, transactions=None,k_values=[1, 3, 5]):
-    """Run evaluation across different k values"""
+def run_evaluation(collections=None, transactions=None, k_values=[1, 3, 5]):
+    """Run evaluation across different k values using LangWatch tracking"""
+    # Initialize a new LangWatch evaluation experiment
+    evaluation = langwatch.evaluation.init("embedding-model-evaluation")
+
     results = []
-    
+
     for k in k_values:
         for table in collections:
             scores = []
-            for transaction in transactions:
+            # Use evaluation.loop() to track the iteration
+            for idx, transaction in evaluation.loop(enumerate(transactions)):
                 query = transaction['query']
                 expected_docs = [transaction['expected']]
-                    
+
                 # Retrieve documents
                 retrieved_docs = retrieve(query, table, k)
-                    
+
                 # Evaluate retrieval
                 metrics = evaluate_retrieval(retrieved_docs, expected_docs)
-                    
+
+                # Log individual transaction results to LangWatch
+                evaluation.log(
+                    f"transaction_retrieval",
+                    index=idx,
+                    score=metrics["recall"],
+                    data={
+                        "query": query,
+                        "expected": expected_docs,
+                        "retrieved": retrieved_docs,
+                        "k": k,
+                        "collection": str(table),
+                        "recall": metrics["recall"],
+                        "mrr": metrics["mrr"]
+                    }
+                )
+
                 scores.append({
                     "query": query,
                     "k": k,
                     "recall": metrics["recall"],
                     "mrr": metrics["mrr"]
                 })
-                
+
             # Calculate average metrics
             avg_recall = sum(r["recall"] for r in scores) / len(scores)
             avg_mrr = sum(r["mrr"] for r in scores) / len(scores)
-                
+
+            # Log aggregate metrics to LangWatch
+            evaluation.log(
+                f"collection_performance_{str(table)}",
+                index=k,  # Using k as the index
+                score=avg_recall,
+                data={
+                    "collection": str(table),
+                    "k": k,
+                    "avg_recall": avg_recall,
+                    "avg_mrr": avg_mrr
+                }
+            )
+
             results.append({
                 "collection": table,
                 "k": k,
                 "avg_recall": avg_recall,
                 "avg_mrr": avg_mrr
             })
-                    
-    return pd.DataFrame(results)
 
-results_df = run_evaluation(collections=[base_collection], transactions=transactions)
-print(results_df)
+    return pd.DataFrame(results)
 ```
 
 ```text
@@ -335,7 +375,7 @@ Moving on, we’ll fine-tune a small open-source embedding model using just 256 
 
 One big reason to fine-tune open-source models is cost. After training, you can run them on your own hardware without worrying about per-query charges. If you’re handling a lot of traffic, this saves a lot of money fast.
 
-We’ll be using sentence-transformers — it’s easy to train, plays nicely with Hugging Face, and has plenty of community examples if you get stuck. Let's first transform our data in the format that sentence-transformer expects it. 
+We’ll be using sentence-transformers — it’s easy to train, plays nicely with Hugging Face, and has plenty of community examples if you get stuck. Let's first transform our data in the format that sentence-transformer expects it.
 
 ```python
 from sentence_transformers import InputExample, losses
@@ -348,7 +388,7 @@ finetuning_data = [
     InputExample(
         texts=[transaction['query'], transaction['expected'], negative],
     )
-    for transaction in train_transactions 
+    for transaction in train_transactions
     for _ in range(2)  # Generate 2 samples per transaction
     for negative in random.sample([label for label in labels if label != transaction['expected']], k=4)  # 4 negatives per sample
 ]
@@ -365,7 +405,7 @@ train_dataloader = DataLoader(finetuning_data, batch_size=8, shuffle=True)
 train_loss = losses.MultipleNegativesRankingLoss(model)
 ```
 
-Now we can start training. If you're done training, you can optionally upload it to HuggingFace. 
+Now we can start training. If you're done training, you can optionally upload it to HuggingFace.
 
 ```python
 model.fit(
@@ -376,7 +416,7 @@ model.fit(
 )
 ```
 
-Now we can create a new collection using our fine-tuned embedding model. 
+Now we can create a new collection using our fine-tuned embedding model.
 
 ```python
 import chromadb.utils.embedding_functions as embedding_functions
@@ -399,7 +439,7 @@ for i, category in enumerate(categories):
 print(f"Created collection with {finetuned_collection.count()} documents.")
 ```
 
-Let's compare the performance of the two models using our parametrized retrieval pipeline. 
+Let's compare the performance of the two models using our parametrized retrieval pipeline.
 
 ```python
 results_df = run_evaluation([base_collection, finetuned_collection], evals_transactions)
@@ -412,11 +452,14 @@ results_df.pivot(index='k', columns='collection', values=['avg_recall']).plot(ki
 ```
 
 <Frame caption="Comparison between base and finetuned models">
-<img src="/images/mrr_recall_finetuned_embeddings.png" alt="Comparison between base and finetuned models" />
+  <img
+    src="/images/mrr_recall_finetuned_embeddings.png"
+    alt="Comparison between base and finetuned models"
+  />
 </Frame>
 
 ## Conclusion
 
-We see that the fine-tuned model performs better than the base model on the evaluation set. Like I said at the beginning of this post, I often find teams improve their retrieval significantly by fine-tuning embedding models on their specific data, for their specific application. Note that we didn't even need that much data. A few hundred examples is often enough. 
+We see that the fine-tuned model performs better than the base model on the evaluation set. Like I said at the beginning of this post, I often find teams improve their retrieval significantly by fine-tuning embedding models on their specific data, for their specific application. Note that we didn't even need that much data. A few hundred examples is often enough.
 
 For the full notebook, check it out on: [GitHub](https://github.com/langwatch/cookbooks/blob/main/notebooks/finetune-embedding-models.ipynb).
