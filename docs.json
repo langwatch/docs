@@ -90,6 +90,7 @@
                           "integration/python/integrations/langgraph",
                           "integration/python/integrations/pydantic-ai",
                           "integration/python/integrations/aws-bedrock",
+                          "integration/python/integrations/agno",
                           "integration/python/integrations/crew-ai",
                           "integration/python/integrations/haystack",
                           "integration/python/integrations/other"
