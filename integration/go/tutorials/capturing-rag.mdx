@@ -1,0 +1,547 @@
+---
+title: Capturing RAG Context
+sidebarTitle: RAG Context
+description: Learn how to capture Retrieval Augmented Generation (RAG) context with the LangWatch Go SDK
+keywords: RAG, retrieval, context, documents, chunks, langwatch, go
+---
+
+import { Note } from '/components/Note.tsx'
+
+When building Retrieval Augmented Generation (RAG) applications, it's crucial to track not just the LLM interactions but also the retrieval process and the context documents that influence the final response. LangWatch Go SDK provides specialized support for capturing RAG workflows.
+
+## RAG Workflow Components
+
+A typical RAG workflow involves several steps that can be captured as separate spans:
+
+1. **Query Processing** - Transforming user input into search queries
+2. **Document Retrieval** - Searching for relevant documents
+3. **Context Preparation** - Processing and formatting retrieved documents
+4. **LLM Generation** - Using the context to generate responses
+
+## Basic RAG Instrumentation
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+Here's a complete example showing how to instrument a RAG pipeline:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"github.com/langwatch/langwatch-go"
+	"github.com/langwatch/langwatch-go/instrumentation/openai"
+
+	"github.com/sashabaranov/go-openai"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+// Document represents a retrieved document
+type Document struct {
+	ID       string
+	Content  string
+	Score    float64
+	Metadata map[string]interface{}
+}
+
+func main() {
+	ctx := context.Background()
+	// Assumes LangWatch is already set up. See the setup guide for details.
+
+	config := openai.DefaultConfig(os.Getenv("OPENAI_API_KEY"))
+	config.HTTPClient = langwatch_openai.Instrument(
+		config.HTTPClient,
+		"rag-app",
+		langwatch_openai.WithCaptureInput(),
+		langwatch_openai.WithCaptureOutput(),
+	)
+	client := openai.NewClientWithConfig(config)
+
+	// Simulate a user question
+	question := "What are the benefits of renewable energy?"
+
+	answer := processRAGQuestion(ctx, client, question)
+	log.Printf("Question: %s", question)
+	log.Printf("Answer: %s", answer)
+}
+
+func processRAGQuestion(ctx context.Context, client *openai.Client, question string) string {
+	// Create main RAG pipeline trace
+	tracer := langwatch.Tracer("rag-app")
+	ctx, mainSpan := tracer.Start(ctx, "ProcessRAGQuestion")
+	defer mainSpan.End()
+
+	mainSpan.SetType(langwatch.SpanTypeRAG)
+	mainSpan.SetThreadID("user-session-123")
+	langwatch.RecordInput(mainSpan, question)
+
+	// Step 1: Retrieve relevant documents
+	docs := retrieveDocuments(ctx, question)
+
+	// Step 2: Prepare context from documents
+	context_text := prepareContext(ctx, docs)
+
+	// Step 3: Generate answer using LLM
+	answer := generateAnswer(ctx, client, question, context_text)
+
+	langwatch.RecordOutput(mainSpan, answer)
+	return answer
+}
+
+func retrieveDocuments(ctx context.Context, query string) []Document {
+	// Create retrieval span
+	tracer := langwatch.Tracer("rag-app")
+	ctx, span := tracer.Start(ctx, "RetrieveDocuments")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeRetrieval)
+	langwatch.RecordInput(span, query)
+
+	// Simulate document retrieval (replace with actual vector search)
+	docs := []Document{
+		{
+			ID:      "doc-1",
+			Content: "Solar energy is a renewable energy source that converts sunlight into electricity. It reduces carbon emissions and provides sustainable power.",
+			Score:   0.95,
+			Metadata: map[string]interface{}{
+				"source": "energy_guide.pdf",
+				"page":   12,
+			},
+		},
+		{
+			ID:      "doc-2",
+			Content: "Wind energy harnesses wind power to generate electricity. It's cost-effective and environmentally friendly with minimal ongoing emissions.",
+			Score:   0.87,
+			Metadata: map[string]interface{}{
+				"source": "renewable_sources.pdf",
+				"page":   8,
+			},
+		},
+		{
+			ID:      "doc-3",
+			Content: "Hydroelectric power uses flowing water to generate electricity. It provides reliable, clean energy and can support grid stability.",
+			Score:   0.82,
+			Metadata: map[string]interface{}{
+				"source": "water_energy.pdf",
+				"page":   3,
+			},
+		},
+	}
+
+	// Add RAG context information to the span
+	chunks := make([]langwatch.SpanRAGContextChunk, len(docs))
+	for i, doc := range docs {
+		chunks[i] = langwatch.SpanRAGContextChunk{
+			DocumentID: doc.ID,
+			Content:    doc.Content,
+			ChunkID:    fmt.Sprintf("chunk-%d", i),
+		}
+	}
+	span.SetRAGContextChunks(chunks)
+
+	// Record additional retrieval metadata as attributes
+	span.SetAttributes(
+		attribute.Int("retrieval.documents_retrieved", len(docs)),
+		attribute.Float64("retrieval.avg_score", averageScore(docs)),
+		attribute.String("retrieval.strategy", "vector_similarity"),
+	)
+
+	return docs
+}
+
+func prepareContext(ctx context.Context, docs []Document) string {
+	// Create context preparation span
+	tracer := langwatch.Tracer("rag-app")
+	_, span := tracer.Start(ctx, "PrepareContext")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeChain)
+
+	var contextParts []string
+	for i, doc := range docs {
+		contextPart := fmt.Sprintf("Document %d (Score: %.2f):\n%s", i+1, doc.Score, doc.Content)
+		contextParts = append(contextParts, contextPart)
+	}
+
+	context_text := strings.Join(contextParts, "\n\n")
+
+	langwatch.RecordInput(span, map[string]interface{}{
+		"num_documents": len(docs),
+		"total_length":  len(context_text),
+	})
+	langwatch.RecordOutput(span, context_text)
+
+	return context_text
+}
+
+func generateAnswer(ctx context.Context, client *openai.Client, question, context_text string) string {
+	// Create answer generation span
+	tracer := langwatch.Tracer("rag-app")
+	ctx, span := tracer.Start(ctx, "GenerateAnswer")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeLLM)
+
+	prompt := fmt.Sprintf(`Based on the following context, answer the question.
+
+Context:
+%s
+
+Question: %s
+
+Answer:`, context_text, question)
+
+	langwatch.RecordInput(span, prompt)
+
+	response, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+		Model: openai.GPT4oMini,
+		Messages: []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: "You are a helpful assistant that answers questions based only on the provided context.",
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: prompt,
+			},
+		},
+		Temperature: 0.1,
+	})
+	if err != nil {
+		log.Fatalf("OpenAI call failed: %v", err)
+	}
+
+	answer := response.Choices[0].Message.Content
+	langwatch.RecordOutput(span, answer)
+
+	return answer
+}
+
+func averageScore(docs []Document) float64 {
+	if len(docs) == 0 {
+		return 0
+	}
+
+	total := 0.0
+	for _, doc := range docs {
+		total += doc.Score
+	}
+	return total / float64(len(docs))
+}
+
+## Advanced RAG Context Tracking
+
+### Single Document Context
+
+For simple cases where you have one document chunk:
+
+```go
+func addSingleContext(span langwatch.LangWatchSpan, doc Document) {
+	chunk := langwatch.SpanRAGContextChunk{
+		DocumentID: doc.ID,
+		Content:    doc.Content,
+		ChunkID:    "chunk-1",
+	}
+	span.SetRAGContextChunk(chunk)
+}
+```
+
+### Multiple Context Chunks
+
+For complex retrievals with multiple chunks from different documents:
+
+```go
+func addMultipleContexts(span langwatch.LangWatchSpan, results []SearchResult) {
+	chunks := make([]langwatch.SpanRAGContextChunk, len(results))
+	
+	for i, result := range results {
+		chunks[i] = langwatch.SpanRAGContextChunk{
+			DocumentID: result.DocumentID,
+			Content:    result.Content,
+			ChunkID:    result.ChunkID,
+		}
+	}
+	
+	span.SetRAGContextChunks(chunks)
+}
+```
+
+### Custom Metadata
+
+Enhance your RAG spans with additional metadata:
+
+```go
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	"go.opentelemetry.io/otel/attribute"
+)
+
+func instrumentRetrieval(ctx context.Context, query string, vectorDB VectorDB) []Document {
+	tracer := langwatch.Tracer("rag-app")
+	ctx, span := tracer.Start(ctx, "VectorSearch")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeRetrieval)
+	span.RecordInputString(query)
+
+	// Add custom timestamps for performance tracking
+	startTime := time.Now()
+	docs := vectorDB.Search(query, 5)
+	endTime := time.Now()
+
+	// Set custom timing information on the span
+	// Note: This is an advanced pattern. The SDK sets timestamps automatically.
+	// Only use this if you need to override the default behavior.
+
+	// Add retrieval-specific attributes
+	span.SetAttributes(
+		attribute.String("search.strategy", "cosine_similarity"),
+		attribute.String("search.embedding_model", "text-embedding-ada-002"),
+		attribute.Int("search.top_k", 5),
+		attribute.Int64("search.latency_ms", endTime.Sub(startTime).Milliseconds()),
+		attribute.Int("search.documents_found", len(docs)),
+	)
+
+	// Add context chunks
+	chunks := make([]langwatch.SpanRAGContextChunk, len(docs))
+	for i, doc := range docs {
+		chunks[i] = langwatch.SpanRAGContextChunk{
+			DocumentID: doc.ID,
+			Content:    doc.Content,
+			ChunkID:    fmt.Sprintf("chunk-%d", i),
+		}
+	}
+	span.SetRAGContextChunks(chunks)
+
+	return docs
+}
+```
+
+## Integration with Vector Databases
+
+### Pinecone Example
+
+```go
+import (
+	"context"
+	"fmt"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	"github.com/pinecone-io/go-pinecone/pinecone"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+)
+
+func searchPinecone(ctx context.Context, query string, index *pinecone.IndexConnection) []Document {
+	tracer := langwatch.Tracer("rag-app")
+	ctx, span := tracer.Start(ctx, "PineconeSearch")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeQuery)
+	span.RecordInputString(query)
+
+	// Generate embedding for query (implement this based on your embedding service)
+	embedding := generateEmbedding(query)
+
+	// Search Pinecone
+	searchRequest := &pinecone.QueryRequest{
+		Vector:          embedding,
+		TopK:           5,
+		IncludeMetadata: true,
+		IncludeValues:   false,
+	}
+
+	results, err := index.Query(ctx, searchRequest)
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Pinecone query failed")
+		return nil
+	}
+
+	// Convert to documents
+	docs := make([]Document, len(results.Matches))
+	chunks := make([]langwatch.SpanRAGContextChunk, len(results.Matches))
+
+	for i, match := range results.Matches {
+		content := match.Metadata["content"].(string)
+		docs[i] = Document{
+			ID:      match.Id,
+			Content: content,
+			Score:   float64(match.Score),
+		}
+
+		chunks[i] = langwatch.SpanRAGContextChunk{
+			DocumentID: match.Id,
+			Content:    content,
+			ChunkID:    fmt.Sprintf("pinecone-chunk-%d", i),
+		}
+	}
+
+	span.SetRAGContextChunks(chunks)
+	span.SetAttributes(
+		attribute.String("db.system", "pinecone"),
+		attribute.Int("db.pinecone.matches_found", len(results.Matches)),
+	)
+
+	return docs
+}
+```
+
+### Weaviate Example
+
+```go
+import (
+	"context"
+	"fmt"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	"github.com/weaviate/weaviate-go-client/v4/weaviate"
+	"go.opentelemetry.io/otel/codes"
+)
+
+func searchWeaviate(ctx context.Context, query string, client *weaviate.Client) []Document {
+	tracer := langwatch.Tracer("rag-app")
+	ctx, span := tracer.Start(ctx, "WeaviateSearch")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeQuery)
+	span.RecordInputString(query)
+
+	// Perform nearText search
+	result, err := client.GraphQL().Get().
+		WithClassName("Document").
+		WithFields("content", "title", "_additional { score }").
+		WithNearText(client.GraphQL().NearTextArgBuilder().
+			WithConcepts([]string{query})).
+		WithLimit(5).
+		Do(ctx)
+
+	if err != nil {
+		span.RecordError(err)
+		span.SetStatus(codes.Error, "Weaviate query failed")
+		return nil
+	}
+
+	// Process results (implement based on Weaviate response structure)
+	docs := processWeaviateResults(result)
+	
+	// Add context chunks
+	chunks := make([]langwatch.SpanRAGContextChunk, len(docs))
+	for i, doc := range docs {
+		chunks[i] = langwatch.SpanRAGContextChunk{
+			DocumentID: doc.ID,
+			Content:    doc.Content,
+			ChunkID:    fmt.Sprintf("weaviate-chunk-%d", i),
+		}
+	}
+	span.SetRAGContextChunks(chunks)
+
+	return docs
+}
+```
+
+## Best Practices
+
+### 1. Separate Concerns
+
+Create separate spans for different RAG stages:
+
+```go
+// ❌ Don't put everything in one span
+func badRAGImplementation(ctx context.Context, query string) string {
+	tracer := langwatch.Tracer("app")
+	ctx, span := tracer.Start(ctx, "DoEverything")
+	defer span.End()
+	
+	// retrieval, processing, and generation all in one span
+	return result
+}
+
+// ✅ Separate each stage
+func goodRAGImplementation(ctx context.Context, query string) string {
+	// Main pipeline span
+	tracer := langwatch.Tracer("app")
+	ctx, span := tracer.Start(ctx, "RAGPipeline")
+	defer span.End()
+	
+	docs := retrieveDocuments(ctx, query)      // Separate span
+	context := prepareContext(ctx, docs)        // Separate span  
+	answer := generateAnswer(ctx, context)      // Separate span
+	
+	return answer
+}
+```
+
+### 2. Include Relevant Metadata
+
+Add metadata that helps with debugging and analysis:
+
+```go
+import (
+	"go.opentelemetry.io/otel/attribute"
+)
+
+// calculateAvgScore is a placeholder for your logic
+func calculateAvgScore(docs []Document) float64 { return 0.9 }
+
+span.SetAttributes(
+	attribute.String("retrieval.strategy", "hybrid_search"),
+	attribute.String("retrieval.rerank_model", "cross-encoder"),
+	attribute.Int("retrieval.num_documents", len(docs)),
+	attribute.Float64("retrieval.avg_score", calculateAvgScore(docs)),
+	attribute.Int64("retrieval.query_latency_ms", latency.Milliseconds()),
+)
+```
+
+### 3. Handle Errors Gracefully
+
+Capture errors in your RAG pipeline:
+
+```go
+import (
+	"go.opentelemetry.io/otel/codes"
+)
+
+docs, err := vectorDB.Search(query)
+if err != nil {
+	span.RecordError(err)
+	span.SetStatus(codes.Error, "failed to search vector DB")
+	return nil
+}
+```
+
+### 4. Use Appropriate Span Types
+
+Choose the right span type for each operation:
+
+```go
+// For vector/database searches
+span.SetType(langwatch.SpanTypeQuery)
+
+// For document retrieval operations
+span.SetType(langwatch.SpanTypeRetrieval)
+
+// For LLM calls
+span.SetType(langwatch.SpanTypeLLM)
+
+// For the overall RAG pipeline
+span.SetType(langwatch.SpanTypeRAG)
+```
+
+## Next Steps
+
+- Learn about [conversation threads](/integration/go/tutorials/capturing-threads)
+- Add [custom metadata](/integration/go/tutorials/capturing-metadata) to your traces
+- Explore [input/output mapping](/integration/go/tutorials/capturing-mapping-input-output)
+- Check the [API reference](/integration/go/reference) for all available methods 

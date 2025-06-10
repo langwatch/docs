@@ -1,0 +1,336 @@
+---
+title: Go SDK API Reference
+sidebarTitle: API Reference
+description: Complete API reference for the LangWatch Go SDK, including core functions, OpenAI instrumentation, and span types.
+keywords: go, golang, sdk, api, reference, documentation, langwatch, opentelemetry, tracer, span
+---
+
+import { ParamField } from '/components/ParamField.tsx'
+import { Note } from '/components/Note.tsx'
+
+This reference provides detailed documentation for all public APIs in the LangWatch Go SDK and its associated instrumentation packages.
+
+## Installation
+
+```bash
+go get github.com/langwatch/langwatch/sdk-go
+go get github.com/langwatch/langwatch/sdk-go/instrumentation/openai
+```
+
+## Core SDK (`langwatch`)
+
+This package contains the primary functions for setting up LangWatch and creating traces and spans.
+
+### Setup
+
+`Setup()` initializes the LangWatch OpenTelemetry exporter and sets it as the global tracer provider. It should be called once when your application starts.
+
+```go
+func Setup(ctx context.Context) (shutdown func(context.Context))
+```
+It returns a `shutdown` function that should be deferred to ensure traces are flushed on exit.
+
+**Example:**
+```go
+shutdown := langwatch.Setup(context.Background())
+defer shutdown(context.Background())
+```
+
+### Tracer
+
+`Tracer()` retrieves a `LangWatchTracer` instance, which is a thin wrapper around an OpenTelemetry `Tracer`.
+
+```go
+func Tracer(instrumentationName string, opts ...trace.TracerOption) LangWatchTracer
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `instrumentationName` | `string` | Name of the library or application being instrumented. |
+| `opts` | `...trace.TracerOption`| Optional OpenTelemetry tracer options (e.g., `trace.WithInstrumentationVersion`). |
+
+### LangWatchTracer
+
+The `LangWatchTracer` interface provides a `Start` method that mirrors OpenTelemetry's but returns a `LangWatchSpan`.
+
+```go
+type LangWatchTracer interface {
+	Start(ctx context.Context, spanName string, opts ...trace.SpanStartOption) (context.Context, LangWatchSpan)
+}
+```
+
+### LangWatchSpan
+
+The `LangWatchSpan` interface embeds the standard `trace.Span` and adds several helper methods for LangWatch-specific data.
+
+<ParamField path="SetType(spanType SpanType)" type="function">
+  Sets the span type for categorization in LangWatch.
+  ```go
+  span.SetType(langwatch.SpanTypeLLM)
+  ```
+</ParamField>
+
+<ParamField path="SetThreadID(threadID string)" type="function">
+  Assigns a thread ID to group this trace with a conversation.
+  ```go
+  span.SetThreadID("conversation-123")
+  ```
+</ParamField>
+
+<ParamField path="SetUserID(userID string)" type="function">
+  Assigns a user ID to the trace for user-centric analytics.
+  ```go
+  span.SetUserID("user-abc-123")
+  ```
+</ParamField>
+
+<ParamField path="RecordInputString(input string)" type="function">
+  Records a simple string as the span's input.
+  ```go
+  span.RecordInputString("User query text")
+  ```
+</ParamField>
+
+<ParamField path="RecordInput(input any)" type="function">
+  Records a structured object (e.g., struct, map) as the span's input, serialized to JSON.
+  ```go
+  span.RecordInput(MyRequestStruct{...})
+  ```
+</ParamField>
+
+<ParamField path="RecordOutputString(output string)" type="function">
+  Records a simple string as the span's output.
+  ```go
+  span.RecordOutputString("Final response text")
+  ```
+</ParamField>
+
+<ParamField path="RecordOutput(output any)" type="function">
+  Records a structured object as the span's output, serialized to JSON.
+  ```go
+  span.RecordOutput(MyResponseStruct{...})
+  ```
+</ParamField>
+
+<ParamField path="SetRequestModel(model string)" type="function">
+  Sets the model identifier used for a request (e.g., an LLM call).
+  ```go
+  span.SetRequestModel("gpt-4o-mini")
+  ```
+</ParamField>
+
+<ParamField path="SetResponseModel(model string)" type="function">
+  Sets the model identifier reported in a response.
+  ```go
+  span.SetResponseModel("gpt-4o-mini-2024-07-18")
+  ```
+</ParamField>
+
+<ParamField path="SetRAGContextChunks(chunks []SpanRAGContextChunk)" type="function">
+  Attaches a slice of retrieved context chunks for RAG analysis.
+  ```go
+  chunks := []langwatch.SpanRAGContextChunk{{...}, {...}}
+  span.SetRAGContextChunks(chunks)
+  ```
+</ParamField>
+
+## OpenAI Instrumentation
+
+The `github.com/langwatch/langwatch/sdk-go/instrumentation/openai` package provides middleware for the official `openai-go` client.
+
+### Middleware
+
+`Middleware()` creates an `openai.Middleware` that automatically traces OpenAI API calls.
+
+```go
+func Middleware(instrumentationName string, opts ...Option) openai.Middleware
+```
+
+**Configuration Options (`...Option`):**
+
+<ParamField path="WithCaptureInput()" type="function">
+  Records the full input payload as a span attribute.
+  ```go
+  otelopenai.Middleware("my-app", otelopenai.WithCaptureInput())
+  ```
+</ParamField>
+
+<ParamField path="WithCaptureOutput()" type="function">
+  Records the full response payload as a span attribute. For streams, this is the final accumulated response.
+  ```go
+  otelopenai.Middleware("my-app", otelopenai.WithCaptureOutput())
+  ```
+</ParamField>
+
+<ParamField path="WithGenAISystem(system string)" type="function">
+  Sets the `gen_ai.system` attribute. Useful for identifying providers like `"anthropic"`. Defaults to `"openai"`.
+  ```go
+  otelopenai.Middleware("my-app", otelopenai.WithGenAISystem("anthropic"))
+  ```
+</ParamField>
+
+<ParamField path="WithTracerProvider(provider trace.TracerProvider)" type="function">
+  Specifies the `trace.TracerProvider` to use. Defaults to the global provider.
+  ```go
+  otelopenai.Middleware("my-app", otelopenai.WithTracerProvider(customProvider))
+  ```
+</ParamField>
+
+## LangWatch Span Types
+
+`SpanType` is a string constant used with `span.SetType()` to categorize spans in LangWatch for specialized UI treatment and analytics.
+
+| Constant | Description |
+| --- | --- |
+| `SpanTypeLLM` | A call to a Large Language Model. |
+| `SpanTypeChain` | A sequence of related operations or a sub-pipeline. |
+| `SpanTypeTool` | A call to an external tool or function. |
+| `SpanTypeAgent` | An autonomous agent's operation or decision-making step. |
+| `SpanTypeRAG` | An overarching RAG operation, often containing retrieval and LLM spans. |
+| `SpanTypeRetrieval`| The specific step of retrieving documents from a knowledge base. |
+| `SpanTypeQuery` | A generic database or API query. |
+| `SpanTypeEmbedding` | The specific step of generating embeddings. |
+
+<Note>
+Using these span types is optional but highly recommended, as it enables LangWatch to provide more tailored insights and visualizations for your traces.
+</Note>
+
+## Collected Attributes
+
+The OpenAI instrumentation automatically adds these attributes to spans:
+
+### Request Attributes
+
+- `gen_ai.system` - AI system name (e.g., "openai")
+- `gen_ai.request.model` - Model used for the request
+- `gen_ai.request.temperature` - Temperature parameter
+- `gen_ai.request.top_p` - Top-p parameter
+- `gen_ai.request.top_k` - Top-k parameter
+- `gen_ai.request.frequency_penalty` - Frequency penalty
+- `gen_ai.request.presence_penalty` - Presence penalty
+- `gen_ai.request.max_tokens` - Maximum tokens
+- `langwatch.gen_ai.streaming` - Boolean indicating streaming
+- `gen_ai.operation.name` - Operation name (e.g., "completions")
+- `langwatch.input.value` - Input content (if WithCaptureInput enabled)
+
+### Response Attributes
+
+- `gen_ai.response.id` - Response ID from the API
+- `gen_ai.response.model` - Model that generated the response
+- `gen_ai.response.finish_reasons` - Completion finish reasons
+- `gen_ai.usage.input_tokens` - Number of input tokens used
+- `gen_ai.usage.output_tokens` - Number of output tokens generated
+- `gen_ai.openai.response.system_fingerprint` - OpenAI system fingerprint
+- `langwatch.output.value` - Output content (if WithCaptureOutput enabled)
+
+### HTTP Attributes
+
+Standard HTTP client attributes are also included:
+- `http.request.method` - HTTP method
+- `url.path` - Request path
+- `server.address` - Server address
+- `http.response.status_code` - HTTP status code
+
+## Error Handling
+
+All SDK methods handle errors gracefully. In case of failures:
+
+1. **Serialization errors** - Fallback to string representation
+2. **Network errors** - Logged but don't interrupt application flow
+3. **Invalid data** - Sanitized or excluded from traces
+
+## Environment Variables
+
+The SDK respects these environment variables:
+
+- `LANGWATCH_API_KEY` - Your LangWatch API key (required)
+- `LANGWATCH_ENDPOINT` - Custom LangWatch endpoint (optional)
+- `OTEL_*` - Standard OpenTelemetry environment variables
+
+## Complete Example
+
+```go
+package main
+
+import (
+    "context"
+    "log"
+    "os"
+
+    langwatch "github.com/langwatch/langwatch/sdk-go"
+    otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+
+    "github.com/openai/openai-go"
+    "github.com/openai/openai-go/option"
+    "go.opentelemetry.io/otel"
+    "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+    sdktrace "go.opentelemetry.io/otel/sdk/trace"
+)
+
+func main() {
+    ctx := context.Background()
+    
+    // Setup OpenTelemetry
+    setupLangWatch(ctx)
+
+    // Create instrumented OpenAI client
+    client := openai.NewClient(
+        option.WithAPIKey(os.Getenv("OPENAI_API_KEY")),
+        option.WithMiddleware(otelopenai.Middleware("my-app",
+            otelopenai.WithCaptureInput(),
+            otelopenai.WithCaptureOutput(),
+        )),
+    )
+
+    // Create and configure spans
+    tracer := langwatch.Tracer("my-app")
+    ctx, span := tracer.Start(ctx, "ChatCompletion")
+    defer span.End()
+
+    span.SetType(langwatch.SpanTypeLLM)
+    span.SetThreadID("conversation-123")
+    span.RecordInputString("Hello, how are you?")
+
+    // Make OpenAI API call (automatically instrumented)
+    response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+        Model: openai.ChatModelGPT4oMini,
+        Messages: []openai.ChatCompletionMessageParamUnion{
+            openai.UserMessage("Hello, how are you?"),
+        },
+    })
+    if err != nil {
+        log.Fatalf("OpenAI call failed: %v", err)
+    }
+
+    span.RecordOutputString(response.Choices[0].Message.Content)
+    log.Printf("Response: %s", response.Choices[0].Message.Content)
+}
+
+func setupLangWatch(ctx context.Context) {
+    exporter, err := otlptracehttp.New(ctx,
+        otlptracehttp.WithEndpointURL("https://app.langwatch.ai/api/otel/v1/traces"),
+        otlptracehttp.WithHeaders(map[string]string{
+            "Authorization": "Bearer " + os.Getenv("LANGWATCH_API_KEY"),
+        }),
+    )
+    if err != nil {
+        log.Fatalf("failed to create OTLP exporter: %v", err)
+    }
+
+    tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+    otel.SetTracerProvider(tp)
+}
+```
+
+## Version Compatibility
+
+- **Go Version:** 1.19 or later
+- **OpenTelemetry:** v1.24.0 or later
+- **OpenAI Go SDK:** Latest version
+
+## Support
+
+For additional help:
+- [GitHub Issues](https://github.com/langwatch/langwatch/issues)
+- [Documentation](https://docs.langwatch.ai)
+- [Community Support](https://docs.langwatch.ai/support) 

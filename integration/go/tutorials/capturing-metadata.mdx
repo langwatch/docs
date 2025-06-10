@@ -1,0 +1,148 @@
+---
+title: Capturing Custom Metadata & Attributes
+sidebarTitle: Metadata & Attributes
+description: Learn how to enrich Go traces and spans with custom attributes and metadata using the LangWatch SDK.
+keywords: metadata, attributes, custom data, golang, go, langwatch, opentelemetry, tracing
+---
+
+import { Note } from '/components/Note.tsx'
+
+Attributes are key-value pairs that allow you to add custom contextual information to your traces and spans. This enrichment is invaluable for debugging, analysis, and filtering in LangWatch. For example, you can add a `user_id` to a trace or a `prompt_template_version` to a specific LLM call span.
+
+The LangWatch Go SDK, being built on OpenTelemetry, uses the standard concept of `Attributes` which can be applied to any span. We can think of them in two scopes:
+
+*   **Trace-Level Attributes**: Information applied to the root span of a trace, providing context for the entire operation.
+*   **Span-Level Attributes**: Information specific to a nested span, detailing a particular unit of work within the trace.
+
+## Trace-Level Attributes
+
+Trace-level attributes provide context for the entire trace. They are ideal for information that remains constant throughout an operation's execution, such as:
+
+*   User identifiers (`user_id`, `session_id`)
+*   Conversation or thread identifiers (`thread_id`)
+*   Application version (`service.version`)
+*   Environment (`deployment.environment`)
+*   A/B testing flags (`feature.flag.key`)
+
+You can set these attributes when you create the root span of your trace.
+
+### Setting Attributes at Initialization
+
+The most direct way to add attributes is by using the `trace.WithAttributes` option when starting your trace's root span.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
+)
+
+func handleUserQuery(ctx context.Context, userID, query string) {
+	tracer := langwatch.Tracer("query-handler")
+
+	// Set attributes when the root span is created
+	ctx, span := tracer.Start(ctx, "HandleUserQuery",
+		trace.WithAttributes(
+			attribute.String("user_id", userID),
+			attribute.String("deployment.environment", "production"),
+		),
+	)
+	defer span.End()
+
+	log.Printf("Handling query for user %s", userID)
+
+	// These attributes are now associated with the entire trace.
+	// Any nested spans will be children of this span.
+}
+
+func main() {
+	ctx := context.Background()
+
+	handleUserQuery(ctx, "user-12345", "How does LangWatch work?")
+}
+```
+
+### Updating Attributes Dynamically
+
+You can also add or modify attributes on the root span at any point using `span.SetAttributes()`.
+
+```go
+import (
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
+)
+
+func processRequest(ctx context.Context, requestType string) {
+	tracer := langwatch.Tracer("request-processor")
+	ctx, span := tracer.Start(ctx, "ProcessRequest")
+	defer span.End()
+
+	// Add an initial attribute
+	span.SetAttributes(attribute.String("request.type", requestType))
+
+	// ... some logic ...
+
+	// Add more attributes based on logic
+	if requestType == "priority" {
+		span.SetAttributes(attribute.Bool("escalated", true))
+	}
+}
+```
+
+## Span-Level Attributes
+
+Span-level attributes provide context for a specific operation *within* a trace. They are useful for details relevant only to that step. Examples include:
+
+*   For an LLM span: `llm.request.model`, `llm.request.temperature`
+*   For a tool call span: `tool.name`, `tool.api.endpoint`
+*   For a database query span: `db.statement`, `db.row_count`
+
+You set these the same way you set trace-level attributes, but on a nested span instead of the root span.
+
+```go
+func main() {
+	// Assumes a trace has already been started in the parent context `ctx`
+	tracer := langwatch.Tracer("article-generator")
+	ctx, rootSpan := tracer.Start(ctx, "GenerateArticle")
+	defer rootSpan.End()
+
+	// Create a nested span for the research step
+	_, researchSpan := tracer.Start(ctx, "FetchResearchData",
+		trace.WithAttributes(attribute.String("source", "internal_db")),
+	)
+	// ... logic to fetch data ...
+	researchSpan.SetAttributes(attribute.Int("items_retrieved", 10))
+	researchSpan.End() // End the nested span
+
+	// Create another nested span for the LLM call
+	_, llmSpan := tracer.Start(ctx, "GenerateText",
+		trace.WithAttributes(attribute.String("llm.request.model", "gpt-4o-mini")),
+	)
+	// ... logic to call LLM ...
+	llmSpan.SetAttributes(attribute.Int("llm.usage.total_tokens", 500))
+	llmSpan.End()
+}
+```
+
+## Key Differences: Trace vs. Span Attributes
+
+| Feature         | Trace-Level Attributes (on Root Span)          | Span-Level Attributes (on Nested Spans)      |
+|-----------------|------------------------------------------------|----------------------------------------------|
+| **Scope**       | Entire trace (e.g., a whole user request)      | Specific span (e.g., one LLM call)           |
+| **Purpose**     | General context for the entire operation.      | Specific details about a particular step.    |
+| **Examples**    | `user_id`, `session_id`, `service.version`     | `llm.request.model`, `db.statement`          |
+
+<Note>
+**Semantic Conventions:** It's a best practice to use the [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/general/attributes/) for attribute keys (e.g., `user_id`, `deployment.environment`, `llm.request.model`). This ensures your data is standardized and can be easily processed by observability platforms like LangWatch.
+</Note>
+
+By enriching your traces with relevant attributes at both the trace and span level, you provide deep, queryable context that makes it significantly easier to understand, debug, and optimize your Go applications.

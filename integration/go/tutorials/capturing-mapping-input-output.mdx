@@ -1,0 +1,146 @@
+---
+title: Mapping Inputs and Outputs
+sidebarTitle: Mapping Inputs & Outputs
+description: Learn how to manually record inputs and outputs for your Go spans using the LangWatch SDK.
+keywords: input, output, mapping, recording, json, string, golang, go, langwatch, opentelemetry, tracing
+---
+
+import { Note } from '/components/Note.tsx'
+import { CodeGroup } from '/components/CodeGroup.tsx'
+
+While automatic instrumentation and attributes are powerful, sometimes you need to explicitly record the input and output of a specific function or operation. This is especially useful for:
+
+*   Instrumenting custom business logic that isn't covered by automatic instrumentation.
+*   Capturing the exact data passed between complex steps in a pipeline.
+*   Ensuring specific payloads are visible in LangWatch for debugging, even if they aren't standard OpenTelemetry attributes.
+
+The LangWatch Go SDK provides simple helper methods on the `LangWatchSpan` object to record this data. You can record data as either a raw string or as a structured `any` type, which will be serialized to JSON.
+
+## Recording String Data
+
+If your input or output is simple text, you can use `RecordInputString()` and `RecordOutputString()`.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/langwatch/langwatch/sdk-go"
+)
+
+func processText(ctx context.Context, text string) string {
+	tracer := langwatch.Tracer("text-processor")
+	ctx, span := tracer.Start(ctx, "ProcessAndCleanText")
+	defer span.End()
+
+	// Record the raw string input
+	span.RecordInputString(text)
+
+	// Simulate some work
+	processedText := strings.ToUpper(text)
+
+	// Record the final string output
+	span.RecordOutputString(processedText)
+
+	return processedText
+}
+
+func main() {
+	ctx := context.Background()
+	// Assumes LangWatch is already set up
+
+	processText(ctx, "hello world, this is a test.")
+}
+```
+
+This will populate the `langwatch.input.value` and `langwatch.output.value` fields for the span in LangWatch.
+
+## Recording Structured Data (JSON)
+
+For more complex data, like structs or maps, use `RecordInput()` and `RecordOutput()`. These methods accept an `any` type and will automatically JSON-serialize the object for you.
+
+This is extremely useful for capturing structured request payloads or responses from external APIs.
+
+<CodeGroup>
+```go Struct Example
+package main
+
+import (
+	"context"
+
+	"github.com/langwatch/langwatch/sdk-go"
+)
+
+type UserRequest struct {
+	UserID   string `json:"userId"`
+	Action   string `json:"action"`
+	DocumentID string `json:"documentId"`
+}
+
+type APIResponse struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+func handleAPIRequest(ctx context.Context, req UserRequest) APIResponse {
+	tracer := langwatch.Tracer("api-handler")
+	_, span := tracer.Start(ctx, "HandleAPIRequest")
+	defer span.End()
+
+	// Record the input struct. It will be marshalled to JSON.
+	span.RecordInput(req)
+
+	// ... your business logic ...
+	response := APIResponse{Status: "Success", Message: "Action completed."}
+
+	// Record the output struct.
+	span.RecordOutput(response)
+
+	return response
+}
+```
+```go Map Example
+package main
+
+import (
+	"context"
+
+	"github.com/langwatch/langwatch/sdk-go"
+)
+
+func queryDatabase(ctx context.Context, params map[string]any) {
+    tracer := langwatch.Tracer("db-querier")
+	_, span := tracer.Start(ctx, "QueryDatabase")
+	defer span.End()
+
+    // Record a map as input
+    span.RecordInput(params)
+
+    // ... database query logic ...
+    result := map[string]any{
+        "rowCount": 2,
+        "data": []string{"row1", "row2"},
+    }
+
+    // Record a map as output
+    span.RecordOutput(result)
+}
+```
+</CodeGroup>
+
+## Best Practices
+
+*   **Choose the Right Method:** Use the `...String` methods for simple text to avoid unnecessary JSON overhead. Use the structured methods for complex objects to preserve their schema.
+*   **Be Mindful of Size:** Inputs and outputs are stored as part of your trace data. Avoid recording extremely large payloads (e.g., entire file contents) unless necessary for debugging. Consider logging a summary or metadata instead.
+*   **Handle Sensitive Data:** Do not record sensitive information (passwords, PII, etc.) in inputs or outputs unless you have appropriate data masking and security policies in place. Use custom attributes for non-sensitive metadata instead.
+
+<Note>
+By explicitly mapping the inputs and outputs of your key functions, you create highly detailed and debuggable traces that give you a clear picture of how data flows through your Go application.
+</Note>

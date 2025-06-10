@@ -1,0 +1,129 @@
+---
+title: Capturing Conversation Threads
+sidebarTitle: Capturing Threads
+description: Learn how to group traces into conversation threads in LangWatch using the Go SDK.
+keywords: threads, conversations, thread_id, grouping, golang, go, langwatch, opentelemetry, tracing
+---
+
+import { Note } from '/components/Note.tsx'
+import { Warning } from '/components/Warning.tsx'
+
+In many LLM applications, a user's interaction is not a single question but a multi-turn conversation. To properly analyze and debug these interactions, it's essential to group all related messages into a single, coherent thread.
+
+LangWatch enables this by allowing you to associate traces with a `thread_id`. All traces sharing the same `thread_id` will be displayed together as a single conversation in the LangWatch dashboard, ordered by timestamp.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+## How Threading Works
+
+The concept is simple: for every trace that is part of the same conversation, you assign it the same unique identifier.
+
+You can set this identifier on the root span of your trace using the `SetThreadID()` method.
+
+```go
+import "github.com/langwatch/langwatch/sdk-go"
+
+func handleMessage(ctx context.Context, conversationID string) {
+    tracer := langwatch.Tracer("chat-app")
+    ctx, span := tracer.Start(ctx, "HandleMessage")
+    defer span.End()
+
+    // Assign the conversation ID to the trace
+    span.SetThreadID(conversationID)
+
+    // ... rest of your logic
+}
+```
+
+## Complete Example: A Multi-Turn Chat
+
+Here is a complete example that simulates a two-turn conversation. Notice how two separate traces are initiated, but both are linked by the same `conversationID`.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/google/uuid"
+	"github.com/langwatch/langwatch/sdk-go"
+)
+
+// simulateLLMCall is a placeholder for your actual LLM call logic.
+func simulateLLMCall(ctx context.Context, input string) string {
+	tracer := langwatch.Tracer("chat-llm")
+	_, span := tracer.Start(ctx, "LLMGeneration")
+	defer span.End()
+
+	span.SetType(langwatch.SpanTypeLLM)
+	span.RecordInputString(input)
+
+	// Simulate response
+	response := fmt.Sprintf("Response to: '%s'", input)
+	span.RecordOutputString(response)
+	return response
+}
+
+// handleUserMessage processes one turn of the conversation.
+func handleUserMessage(ctx context.Context, threadID, userInput string) {
+	tracer := langwatch.Tracer("chat-app")
+	ctx, span := tracer.Start(ctx, "HandleUserMessage")
+	defer span.End()
+
+	// Set the thread ID to link this trace to the conversation
+	span.SetThreadID(threadID)
+
+	// Also recommended: add a user ID for user-level analytics
+	span.SetUserID("user-1234")
+
+	span.RecordInputString(userInput)
+	log.Printf("[Thread: %s] User: %s\n", threadID, userInput)
+
+	llmResponse := simulateLLMCall(ctx, userInput)
+
+	span.RecordOutputString(llmResponse)
+	log.Printf("[Thread: %s] AI: %s\n", threadID, llmResponse)
+}
+
+func main() {
+	ctx := context.Background()
+	// Assumes LangWatch is already set up. See the setup guide for details:
+	// /integration/go/setup
+
+	// 1. Start a new conversation and generate a unique ID for it.
+	conversationID := uuid.New().String()
+	log.Printf("Starting new conversation with Thread ID: %s\n\n", conversationID)
+
+	// 2. Process the first user message in the conversation.
+	handleUserMessage(ctx, conversationID, "What is LangWatch?")
+
+	fmt.Println("--- Next turn in the same conversation ---")
+
+	// 3. Process the second user message, passing the *same* conversationID.
+	handleUserMessage(ctx, conversationID, "How does it help with RAG?")
+}
+```
+
+In the LangWatch UI, you will now see a single conversation thread containing two distinct traces, one for each call to `handleUserMessage`.
+
+## Thread ID Generation and Management
+
+The `thread_id` is a simple string, giving you full flexibility. Here are some common strategies for managing it:
+
+<Note>
+**Use a UUID for New Conversations:** When a new chat or conversation begins, generate a new Version 4 UUID. This ensures a unique identifier for the thread.
+
+**Propagate from Your Application:** If your application already has a concept of a `session_id` or `conversation_id`, simply use that existing identifier as your `thread_id`.
+
+**Store on the Client:** For web applications, you can generate the ID on the first request and then store it in the client's state (e.g., local storage) to be sent with every subsequent request in that conversation.
+</Note>
+
+<Warning>
+**Avoid Reusing IDs Accidentally:** Be careful not to reuse thread IDs across different, unrelated conversations, as this will incorrectly merge them in the LangWatch UI. Always generate a fresh ID for a new conversation.
+</Warning>
+
+By consistently applying `thread_id` to your traces, you gain a clear, end-to-end view of user conversations, making it significantly easier to debug issues, analyze user behavior, and evaluate the performance of your conversational agents.

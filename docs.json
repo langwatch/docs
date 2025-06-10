@@ -111,6 +111,35 @@
                     ]
                   },
                   {
+                    "group": "Go",
+                    "pages": [
+                      "integration/go/guide",
+                      {
+                        "group": "Integrations",
+                        "pages": [
+                          "integration/go/integrations/open-ai",
+                          "integration/go/integrations/anthropic",
+                          "integration/go/integrations/azure-openai",
+                          "integration/go/integrations/google-gemini",
+                          "integration/go/integrations/groq",
+                          "integration/go/integrations/ollama",
+                          "integration/go/integrations/openrouter",
+                          "integration/go/integrations/other"
+                        ]
+                      },
+                      {
+                        "group": "Tutorials",
+                        "pages": [
+                          "integration/go/tutorials/capturing-rag",
+                          "integration/go/tutorials/capturing-threads",
+                          "integration/go/tutorials/capturing-metadata",
+                          "integration/go/tutorials/capturing-mapping-input-output"
+                        ]
+                      },
+                      "integration/go/reference"
+                    ]
+                  },
+                  {
                     "group": "TypeScript",
                     "pages": [
                       "integration/typescript/guide"
