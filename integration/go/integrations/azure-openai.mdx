@@ -1,0 +1,97 @@
+---
+title: Azure OpenAI Integration
+sidebarTitle: Azure OpenAI
+description: Learn how to instrument Azure OpenAI API calls in Go using the LangWatch SDK.
+keywords: go, golang, azure, azure openai, instrumentation, langwatch, opentelemetry, openai-compatible
+---
+
+import { Note } from '/components/Note.tsx'
+import { Warning } from '/components/Warning.tsx'
+
+LangWatch allows you to trace your Azure OpenAI API calls using the same `otelopenai` middleware you use for OpenAI. The setup requires pointing the client to your specific Azure resource endpoint and using your Azure API key.
+
+## Setup
+
+You will need three key pieces of information from your Azure OpenAI service deployment:
+
+1.  **Your Azure Endpoint**: The URL for your Azure OpenAI resource (e.g., `https://my-langwatch-demo.openai.azure.com`).
+2.  **Your Deployment Name**: The name you gave your model deployment (e.g., `gpt-4o-mini-deployment`).
+3.  **Your Azure API Key**: The API key for your Azure resource.
+
+Set your API key as an environment variable:
+
+```bash
+export AZURE_OPENAI_API_KEY="your-azure-api-key"
+```
+
+## Example
+
+To configure the `openai.Client`, you must construct the correct base URL by combining your Azure endpoint and deployment name. You should also set the `gen_ai.system` attribute to `"azure"` for proper categorization in LangWatch.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+	// Assumes LangWatch is already set up.
+
+	// Your Azure OpenAI details
+	apiKey := os.Getenv("AZURE_OPENAI_API_KEY")
+
+	// Your Azure-specific details
+	azureEndpoint := "https://<your-resource-name>.openai.azure.com"
+	deploymentName := "<your-deployment-name>"
+
+	// Construct the full base URL
+	baseURL := fmt.Sprintf("%s/openai/deployments/%s", azureEndpoint, deploymentName)
+
+	client := openai.NewClient(
+		// Set the specific URL for your Azure deployment
+		oaioption.WithBaseURL(baseURL),
+
+		// Use your Azure API key
+		oaioption.WithAPIKey(apiKey),
+
+		// Add the middleware, identifying the system as "azure"
+		oaioption.WithMiddleware(otelopenai.Middleware("my-azure-app",
+			otelopenai.WithGenAISystem("azure"),
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	// When making the call, the model name is your deployment name
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: openai.ChatModel(deploymentName),
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage("Hello, Azure OpenAI!"),
+		},
+	})
+
+	if err != nil {
+		log.Fatalf("Azure OpenAI API call failed: %v", err)
+	}
+
+	log.Printf("Response from Azure: %s", response.Choices[0].Message.Content)
+}
+```
+
+<Warning>
+**Model vs. Deployment Name:** When using the Azure OpenAI endpoint, the `Model` parameter in your `Chat.Completions.New` call should typically be your **deployment name**, not the underlying model name (e.g., `gpt-4o-mini`).
+</Warning> 

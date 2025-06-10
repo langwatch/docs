@@ -1,0 +1,87 @@
+---
+title: Other OpenAI-Compatible Providers
+sidebarTitle: Other Providers
+description: Integrate LangWatch with any OpenAI-compatible provider in Go, such as custom or open-source LLM servers.
+keywords: openai-compatible, langwatch, go, golang, providers, custom llm, open-source llm
+---
+
+import { Note } from '/components/Note.tsx'
+
+The LangWatch Go SDK's `otelopenai` middleware is designed for maximum flexibility. Since many open-source projects and custom LLM providers have adopted the OpenAI API specification, you can use the exact same instrumentation to capture traces from them.
+
+This pattern works for any server that exposes an OpenAI-compatible `/v1/chat/completions` endpoint.
+
+## Generic Configuration Pattern
+
+The key to using a different provider is to configure the `openai.Client` with two provider-specific details:
+
+1.  **Base URL**: The entry point for the provider's API (e.g., `http://localhost:8080/v1`).
+2.  **API Key**: The authentication token for the provider, if required.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+Here is the generic template:
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+
+	// Assumes LangWatch is already set up.
+
+	client := openai.NewClient(
+		// 1. Set the provider's specific API endpoint
+		oaioption.WithBaseURL("PROVIDER_API_ENDPOINT"),
+
+		// 2. Use the provider's API key (if required)
+		oaioption.WithAPIKey(os.Getenv("PROVIDER_API_KEY_ENV_VAR")),
+
+		// 3. Add middleware and optionally identify the provider
+		oaioption.WithMiddleware(otelopenai.Middleware("my-custom-provider-app",
+			// It's a good practice to name your system for easier filtering
+			otelopenai.WithGenAISystem("my_custom_llm"), 
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	// Make a call to a model served by the custom endpoint
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: "some-custom-model",
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage("Hello, custom model!"),
+		},
+	})
+
+	if err != nil {
+		log.Fatalf("Custom provider API call failed: %v", err)
+	}
+
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
+}
+```
+
+<Note>
+By using this standardized approach, you can easily switch between different LLM backends without rewriting your observability code. As long as the endpoint is OpenAI-compatible, LangWatch will be able to trace it.
+</Note>
+
+## Next Steps
+
+- Learn about [capturing RAG context](/integration/go/tutorials/capturing-rag)
+- Set up [conversation threads](/integration/go/tutorials/capturing-threads)
+- Add [custom metadata](/integration/go/tutorials/capturing-metadata)
+- Explore the [API reference](/integration/go/reference) 

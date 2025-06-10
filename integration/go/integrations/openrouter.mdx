@@ -1,0 +1,85 @@
+---
+title: OpenRouter Integration
+sidebarTitle: OpenRouter
+description: Learn how to instrument calls to hundreds of models via OpenRouter in Go using the LangWatch SDK.
+keywords: go, golang, openrouter, model router, instrumentation, langwatch, opentelemetry, openai-compatible
+---
+
+import { Note } from '/components/Note.tsx'
+
+[OpenRouter](https://openrouter.ai) provides a unified API to access a vast range of LLMs from different providers. LangWatch can trace calls made through OpenRouter using its OpenAI-compatible endpoint.
+
+## Setup
+
+You will need an OpenRouter API key from your [OpenRouter settings](https://openrouter.ai/keys).
+
+Set your OpenRouter API key as an environment variable:
+
+```bash
+export OPENROUTER_API_KEY="your-openrouter-api-key"
+```
+
+## Example
+
+Configure your `openai.Client` to use the OpenRouter base URL and your API key. Set the `gen_ai.system` attribute to `"openrouter"` for clear identification in your LangWatch traces.
+
+The key difference with OpenRouter is the model name, which is typically prefixed with the original provider (e.g., `anthropic/claude-3.5-sonnet`).
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+
+	// Assumes LangWatch is already set up.
+
+	client := openai.NewClient(
+		// Use the OpenRouter API endpoint
+		oaioption.WithBaseURL("https://openrouter.ai/api/v1"),
+
+		// Use your OpenRouter API key
+		oaioption.WithAPIKey(os.Getenv("OPENROUTER_API_KEY")),
+
+		// Add the middleware, identifying the system as "openrouter"
+		oaioption.WithMiddleware(otelopenai.Middleware("my-openrouter-app",
+			otelopenai.WithGenAISystem("openrouter"),
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	// Make a call to a model available on OpenRouter
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		// Model names are prefixed with the provider
+		Model: "anthropic/claude-3.5-sonnet",
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage("Hello via OpenRouter!"),
+		},
+	})
+
+	if err != nil {
+		log.Fatalf("OpenRouter API call failed: %v", err)
+	}
+
+	log.Printf("Response from OpenRouter: %s", response.Choices[0].Message.Content)
+}
+```
+
+<Note>
+Using OpenRouter is a great way to experiment with different models without changing your core instrumentation logic. All calls will be traced by LangWatch, regardless of the underlying model you choose.
+</Note> 

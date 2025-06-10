@@ -1,0 +1,82 @@
+---
+title: Ollama (Local Models) Integration
+sidebarTitle: Ollama (Local)
+description: Learn how to trace local LLMs running via Ollama in Go using the LangWatch SDK.
+keywords: go, golang, ollama, local llm, instrumentation, langwatch, opentelemetry, openai-compatible
+---
+
+import { Note } from '/components/Note.tsx'
+
+You can use LangWatch to trace interactions with local models served by [Ollama](https://ollama.com). Ollama exposes an OpenAI-compatible endpoint, making it easy to integrate with the standard `otelopenai` middleware.
+
+## Setup
+
+First, ensure Ollama is running and you have pulled a model.
+
+```bash
+# Pull the Llama 3 model
+ollama pull llama3
+```
+
+By default, Ollama's server runs at `http://localhost:11434`.
+
+## Example
+
+Configure your `openai.Client` to point to the local Ollama endpoint. While Ollama doesn't require an API key, the `openai-go` library requires one to be set, so you can use a non-empty string like `"ollama"`.
+
+Set the `gen_ai.system` attribute to `"ollama"` to identify the provider in your LangWatch traces.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+
+	client := openai.NewClient(
+		// Use the default Ollama endpoint
+		oaioption.WithBaseURL("http://localhost:11434/v1"),
+
+		// The API key is required but not used by Ollama
+		oaioption.WithAPIKey("ollama"),
+
+		// Add the middleware, identifying the system as "ollama"
+		oaioption.WithMiddleware(otelopenai.Middleware("my-ollama-app",
+			otelopenai.WithGenAISystem("ollama"),
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	// Make a call to a local model
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: "llama3",
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage("Hello, local model! Write a haiku about Go."),
+		},
+	})
+
+	if err != nil {
+		log.Fatalf("Ollama API call failed: %v", err)
+	}
+
+	log.Printf("Response from Ollama: %s", response.Choices[0].Message.Content)
+}
+```
+
+<Note>
+This same pattern works for any tool that provides an OpenAI-compatible endpoint for local models, such as LM Studio or vLLM.
+</Note> 
