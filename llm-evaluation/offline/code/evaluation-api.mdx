@@ -97,6 +97,24 @@ evaluation.log("coherence", index=index, score=0.9,
                data={"output": result["text"], "tokens": result["token_count"]})
 ```
 
+## Use LangWatch Datasets
+
+Collaborate with your team using datasets stored in LangWatch:
+
+```python
+# Load dataset from LangWatch
+df = langwatch.dataset.get_dataset("dataset-id").to_pandas()
+
+evaluation = langwatch.evaluation.init("team-shared-eval")
+
+for index, row in evaluation.loop(df.iterrows()):
+    # Your evaluation logic
+```
+
+<Info>
+  Create and manage datasets in the LangWatch UI. See our [Datasets Overview](/datasets/overview) for more details.
+</Info>
+
 ## Capture Full Pipeline
 
 ### Add Custom Data
@@ -158,24 +176,6 @@ for index, row in evaluation.loop(df.iterrows(), threads=4):
 <Note>
   By default, `threads=4`. Adjust based on your API rate limits and system resources.
 </Note>
-
-## Use LangWatch Datasets
-
-Collaborate with your team using datasets stored in LangWatch:
-
-```python
-# Load dataset from LangWatch
-df = langwatch.dataset.get_dataset("dataset-id").to_pandas()
-
-evaluation = langwatch.evaluation.init("team-shared-eval")
-
-for index, row in evaluation.loop(df.iterrows()):
-    # Your evaluation logic
-```
-
-<Info>
-  Create and manage datasets in the LangWatch UI. See our [Datasets Overview](/datasets/overview) for more details.
-</Info>
 
 ## Built-in Evaluators
 

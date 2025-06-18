@@ -164,17 +164,12 @@
             "group": "LLM Evaluation",
             "pages": [
               "llm-evaluation/overview",
+              "llm-evaluation/offline/code/evaluation-api",
               {
-                "group": "Offline Evaluation",
+                "group": "Evaluation Wizard",
                 "pages": [
-                  "llm-evaluation/offline/code/evaluation-api",
-                  {
-                    "group": "On the platform",
-                    "pages": [
-                      "llm-evaluation/offline/platform/answer-correctness",
-                      "llm-evaluation/offline/platform/llm-as-a-judge"
-                    ]
-                  }
+                  "llm-evaluation/offline/platform/answer-correctness",
+                  "llm-evaluation/offline/platform/llm-as-a-judge"
                 ]
               },
               {
