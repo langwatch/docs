@@ -38,7 +38,8 @@
                 "group": "Self Hosting",
                 "pages": [
                   "self-hosting/overview",
-                  "self-hosting/open-source",
+                  "self-hosting/docker-compose",
+                  "self-hosting/helm",
                   "self-hosting/onprem",
                   {
                     "group": "Hybrid Setup",
@@ -358,6 +359,10 @@
     {
       "source": "/self-hosting/sso-hybrid",
       "destination": "/hybrid-setup/sso-setup-langwatch"
+    },
+    {
+      "source": "/self-hosting/open-source",
+      "destination": "/self-hosting/docker-compose"
     }
   ]
 }

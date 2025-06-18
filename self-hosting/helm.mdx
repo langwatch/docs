@@ -1,47 +1,13 @@
 ---
-title: Open Source
-description: LangWatch offers a fully open source version of the platform
+title: Helm Chart
+description: LangWatch is available as a Helm chart for easy deployment on Kubernetes
 ---
+
+LangWatch is available as a Helm chart for easy deployment on Kubernetes. This section provides instructions for installing the langwatch Helm chart.
 
 <Note>
 While the open-source version is available for local use and experimentation, for commercial use please reach out for a [demo call with our team](https://get.langwatch.ai/request-a-demo).
 </Note>
-
-
-## Docker Compose
-
-LangWatch is available as a Docker Compose setup for easy deployment on your local machine. This section provides instructions for installing the Langwatch Docker Compose setup.
-
-### Prerequisites
-
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-
-```bash
-git clone https://github.com/langwatch/langwatch.git
-cp langwatch/.env.example langwatch/.env
-docker compose up -d --wait --build
-open http://localhost:5560
-```
-
-## Local Development
-
-To run the project locally, you need to start the databases and LangWatch services.
-Start just the databases using docker and leave it running:
-
-```bash
-docker compose up redis postgres opensearch
-```
-Then, on another terminal, install the dependencies and start LangWatch:
-
-```bash
-make install
-make start
-```
-
-## Helm Chart for LangWatch
-
-LangWatch is available as a Helm chart for easy deployment on Kubernetes. This section provides instructions for installing the Langwatch Helm chart.
 
 ## Required Values
 
