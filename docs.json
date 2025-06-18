@@ -62,6 +62,7 @@
                   "/cookbooks/evaluating-multi-turn-conversations"
                 ]
               }
+              
             ]
           },
           {
@@ -113,7 +114,13 @@
                   {
                     "group": "TypeScript",
                     "pages": [
-                      "integration/typescript/guide"
+                      "integration/typescript/guide",
+                      {
+                        "group": "Integrations",
+                        "pages": [
+                          "integration/typescript/integrations/mastra"
+                        ]
+                      }
                     ]
                   },
                   {

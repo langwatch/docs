@@ -1,0 +1,105 @@
+---
+title: Mastra
+description: Learn how to integrate Mastra, a TypeScript agent framework, with LangWatch.
+---
+
+#  Observability for Mastra With LangWatch
+
+This guide shows you how to integrate **Mastra** with **LangWatch** for observability and tracing. By following these steps, you'll be able to monitor and debug your Mastra agents in the LangWatch dashboard.
+
+
+## Integration
+
+<Steps>
+<Step title="Create a Mastra project">
+Create a Mastra project using the Mastra CLI:
+
+  ```bash
+  npx create-mastra
+  ```
+
+  Move into the project directory:
+
+  ```bash
+  cd your-mastra-project
+  ```
+For more information, view Mastra installation instructions [here](https://mastra.ai/docs/getting-started/installation)
+
+
+</Step>
+
+<Step title="Set up LangWatch project">
+Create a project in [LangWatch](https://app.langwatch.ai) and get your API keys from the project settings page.
+
+</Step>
+
+<Step title="Add environment variables">
+  Create or update your `.env` file with the following variables:
+
+  ```bash
+  # Your LLM API key
+  OPENAI_API_KEY=your-api-key
+
+  # LangWatch credentials
+  LANGWATCH_API_KEY=sk-...
+
+  ```
+</Step>
+
+
+<Step title="Install the langwatch package">
+  Add the `langwatch` package to your project:
+
+  ```bash
+  npm install langwatch
+  ```
+
+</Step>
+
+<Step title="Add LangWatch to your Mastra instance">
+  Add LangWatch to your Mastra instance via the telemetry exporter. 
+
+  ```typescript
+import { Mastra } from "@mastra/core/mastra";
+import { PinoLogger } from "@mastra/loggers";
+import { LibSQLStore } from "@mastra/libsql";
+import { LangWatchExporter } from "langwatch";
+
+import { weatherAgent } from "./agents/weather-agent";
+
+export const mastra = new Mastra({
+  agents: { weatherAgent },
+  telemetry: {
+    serviceName: "ai", // this must be set to "ai" so that the LangWatchExporter thinks it's an AI SDK trace
+    enabled: true,
+    export: {
+      type: "custom",
+      exporter: new LangWatchExporter({
+        apiKey: process.env.LANGWATCH_API_KEY,
+        debug: true,
+        // includeAllSpans: true,
+      }),
+    },
+  },
+});
+  ```
+
+</Step>
+
+
+<Step title="Run mastra dev server">
+  Start the Mastra development server:
+
+  ```bash
+  npm run dev
+  ```
+
+  Head over to the developer playground with the provided URL and start chatting with your agent.
+
+
+  ### View traces in LangWatch
+  Visit your [LangWatch dashboard](https://app.langwatch.ai) to explore detailed insights into your agent interactions. Monitor and analyze every aspect of your AI conversations, from prompt engineering to response quality, helping you optimize your AI applications.
+
+</Step>
+
+</Steps>
