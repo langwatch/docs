@@ -1,0 +1,60 @@
+---
+title: LangChain
+sidebarTitle: TS/JS
+description: LangWatch LangChain TypeScript integration guide
+---
+
+import TypeScriptIntro from "/snippets/typescript-intro.mdx";
+
+<TypeScriptIntro />
+
+## Integration
+
+
+Start by initializing LangWatch client and creating a new trace to capture your chain:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then, to capture your LLM calls and all other chain steps, LangWatch provides a callback hook for LangChain.js that automatically tracks everything for you.
+
+First, define your chain as you would normally do:
+
+```typescript
+import { StringOutputParser } from '@langchain/core/output_parsers'
+import { ChatPromptTemplate } from '@langchain/core/prompts'
+import { ChatOpenAI } from '@langchain/openai'
+
+const prompt = ChatPromptTemplate.fromMessages([
+  ['system', 'Translate the following from English into Italian'],
+  ['human', '{input}']
+])
+const model = new ChatOpenAI({ model: 'gpt-3.5-turbo' })
+const outputParser = new StringOutputParser()
+
+const chain = prompt.pipe(model).pipe(outputParser)
+```
+
+Now, when calling your chain either with `invoke` or `stream`, pass in `trace.getLangChainCallback()` as one of the callbacks:
+
+```typescript
+const stream = await chain.stream(
+  { input: message },
+  { callbacks: [trace.getLangChainCallback()] }
+)
+```
+
+That's it! The full trace with all spans for each chain step will be sent automatically to LangWatch in the background on periodic intervals. After capturing your first LLM Span, go to [LangWatch Dashboard](https://app.langwatch.ai), your message should be there!
+
+
+import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
+
+<TypeScriptSharedSpanExcepEval />
+

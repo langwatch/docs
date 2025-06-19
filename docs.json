@@ -71,33 +71,17 @@
             "pages": [
               "integration/overview",
               "concepts",
+              "integration/quick-start",
               {
                 "group": "Language APIs & SDKs",
                 "pages": [
-                  "integration/quick-start",
-                  {
-                    "group": "Python",
-                    "pages": [
-                      "integration/python/guide",
-                      {
-                        "group": "Integrations",
-                        "pages": [
-                          "integration/python/integrations/open-ai",
-                          "integration/python/integrations/open-ai-agents",
-                          "integration/python/integrations/open-ai-azure",
-                          "integration/python/integrations/azure-ai",
-                          "integration/python/integrations/lite-llm",
-                          "integration/python/integrations/dspy",
-                          "integration/python/integrations/langchain",
-                          "integration/python/integrations/langgraph",
-                          "integration/python/integrations/pydantic-ai",
-                          "integration/python/integrations/aws-bedrock",
-                          "integration/python/integrations/agno",
-                          "integration/python/integrations/crew-ai",
-                          "integration/python/integrations/haystack",
-                          "integration/python/integrations/other"
-                        ]
-                      },
+                 
+                
+                        "integration/python/guide",
+                        "integration/typescript/guide",
+                       
+                   
+                             
                       {
                         "group": "Tutorials",
                         "pages": [
@@ -108,22 +92,7 @@
                           "integration/python/tutorials/capturing-metadata",
                           "integration/python/tutorials/capturing-mapping-input-output"
                         ]
-                      },
-                      "integration/python/reference"
-                    ]
-                  },
-                  {
-                    "group": "TypeScript",
-                    "pages": [
-                      "integration/typescript/guide",
-                      {
-                        "group": "Integrations",
-                        "pages": [
-                          "integration/typescript/integrations/mastra"
-                        ]
-                      }
-                    ]
-                  },
+                      },               
                   {
                     "group": "OpenTelemetry",
                     "pages": [
@@ -131,11 +100,57 @@
                     ]
                   },
                   "integration/rags-context-tracking",
-                  "integration/langflow",
-                  "integration/flowise",
-                  "integration/rest-api"
+                  {
+                    "group": "API Reference",
+                    "pages": [
+                      "integration/python/reference",
+                      "integration/rest-api"
+                    ]
+                  }
+                  
                 ]
               },
+              {
+                "group": "Integrations",
+                "pages": [
+                  
+                  {
+                    "group": "Azure AI",
+                    "pages": [
+                      "integration/typescript/integrations/azure",
+                      "integration/python/integrations/azure-ai"
+                    ]
+                  },
+                  {
+                    "group": "LangChain",
+                    "pages": [
+                      "integration/typescript/integrations/langchain",
+                      "integration/python/integrations/langchain"
+                    ]
+                  },
+                  {
+                    "group": "OpenAI",
+                    "pages": [
+                      "integration/typescript/integrations/open-ai",
+                      "integration/python/integrations/open-ai"
+                    ]
+                  }, 
+                  "integration/python/integrations/agno",
+                  "integration/python/integrations/aws-bedrock",   
+                  "integration/python/integrations/crew-ai",
+                  "integration/python/integrations/dspy",
+                  "integration/flowise",
+                  "integration/python/integrations/haystack",  
+                  "integration/langflow",
+                  "integration/python/integrations/langgraph",
+                  "integration/python/integrations/lite-llm",
+                  "integration/typescript/integrations/mastra",   
+                  "integration/python/integrations/open-ai-agents",
+                  "integration/python/integrations/pydantic-ai",
+                  "integration/typescript/integrations/vercel-ai-sdk",
+                  "integration/python/integrations/other"
+                ]
+              },    
               {
                 "group": "User Events",
                 "pages": [
@@ -159,6 +174,7 @@
                 ]
               },
               "integration/code-examples"
+              
             ]
           },
           {

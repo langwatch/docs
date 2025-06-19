@@ -1,0 +1,88 @@
+---
+title: Azure OpenAI
+sidebarTitle: TS/JS
+description: LangWatch Azure OpenAI integration guide
+---
+
+import TypeScriptIntro from "/snippets/typescript-intro.mdx";
+
+<TypeScriptIntro />
+
+## Integration
+
+Start by initializing LangWatch client and creating a new trace to capture your messages:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then to capture your LLM calls, you can start an LLM span inside the trace with the input about to be sent to the LLM.
+
+First, define the model and the messages you are going to use for your LLM call separately, so you can capture them:
+
+```typescript
+import { AzureOpenAI } from "openai";
+
+// Model to be used and messages that will be sent to the LLM
+const model = "gpt-4-turbo-2024-04-09"
+const messages : OpenAI.Chat.ChatCompletionMessageParam[] = [
+  { role: "system", content: "You are a helpful assistant." },
+  {
+    role: "user",
+    content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
+  },
+]
+```
+
+Then, start the LLM span from the trace, giving it the model and input messages:
+
+```typescript
+const span = trace.startLLMSpan({
+  name: "llm",
+  model: model,
+  input: {
+    type: "chat_messages",
+    value: messages
+  },
+});
+```
+
+This will capture the LLM input and register the time the call started. Now, continue with the LLM call normally, using the same parameters:
+
+```typescript
+const openai = new AzureOpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  apiVersion: "2024-02-01",
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+});
+const chatCompletion = await openai.chat.completions.create({
+  messages: messages,
+  model: model,
+});
+```
+
+Finally, after the OpenAI call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation:
+
+```typescript
+span.end({
+  output: {
+    type: "chat_messages",
+    value: [chatCompletion.choices[0]!.message],
+  },
+  metrics: {
+    promptTokens: chatCompletion.usage?.prompt_tokens,
+    completionTokens: chatCompletion.usage?.completion_tokens,
+  },
+});
+```
+
+import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
+
+<TypeScriptSharedSpanExcepEval />
+

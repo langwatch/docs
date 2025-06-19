@@ -1,0 +1,150 @@
+---
+title: Vercel AI SDK
+sidebarTitle: Vercel AI SDK
+description: LangWatch Vercel AI SDK integration guide
+---
+
+import TypeScriptIntro from "/snippets/typescript-intro.mdx";
+
+<TypeScriptIntro />
+
+## Integration
+
+
+The Vercel AI SDK supports tracing via Next.js OpenTelemetry integration. By using the `LangWatchExporter`, you can automatically collect those traces to LangWatch.
+
+First, you need to install the necessary dependencies:
+
+```bash
+npm install @vercel/otel langwatch @opentelemetry/api-logs @opentelemetry/instrumentation @opentelemetry/sdk-logs
+```
+
+Then, set up the OpenTelemetry for your application, follow one of the tabs below depending whether you are using AI SDK with Next.js or on Node.js:
+
+<Tabs>
+<Tab title="Next.js">
+You need to enable the `instrumentationHook` in your `next.config.js` file if you haven't already:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    instrumentationHook: true,
+  },
+};
+
+module.exports = nextConfig;
+```
+
+Next, you need to create a file named `instrumentation.ts` (or `.js`) in the __root directory__ of the project (or inside `src` folder if using one), with `LangWatchExporter` as the traceExporter:
+
+```typescript
+import { registerOTel } from '@vercel/otel'
+import { LangWatchExporter } from 'langwatch'
+
+export function register() {
+  registerOTel({
+    serviceName: 'next-app',
+    traceExporter: new LangWatchExporter({
+      apiKey: process.env.LANGWATCH_API_KEY
+    })
+  })
+}
+```
+
+(Read more about Next.js OpenTelemetry configuration [on the official guide](https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry#manual-opentelemetry-configuration))
+
+Finally, enable `experimental_telemetry` tracking on the AI SDK calls you want to trace:
+
+```typescript
+const result = await generateText({
+  model: openai('gpt-4o-mini'),
+  prompt: 'Explain why a chicken would make a terrible astronaut, be creative and humorous about it.',
+  experimental_telemetry: {
+    isEnabled: true,
+    // optional metadata
+    metadata: {
+      userId: "myuser-123",
+      threadId: "mythread-123",
+    },
+  },
+});
+```
+</Tab>
+<Tab title="Node.js">
+For Node.js, start by following the official OpenTelemetry guide:
+
+- [OpenTelemetry Node.js Getting Started](https://opentelemetry.io/docs/languages/js/getting-started/nodejs/)
+
+Once you have set up OpenTelemetry, you can use the `LangWatchExporter` to automatically send your traces to LangWatch:
+
+```typescript
+import { LangWatchExporter } from 'langwatch'
+
+const sdk = new NodeSDK({
+  traceExporter: new LangWatchExporter({
+    apiKey: process.env.LANGWATCH_API_KEY
+  }),
+  // ...
+});
+```
+</Tab>
+</Tabs>
+
+That's it! Your messages will now be visible on LangWatch:
+
+![Vercel AI SDK](/images/integration/vercel-ai-sdk.png)
+
+## Example Project
+
+You can find a full example project with a more complex pipeline and Vercel AI SDK and LangWatch integration [on our GitHub](https://github.com/langwatch/langwatch/blob/main/typescript-sdk/example/lib/chat/vercel-ai.tsx).
+
+## Manual Integration
+
+The docs from here below are for manual integration, in case you are not using the Vercel AI SDK OpenTelemetry integration,
+you can manually start a trace to capture your messages:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then, you can start an LLM span inside the trace with the input about to be sent to the LLM.
+
+```typescript
+import { convertFromVercelAIMessages } from 'langwatch'
+
+const span = trace.startLLMSpan({
+  name: "llm",
+  model: model,
+  input: {
+    type: "chat_messages",
+    value: convertFromVercelAIMessages(messages)
+  },
+});
+```
+
+This will capture the LLM input and register the time the call started. Once the LLM call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation, e.g.:
+
+```typescript
+span.end({
+  output: {
+    type: "chat_messages",
+    value: convertFromVercelAIMessages(output), // assuming output is Message[]
+  },
+  metrics: {
+    promptTokens: chatCompletion.usage?.prompt_tokens,
+    completionTokens: chatCompletion.usage?.completion_tokens,
+  },
+});
+```
+
+import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
+
+<TypeScriptSharedSpanExcepEval />
+
