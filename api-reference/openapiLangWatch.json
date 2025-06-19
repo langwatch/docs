@@ -823,7 +823,7 @@
         }
       }
     },
-    "/api/triggers/slack": {
+    "/api/trigger/slack": {
       "post": {
         "responses": {},
         "operationId": "postApiTriggersSlack",
