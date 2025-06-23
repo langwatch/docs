@@ -63,7 +63,6 @@
                   "/cookbooks/evaluating-multi-turn-conversations"
                 ]
               }
-              
             ]
           },
           {
@@ -75,24 +74,19 @@
               {
                 "group": "Language APIs & SDKs",
                 "pages": [
-                 
-                
-                        "integration/python/guide",
-                        "integration/typescript/guide",
-                       
-                   
-                             
-                      {
-                        "group": "Tutorials",
-                        "pages": [
-                          "integration/python/tutorials/manual-instrumentation",
-                          "integration/python/tutorials/open-telemetry",
-                          "integration/python/tutorials/capturing-rag",
-                          "integration/python/tutorials/capturing-evaluations-guardrails",
-                          "integration/python/tutorials/capturing-metadata",
-                          "integration/python/tutorials/capturing-mapping-input-output"
-                        ]
-                      },               
+                  "integration/python/guide",
+                  "integration/typescript/guide",
+                  {
+                    "group": "Tutorials",
+                    "pages": [
+                      "integration/python/tutorials/manual-instrumentation",
+                      "integration/python/tutorials/open-telemetry",
+                      "integration/python/tutorials/capturing-rag",
+                      "integration/python/tutorials/capturing-evaluations-guardrails",
+                      "integration/python/tutorials/capturing-metadata",
+                      "integration/python/tutorials/capturing-mapping-input-output"
+                    ]
+                  },
                   {
                     "group": "OpenTelemetry",
                     "pages": [
@@ -107,13 +101,11 @@
                       "integration/rest-api"
                     ]
                   }
-                  
                 ]
               },
               {
                 "group": "Integrations",
                 "pages": [
-                  
                   {
                     "group": "Azure AI",
                     "pages": [
@@ -134,23 +126,23 @@
                       "integration/typescript/integrations/open-ai",
                       "integration/python/integrations/open-ai"
                     ]
-                  }, 
+                  },
                   "integration/python/integrations/agno",
-                  "integration/python/integrations/aws-bedrock",   
+                  "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
                   "integration/flowise",
-                  "integration/python/integrations/haystack",  
+                  "integration/python/integrations/haystack",
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
                   "integration/python/integrations/lite-llm",
-                  "integration/typescript/integrations/mastra",   
+                  "integration/typescript/integrations/mastra",
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
                   "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/python/integrations/other"
                 ]
-              },    
+              },
               {
                 "group": "User Events",
                 "pages": [
@@ -174,7 +166,6 @@
                 ]
               },
               "integration/code-examples"
-              
             ]
           },
           {
@@ -247,6 +238,13 @@
                 ]
               },
               {
+                "group": "Scenarios",
+                "pages": [
+                  "api-reference/scenarios/overview",
+                  "api-reference/scenarios/create-event"
+                ]
+              },
+              {
                 "group": "Prompts",
                 "pages": [
                   "api-reference/prompts/overview",
@@ -283,6 +281,16 @@
                   "api-reference/triggers/create-slack-trigger"
                 ]
               }
+            ]
+          },
+          {
+            "group": "Simulations",
+            "pages": [
+              "simulations/overview",
+              "simulations/getting-started",
+              "simulations/set-overview",
+              "simulations/batch-runs",
+              "simulations/individual-run"
             ]
           },
           {

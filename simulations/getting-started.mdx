@@ -1,0 +1,126 @@
+---
+title: Getting Started
+---
+
+import { Tabs, Tab } from 'nextra/components';
+
+This guide will walk you through the basic setup required to run your first simulation and see the results in LangWatch.
+
+For more in-depth information and advanced use cases, please refer to the official [`scenario` library documentation](https://github.com/langwatch/scenario).
+
+## 1. Installation
+
+First, you need to install the `scenario` library in your project. Choose your language below.
+
+<Tabs>
+  <Tab title="Python">
+    ```bash
+    pip install scenario-langwatch
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```bash
+    npm install @langwatch/scenario
+    ```
+  </Tab>
+</Tabs>
+
+
+## 2. Configure Environment Variables
+
+We recommend creating a `.env` file in the root of your project to manage your environment variables.
+
+```bash title=".env"
+LANGWATCH_API_KEY="your-api-key"
+LANGWATCH_ENDPOINT="https://app.langwatch.ai"
+```
+
+You can find your `LANGWATCH_API_KEY` in your LangWatch project settings.
+
+
+## 3. Create a Basic Scenario
+
+Here's how to create and run a simple scenario to test an agent.
+
+First, you need to wrap your agent in a simple function that takes a list of messages and returns a string response.
+
+While optional, we strongly recommend setting stable identifiers for your scenarios, sets, and batches for better organization and tracking in LangWatch.
+
+-   **`id`**: A unique and stable identifier for your scenario. If not provided, it's often generated from the `name`, which can be brittle if you rename the test.
+-   **`setId`**: Groups related scenarios into a test suite. This corresponds to the "Simulation Set" in the UI.
+-   **`batchId`**: Groups all scenarios that were run together in a single execution (e.g., a single CI job). You can use a CI environment variable like `process.env.GITHUB_RUN_ID` for this.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import scenario
+    import asyncio
+    import os
+
+    # 1. Wrap your agent logic in a simple function
+    def my_agent(messages, context):
+        # Your agent logic here
+        return "Hello from the agent!"
+
+    # 2. Define the scenario
+    async def run_test():
+        result = await scenario.run(
+            # We recommend setting a stable ID for your scenario
+            id="my-first-scenario",
+            name="my first scenario",
+            description="A simple test to see if the agent responds.",
+            # Group scenarios into sets for better organization
+            set_id="my-test-suite",
+            # Batch ID can be used to group runs, e.g. from a CI job
+            batch_id=os.environ.get("GITHUB_RUN_ID", "local-run"),
+            agents=[
+                # Use the simple wrapper for your agent
+                scenario.Agent(my_agent),
+                # The user simulator will drive the conversation
+                scenario.UserSimulatorAgent(),
+            ]
+        )
+        assert result.success, "Scenario failed!"
+
+    # 3. Run it
+    asyncio.run(run_test())
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+    import * as scenario from "@langwatch/scenario";
+    import { expect } from "vitest";
+
+    // 1. Wrap your agent logic in a simple function
+    const myAgent: scenario.AgentFn = async (messages, context) => {
+      // Your agent logic here
+      return { content: "Hello from the agent!" };
+    };
+
+    // 2. Define and run the scenario
+    // (e.g. inside a vitest test)
+    test("my first scenario", async () => {
+        const result = await scenario.run({
+          // We recommend setting a stable ID for your scenario
+          id: "my-first-scenario",
+          name: "my first scenario",
+          description: "A simple test to see if the agent responds.",
+          // Group scenarios into sets for better organization
+          setId: "my-test-suite",
+          // Batch ID can be used to group runs, e.g. from a CI job
+          batchId: process.env.GITHUB_RUN_ID ?? "local-run",
+          agents: [
+            // Use the simple wrapper for your agent
+            scenario.agent(myAgent),
+            // The user simulator will drive the conversation
+            scenario.userSimulatorAgent(),
+          ],
+        });
+
+        expect(result.success).toBe(true);
+    });
+    ```
+  </Tab>
+</Tabs>
+
+Once you run this code, you will see a new "my first scenario" run appear in the **Simulations** section of your LangWatch project. 
