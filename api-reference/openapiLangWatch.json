@@ -419,7 +419,9 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": ["cccd21e0b70c706034dfd9f7772816a3"]
+                      "example": [
+                        "cccd21e0b70c706034dfd9f7772816a3"
+                      ]
                     },
                     "spans": {
                       "type": "array",
@@ -649,7 +651,9 @@
                                 "items": {
                                   "type": "string"
                                 },
-                                "example": ["TypeError: fetch failed"]
+                                "example": [
+                                  "TypeError: fetch failed"
+                                ]
                               },
                               "message": {
                                 "type": "string",
@@ -686,7 +690,9 @@
       "post": {
         "summary": "Search traces",
         "description": "Search for traces based on given criteria",
-        "tags": ["Traces"],
+        "tags": [
+          "Traces"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -823,32 +829,6 @@
         }
       }
     },
-    "/api/trigger/slack": {
-      "post": {
-        "responses": {},
-        "operationId": "postApiTriggersSlack",
-        "parameters": [
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "path",
-            "name": "slug",
-            "required": true
-          }
-        ],
-        "description": "Create a Slack trigger",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SlackTrigger"
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/prompts": {
       "get": {
         "responses": {
@@ -891,22 +871,34 @@
                           "properties": {
                             "role": {
                               "type": "string",
-                              "enum": ["user", "assistant", "system"]
+                              "enum": [
+                                "user",
+                                "assistant",
+                                "system"
+                              ]
                             },
                             "content": {
                               "type": "string"
                             }
                           },
-                          "required": ["role", "content"],
+                          "required": [
+                            "role",
+                            "content"
+                          ],
                           "additionalProperties": true
                         }
                       },
                       "response_format": {
-                        "type": ["object", "null"],
+                        "type": [
+                          "object",
+                          "null"
+                        ],
                         "properties": {
                           "type": {
                             "type": "string",
-                            "enum": ["json_schema"]
+                            "enum": [
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
                             "type": "object",
@@ -918,10 +910,16 @@
                                 "type": "object"
                               }
                             },
-                            "required": ["name", "schema"]
+                            "required": [
+                              "name",
+                              "schema"
+                            ]
                           }
                         },
-                        "required": ["type", "json_schema"]
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ]
                       }
                     },
                     "required": [
@@ -951,10 +949,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -969,10 +971,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -990,7 +996,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1040,22 +1048,34 @@
                         "properties": {
                           "role": {
                             "type": "string",
-                            "enum": ["user", "assistant", "system"]
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system"
+                            ]
                           },
                           "content": {
                             "type": "string"
                           }
                         },
-                        "required": ["role", "content"],
+                        "required": [
+                          "role",
+                          "content"
+                        ],
                         "additionalProperties": true
                       }
                     },
                     "response_format": {
-                      "type": ["object", "null"],
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["json_schema"]
+                          "enum": [
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
                           "type": "object",
@@ -1067,10 +1087,16 @@
                               "type": "object"
                             }
                           },
-                          "required": ["name", "schema"]
+                          "required": [
+                            "name",
+                            "schema"
+                          ]
                         }
                       },
-                      "required": ["type", "json_schema"]
+                      "required": [
+                        "type",
+                        "json_schema"
+                      ]
                     }
                   },
                   "required": [
@@ -1099,10 +1125,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -1117,10 +1147,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -1138,7 +1172,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1158,7 +1194,9 @@
                     "minLength": 1
                   }
                 },
-                "required": ["name"]
+                "required": [
+                  "name"
+                ]
               }
             }
           }
@@ -1206,22 +1244,34 @@
                         "properties": {
                           "role": {
                             "type": "string",
-                            "enum": ["user", "assistant", "system"]
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system"
+                            ]
                           },
                           "content": {
                             "type": "string"
                           }
                         },
-                        "required": ["role", "content"],
+                        "required": [
+                          "role",
+                          "content"
+                        ],
                         "additionalProperties": true
                       }
                     },
                     "response_format": {
-                      "type": ["object", "null"],
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["json_schema"]
+                          "enum": [
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
                           "type": "object",
@@ -1233,10 +1283,16 @@
                               "type": "object"
                             }
                           },
-                          "required": ["name", "schema"]
+                          "required": [
+                            "name",
+                            "schema"
+                          ]
                         }
                       },
-                      "required": ["type", "json_schema"]
+                      "required": [
+                        "type",
+                        "json_schema"
+                      ]
                     }
                   },
                   "required": [
@@ -1265,10 +1321,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -1283,10 +1343,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -1304,7 +1368,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1320,7 +1386,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1358,7 +1426,11 @@
                       "type": "string"
                     }
                   },
-                  "required": ["id", "name", "updatedAt"]
+                  "required": [
+                    "id",
+                    "name",
+                    "updatedAt"
+                  ]
                 }
               }
             },
@@ -1373,10 +1445,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -1391,10 +1467,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -1412,7 +1492,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1428,7 +1510,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1457,7 +1541,9 @@
                     "minLength": 1
                   }
                 },
-                "required": ["name"]
+                "required": [
+                  "name"
+                ]
               }
             }
           }
@@ -1476,7 +1562,9 @@
                       "type": "boolean"
                     }
                   },
-                  "required": ["success"]
+                  "required": [
+                    "success"
+                  ]
                 }
               }
             },
@@ -1491,10 +1579,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -1509,10 +1601,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -1530,7 +1626,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1546,7 +1644,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1581,7 +1681,10 @@
                         "type": "string"
                       },
                       "authorId": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "projectId": {
                         "type": "string",
@@ -1596,7 +1699,10 @@
                         "const": "1.0"
                       },
                       "commitMessage": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "version": {
                         "type": "number"
@@ -1621,13 +1727,20 @@
                               "properties": {
                                 "role": {
                                   "type": "string",
-                                  "enum": ["user", "assistant", "system"]
+                                  "enum": [
+                                    "user",
+                                    "assistant",
+                                    "system"
+                                  ]
                                 },
                                 "content": {
                                   "type": "string"
                                 }
                               },
-                              "required": ["role", "content"],
+                              "required": [
+                                "role",
+                                "content"
+                              ],
                               "additionalProperties": true
                             },
                             "default": []
@@ -1656,7 +1769,10 @@
                                   ]
                                 }
                               },
-                              "required": ["identifier", "type"]
+                              "required": [
+                                "identifier",
+                                "type"
+                              ]
                             },
                             "minItems": 1
                           },
@@ -1686,11 +1802,16 @@
                                       "minLength": 1
                                     }
                                   },
-                                  "required": ["type"],
+                                  "required": [
+                                    "type"
+                                  ],
                                   "additionalProperties": true
                                 }
                               },
-                              "required": ["identifier", "type"]
+                              "required": [
+                                "identifier",
+                                "type"
+                              ]
                             },
                             "minItems": 1
                           },
@@ -1737,7 +1858,11 @@
                                       ]
                                     }
                                   },
-                                  "required": ["id", "name", "type"]
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "type"
+                                  ]
                                 }
                               },
                               "rows": {
@@ -1752,7 +1877,9 @@
                                           "minLength": 1
                                         }
                                       },
-                                      "required": ["id"]
+                                      "required": [
+                                        "id"
+                                      ]
                                     },
                                     {
                                       "type": "object",
@@ -1763,7 +1890,10 @@
                                 "default": []
                               }
                             },
-                            "required": ["columns", "rows"]
+                            "required": [
+                              "columns",
+                              "rows"
+                            ]
                           }
                         },
                         "required": [
@@ -1792,7 +1922,10 @@
                       "type": "string"
                     },
                     "authorId": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "projectId": {
                       "type": "string",
@@ -1807,7 +1940,10 @@
                       "const": "1.0"
                     },
                     "commitMessage": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "version": {
                       "type": "number"
@@ -1832,13 +1968,20 @@
                             "properties": {
                               "role": {
                                 "type": "string",
-                                "enum": ["user", "assistant", "system"]
+                                "enum": [
+                                  "user",
+                                  "assistant",
+                                  "system"
+                                ]
                               },
                               "content": {
                                 "type": "string"
                               }
                             },
-                            "required": ["role", "content"],
+                            "required": [
+                              "role",
+                              "content"
+                            ],
                             "additionalProperties": true
                           },
                           "default": []
@@ -1867,7 +2010,10 @@
                                 ]
                               }
                             },
-                            "required": ["identifier", "type"]
+                            "required": [
+                              "identifier",
+                              "type"
+                            ]
                           },
                           "minItems": 1
                         },
@@ -1882,7 +2028,12 @@
                               },
                               "type": {
                                 "type": "string",
-                                "enum": ["str", "float", "bool", "json_schema"]
+                                "enum": [
+                                  "str",
+                                  "float",
+                                  "bool",
+                                  "json_schema"
+                                ]
                               },
                               "json_schema": {
                                 "type": "object",
@@ -1892,11 +2043,16 @@
                                     "minLength": 1
                                   }
                                 },
-                                "required": ["type"],
+                                "required": [
+                                  "type"
+                                ],
                                 "additionalProperties": true
                               }
                             },
-                            "required": ["identifier", "type"]
+                            "required": [
+                              "identifier",
+                              "type"
+                            ]
                           },
                           "minItems": 1
                         },
@@ -1943,7 +2099,11 @@
                                     ]
                                   }
                                 },
-                                "required": ["id", "name", "type"]
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type"
+                                ]
                               }
                             },
                             "rows": {
@@ -1958,7 +2118,9 @@
                                         "minLength": 1
                                       }
                                     },
-                                    "required": ["id"]
+                                    "required": [
+                                      "id"
+                                    ]
                                   },
                                   {
                                     "type": "object",
@@ -1969,7 +2131,18 @@
                               "default": []
                             }
                           },
-                          "required": ["columns", "rows"]
+                          "required": [
+                            "columns",
+                            "rows"
+                          ]
+                        },
+                        "prompting_technique": {
+                          "type": "object",
+                          "properties": {
+                            "ref": {
+                              "type": "string"
+                            }
+                          }
                         }
                       },
                       "required": [
@@ -2006,10 +2179,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -2024,10 +2201,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -2045,7 +2226,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2061,7 +2244,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2093,7 +2278,10 @@
                       "type": "string"
                     },
                     "authorId": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "projectId": {
                       "type": "string",
@@ -2108,7 +2296,10 @@
                       "const": "1.0"
                     },
                     "commitMessage": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "version": {
                       "type": "number"
@@ -2133,13 +2324,20 @@
                             "properties": {
                               "role": {
                                 "type": "string",
-                                "enum": ["user", "assistant", "system"]
+                                "enum": [
+                                  "user",
+                                  "assistant",
+                                  "system"
+                                ]
                               },
                               "content": {
                                 "type": "string"
                               }
                             },
-                            "required": ["role", "content"],
+                            "required": [
+                              "role",
+                              "content"
+                            ],
                             "additionalProperties": true
                           },
                           "default": []
@@ -2168,7 +2366,10 @@
                                 ]
                               }
                             },
-                            "required": ["identifier", "type"]
+                            "required": [
+                              "identifier",
+                              "type"
+                            ]
                           },
                           "minItems": 1
                         },
@@ -2183,7 +2384,12 @@
                               },
                               "type": {
                                 "type": "string",
-                                "enum": ["str", "float", "bool", "json_schema"]
+                                "enum": [
+                                  "str",
+                                  "float",
+                                  "bool",
+                                  "json_schema"
+                                ]
                               },
                               "json_schema": {
                                 "type": "object",
@@ -2193,11 +2399,16 @@
                                     "minLength": 1
                                   }
                                 },
-                                "required": ["type"],
+                                "required": [
+                                  "type"
+                                ],
                                 "additionalProperties": true
                               }
                             },
-                            "required": ["identifier", "type"]
+                            "required": [
+                              "identifier",
+                              "type"
+                            ]
                           },
                           "minItems": 1
                         },
@@ -2244,7 +2455,11 @@
                                     ]
                                   }
                                 },
-                                "required": ["id", "name", "type"]
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type"
+                                ]
                               }
                             },
                             "rows": {
@@ -2259,7 +2474,9 @@
                                         "minLength": 1
                                       }
                                     },
-                                    "required": ["id"]
+                                    "required": [
+                                      "id"
+                                    ]
                                   },
                                   {
                                     "type": "object",
@@ -2270,11 +2487,23 @@
                               "default": []
                             }
                           },
-                          "required": ["columns"]
+                          "required": [
+                            "columns",
+                            "rows"
+                          ]
+                        },
+                        "prompting_technique": {
+                          "type": "object",
+                          "properties": {
+                            "ref": {
+                              "type": "string"
+                            }
+                          }
                         }
                       },
                       "required": [
                         "prompt",
+                        "messages",
                         "inputs",
                         "outputs",
                         "model",
@@ -2306,10 +2535,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Bad Request"]
+                      "enum": [
+                        "Bad Request"
+                      ]
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             },
@@ -2324,10 +2557,14 @@
                   "properties": {
                     "error": {
                       "type": "string",
-                      "enum": ["Unauthorized"]
+                      "enum": [
+                        "Unauthorized"
+                      ]
                     }
                   },
-                  "required": ["error"],
+                  "required": [
+                    "error"
+                  ],
                   "error": "Unauthorized"
                 }
               }
@@ -2345,7 +2582,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2361,7 +2600,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2389,7 +2630,10 @@
                     "type": "string"
                   },
                   "authorId": {
-                    "type": ["string", "null"]
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   },
                   "projectId": {
                     "type": "string",
@@ -2429,13 +2673,20 @@
                           "properties": {
                             "role": {
                               "type": "string",
-                              "enum": ["user", "assistant", "system"]
+                              "enum": [
+                                "user",
+                                "assistant",
+                                "system"
+                              ]
                             },
                             "content": {
                               "type": "string"
                             }
                           },
-                          "required": ["role", "content"],
+                          "required": [
+                            "role",
+                            "content"
+                          ],
                           "additionalProperties": true
                         },
                         "default": []
@@ -2464,7 +2715,10 @@
                               ]
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -2479,7 +2733,12 @@
                             },
                             "type": {
                               "type": "string",
-                              "enum": ["str", "float", "bool", "json_schema"]
+                              "enum": [
+                                "str",
+                                "float",
+                                "bool",
+                                "json_schema"
+                              ]
                             },
                             "json_schema": {
                               "type": "object",
@@ -2489,11 +2748,16 @@
                                   "minLength": 1
                                 }
                               },
-                              "required": ["type"],
+                              "required": [
+                                "type"
+                              ],
                               "additionalProperties": true
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -2540,7 +2804,11 @@
                                   ]
                                 }
                               },
-                              "required": ["id", "name", "type"]
+                              "required": [
+                                "id",
+                                "name",
+                                "type"
+                              ]
                             }
                           },
                           "rows": {
@@ -2555,7 +2823,9 @@
                                       "minLength": 1
                                     }
                                   },
-                                  "required": ["id"]
+                                  "required": [
+                                    "id"
+                                  ]
                                 },
                                 {
                                   "type": "object",
@@ -2566,7 +2836,17 @@
                             "default": []
                           }
                         },
-                        "required": ["columns"]
+                        "required": [
+                          "columns"
+                        ]
+                      },
+                      "prompting_technique": {
+                        "type": "object",
+                        "properties": {
+                          "ref": {
+                            "type": "string"
+                          }
+                        }
                       }
                     },
                     "required": [
@@ -2591,12 +2871,711 @@
           }
         }
       }
+    },
+    "/api/dataset/{slugOrId}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "datasetId": {
+                            "type": "string"
+                          },
+                          "projectId": {
+                            "type": "string"
+                          },
+                          "entry": {
+                            "type": "object",
+                            "additionalProperties": {}
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "datasetId",
+                          "projectId",
+                          "entry",
+                          "createdAt",
+                          "updatedAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "default": "error"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "default": "error"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dataset not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "default": "error"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "default": "error"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "default": "error"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getApiDatasetBySlugOrId",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "slugOrId",
+            "required": true
+          }
+        ],
+        "description": "Get a dataset by its slug or id."
+      }
+    },
+    "/api/scenario-events": {
+      "post": {
+        "responses": {
+          "201": {
+            "description": "Event created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "postApiScenario-events",
+        "parameters": [],
+        "description": "Create a new scenario event",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "SCENARIO_RUN_STARTED"
+                      },
+                      "timestamp": {
+                        "type": "number"
+                      },
+                      "rawEvent": {},
+                      "batchRunId": {
+                        "type": "string"
+                      },
+                      "scenarioId": {
+                        "type": "string"
+                      },
+                      "scenarioRunId": {
+                        "type": "string"
+                      },
+                      "scenarioSetId": {
+                        "type": "string",
+                        "default": "default"
+                      },
+                      "metadata": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "timestamp",
+                      "batchRunId",
+                      "scenarioId",
+                      "scenarioRunId",
+                      "metadata"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "SCENARIO_RUN_FINISHED"
+                      },
+                      "timestamp": {
+                        "type": "number"
+                      },
+                      "rawEvent": {},
+                      "batchRunId": {
+                        "type": "string"
+                      },
+                      "scenarioId": {
+                        "type": "string"
+                      },
+                      "scenarioRunId": {
+                        "type": "string"
+                      },
+                      "scenarioSetId": {
+                        "type": "string",
+                        "default": "default"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "SUCCESS",
+                          "ERROR",
+                          "CANCELLED",
+                          "IN_PROGRESS",
+                          "PENDING",
+                          "FAILED"
+                        ]
+                      },
+                      "results": {
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "properties": {
+                          "verdict": {
+                            "type": "string",
+                            "enum": [
+                              "success",
+                              "failure",
+                              "inconclusive"
+                            ]
+                          },
+                          "reasoning": {
+                            "type": "string"
+                          },
+                          "metCriteria": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "unmetCriteria": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "error": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "verdict",
+                          "metCriteria",
+                          "unmetCriteria"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "timestamp",
+                      "batchRunId",
+                      "scenarioId",
+                      "scenarioRunId",
+                      "status"
+                    ]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "const": "SCENARIO_MESSAGE_SNAPSHOT"
+                      },
+                      "timestamp": {
+                        "type": "number"
+                      },
+                      "rawEvent": {},
+                      "messages": {
+                        "type": "array",
+                        "items": {
+                          "oneOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "const": "developer"
+                                },
+                                "content": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "role",
+                                "content"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "const": "system"
+                                },
+                                "content": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "role",
+                                "content"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "const": "assistant"
+                                },
+                                "content": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "toolCalls": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "type": "string",
+                                        "const": "function"
+                                      },
+                                      "function": {
+                                        "type": "object",
+                                        "properties": {
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "arguments": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "name",
+                                          "arguments"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "type",
+                                      "function"
+                                    ]
+                                  }
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "role"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "const": "user"
+                                },
+                                "content": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "role",
+                                "content"
+                              ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "content": {
+                                  "type": "string"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "const": "tool"
+                                },
+                                "toolCallId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "content",
+                                "role",
+                                "toolCallId"
+                              ]
+                            }
+                          ]
+                        }
+                      },
+                      "batchRunId": {
+                        "type": "string"
+                      },
+                      "scenarioId": {
+                        "type": "string"
+                      },
+                      "scenarioRunId": {
+                        "type": "string"
+                      },
+                      "scenarioSetId": {
+                        "type": "string",
+                        "default": "default"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "timestamp",
+                      "messages",
+                      "batchRunId",
+                      "scenarioId",
+                      "scenarioRunId"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "Events deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "deleteApiScenario-events",
+        "parameters": [],
+        "description": "Delete all events"
+      }
     }
   },
   "components": {
     "schemas": {
       "Annotation": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -2638,7 +3617,10 @@
         }
       },
       "Error": {
-        "required": ["error", "message"],
+        "required": [
+          "error",
+          "message"
+        ],
         "type": "object",
         "properties": {
           "error": {
@@ -2888,59 +3870,9 @@
             ]
           }
         },
-        "required": ["entries"]
-      },
-      "SlackTrigger": {
-        "type": "object",
-        "properties": {
-          "slack_webhook": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "filters": {
-            "type": "object",
-            "properties": {
-              "metadata.user_id": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "metadata.thread_id": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "metadata.customer_id": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "metadata.labels": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "metadata.custom_value": {
-                "type": "object",
-                "additionalProperties": true
-              }
-            }
-          },
-          "alert_type": {
-            "type": "string",
-            "enum": ["ERROR", "WARNING", "INFO"]
-          }
-        },
-        "required": ["slack_webhook", "name", "filters", "alert_type"]
+        "required": [
+          "entries"
+        ]
       }
     },
     "securitySchemes": {
