@@ -1,0 +1,90 @@
+---
+title: Introduction to Agent Testing
+---
+
+# What are Agent Simulations?
+
+Agent simulations are a powerful approach to testing AI agents that goes beyond traditional evaluation methods. Unlike static input-output testing, simulations test your agent's behavior in realistic, multi-turn conversations that mimic how real users would interact with your system.
+
+## Why Traditional Testing Isn't Enough
+
+Most AI evaluation methods are designed for single-turn interactions with static datasets. They test isolated components like:
+
+- **RAG accuracy** - How well your retrieval system finds relevant information
+- **LLM response quality** - How good individual model responses are
+- **Tool functionality** - Whether your tools work correctly
+
+But agents are more than the sum of their parts. They're **stateful, dynamic systems** that:
+
+- Make decisions over time
+- Recover from errors
+- Adapt to new information
+- Maintain conversation context
+- Use tools strategically
+
+To build robust, autonomous agents, you need to test the **entire agent behavior** in realistic scenarios.
+
+## The Power of Simulation-Based Testing
+
+Agent simulations test your agent end-to-end by:
+
+1. **Simulating realistic users** - Creating conversations that mimic real user behavior
+2. **Testing multi-turn interactions** - Evaluating how your agent handles complex, evolving conversations
+3. **Validating agent decisions** - Checking that your agent makes the right choices at each step
+4. **Catching edge cases** - Discovering how your agent behaves in unexpected situations
+
+### Example: Customer Support Agent
+
+Instead of testing individual components, you can simulate a frustrated customer:
+
+```python
+scenario = [
+    user("I've been waiting for my refund for weeks!"),
+    agent(),  # Should acknowledge the issue
+    user("This is ridiculous, I want to speak to a manager"),
+    agent(),  # Should escalate appropriately
+    user("Actually, I found the refund in my account"),
+    agent(),  # Should handle the resolution gracefully
+]
+```
+
+This tests the **entire customer journey** and ensures your agent handles the emotional arc, context switching, and resolution properly.
+
+## The Three Levels of Agent Quality
+
+For comprehensive agent testing, you need all three levels:
+
+1. **Unit Tests** - Traditional software tests for tools and components
+2. **Evaluations & Optimization** - Measuring individual non-deterministic components (RAG accuracy, LLM quality)
+3. **Agent Simulations** - End-to-end testing of the complete agent behavior
+
+Simulations complement evaluations by testing the **agent as a whole system** rather than isolated parts.
+
+## Why Use Scenario?
+
+[Scenario](https://scenario.langwatch.ai/) is the most advanced agent testing framework available. It provides:
+
+- **Framework agnostic** - Works with any AI agent framework
+- **Simple integration** - Just implement one `call()` method
+- **Powerful evaluation** - Judge agent behavior at any point in conversations
+- **Flexible scenarios** - Test edge cases, error recovery, and complex workflows
+- **Multi-language support** - Python, TypeScript, and Go
+
+## Visualizing Simulations in LangWatch
+
+Once you've set up your agent tests with Scenario, LangWatch provides powerful visualization tools to:
+
+- **Organize simulations** into sets and batches
+- **Debug agent behavior** by stepping through conversations
+- **Track performance** over time with run history
+- **Collaborate** with your team on agent improvements
+
+The rest of this documentation will show you how to use LangWatch's simulation visualizer to get the most out of your agent testing.
+
+## Next Steps
+
+- [Overview](/simulations/overview) - Learn about LangWatch's simulation visualizer
+- [Getting Started](/simulations/getting-started) - Set up your first simulation
+- [Individual Run Analysis](/simulations/individual-run) - Learn how to debug specific scenarios
+- [Batch Runs](/simulations/batch-runs) - Understand how to organize multiple tests
+- [Scenario Documentation](https://scenario.langwatch.ai/) - Deep dive into the testing framework 

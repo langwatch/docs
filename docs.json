@@ -286,6 +286,7 @@
           {
             "group": "Simulations",
             "pages": [
+              "simulations/introduction",
               "simulations/overview",
               "simulations/getting-started",
               "simulations/set-overview",

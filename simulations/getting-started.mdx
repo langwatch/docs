@@ -2,8 +2,6 @@
 title: Getting Started
 ---
 
-import { Tabs, Tab } from 'nextra/components';
-
 This guide will walk you through the basic setup required to run your first simulation and see the results in LangWatch.
 
 For more in-depth information and advanced use cases, please refer to the official [`scenario` library documentation](https://github.com/langwatch/scenario).
@@ -15,12 +13,12 @@ First, you need to install the `scenario` library in your project. Choose your l
 <Tabs>
   <Tab title="Python">
     ```bash
-    pip install scenario-langwatch
+    uv add langwatch-scenario
     ```
   </Tab>
   <Tab title="TypeScript">
     ```bash
-    npm install @langwatch/scenario
+    pnpm add @langwatch/scenario
     ```
   </Tab>
 </Tabs>
@@ -35,27 +33,20 @@ LANGWATCH_API_KEY="your-api-key"
 LANGWATCH_ENDPOINT="https://app.langwatch.ai"
 ```
 
-You can find your `LANGWATCH_API_KEY` in your LangWatch project settings.
+You can find your `LANGWATCH_API_KEY` in your [LangWatch project settings](https://app.langwatch.ai/settings).
 
 
 ## 3. Create a Basic Scenario
 
 Here's how to create and run a simple scenario to test an agent.
 
-First, you need to wrap your agent in a simple function that takes a list of messages and returns a string response.
-
-While optional, we strongly recommend setting stable identifiers for your scenarios, sets, and batches for better organization and tracking in LangWatch.
-
--   **`id`**: A unique and stable identifier for your scenario. If not provided, it's often generated from the `name`, which can be brittle if you rename the test.
--   **`setId`**: Groups related scenarios into a test suite. This corresponds to the "Simulation Set" in the UI.
--   **`batchId`**: Groups all scenarios that were run together in a single execution (e.g., a single CI job). You can use a CI environment variable like `process.env.GITHUB_RUN_ID` for this.
+First, you need to wrap your agent in a simple function. For detailed information about agent integration patterns, see the [agent integration guide](https://scenario.langwatch.ai/agent-integration).
 
 <Tabs>
   <Tab title="Python">
     ```python
     import scenario
     import asyncio
-    import os
 
     # 1. Wrap your agent logic in a simple function
     def my_agent(messages, context):
@@ -65,14 +56,8 @@ While optional, we strongly recommend setting stable identifiers for your scenar
     # 2. Define the scenario
     async def run_test():
         result = await scenario.run(
-            # We recommend setting a stable ID for your scenario
-            id="my-first-scenario",
             name="my first scenario",
             description="A simple test to see if the agent responds.",
-            # Group scenarios into sets for better organization
-            set_id="my-test-suite",
-            # Batch ID can be used to group runs, e.g. from a CI job
-            batch_id=os.environ.get("GITHUB_RUN_ID", "local-run"),
             agents=[
                 # Use the simple wrapper for your agent
                 scenario.Agent(my_agent),
@@ -101,14 +86,8 @@ While optional, we strongly recommend setting stable identifiers for your scenar
     // (e.g. inside a vitest test)
     test("my first scenario", async () => {
         const result = await scenario.run({
-          // We recommend setting a stable ID for your scenario
-          id: "my-first-scenario",
           name: "my first scenario",
           description: "A simple test to see if the agent responds.",
-          // Group scenarios into sets for better organization
-          setId: "my-test-suite",
-          // Batch ID can be used to group runs, e.g. from a CI job
-          batchId: process.env.GITHUB_RUN_ID ?? "local-run",
           agents: [
             // Use the simple wrapper for your agent
             scenario.agent(myAgent),
@@ -123,4 +102,47 @@ While optional, we strongly recommend setting stable identifiers for your scenar
   </Tab>
 </Tabs>
 
-Once you run this code, you will see a new "my first scenario" run appear in the **Simulations** section of your LangWatch project. 
+Once you run this code, you will see a new "my first scenario" run appear in the **Simulations** section of your LangWatch project.
+
+## 4. Grouping Your Sets and Batches
+
+While optional, we strongly recommend setting stable identifiers for your scenarios, sets, and batches for better organization and tracking in LangWatch.
+
+-   **`id`**: A unique and stable identifier for your scenario. If not provided, it's often generated from the `name`, which can be brittle if you rename the test.
+-   **`setId`**: Groups related scenarios into a test suite. This corresponds to the "Simulation Set" in the UI.
+-   **`batchId`**: Groups all scenarios that were run together in a single execution (e.g., a single CI job). You can use a CI environment variable like `process.env.GITHUB_RUN_ID` for this.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import os
+
+    result = await scenario.run(
+        id="my-first-scenario",
+        name="my first scenario",
+        description="A simple test to see if the agent responds.",
+        set_id="my-test-suite",
+        batch_id=os.environ.get("GITHUB_RUN_ID", "local-run"),
+        agents=[
+            scenario.Agent(my_agent),
+            scenario.UserSimulatorAgent(),
+        ]
+    )
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+    const result = await scenario.run({
+        id: "my-first-scenario",
+        name: "my first scenario",
+        description: "A simple test to see if the agent responds.",
+        setId: "my-test-suite",
+        batchId: process.env.GITHUB_RUN_ID ?? "local-run",
+        agents: [
+            scenario.agent(myAgent),
+            scenario.userSimulatorAgent(),
+        ],
+    });
+    ```
+  </Tab>
+</Tabs> 
