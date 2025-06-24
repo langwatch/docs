@@ -66,6 +66,17 @@
             ]
           },
           {
+            "group": "Agent Simulations",
+            "pages": [
+              "simulations/introduction",
+              "simulations/overview",
+              "simulations/getting-started",
+              "simulations/set-overview",
+              "simulations/batch-runs",
+              "simulations/individual-run"
+            ]
+          },
+          {
             "group": "LLM Observability",
             "pages": [
               "integration/overview",
@@ -281,17 +292,6 @@
                   "api-reference/triggers/create-slack-trigger"
                 ]
               }
-            ]
-          },
-          {
-            "group": "Simulations",
-            "pages": [
-              "simulations/introduction",
-              "simulations/overview",
-              "simulations/getting-started",
-              "simulations/set-overview",
-              "simulations/batch-runs",
-              "simulations/individual-run"
             ]
           },
           {
