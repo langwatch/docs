@@ -123,7 +123,7 @@ Integrating LangWatch into your projects is designed to be a straightforward pro
 
 ---
 title: Python SDK API Reference
-sidebarTitle: API Reference
+sidebarTitle: Python
 description: LangWatch Python SDK API reference
 ---
 
@@ -1008,7 +1008,7 @@ A dictionary (`
 
 ---
 title: Python Integration Guide
-sidebarTitle: Getting Started
+sidebarTitle: Python
 description: LangWatch Python SDK integration guide
 keywords: LangWatch, Python, SDK, integration, guide, setup, tracing, spans, traces, OpenTelemetry, OpenAI, Celery, HTTP clients, databases, ORMs
 ---
@@ -1234,6 +1234,7 @@ LangWatch offers seamless integrations with a variety of popular Python librarie
 
 Below is a list of currently supported integrations. Click on each to learn more about specific setup instructions and available features:
 
+- [Agno](/integration/python/integrations/agno)
 - [AWS Bedrock](/integration/python/integrations/aws-bedrock)
 - [Azure AI](/integration/python/integrations/azure-ai)
 - [Crew AI](/integration/python/integrations/crew-ai)
@@ -1255,8 +1256,8 @@ If you are using a library that is not listed here, you can still instrument you
 # FILE: ./integration/python/integrations/langchain.mdx
 
 ---
-title: Langchain Instrumentation
-sidebarTitle: Langchain
+title: LangChain Instrumentation
+sidebarTitle: Python
 description: Learn how to instrument Langchain applications with the LangWatch Python SDK.
 keywords: langchain, instrumentation, callback, opentelemetry, langwatch, python, tracing, openinference, openllmetry
 ---
@@ -1547,6 +1548,78 @@ if __name__ == "__main__":
 
 For the best Langchain-specific observability within LangWatch, the **Langchain Callback Handler** is the generally recommended approach, with dedicated **Langchain Instrumentors** as strong alternatives for instrumentor-based setups.
 </Note>
+
+---
+
+# FILE: ./integration/python/integrations/agno.mdx
+
+---
+title: Agno Instrumentation
+sidebarTitle: Agno
+description: Learn how to instrument Agno agents and send traces to LangWatch using the Python SDK.
+keywords: agno, openinference, openlit, opentelemetry, LangWatch, Python, tracing, observability
+---
+
+LangWatch supports seamless observability for [Agno](https://github.com/agno-agi/agno) agents. You can instrument your Agno-based applications and send traces directly to LangWatch for monitoring and analysis.
+
+This guide shows how to set up tracing for Agno agents using the LangWatch Python SDK. Unlike the default OpenTelemetry/OTLP setup, you only need to call `langwatch.setup()`—no manual exporter or environment variable configuration is required.
+
+## Prerequisites
+
+- Install the required packages:
+  ```bash
+  pip install agno openai langwatch openinference-instrumentation-agno
+  ```
+- Get your LangWatch API key from your [project settings](https://app.langwatch.ai/) and set it as an environment variable:
+  ```bash
+  export LANGWATCH_API_KEY=your-langwatch-api-key
+  ```
+
+## Instrumenting Agno with LangWatch
+
+You can use the [OpenInference Agno instrumentor](https://github.com/Arize-ai/openinference/tree/main/python/instrumentation/openinference-instrumentation-agno) to automatically capture traces from your Agno agents. Just pass the instrumentor to `langwatch.setup()`.
+
+```python
+import langwatch
+import os
+
+from agno.agent import Agent
+from agno.models.openai import OpenAIChat
+from agno.tools.yfinance import YFinanceTools
+from openinference.instrumentation.agno import AgnoInstrumentor
+
+# Initialize LangWatch and instrument Agno
+langwatch.setup(
+    instrumentors=[AgnoInstrumentor()]
+)
+
+# Create and configure your Agno agent
+agent = Agent(
+    name="Stock Price Agent",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[YFinanceTools()],
+    instructions="You are a stock price agent. Answer questions in the style of a stock analyst.",
+    debug_mode=True,
+)
+
+# Use the agent as usual—traces will be sent to LangWatch
+agent.print_response("What is the current price of Tesla?")
+```
+
+**That's it!** All Agno agent activity will now be traced and sent to your LangWatch dashboard.
+
+## Notes
+
+- You do **not** need to set any OpenTelemetry environment variables or configure exporters manually—`langwatch.setup()` handles everything.
+- You can combine Agno instrumentation with other instrumentors (e.g., OpenAI, LangChain) by adding them to the `instrumentors` list.
+- For advanced configuration (custom attributes, endpoint, etc.), see the [Python integration guide](/integration/python/guide).
+
+## Troubleshooting
+
+- Make sure your `LANGWATCH_API_KEY` is set in the environment.
+- If you see no traces in LangWatch, check that the instrumentor is included in `langwatch.setup()` and that your agent code is being executed.
+
+For more details, see the [LangWatch Python SDK reference](/integration/python/reference) and the [Agno documentation](https://docs.agno.com/observability/langfuse).
 
 ---
 
@@ -3259,7 +3332,7 @@ By leveraging the `BaseInstrumentor` interface, LangWatch remains flexible and e
 
 ---
 title: Azure AI Inference SDK Instrumentation
-sidebarTitle: Azure AI
+sidebarTitle: Python
 description: Learn how to instrument the Azure AI Inference Python SDK with LangWatch.
 keywords: azure ai inference, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
@@ -3355,7 +3428,7 @@ With this setup, calls made using the `azure-ai-inference` clients will be autom
 
 ---
 title: OpenAI Instrumentation
-sidebarTitle: OpenAI
+sidebarTitle: Python
 description: Learn how to instrument OpenAI API calls with the LangWatch Python SDK
 keywords: openai, instrumentation, autotrack, openinference, openllmetry, LangWatch, Python
 ---
@@ -4972,7 +5045,7 @@ langwatch.setup(
 
 ---
 title: TypeScript Integration Guide
-sidebarTitle: Guide
+sidebarTitle: TypeScript
 description: LangWatch TypeScript SDK integration guide
 ---
 
@@ -5487,10 +5560,733 @@ The evaluation `name` is required and must be a string. The other fields are opt
 
 ---
 
+# FILE: ./integration/typescript/integrations/langchain.mdx
+
+---
+title: LangChain
+sidebarTitle: TS/JS
+description: LangWatch LangChain TypeScript integration guide
+---
+
+<div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
+  <div>
+  <a href="https://github.com/langwatch/langwatch/tree/main/typescript-sdk" target="_blank">
+    <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch TypeScript Repo" />
+  </a>
+  </div>
+
+  <div>
+  <a href="https://www.npmjs.com/package/langwatch" target="_blank">
+    <img src="https://img.shields.io/npm/v/langwatch?color=007EC6" noZoom alt="LangWatch TypeScript SDK version" />
+  </a>
+  </div>
+</div>
+
+LangWatch library is the easiest way to integrate your TypeScript application with LangWatch, the messages are synced on the background so it doesn't intercept or block your LLM calls.
+
+<LLMsTxtProtip />
+
+<Prerequisites />
+
+## Basic Concepts
+
+- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
+- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
+  - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
+  - Different types of [Spans](/concepts#spans) capture different parameters.
+  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
+- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
+  - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
+
+
+## Integration
+
+
+Start by initializing LangWatch client and creating a new trace to capture your chain:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then, to capture your LLM calls and all other chain steps, LangWatch provides a callback hook for LangChain.js that automatically tracks everything for you.
+
+First, define your chain as you would normally do:
+
+```typescript
+import { StringOutputParser } from '@langchain/core/output_parsers'
+import { ChatPromptTemplate } from '@langchain/core/prompts'
+import { ChatOpenAI } from '@langchain/openai'
+
+const prompt = ChatPromptTemplate.fromMessages([
+  ['system', 'Translate the following from English into Italian'],
+  ['human', '{input}']
+])
+const model = new ChatOpenAI({ model: 'gpt-3.5-turbo' })
+const outputParser = new StringOutputParser()
+
+const chain = prompt.pipe(model).pipe(outputParser)
+```
+
+Now, when calling your chain either with `invoke` or `stream`, pass in `trace.getLangChainCallback()` as one of the callbacks:
+
+```typescript
+const stream = await chain.stream(
+  { input: message },
+  { callbacks: [trace.getLangChainCallback()] }
+)
+```
+
+That's it! The full trace with all spans for each chain step will be sent automatically to LangWatch in the background on periodic intervals. After capturing your first LLM Span, go to [LangWatch Dashboard](https://app.langwatch.ai), your message should be there!
+
+<Note>
+On short-live environments like Lambdas or Serverless Functions, be sure to call <br /> `await trace.sendSpans();` to wait for all pending requests to be sent before the runtime is destroyed.
+</Note>
+
+## Capture a RAG Span
+
+Appart from LLM spans, another very used type of span is the RAG span. This is used to capture the retrieved contexts from a RAG that will be used by the LLM, and enables a whole new set of RAG-based features evaluations for RAG quality on LangWatch.
+
+<TypeScriptRAG />
+
+## Capture an arbritary Span
+
+You can also use generic spans to capture any type of operation, its inputs and outputs, for example for a function call:
+
+<TypeScriptCaptureSpans />
+
+## Capturing Exceptions
+
+To capture also when your code throws an exception, you can simply wrap your code around a try/catch, and update or end the span with the exception:
+
+<TypeScriptExceptions />
+
+## Capturing custom evaluation results
+
+[LangWatch Evaluators](/llm-evaluation/list) can run automatically on your traces, but if you have an in-house custom evaluator, you can also capture the evaluation
+results of your custom evaluator on the current trace or span by using the `.addEvaluation` method:
+
+<TypeScriptCustomEvaluation />
+
+
+
+---
+
+# FILE: ./integration/typescript/integrations/vercel-ai-sdk.mdx
+
+---
+title: Vercel AI SDK
+sidebarTitle: Vercel AI SDK
+description: LangWatch Vercel AI SDK integration guide
+---
+
+<div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
+  <div>
+  <a href="https://github.com/langwatch/langwatch/tree/main/typescript-sdk" target="_blank">
+    <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch TypeScript Repo" />
+  </a>
+  </div>
+
+  <div>
+  <a href="https://www.npmjs.com/package/langwatch" target="_blank">
+    <img src="https://img.shields.io/npm/v/langwatch?color=007EC6" noZoom alt="LangWatch TypeScript SDK version" />
+  </a>
+  </div>
+</div>
+
+LangWatch library is the easiest way to integrate your TypeScript application with LangWatch, the messages are synced on the background so it doesn't intercept or block your LLM calls.
+
+<LLMsTxtProtip />
+
+<Prerequisites />
+
+## Basic Concepts
+
+- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
+- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
+  - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
+  - Different types of [Spans](/concepts#spans) capture different parameters.
+  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
+- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
+  - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
+
+
+## Integration
+
+
+The Vercel AI SDK supports tracing via Next.js OpenTelemetry integration. By using the `LangWatchExporter`, you can automatically collect those traces to LangWatch.
+
+First, you need to install the necessary dependencies:
+
+```bash
+npm install @vercel/otel langwatch @opentelemetry/api-logs @opentelemetry/instrumentation @opentelemetry/sdk-logs
+```
+
+Then, set up the OpenTelemetry for your application, follow one of the tabs below depending whether you are using AI SDK with Next.js or on Node.js:
+
+
+### Next.js
+
+You need to enable the `instrumentationHook` in your `next.config.js` file if you haven't already:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    instrumentationHook: true,
+  },
+};
+
+module.exports = nextConfig;
+```
+
+Next, you need to create a file named `instrumentation.ts` (or `.js`) in the __root directory__ of the project (or inside `src` folder if using one), with `LangWatchExporter` as the traceExporter:
+
+```typescript
+import { registerOTel } from '@vercel/otel'
+import { LangWatchExporter } from 'langwatch'
+
+export function register() {
+  registerOTel({
+    serviceName: 'next-app',
+    traceExporter: new LangWatchExporter({
+      apiKey: process.env.LANGWATCH_API_KEY
+    })
+  })
+}
+```
+
+(Read more about Next.js OpenTelemetry configuration [on the official guide](https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry#manual-opentelemetry-configuration))
+
+Finally, enable `experimental_telemetry` tracking on the AI SDK calls you want to trace:
+
+```typescript
+const result = await generateText({
+  model: openai('gpt-4o-mini'),
+  prompt: 'Explain why a chicken would make a terrible astronaut, be creative and humorous about it.',
+  experimental_telemetry: {
+    isEnabled: true,
+    // optional metadata
+    metadata: {
+      userId: "myuser-123",
+      threadId: "mythread-123",
+    },
+  },
+});
+```
+
+### Node.js
+
+For Node.js, start by following the official OpenTelemetry guide:
+
+- [OpenTelemetry Node.js Getting Started](https://opentelemetry.io/docs/languages/js/getting-started/nodejs/)
+
+Once you have set up OpenTelemetry, you can use the `LangWatchExporter` to automatically send your traces to LangWatch:
+
+```typescript
+import { LangWatchExporter } from 'langwatch'
+
+const sdk = new NodeSDK({
+  traceExporter: new LangWatchExporter({
+    apiKey: process.env.LANGWATCH_API_KEY
+  }),
+  // ...
+});
+```
+
+That's it! Your messages will now be visible on LangWatch:
+
+![Vercel AI SDK](/images/integration/vercel-ai-sdk.png)
+
+## Example Project
+
+You can find a full example project with a more complex pipeline and Vercel AI SDK and LangWatch integration [on our GitHub](https://github.com/langwatch/langwatch/blob/main/typescript-sdk/example/lib/chat/vercel-ai.tsx).
+
+## Manual Integration
+
+The docs from here below are for manual integration, in case you are not using the Vercel AI SDK OpenTelemetry integration,
+you can manually start a trace to capture your messages:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then, you can start an LLM span inside the trace with the input about to be sent to the LLM.
+
+```typescript
+import { convertFromVercelAIMessages } from 'langwatch'
+
+const span = trace.startLLMSpan({
+  name: "llm",
+  model: model,
+  input: {
+    type: "chat_messages",
+    value: convertFromVercelAIMessages(messages)
+  },
+});
+```
+
+This will capture the LLM input and register the time the call started. Once the LLM call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation, e.g.:
+
+```typescript
+span.end({
+  output: {
+    type: "chat_messages",
+    value: convertFromVercelAIMessages(output), // assuming output is Message[]
+  },
+  metrics: {
+    promptTokens: chatCompletion.usage?.prompt_tokens,
+    completionTokens: chatCompletion.usage?.completion_tokens,
+  },
+});
+```
+
+<Note>
+On short-live environments like Lambdas or Serverless Functions, be sure to call <br /> `await trace.sendSpans();` to wait for all pending requests to be sent before the runtime is destroyed.
+</Note>
+
+## Capture a RAG Span
+
+Appart from LLM spans, another very used type of span is the RAG span. This is used to capture the retrieved contexts from a RAG that will be used by the LLM, and enables a whole new set of RAG-based features evaluations for RAG quality on LangWatch.
+
+<TypeScriptRAG />
+
+## Capture an arbritary Span
+
+You can also use generic spans to capture any type of operation, its inputs and outputs, for example for a function call:
+
+<TypeScriptCaptureSpans />
+
+## Capturing Exceptions
+
+To capture also when your code throws an exception, you can simply wrap your code around a try/catch, and update or end the span with the exception:
+
+<TypeScriptExceptions />
+
+## Capturing custom evaluation results
+
+[LangWatch Evaluators](/llm-evaluation/list) can run automatically on your traces, but if you have an in-house custom evaluator, you can also capture the evaluation
+results of your custom evaluator on the current trace or span by using the `.addEvaluation` method:
+
+<TypeScriptCustomEvaluation />
+
+
+
+---
+
+# FILE: ./integration/typescript/integrations/azure.mdx
+
+---
+title: Azure OpenAI
+sidebarTitle: TS/JS
+description: LangWatch Azure OpenAI integration guide
+---
+
+<div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
+  <div>
+  <a href="https://github.com/langwatch/langwatch/tree/main/typescript-sdk" target="_blank">
+    <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch TypeScript Repo" />
+  </a>
+  </div>
+
+  <div>
+  <a href="https://www.npmjs.com/package/langwatch" target="_blank">
+    <img src="https://img.shields.io/npm/v/langwatch?color=007EC6" noZoom alt="LangWatch TypeScript SDK version" />
+  </a>
+  </div>
+</div>
+
+LangWatch library is the easiest way to integrate your TypeScript application with LangWatch, the messages are synced on the background so it doesn't intercept or block your LLM calls.
+
+<LLMsTxtProtip />
+
+<Prerequisites />
+
+## Basic Concepts
+
+- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
+- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
+  - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
+  - Different types of [Spans](/concepts#spans) capture different parameters.
+  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
+- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
+  - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
+
+
+## Integration
+
+Start by initializing LangWatch client and creating a new trace to capture your messages:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then to capture your LLM calls, you can start an LLM span inside the trace with the input about to be sent to the LLM.
+
+First, define the model and the messages you are going to use for your LLM call separately, so you can capture them:
+
+```typescript
+import { AzureOpenAI } from "openai";
+
+// Model to be used and messages that will be sent to the LLM
+const model = "gpt-4-turbo-2024-04-09"
+const messages : OpenAI.Chat.ChatCompletionMessageParam[] = [
+  { role: "system", content: "You are a helpful assistant." },
+  {
+    role: "user",
+    content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
+  },
+]
+```
+
+Then, start the LLM span from the trace, giving it the model and input messages:
+
+```typescript
+const span = trace.startLLMSpan({
+  name: "llm",
+  model: model,
+  input: {
+    type: "chat_messages",
+    value: messages
+  },
+});
+```
+
+This will capture the LLM input and register the time the call started. Now, continue with the LLM call normally, using the same parameters:
+
+```typescript
+const openai = new AzureOpenAI({
+  apiKey: process.env.AZURE_OPENAI_API_KEY,
+  apiVersion: "2024-02-01",
+  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
+});
+const chatCompletion = await openai.chat.completions.create({
+  messages: messages,
+  model: model,
+});
+```
+
+Finally, after the OpenAI call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation:
+
+```typescript
+span.end({
+  output: {
+    type: "chat_messages",
+    value: [chatCompletion.choices[0]!.message],
+  },
+  metrics: {
+    promptTokens: chatCompletion.usage?.prompt_tokens,
+    completionTokens: chatCompletion.usage?.completion_tokens,
+  },
+});
+```
+
+<Note>
+On short-live environments like Lambdas or Serverless Functions, be sure to call <br /> `await trace.sendSpans();` to wait for all pending requests to be sent before the runtime is destroyed.
+</Note>
+
+## Capture a RAG Span
+
+Appart from LLM spans, another very used type of span is the RAG span. This is used to capture the retrieved contexts from a RAG that will be used by the LLM, and enables a whole new set of RAG-based features evaluations for RAG quality on LangWatch.
+
+<TypeScriptRAG />
+
+## Capture an arbritary Span
+
+You can also use generic spans to capture any type of operation, its inputs and outputs, for example for a function call:
+
+<TypeScriptCaptureSpans />
+
+## Capturing Exceptions
+
+To capture also when your code throws an exception, you can simply wrap your code around a try/catch, and update or end the span with the exception:
+
+<TypeScriptExceptions />
+
+## Capturing custom evaluation results
+
+[LangWatch Evaluators](/llm-evaluation/list) can run automatically on your traces, but if you have an in-house custom evaluator, you can also capture the evaluation
+results of your custom evaluator on the current trace or span by using the `.addEvaluation` method:
+
+<TypeScriptCustomEvaluation />
+
+
+
+---
+
+# FILE: ./integration/typescript/integrations/mastra.mdx
+
+---
+title: Mastra
+description: Learn how to integrate Mastra, a TypeScript agent framework, with LangWatch.
+---
+
+#  Observability for Mastra With LangWatch
+
+This guide shows you how to integrate **Mastra** with **LangWatch** for observability and tracing. By following these steps, you'll be able to monitor and debug your Mastra agents in the LangWatch dashboard.
+
+
+## Integration
+
+<Steps>
+<Step title="Create a Mastra project">
+Create a Mastra project using the Mastra CLI:
+
+  ```bash
+  npx create-mastra
+  ```
+
+  Move into the project directory:
+
+  ```bash
+  cd your-mastra-project
+  ```
+For more information, view Mastra installation instructions [here](https://mastra.ai/docs/getting-started/installation)
+
+
+</Step>
+
+<Step title="Set up LangWatch project">
+Create a project in [LangWatch](https://app.langwatch.ai) and get your API keys from the project settings page.
+
+</Step>
+
+<Step title="Add environment variables">
+  Create or update your `.env` file with the following variables:
+
+  ```bash
+  # Your LLM API key
+  OPENAI_API_KEY=your-api-key
+
+  # LangWatch credentials
+  LANGWATCH_API_KEY=sk-...
+
+  ```
+</Step>
+
+
+<Step title="Install the langwatch package">
+  Add the `langwatch` package to your project:
+
+  ```bash
+  npm install langwatch
+  ```
+
+</Step>
+
+<Step title="Add LangWatch to your Mastra instance">
+  Add LangWatch to your Mastra instance via the telemetry exporter.
+
+  ```typescript
+import { Mastra } from "@mastra/core/mastra";
+import { PinoLogger } from "@mastra/loggers";
+import { LibSQLStore } from "@mastra/libsql";
+import { LangWatchExporter } from "langwatch";
+
+import { weatherAgent } from "./agents/weather-agent";
+
+export const mastra = new Mastra({
+  agents: { weatherAgent },
+  telemetry: {
+    serviceName: "ai", // this must be set to "ai" so that the LangWatchExporter thinks it's an AI SDK trace
+    enabled: true,
+    export: {
+      type: "custom",
+      exporter: new LangWatchExporter({
+        apiKey: process.env.LANGWATCH_API_KEY,
+        debug: true,
+        // includeAllSpans: true,
+      }),
+    },
+  },
+});
+  ```
+
+</Step>
+
+
+<Step title="Run mastra dev server">
+  Start the Mastra development server:
+
+  ```bash
+  npm run dev
+  ```
+
+  Head over to the developer playground with the provided URL and start chatting with your agent.
+
+
+  ### View traces in LangWatch
+  Visit your [LangWatch dashboard](https://app.langwatch.ai) to explore detailed insights into your agent interactions. Monitor and analyze every aspect of your AI conversations, from prompt engineering to response quality, helping you optimize your AI applications.
+
+</Step>
+
+</Steps>
+
+---
+
+# FILE: ./integration/typescript/integrations/open-ai.mdx
+
+---
+title: OpenAI
+sidebarTitle: TS/JS
+description: LangWatch OpenAI TypeScript integration guide
+---
+
+<div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
+  <div>
+  <a href="https://github.com/langwatch/langwatch/tree/main/typescript-sdk" target="_blank">
+    <img src="https://img.shields.io/badge/repo-langwatch-blue?style=flat&logo=Github" noZoom alt="LangWatch TypeScript Repo" />
+  </a>
+  </div>
+
+  <div>
+  <a href="https://www.npmjs.com/package/langwatch" target="_blank">
+    <img src="https://img.shields.io/npm/v/langwatch?color=007EC6" noZoom alt="LangWatch TypeScript SDK version" />
+  </a>
+  </div>
+</div>
+
+LangWatch library is the easiest way to integrate your TypeScript application with LangWatch, the messages are synced on the background so it doesn't intercept or block your LLM calls.
+
+<LLMsTxtProtip />
+
+<Prerequisites />
+
+## Basic Concepts
+
+- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
+- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
+  - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
+  - Different types of [Spans](/concepts#spans) capture different parameters.
+  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
+- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
+  - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
+
+
+## Integration
+
+Start by initializing LangWatch client and creating a new trace to capture your messages:
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+const trace = langwatch.getTrace({
+  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+});
+```
+
+Then to capture your LLM calls, you can start an LLM span inside the trace with the input about to be sent to the LLM.
+
+First, define the model and the messages you are going to use for your LLM call separately, so you can capture them:
+
+```typescript
+import { OpenAI } from "openai";
+
+// Model to be used and messages that will be sent to the LLM
+const model = "gpt-4o"
+const messages : OpenAI.Chat.ChatCompletionMessageParam[] = [
+  { role: "system", content: "You are a helpful assistant." },
+  {
+    role: "user",
+    content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
+  },
+]
+```
+
+Then, start the LLM span from the trace, giving it the model and input messages:
+
+```typescript
+const span = trace.startLLMSpan({
+  name: "llm",
+  model: model,
+  input: {
+    type: "chat_messages",
+    value: messages
+  },
+});
+```
+
+This will capture the LLM input and register the time the call started. Now, continue with the LLM call normally, using the same parameters:
+
+```typescript
+const openai = new OpenAI();
+const chatCompletion = await openai.chat.completions.create({
+  messages: messages,
+  model: model,
+});
+```
+
+Finally, after the OpenAI call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation:
+
+```typescript
+span.end({
+  output: {
+    type: "chat_messages",
+    value: [chatCompletion.choices[0]!.message],
+  },
+  metrics: {
+    promptTokens: chatCompletion.usage?.prompt_tokens,
+    completionTokens: chatCompletion.usage?.completion_tokens,
+  },
+});
+```
+
+<Note>
+On short-live environments like Lambdas or Serverless Functions, be sure to call <br /> `await trace.sendSpans();` to wait for all pending requests to be sent before the runtime is destroyed.
+</Note>
+
+## Capture a RAG Span
+
+Appart from LLM spans, another very used type of span is the RAG span. This is used to capture the retrieved contexts from a RAG that will be used by the LLM, and enables a whole new set of RAG-based features evaluations for RAG quality on LangWatch.
+
+<TypeScriptRAG />
+
+## Capture an arbritary Span
+
+You can also use generic spans to capture any type of operation, its inputs and outputs, for example for a function call:
+
+<TypeScriptCaptureSpans />
+
+## Capturing Exceptions
+
+To capture also when your code throws an exception, you can simply wrap your code around a try/catch, and update or end the span with the exception:
+
+<TypeScriptExceptions />
+
+## Capturing custom evaluation results
+
+[LangWatch Evaluators](/llm-evaluation/list) can run automatically on your traces, but if you have an in-house custom evaluator, you can also capture the evaluation
+results of your custom evaluator on the current trace or span by using the `.addEvaluation` method:
+
+<TypeScriptCustomEvaluation />
+
+
+
+---
+
 # FILE: ./integration/rest-api.mdx
 
 ---
-title: REST API Integration
+title: REST API
 description: Integrate LangWatch with any language by using the REST API
 ---
 

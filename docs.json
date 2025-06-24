@@ -68,12 +68,12 @@
           {
             "group": "Agent Simulations",
             "pages": [
-              "simulations/introduction",
-              "simulations/overview",
-              "simulations/getting-started",
-              "simulations/set-overview",
-              "simulations/batch-runs",
-              "simulations/individual-run"
+              "agent-simulations/introduction",
+              "agent-simulations/overview",
+              "agent-simulations/getting-started",
+              "agent-simulations/set-overview",
+              "agent-simulations/batch-runs",
+              "agent-simulations/individual-run"
             ]
           },
           {
@@ -388,6 +388,30 @@
     {
       "source": "/self-hosting/open-source",
       "destination": "/self-hosting/docker-compose"
+    },
+    {
+      "source": "/simulations/overview",
+      "destination": "/agent-simulations/overview"
+    },
+    {
+      "source": "/simulations/getting-started",
+      "destination": "/agent-simulations/getting-started"
+    },
+    {
+      "source": "/simulations/set-overview",
+      "destination": "/agent-simulations/set-overview"
+    },
+    {
+      "source": "/simulations/batch-runs",
+      "destination": "/agent-simulations/batch-runs"
+    },
+    {
+      "source": "/simulations/individual-run",
+      "destination": "/agent-simulations/individual-run"
+    },
+    {
+      "source": "/simulations/introduction",
+      "destination": "/agent-simulations/introduction"
     }
   ]
 }

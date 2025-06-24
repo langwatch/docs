@@ -11,18 +11,9 @@ For more in-depth information and advanced use cases, please refer to the offici
 First, you need to install the `scenario` library in your project. Choose your language below.
 
 <Tabs>
-  <Tab title="Python">
-    ```bash
-    uv add langwatch-scenario
-    ```
-  </Tab>
-  <Tab title="TypeScript">
-    ```bash
-    pnpm add @langwatch/scenario
-    ```
-  </Tab>
+  <Tab title="Python">```bash uv add langwatch-scenario ```</Tab>
+  <Tab title="TypeScript">```bash pnpm add @langwatch/scenario ```</Tab>
 </Tabs>
-
 
 ## 2. Configure Environment Variables
 
@@ -34,7 +25,6 @@ LANGWATCH_ENDPOINT="https://app.langwatch.ai"
 ```
 
 You can find your `LANGWATCH_API_KEY` in your [LangWatch project settings](https://app.langwatch.ai/settings).
-
 
 ## 3. Create a Basic Scenario
 
@@ -48,10 +38,10 @@ First, you need to create an agent adapter that implements your agent logic. For
     import pytest
     import scenario
     import litellm
-     
+
     # Configure the default model for simulations
     scenario.configure(default_model="openai/gpt-4.1-mini")
-     
+
     @pytest.mark.agent_test
     @pytest.mark.asyncio
     async def test_vegetarian_recipe_agent():
@@ -59,7 +49,7 @@ First, you need to create an agent adapter that implements your agent logic. For
         class RecipeAgent(scenario.AgentAdapter):
             async def call(self, input: scenario.AgentInput) -> scenario.AgentReturnTypes:
                 return vegetarian_recipe_agent(input.messages)
-     
+
         # 2. Run the scenario
         result = await scenario.run(
             name="dinner recipe request",
@@ -79,10 +69,10 @@ First, you need to create an agent adapter that implements your agent logic. For
                 ])
             ],
         )
-     
+
         # 3. Assert the result
         assert result.success
-     
+
     # Example agent implementation using litellm
     @scenario.cache()
     def vegetarian_recipe_agent(messages) -> scenario.AgentReturnTypes:
@@ -171,6 +161,7 @@ First, you need to create an agent adapter that implements your agent logic. For
       });
     });
     ```
+
   </Tab>
 </Tabs>
 
@@ -180,9 +171,9 @@ Once you run this code, you will see a new scenario run appear in the **Simulati
 
 While optional, we strongly recommend setting stable identifiers for your scenarios, sets, and batches for better organization and tracking in LangWatch.
 
--   **`id`**: A unique and stable identifier for your scenario. If not provided, it's often generated from the `name`, which can be brittle if you rename the test.
--   **`setId`**: Groups related scenarios into a test suite. This corresponds to the "Simulation Set" in the UI.
--   **`batchId`**: Groups all scenarios that were run together in a single execution (e.g., a single CI job). You can use a CI environment variable like `process.env.GITHUB_RUN_ID` for this.
+- **`id`**: A unique and stable identifier for your scenario. If not provided, it's often generated from the `name`, which can be brittle if you rename the test.
+- **`setId`**: Groups related scenarios into a test suite. This corresponds to the "Simulation Set" in the UI.
+- **`batchId`**: Groups all scenarios that were run together in a single execution (e.g., a single CI job). You can use a CI environment variable like `process.env.GITHUB_RUN_ID` for this.
 
 <Tabs>
   <Tab title="Python">
@@ -205,6 +196,7 @@ While optional, we strongly recommend setting stable identifiers for your scenar
         ]
     )
     ```
+
   </Tab>
   <Tab title="TypeScript">
     ```typescript
@@ -229,4 +221,4 @@ While optional, we strongly recommend setting stable identifiers for your scenar
     });
     ```
   </Tab>
-</Tabs> 
+</Tabs>
