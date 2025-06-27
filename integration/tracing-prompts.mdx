@@ -1,0 +1,131 @@
+---
+title: Tracing Prompts
+mode: "wide"
+---
+
+# Tracing Prompts
+
+Capturing _which_ prompt – and _which version_ of that prompt – generated a given LLM response is essential for
+
+- debugging behaviour regressions when the prompt is iterated,
+- correlating cost / latency / evaluation scores back to a concrete prompt version,
+- enabling automatic prompt-comparison experiments.
+
+LangWatch already records all LLM calls as **Spans** inside a **Trace**. This page shows how to add one extra span that represents the prompt-fetch step so that every message flowing through your system is connected to a prompt version.
+
+<Alert>
+  Need a refresher on Traces and Spans? Check the{" "}
+  <a href="/concepts">Observability concepts page</a> first.
+</Alert>
+
+## Python SDK – built-in helper
+
+The Python SDK ships with `langwatch.prompt.get_prompt`, which automatically:
+
+1. fetches the prompt config from LangWatch (by ID),
+2. records an OpenTelemetry span called `get_prompt`,
+3. attaches span attributes `langwatch.prompt_id`, `langwatch.prompt_version_id`, `langwatch.prompt_version_number`.
+
+<Tabs>
+<Tab title="Python">
+
+```python
+from langwatch.prompt import get_prompt
+
+prompt = get_prompt("support-bot-greeting")
+
+messages = prompt.format_messages(customer_name="Alice")
+# => [
+#      {"role": "system", "content": "…"},
+#      {"role": "user", "content": "…"}
+#    ]
+```
+
+</Tab>
+<Tab title="TypeScript (Node.js)">
+
+> The TypeScript SDK doesn't (yet) ship a dedicated `getPrompt` helper, but you can achieve the _exact_ same effect today with a tiny utility and **no SDK changes or extra dependencies**.
+
+```ts
+import { LangWatch } from "langwatch";
+import { trace } from "@opentelemetry/api";
+
+const tracer = trace.getTracer("example");
+const langwatch = new LangWatch();
+const traceObj = langwatch.getTrace();
+
+export async function getPrompt(promptId: string) {
+  const span = tracer.startSpan("get_prompt", {
+    attributes: { "inputs.prompt_id": promptId },
+  });
+  try {
+    const endpoint =
+      process.env.LANGWATCH_ENDPOINT ?? "https://app.langwatch.ai";
+    const res = await fetch(`${endpoint}/api/prompts/${promptId}`, {
+      headers: {
+        "X-Auth-Token": process.env.LANGWATCH_API_KEY ?? "",
+      },
+    });
+
+    if (res.status === 404) {
+      throw new Error(`Prompt ${promptId} not found (404)`);
+    }
+    if (res.status === 401) {
+      throw new Error("Authentication error – check LANGWATCH_API_KEY");
+    }
+    if (!res.ok) {
+      throw new Error(`Unexpected status ${res.status}`);
+    }
+
+    const json = await res.json();
+
+    span.setAttributes({
+      "langwatch.prompt_id": json.id,
+      "langwatch.prompt_version_id": json.version_id,
+      "langwatch.prompt_version_number": json.version,
+    });
+
+    return json;
+  } finally {
+    span.end();
+  }
+}
+
+// Later in your request / conversation handler
+const promptCfg = await getPrompt("support-bot-greeting");
+
+const messages = promptCfg.messages.map((m: any) => ({
+  ...m,
+  content: m.content.replace("{customer_name}", "Alice"),
+}));
+
+const llmSpan = traceObj.startLLMSpan({
+  name: "support_response",
+  model: promptCfg.model,
+  input: { type: "chat_messages", value: messages },
+});
+/* …call your LLM of choice… */
+llmSpan.end({ output: { type: "chat_messages", value: llmResponse } });
+```
+
+</Tab>
+</Tabs>
+
+### Why a separate span?
+
+Keeping the prompt-fetch in its own span makes it crystal-clear on the timeline **when** the prompt was resolved and **which version** was used. This unlocks:
+
+- **Search**: filter traces by `langwatch.prompt_id:"support-bot-greeting"`.
+- **Dashboards**: compare latency or evaluation scores across prompt versions.
+- **Replays**: rerun the exact prompt/LLM pair for regression testing.
+
+## Best practices
+
+1. **Cache smartly**: If you memoise prompts locally, _still_ emit the span – it is instantaneous and costs nothing.
+2. **Hide your API key** in browser environments by routing the fetch through your backend.
+3. **One Trace per user request**: start the prompt span _inside_ the same LangWatch trace that will contain the LLM span. This keeps the tree tidy.
+
+## Next steps
+
+- See the [Prompt Versioning feature guide](/features/prompt-versioning) for A/B tests and automatic roll-outs.
+- Automate prompt quality checks with [real-time evaluations](/llm-evaluation/realtime/setup).
