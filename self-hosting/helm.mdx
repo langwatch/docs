@@ -6,7 +6,9 @@ description: LangWatch is available as a Helm chart for easy deployment on Kuber
 LangWatch is available as a Helm chart for easy deployment on Kubernetes. This section provides instructions for installing the langwatch Helm chart.
 
 <Note>
-While the open-source version is available for local use and experimentation, for commercial use please reach out for a [demo call with our team](https://get.langwatch.ai/request-a-demo).
+  While the open-source version is available for local use and experimentation,
+  for commercial use please reach out for a [demo call with our
+  team](https://get.langwatch.ai/request-a-demo).
 </Note>
 
 ## Required Values
@@ -15,7 +17,8 @@ When installing this chart, the following environment variables must be provided
 
 - `app.env.NEXTAUTH_SECRET`: A random string used to hash tokens, sign cookies, and generate cryptographic keys. **Required** for authentication to work.
 - `app.env.API_TOKEN_JWT_SECRET`: A random string used to securely store API tokens.
-- `app.env.BASE_HOST`: The base URL of the application (e.g., `http://localhost:5560`).
+- `app.env.CRON_API_KEY`: A random string used to authenticate with the cron service for triggers and other background jobs.
+- `app.env.BASE_HOST`: The base URL of the application (e.g., `https://langwatch.yourdomain.com` or `http://localhost:5560` on e.g. minikube or port-forwarding).
 - `app.env.NEXTAUTH_URL`: The URL of the authentication service (usually same as `BASE_HOST`).
 
 ## Example Setup
@@ -24,10 +27,11 @@ When installing this chart, the following environment variables must be provided
 # Generate secure secrets
 export NEXTAUTH_SECRET=$(openssl rand -base64 32)
 export API_TOKEN_JWT_SECRET=$(openssl rand -base64 32)
+export CRON_API_KEY=$(openssl rand -base64 32)
 
 # Set application URLs
-export BASE_HOST="http://localhost:5560"
-export NEXTAUTH_URL="http://localhost:5560"
+export BASE_HOST="http://localhost:5560" # for minikube or port-forwarding, or "https://langwatch.yourdomain.com" for the definitive deployment
+export NEXTAUTH_URL="http://localhost:5560" # for minikube or port-forwarding, or "https://langwatch.yourdomain.com" for the definitive deployment
 
 # Add LangWatch Helm repository
 helm repo add langwatch https://langwatch.github.io/langwatch/
@@ -38,5 +42,16 @@ helm install langwatch langwatch/langwatch-helm \
   --set app.env.NEXTAUTH_SECRET=$NEXTAUTH_SECRET \
   --set app.env.API_TOKEN_JWT_SECRET=$API_TOKEN_JWT_SECRET \
   --set app.env.BASE_HOST=$BASE_HOST \
-  --set app.env.NEXTAUTH_URL=$NEXTAUTH_URL
+  --set app.env.NEXTAUTH_URL=$NEXTAUTH_URL \
+  --set app.env.CRON_API_KEY=$CRON_API_KEY
 ```
+
+## Port Forwarding
+
+Once the chart is installed, you can port-forward the service to open up in your local browser before setting up the proper domain.
+
+```bash
+kubectl port-forward service/langwatch-app 5560:5560
+```
+
+Then you can access the application at `http://localhost:5560`.
