@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       release_reason:
-        description: 'Reason for docs release'
+        description: "Reason for docs release"
         required: true
-        default: 'General'
+        default: "General"
 
 jobs:
   docs:
