@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   check_links:
@@ -15,57 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install Mintlify CLI
-        run: npm install -g mintlify
-
       - name: Check for broken links
-        id: broken_links_check
         run: |
-          output=$(mintlify broken-links)
+          output=$(npx mintlify broken-links)
           echo "$output"
-          echo "output<<EOF" >> $GITHUB_OUTPUT
-          echo "$output" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Verify output
-        run: |
-          expected_substring="No broken links found."
-          actual_raw_output="${{ steps.broken_links_check.outputs.output }}"
-          # Remove ANSI escape codes (colors, bold, etc.)
-          actual_clean_output=$(echo "$actual_raw_output" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')
-
-          echo "Cleaned output to check:"
-          echo "$actual_clean_output"
-
-          if echo "$actual_clean_output" | grep -q "$expected_substring"; then
-            echo "Success: Output contains '$expected_substring'."
-            exit 0
-          else
-            echo "Error: Output does not contain '$expected_substring'. Broken links detected."
-            echo "Adding broken links to job summary..."
-            echo "### :x: Broken Links Found"
-            echo "The following broken links were reported by \`mintlify broken-links\`:" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY # Add a blank line
-            echo "```" >> $GITHUB_STEP_SUMMARY
-            echo "$actual_clean_output" >> $GITHUB_STEP_SUMMARY
-            echo "```" >> $GITHUB_STEP_SUMMARY
-
-            echo "--- Failure Details (for logs) ---"
-            echo "Expected substring: $expected_substring"
-            echo "Actual (raw, with potential styles):"
-            echo "$actual_raw_output"
-            echo "Actual (cleaned, styles stripped):"
-            echo "$actual_clean_output"
+          if echo "$output" | grep -qi "found.*broken links in"; then
+            echo "❌ Broken links detected!"
             exit 1
+          else
+            echo "✅ No broken links found"
           fi
