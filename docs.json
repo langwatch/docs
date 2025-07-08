@@ -348,6 +348,11 @@
       "youtube": "https://www.youtube.com/@LangWatch"
     }
   },
+  "integrations": {
+    "ga4": {
+      "measurementId": "G-EW0RBEXFBD"
+    }
+  },
   "redirects": [
     {
       "source": "/ci/cache/busted/1751976173",
