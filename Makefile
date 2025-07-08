@@ -14,6 +14,7 @@ sync-api-spec:
 .PHONY: view-docs
 preview:
 	@echo "Viewing docs..."
+	@npx mintlify dev
 	make open
 
 .PHONY: open
