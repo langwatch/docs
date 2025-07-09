@@ -349,8 +349,8 @@
     }
   },
   "integrations": {
-    "ga4": {
-      "measurementId": "G-EW0RBEXFBD"
+    "gtm": {
+        "tagId": "GTM-KJ4S6Z9C"
     }
   },
   "redirects": [
