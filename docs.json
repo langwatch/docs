@@ -295,6 +295,12 @@
             ]
           },
           {
+            "group": "Use Cases",
+            "pages": [
+              "use-cases/technical-rag"
+            ]
+          },
+          {
             "group": "Support",
             "pages": [
               "support",
