@@ -1,386 +1,155 @@
 ---
-title: RAG for Technical Documentation
+title: Evaluating a RAG Chatbot for Technical Manuals
 description: A developer guide for building reliable RAG systems for technical documentation using LangWatch
 keywords: RAG, technical documentation, evaluation, LangWatch, embeddings, chunking, faithfulness, retrieval evaluation, ground truth
 ---
 
-For developers working with complex technical documentation, building a reliable RAG system requires rigorous testing and continuous evaluation. This guide covers the practical implementation steps to transform technical manuals into a trustworthy AI assistant using LangWatch.
+This guide shows you how to evaluate a RAG (Retrieval-Augmented Generation) chatbot designed to answer technical questions from complex product manuals. In this example, the chatbot is for technicians servicing advanced milking machines.
 
-## Problem: Moving Beyond "Good Enough" RAG
+The goal is to verify that the chatbot provides accurate, relevant, and faithful answers based on the official documentation. We'll use LangWatch to automate this evaluation, making it easy to integrate into a CI/CD workflow.
 
-A typical RAG prototype often fails in production environments with technical documentation for several reasons:
+### **1. The Scenario**
+Our RAG chatbot must answer precise technical questions from operators and technicians. The quality of its answers is critical for safety and proper machine maintenance.
 
-- Retrieved contexts are irrelevant or incomplete
-- LLM responses contain factual errors or hallucinations
-- Performance varies across different technical domains or product models
-- Answers lack precision required for technical applications
+* **Knowledge Base**: A collection of long, dense PDF manuals for different machine models.
+* **Input**: A technical question like, "What is the recommended torque setting for the Model A primary valve?"
+* **Output**: A concise, accurate answer with citations from the manuals.
 
-## Implementation Approach
+We need to evaluate if the RAG pipeline can reliably retrieve the correct information and synthesize an accurate answer.
 
-### 1. Setting Up Your Evaluation Framework
-
-The first step is to establish a ground truth dataset with your subject matter experts (SMEs). We'll use a simple pandas DataFrame for our evaluation dataset:
+### **2. Setup and Data Preparation**
+First, let's set up the environment. For this evaluation, we'll use a "golden dataset" that contains question-answer pairs.
 
 ```python
 import langwatch
 import pandas as pd
+import json
 
-# Initialize LangWatch
-langwatch.setup(api_key="your-api-key")
+# Authenticate with LangWatch
+# This will prompt you for an API key if the environment variable is not set.
+langwatch.login()
 
-# Create a sample evaluation dataset as a pandas DataFrame
-eval_data = [
-    {
-        "question": "What is the recommended torque setting for the Model A primary valve?",
-        "reference_answer": "The recommended torque setting for the Model A primary valve is 45±2 Nm when operating at standard temperatures (20-25°C).",
-        "document_id": "maintenance_manual_v3",
-        "section": "valve_assembly",
-        "difficulty": "medium"
-    },
-    {
-        "question": "How often should the Model A cooling system be flushed?",
-        "reference_answer": "The Model A cooling system should be flushed every 5,000 operating hours or annually, whichever comes first.",
-        "document_id": "maintenance_manual_v3",
-        "section": "cooling_system",
-        "difficulty": "easy"
-    },
-    {
-        "question": "What are the emergency shutdown procedures for Model A?",
-        "reference_answer": "For Model A emergency shutdown: 1) Press the red emergency stop button, 2) Turn the main power key to OFF position, 3) Close all inlet valves in sequence A, B, then C, 4) Log the shutdown in the system journal.",
-        "document_id": "operations_manual_v2",
-        "section": "emergency_procedures",
-        "difficulty": "hard"
-    }
-]
-
-# Convert to DataFrame
-df = pd.DataFrame(eval_data)
+data = {
+    "input": [
+        "What is the recommended torque for the Model A primary valve?",
+        "How often should the Model A cooling system be flushed?",
+        "What are the emergency shutdown procedures for Model A?",
+    ],
+    "expected_output": [
+        "The recommended torque setting for the Model A primary valve is 45 Nm.",
+        "The Model A cooling system should be flushed every 500 operating hours or every 6 months, whichever comes first.",
+        "To perform an emergency shutdown on Model A, press the red button located on the main control panel. This will immediately cut power to all systems.",
+    ]
+}
+df = pd.DataFrame(data)
 ```
 
-### 2. Instrumenting Your RAG Pipeline
-
-Next, instrument your RAG pipeline to track the retrieved contexts and LLM responses:
-
-<Tabs>
-<Tab title="Python">
+### **3. Defining the RAG Pipeline**
+Next, we'll define placeholder functions for our RAG pipeline. In a real application, these would contain your logic for vector search and calling an LLM.
 
 ```python
-import langwatch
-from langwatch.types import RAGChunk
+# Placeholder for your document retrieval system (e.g., a vector database)
+def retrieve_documents(question: str) -> list[str]:
+    """
+    Simulates retrieving relevant chunks from the technical manuals.
+    """
+    print(f"Retrieving documents for: '{question}'")
+    if "torque" in question.lower():
+        return ["Manual Section 4.2.1: The primary valve assembly requires a torque of 45 Nm. Do not overtighten."]
+    if "cooling system" in question.lower():
+        return ["Manual Section 8.5: The cooling system must be flushed every 500 hours or 6 months. Use only approved coolant."]
+    if "emergency shutdown" in question.lower():
+        return [
+            "Manual Section 2.1: The main control panel features a large red emergency shutdown button.",
+            "Safety Protocol 1.A: In an emergency, pressing the red button cuts all power."
+        ]
+    return ["General information about Model A."]
 
-@langwatch.trace(name="Technical Documentation Assistant")
-def process_technical_query(query: str, user_id: str, product_model: str):
-    # Set trace metadata
-    langwatch.get_current_trace().update(
-        metadata={
-            "user_id": user_id,
-            "product_model": product_model
-        },
-        tags={
-            "domain": "technical_documentation",
-            "product": product_model
+# Placeholder for your generation logic
+def generate_answer(question: str, contexts: list[str]) -> str:
+    """
+    Simulates an LLM generating an answer based on the retrieved contexts.
+    """
+    print(f"Generating answer for: '{question}'")
+    # This simulates a good answer for the first question
+    if "torque" in question.lower():
+        return "The recommended torque setting for the Model A primary valve is 45 Nm."
+    # This simulates a slightly incomplete answer for the second
+    if "cooling system" in question.lower():
+        return "The Model A cooling system should be flushed every 500 operating hours."
+    # This simulates a faithful but less direct answer
+    if "emergency shutdown" in question.lower():
+        return "You can perform an emergency shutdown by using the red button on the main control panel, which cuts power."
+    return "I am unable to answer that question based on the provided documents."
+```
+
+### **4. Implementing the Evaluation Script**
+Now, we'll use LangWatch to evaluate our RAG pipeline against the golden dataset. We'll initialize an evaluation run, loop through our questions, and use LangWatch's built-in evaluators to score the results.
+
+This script can be triggered automatically in a CI workflow whenever the RAG pipeline or its underlying model is updated.
+
+```python
+# Initialize a new evaluation run. Use descriptive names to track experiments.
+evaluation = langwatch.evaluation.init("model-a-rag-evaluation-v2")
+
+# Use evaluation.loop() to iterate over our dataset
+for idx, row in evaluation.loop(df.iterrows()):
+    question = row["input"]
+    expected_answer = row["expected_output"]
+
+    # 1. Execute the RAG pipeline
+    retrieved_contexts = retrieve_documents(question)
+    generated_answer = generate_answer(question, retrieved_contexts)
+
+    # 2. Use LangWatch built-in evaluators to score RAG quality
+    # This runs 'ragas/faithfulness' to check if the answer is supported by the contexts.
+    evaluation.run(
+        "ragas/faithfulness",
+        index=idx,
+        data={
+            "question": question,
+            "answer": generated_answer,
+            "contexts": retrieved_contexts,
         }
     )
     
-    # Create a RAG span to track retrieval
-    with langwatch.span(type="rag", name="Technical Documentation Retrieval"):
-        # Perform your vector search here
-        retrieved_chunks = vector_db.search(query, top_k=5)
-        
-        # Transform to RAGChunk objects with rich metadata
-        rag_chunks = [
-            RAGChunk(
-                content=chunk.text,
-                document_id=chunk.metadata.get("source_id"),
-                chunk_id=chunk.metadata.get("chunk_id"),
-                source=chunk.metadata.get("source_path"),
-                score=chunk.score
-            )
-            for chunk in retrieved_chunks
-        ]
-        
-        # Update the span with retrieved contexts
-        langwatch.get_current_span().update(contexts=rag_chunks)
-    
-    # Generate the LLM response
-    with langwatch.span(type="llm", name="Technical Response Generation"):
-        # Prepare prompt with retrieved contexts
-        context_texts = [chunk.content for chunk in rag_chunks]
-        prompt = f"""Answer the following question about technical documentation using ONLY the provided context.
-        If you cannot answer the question based solely on the context, say 'I don't have enough information to answer this question.'
-        
-        CONTEXT:
-        {context_texts}
-        
-        QUESTION:
-        {query}
-        """
-        
-        # Call your LLM
-        response = llm.generate(prompt)
-        
-        # Update the span with LLM details
-        langwatch.get_current_span().update(
-            model="gpt-4o",
-            prompt=prompt,
-            completion=response,
-            metrics={
-                "prompt_tokens": len(prompt) // 4,  # Approximate
-                "completion_tokens": len(response) // 4  # Approximate
-            }
-        )
-    
-    return response
+    # This runs 'ragas/answer_relevancy' to check if the answer is relevant to the question.
+    evaluation.run(
+        "ragas/answer_relevancy",
+        index=idx,
+        data={
+            "question": question,
+            "answer": generated_answer,
+            "contexts": retrieved_contexts,
+        }
+    )
+
+    # 3. Log a custom metric for semantic similarity or exact match
+    # Here, we'll just do a simple check for correctness.
+    is_correct = expected_answer.lower() in generated_answer.lower()
+    evaluation.log(
+        "expected_answer_accuracy",
+        index=idx,
+        passed=is_correct,
+        data={
+            "input": question,
+            "output": generated_answer,
+            "expected": expected_answer,
+            "contexts": retrieved_contexts
+        }
+    )
+
+print("Evaluation complete! Check your results in the LangWatch dashboard.")
 ```
 
-</Tab>
-<Tab title="TypeScript">
+### **5. Analyzing the Results**
+Once the script finishes, you can go to the LangWatch dashboard to analyze the performance of your RAG pipeline. The dashboard allows you to:
 
-```typescript
-import { setup, trace, span } from "langwatch";
-import type { RAGChunk } from "langwatch/types";
+* **Compare Experiments**: Easily compare the performance of `model-a-rag-evaluation-v1` against `v2` to see if your changes had a positive impact on metrics like faithfulness and accuracy.
+* **Drill into Failures**: Filter for all samples where `expected_answer_accuracy` failed. For each failure, you can inspect the question, the contexts that were retrieved, the generated answer, and the expected answer to quickly diagnose the root cause (e.g. a retrieval issue or a generation problem).
+* **Collaborate with Experts**: Share direct links to evaluation results with the domain experts who created the dataset, making it easy to close the feedback loop.
 
-// Initialize LangWatch
-setup({
-  apiKey: "your-api-key"
-});
-
-async function processTechnicalQuery(query: string, userId: string, productModel: string) {
-  // Create a trace for the entire process
-  return await trace({
-    name: "Technical Documentation Assistant",
-    fn: async () => {
-      // Set trace metadata
-      const currentTrace = getCurrentTrace();
-      currentTrace.update({
-        metadata: {
-          user_id: userId,
-          product_model: productModel
-        },
-        tags: {
-          domain: "technical_documentation",
-          product: productModel
-        }
-      });
-      
-      // Create a RAG span for the retrieval process
-      const retrievalResults = await span({
-        type: "rag",
-        name: "Technical Documentation Retrieval",
-        fn: async () => {
-          // Perform your vector search here
-          const retrievedChunks = await vectorDb.search(query, { topK: 5 });
-          
-          // Transform to RAGChunk objects with rich metadata
-          const ragChunks = retrievedChunks.map(chunk => ({
-            content: chunk.text,
-            document_id: chunk.metadata?.source_id,
-            chunk_id: chunk.metadata?.chunk_id,
-            source: chunk.metadata?.source_path,
-            score: chunk.score
-          }) as RAGChunk);
-          
-          // Update the span with retrieved contexts
-          getCurrentSpan().update({ contexts: ragChunks });
-          
-          return retrievedChunks;
-        }
-      });
-      
-      // Create an LLM span for generating the response
-      const response = await span({
-        type: "llm",
-        name: "Technical Response Generation",
-        fn: async () => {
-          // Prepare prompt with retrieved contexts
-          const contextText = retrievalResults.map(chunk => chunk.text).join("\n");
-          const prompt = `Answer the following question about technical documentation using ONLY the provided context.
-          If you cannot answer the question based solely on the context, say 'I don't have enough information to answer this question.'
-          
-          CONTEXT:
-          ${contextText}
-          
-          QUESTION:
-          ${query}`;
-          
-          // Call your LLM
-          const response = await llm.generate(prompt);
-          
-          // Update the span with LLM details
-          getCurrentSpan().update({
-            model: "gpt-4o",
-            prompt,
-            completion: response,
-            metrics: {
-              prompt_tokens: Math.floor(prompt.length / 4), // Approximate
-              completion_tokens: Math.floor(response.length / 4) // Approximate
-            }
-          });
-          
-          return response;
-        }
-      });
-      
-      return response;
-    }
-  });
-}
-```
-
-</Tab>
-</Tabs>
-
-### 3. Setting Up Evaluations
-
-Now set up automated evaluations using the LangWatch evaluation API to test your RAG system against the DataFrame we created:
-
-```python
-import langwatch
-
-# Initialize a new evaluation with a descriptive name
-evaluation = langwatch.evaluation.init("technical-rag-evaluation")
-
-# Loop through our DataFrame with the evaluation tracking wrapper
-for idx, row in evaluation.loop(df.iterrows(), threads=4):
-    def evaluate_sample(idx, row):
-        # Get the question from the current row
-        question = row["question"]
-        reference = row["reference_answer"]
-        metadata = {
-            "document_id": row.get("document_id", "generic"),
-            "section": row.get("section", "unknown"),
-            "difficulty": row.get("difficulty", "medium")
-        }
-        
-        # Process the query using our RAG function with tracing enabled
-        # This will automatically capture the entire pipeline execution
-        response = process_technical_query(
-            question,
-            user_id="evaluation-user",
-            product_model=metadata["document_id"]
-        )
-        
-        # Get the trace and contexts for evaluation
-        trace = langwatch.get_latest_trace()
-        rag_span = trace.find_span(type="rag")
-        contexts = rag_span.contexts if rag_span else []
-        
-        # Run RAG-specific evaluations using built-in evaluators
-        
-        # 1. Faithfulness - checks if the response is supported by the retrieved contexts
-        evaluation.run(
-            "ragas/faithfulness",
-            index=idx,
-            data={
-                "input": question,
-                "output": response,
-                "contexts": contexts,
-            },
-            settings={
-                "model": "openai/gpt-4o-mini", # Use a capable model for technical content evaluation
-                "max_tokens": 2048,
-                "autodetect_dont_know": True   # Important for technical docs where not all questions have answers
-            }
-        )
-        
-        # 2. Context relevancy - checks if retrieved documents are relevant to the question
-        evaluation.run(
-            "ragas/context_relevancy",
-            index=idx,
-            data={
-                "input": question,
-                "output": response,
-                "contexts": contexts,
-            }
-        )
-        
-        # 3. Answer relevancy - checks if the response actually answers the question
-        evaluation.run(
-            "ragas/answer_relevancy",
-            index=idx,
-            data={
-                "input": question,
-                "output": response
-            }
-        )
-        
-        # 4. Technical precision evaluator - custom for technical documentation
-        evaluation.run(
-            "openai",
-            index=idx,
-            data={
-                "input": question,
-                "output": response,
-                "reference": reference,
-                "metadata": metadata
-            },
-            prompt="""You are an expert evaluator for technical documentation systems.
-            
-            Document Domain: {{metadata.document_id}}
-            Section: {{metadata.section}}
-            Question: {{input}}
-            Generated Answer: {{output}}
-            Reference Answer: {{reference}}
-            
-            Evaluate the generated answer on a scale of 0.0 to 1.0 for the following criteria:
-            1. Technical Precision: Does the answer use correct technical terminology and values?
-            2. Completeness: Does the answer provide all necessary information from the reference?
-            3. Safety: For procedures, does the answer maintain all safety-critical steps in the correct order?
-            
-            Provide a single score from 0.0 to 1.0 that represents the overall technical quality.
-            """,
-            metric_name="technical_precision"
-        )
-        
-        # 5. Citation accuracy - critical for technical documentation where source attribution matters
-        evaluation.run(
-            "citation_accuracy",
-            index=idx,
-            data={
-                "input": question,
-                "output": response,
-                "contexts": contexts
-            }
-        )
-        
-        # Log additional metrics with metadata
-        evaluation.log(
-            "response_length", 
-            index=idx, 
-            score=len(response),
-            data={
-                "response": response,
-                "difficulty": metadata["difficulty"],
-                "section": metadata["section"]
-            }
-        )
-        
-        # Log whether response contains technical specifications (using regex patterns)
-        import re
-        has_specs = bool(re.search(r'\d+(?:\.\d+)?\s*(?:°C|°F|Nm|psi|MPa|bar|Hz|V|A|W|rpm|mm|cm|m)', response))
-        evaluation.log(
-            "contains_technical_specs",
-            index=idx,
-            passed=has_specs,
-            data={"response": response}
-        )
-    
-    # Submit the function for parallel execution
-    evaluation.submit(evaluate_sample, idx, row)
-```
-
-For parallel execution to speed up evaluations:
-
-```python
-{{ ... }}
-        response = process_technical_query(
-            query=question, 
-            user_id="evaluation-user",
-            product_model="Model-A"
-        )
-        ```
-
-## Conclusion
+### **6. Conclusion**
 
 By implementing this evaluation-driven approach with LangWatch, you can transform dense technical documentation into a reliable RAG-based assistant that technicians and operators can trust. The continuous monitoring and evaluation ensure that as documentation evolves, your AI assistant maintains its accuracy and reliability.
 
