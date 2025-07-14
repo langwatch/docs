@@ -66,21 +66,17 @@ def retrieve_documents(question: str) -> list[str]:
     return ["General information about Model A."]
 
 # Placeholder for your generation logic
-def generate_answer(question: str, contexts: list[str]) -> str:
-    """
-    Simulates an LLM generating an answer based on the retrieved contexts.
-    """
-    print(f"Generating answer for: '{question}'")
-    # This simulates a good answer for the first question
-    if "torque" in question.lower():
-        return "The recommended torque setting for the Model A primary valve is 45 Nm."
-    # This simulates a slightly incomplete answer for the second
-    if "cooling system" in question.lower():
-        return "The Model A cooling system should be flushed every 500 operating hours."
-    # This simulates a faithful but less direct answer
-    if "emergency shutdown" in question.lower():
-        return "You can perform an emergency shutdown by using the red button on the main control panel, which cuts power."
-    return "I am unable to answer that question based on the provided documents."
+def generate_answer(question: str, contexts: List[str]) -> str:
+    system_prompt = "You are a helpful technical assistant. Use the following document chunks to answer the user's question accurately."
+
+    response = client.responses.create(
+        model="gpt-4o",
+        instructions=system_prompt,
+        input=[{"role": "user", "content": f"Documents:\n{chr(10).join(contexts)}"}, {"role": "user", "content": f"Question: {question}"}
+        ]
+    )
+
+    return response.output
 ```
 
 ### **4. Implementing the Evaluation Script**
