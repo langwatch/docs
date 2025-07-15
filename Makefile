@@ -1,6 +1,6 @@
 # Directory paths
 DOCS_DIR = api-reference
-API_SPEC_FILE = openapiLangWatch.json
+API_SPEC_FILE = openapi-langwatch.json
 GITHUB_RAW_URL = https://raw.githubusercontent.com/langwatch/langwatch/main/langwatch/src/app/api/$(API_SPEC_FILE)
 
 
