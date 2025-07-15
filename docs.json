@@ -181,9 +181,10 @@
           },
           {
             "group": "LLM Evaluation",
+            
             "pages": [
               "llm-evaluation/overview",
-              "llm-evaluation/offline/code/evaluation-api",
+            "llm-evaluation/offline/code/evaluation-api",
               {
                 "group": "Evaluation Wizard",
                 "pages": [
@@ -198,7 +199,11 @@
                   "evaluations/custom-evaluator-integration"
                 ]
               },
-              "llm-evaluation/list",
+              "llm-evaluation/list",     
+              {
+                "group": "Evaluator APIs",
+                "openapi": "/api-reference/openapi-evals.json"
+              },
               {
                 "group": "Datasets",
                 "pages": [

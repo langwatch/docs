@@ -1,0 +1,3654 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "LangEvals API",
+    "version": "1.0.0",
+    "description": "API for LangEvals evaluators"
+  },
+  "servers": [
+    {
+      "url": "https://app.langwatch.ai/api/evaluations",
+      "description": "Production server"
+    }
+  ],
+  "security": [
+    {
+      "api_key": []
+    }
+  ],
+  "paths": {
+    "/huggingface/llama_guard/evaluate": {
+      "post": {
+        "summary": "Llama Guard",
+        "description": "This evaluator is a special version of Llama trained strictly\nfor acting as a guardrail, following customizable guidelines.\nIt can work both as a safety evaluator and as policy enforcement.",
+        "operationId": "huggingface_llama_guard_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/huggingface_llama_guardRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/basic/evaluate": {
+      "post": {
+        "summary": "Custom Basic Evaluator",
+        "description": "Allows you to check for simple text matches or regex evaluation.",
+        "operationId": "langevals_basic_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_basicRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/competitor_blocklist/evaluate": {
+      "post": {
+        "summary": "Competitor Blocklist",
+        "description": "This evaluator checks if any of the specified competitors was mentioned",
+        "operationId": "langevals_competitor_blocklist_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_competitor_blocklistRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/competitor_llm/evaluate": {
+      "post": {
+        "summary": "Competitor Allowlist Check",
+        "description": "This evaluator use an LLM-as-judge to check if the conversation is related to competitors, without having to name them explicitly",
+        "operationId": "langevals_competitor_llm_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_competitor_llmRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/competitor_llm_function_call/evaluate": {
+      "post": {
+        "summary": "Competitor LLM Check",
+        "description": "This evaluator implements LLM-as-a-judge with a function call approach to check if the message contains a mention of a competitor.",
+        "operationId": "langevals_competitor_llm_function_call_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_competitor_llm_function_callRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/exact_match/evaluate": {
+      "post": {
+        "summary": "Exact Match Evaluator",
+        "description": "A simple evaluator that checks if the output matches the expected_output exactly.",
+        "operationId": "langevals_exact_match_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_exact_matchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/llm_answer_match/evaluate": {
+      "post": {
+        "summary": "LLM Answer Match",
+        "description": "Uses an LLM to check if the generated output answers a question correctly the same way as the expected output, even if their style is different.",
+        "operationId": "langevals_llm_answer_match_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_llm_answer_matchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/llm_boolean/evaluate": {
+      "post": {
+        "summary": "LLM-as-a-Judge Boolean Evaluator",
+        "description": "Use an LLM as a judge with a custom prompt to do a true/false boolean evaluation of the message.",
+        "operationId": "langevals_llm_boolean_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_llm_booleanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/llm_category/evaluate": {
+      "post": {
+        "summary": "LLM-as-a-Judge Category Evaluator",
+        "description": "Use an LLM as a judge with a custom prompt to classify the message into custom defined categories.",
+        "operationId": "langevals_llm_category_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_llm_categoryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/llm_score/evaluate": {
+      "post": {
+        "summary": "LLM-as-a-Judge Score Evaluator",
+        "description": "Use an LLM as a judge with custom prompt to do a numeric score evaluation of the message.",
+        "operationId": "langevals_llm_score_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_llm_scoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/off_topic/evaluate": {
+      "post": {
+        "summary": "Off Topic Evaluator",
+        "description": "This evaluator checks if the user message is concerning one of the allowed topics of the chatbot",
+        "operationId": "langevals_off_topic_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_off_topicRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/query_resolution/evaluate": {
+      "post": {
+        "summary": "Query Resolution",
+        "description": "This evaluator checks if all the user queries in the conversation were resolved. Useful to detect when the bot doesn't know how to answer or can't help the user.",
+        "operationId": "langevals_query_resolution_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_query_resolutionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/similarity/evaluate": {
+      "post": {
+        "summary": "Semantic Similarity Evaluator",
+        "description": "Allows you to check for semantic similarity or dissimilarity between input and output and a\ntarget value, so you can avoid sentences that you don't want to be present without having to\nmatch on the exact text.",
+        "operationId": "langevals_similarity_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_similarityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/langevals/valid_format/evaluate": {
+      "post": {
+        "summary": "Valid Format Evaluator",
+        "description": "Allows you to check if the output is a valid json, markdown, python, sql, etc.\nFor JSON, can optionally validate against a provided schema.",
+        "operationId": "langevals_valid_format_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/langevals_valid_formatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/azure/content_safety/evaluate": {
+      "post": {
+        "summary": "Azure Content Safety",
+        "description": "This evaluator detects potentially unsafe content in text, including hate speech,\nself-harm, sexual content, and violence. It allows customization of the severity\nthreshold and the specific categories to check.",
+        "operationId": "azure_content_safety_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/azure_content_safetyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/azure/jailbreak/evaluate": {
+      "post": {
+        "summary": "Azure Jailbreak Detection",
+        "description": "This evaluator checks for jailbreak-attempt in the input using Azure's Content Safety API.",
+        "operationId": "azure_jailbreak_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/azure_jailbreakRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/azure/prompt_injection/evaluate": {
+      "post": {
+        "summary": "Azure Prompt Shield",
+        "description": "This evaluator checks for prompt injection attempt in the input and the contexts using Azure's Content Safety API.",
+        "operationId": "azure_prompt_injection_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/azure_prompt_injectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/openai/moderation/evaluate": {
+      "post": {
+        "summary": "OpenAI Moderation",
+        "description": "This evaluator uses OpenAI's moderation API to detect potentially harmful content in text,\nincluding harassment, hate speech, self-harm, sexual content, and violence.",
+        "operationId": "openai_moderation_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/openai_moderationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lingua/language_detection/evaluate": {
+      "post": {
+        "summary": "Lingua Language Detection",
+        "description": "This evaluator detects the language of the input and output text to check for example if the generated answer is in the same language as the prompt,\nor if it's in a specific expected language.",
+        "operationId": "lingua_language_detection_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/lingua_language_detectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_answer_correctness/evaluate": {
+      "post": {
+        "summary": "Ragas Answer Correctness",
+        "description": "Computes with an LLM a weighted combination of factual as well as semantic similarity between the generated answer and the expected output.",
+        "operationId": "legacy_ragas_answer_correctness_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_answer_correctnessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_answer_relevancy/evaluate": {
+      "post": {
+        "summary": "Ragas Answer Relevancy",
+        "description": "Evaluates how pertinent the generated answer is to the given prompt. Higher scores indicate better relevancy.",
+        "operationId": "legacy_ragas_answer_relevancy_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_answer_relevancyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_context_precision/evaluate": {
+      "post": {
+        "summary": "Ragas Context Precision",
+        "description": "This metric evaluates whether all of the ground-truth relevant items present in the contexts are ranked higher or not. Higher scores indicate better precision.",
+        "operationId": "legacy_ragas_context_precision_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_context_precisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_context_recall/evaluate": {
+      "post": {
+        "summary": "Ragas Context Recall",
+        "description": "This evaluator measures the extent to which the retrieved context aligns with the annotated answer, treated as the ground truth. Higher values indicate better performance.",
+        "operationId": "legacy_ragas_context_recall_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_context_recallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_context_relevancy/evaluate": {
+      "post": {
+        "summary": "Ragas Context Relevancy",
+        "description": "This metric gauges the relevancy of the retrieved context, calculated based on both the question and contexts. The values fall within the range of (0, 1), with higher values indicating better relevancy.",
+        "operationId": "legacy_ragas_context_relevancy_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_context_relevancyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_context_utilization/evaluate": {
+      "post": {
+        "summary": "Ragas Context Utilization",
+        "description": "This metric evaluates whether all of the output relevant items present in the contexts are ranked higher or not. Higher scores indicate better utilization.",
+        "operationId": "legacy_ragas_context_utilization_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_context_utilizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/legacy/ragas_faithfulness/evaluate": {
+      "post": {
+        "summary": "Ragas Faithfulness",
+        "description": "This evaluator assesses the extent to which the generated answer is consistent with the provided context. Higher scores indicate better faithfulness to the context, useful for detecting hallucinations.",
+        "operationId": "legacy_ragas_faithfulness_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/legacy_ragas_faithfulnessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/example/word_count/evaluate": {
+      "post": {
+        "summary": "Example Evaluator",
+        "description": "This evaluator serves as a boilerplate for creating new evaluators.",
+        "operationId": "example_word_count_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/example_word_countRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/bleu_score/evaluate": {
+      "post": {
+        "summary": "BLEU Score",
+        "description": "Traditional NLP metric. BLEU score for evaluating the similarity between two strings.",
+        "operationId": "ragas_bleu_score_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_bleu_scoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/context_f1/evaluate": {
+      "post": {
+        "summary": "Context F1",
+        "description": "Balances between precision and recall for context retrieval, increasing it means a better signal-to-noise ratio. Uses traditional string distance metrics.",
+        "operationId": "ragas_context_f1_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_context_f1Request"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/context_precision/evaluate": {
+      "post": {
+        "summary": "Context Precision",
+        "description": "Measures how accurate is the retrieval compared to expected contexts, increasing it means less noise in the retrieval. Uses traditional string distance metrics.",
+        "operationId": "ragas_context_precision_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_context_precisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/context_recall/evaluate": {
+      "post": {
+        "summary": "Context Recall",
+        "description": "Measures how many relevant contexts were retrieved compared to expected contexts, increasing it means more signal in the retrieval. Uses traditional string distance metrics.",
+        "operationId": "ragas_context_recall_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_context_recallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/factual_correctness/evaluate": {
+      "post": {
+        "summary": "LLM Factual Match",
+        "description": "Computes with an LLM how factually similar the generated answer is to the expected output.",
+        "operationId": "ragas_factual_correctness_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_factual_correctnessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/faithfulness/evaluate": {
+      "post": {
+        "summary": "Ragas Faithfulness",
+        "description": "This evaluator assesses the extent to which the generated answer is consistent with the provided context. Higher scores indicate better faithfulness to the context, useful for detecting hallucinations.",
+        "operationId": "ragas_faithfulness_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_faithfulnessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/response_context_precision/evaluate": {
+      "post": {
+        "summary": "Ragas Response Context Precision",
+        "description": "Uses an LLM to measure the proportion of chunks in the retrieved context that were relevant to generate the output or the expected output.",
+        "operationId": "ragas_response_context_precision_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_response_context_precisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/response_context_recall/evaluate": {
+      "post": {
+        "summary": "Ragas Response Context Recall",
+        "description": "Uses an LLM to measure how many of relevant documents attributable the claims in the output were successfully retrieved in order to generate an expected output.",
+        "operationId": "ragas_response_context_recall_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_response_context_recallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/response_relevancy/evaluate": {
+      "post": {
+        "summary": "Ragas Response Relevancy",
+        "description": "Evaluates how pertinent the generated answer is to the given prompt. Higher scores indicate better relevancy.",
+        "operationId": "ragas_response_relevancy_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_response_relevancyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/rouge_score/evaluate": {
+      "post": {
+        "summary": "ROUGE Score",
+        "description": "Traditional NLP metric. ROUGE score for evaluating the similarity between two strings.",
+        "operationId": "ragas_rouge_score_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_rouge_scoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/rubrics_based_scoring/evaluate": {
+      "post": {
+        "summary": "Rubrics Based Scoring",
+        "description": "Rubric-based evaluation metric that is used to evaluate responses. The rubric consists of descriptions for each score, typically ranging from 1 to 5",
+        "operationId": "ragas_rubrics_based_scoring_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_rubrics_based_scoringRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/sql_query_equivalence/evaluate": {
+      "post": {
+        "summary": "SQL Query Equivalence",
+        "description": "Checks if the SQL query is equivalent to a reference one by using an LLM to infer if it would generate the same results given the table schemas.",
+        "operationId": "ragas_sql_query_equivalence_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_sql_query_equivalenceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ragas/summarization_score/evaluate": {
+      "post": {
+        "summary": "Summarization Score",
+        "description": "Measures how well the summary captures important information from the retrieved contexts.",
+        "operationId": "ragas_summarization_score_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ragas_summarization_scoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/presidio/pii_detection/evaluate": {
+      "post": {
+        "summary": "Presidio PII Detection",
+        "description": "Detects personally identifiable information in text, including phone numbers, email addresses, and\nsocial security numbers. It allows customization of the detection threshold and the specific types of PII to check.",
+        "operationId": "presidio_pii_detection_evaluate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/presidio_pii_detectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful evaluation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationResult"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EvaluationRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              },
+              "expected_contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Expected context information"
+              },
+              "conversation": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "enum": ["user", "assistant", "system"]
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["role", "content"]
+                },
+                "description": "Conversation history"
+              }
+            }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
+          }
+        },
+        "required": ["data"]
+      },
+      "EvaluationEntry": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "string",
+            "description": "The input text to evaluate"
+          },
+          "output": {
+            "type": "string",
+            "description": "The output text to evaluate"
+          },
+          "contexts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Context information for evaluation"
+          },
+          "expected_output": {
+            "type": "string",
+            "description": "Expected output for comparison"
+          },
+          "expected_contexts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Expected context information"
+          },
+          "conversation": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["user", "assistant", "system"]
+                },
+                "content": {
+                  "type": "string"
+                }
+              },
+              "required": ["role", "content"]
+            },
+            "description": "Conversation history"
+          }
+        }
+      },
+      "EvaluationResult": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["processed", "skipped", "error"]
+          },
+          "score": {
+            "type": "number",
+            "description": "Evaluation score"
+          },
+          "passed": {
+            "type": "boolean",
+            "description": "Whether the evaluation passed"
+          },
+          "label": {
+            "type": "string",
+            "description": "Evaluation label"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional details about the evaluation"
+          },
+          "cost": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "raw_response": {
+            "type": "object",
+            "description": "Raw response from the evaluator"
+          },
+          "error_type": {
+            "type": "string",
+            "description": "Type of error if status is 'error'"
+          },
+          "traceback": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Error traceback if status is 'error'"
+          }
+        },
+        "required": ["status"]
+      },
+      "Money": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": ["currency", "amount"]
+      },
+      "huggingface_llama_guardRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_basicRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_competitor_blocklistRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_competitor_llmRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_competitor_llm_function_callRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_exact_matchRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_llm_answer_matchRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_llm_booleanRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_llm_categoryRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_llm_scoreRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_off_topicRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              }
+            },
+            "required": ["input"]
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_query_resolutionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "conversation": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string",
+                      "enum": ["user", "assistant", "system"]
+                    },
+                    "content": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["role", "content"]
+                },
+                "description": "Conversation history"
+              }
+            },
+            "required": ["conversation"]
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_similarityRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "langevals_valid_formatRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "azure_content_safetyRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "azure_jailbreakRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              }
+            },
+            "required": ["input"]
+          }
+        },
+        "required": ["data"]
+      },
+      "azure_prompt_injectionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            },
+            "required": ["input"]
+          }
+        },
+        "required": ["data"]
+      },
+      "openai_moderationRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      },
+      "lingua_language_detectionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            },
+            "required": ["output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_answer_correctnessRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["output", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_answer_relevancyRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            },
+            "required": ["input", "output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_context_precisionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["input", "contexts", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_context_recallRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["input", "contexts", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_context_relevancyRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            },
+            "required": ["output", "contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_context_utilizationRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            },
+            "required": ["input", "output", "contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "legacy_ragas_faithfulnessRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            },
+            "required": ["output", "contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "example_word_countRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            },
+            "required": ["output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_bleu_scoreRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["output", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_context_f1Request": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Expected context information"
+              }
+            },
+            "required": ["contexts", "expected_contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_context_precisionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Expected context information"
+              }
+            },
+            "required": ["contexts", "expected_contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_context_recallRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Expected context information"
+              }
+            },
+            "required": ["contexts", "expected_contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_factual_correctnessRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["output", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_faithfulnessRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            },
+            "required": ["output", "contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_response_context_precisionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["input", "contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_response_context_recallRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["input", "output", "contexts", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_response_relevancyRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            },
+            "required": ["input", "output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_rouge_scoreRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["output", "expected_output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_rubrics_based_scoringRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              }
+            },
+            "required": ["input", "output"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_sql_query_equivalenceRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "expected_output": {
+                "type": "string",
+                "description": "Expected output for comparison"
+              },
+              "expected_contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Expected context information"
+              }
+            },
+            "required": ["output", "expected_output", "expected_contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "ragas_summarization_scoreRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              },
+              "contexts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Context information for evaluation"
+              }
+            },
+            "required": ["output", "contexts"]
+          }
+        },
+        "required": ["data"]
+      },
+      "presidio_pii_detectionRequest": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "properties": {
+              "input": {
+                "type": "string",
+                "description": "The input text to evaluate"
+              },
+              "output": {
+                "type": "string",
+                "description": "The output text to evaluate"
+              }
+            }
+          }
+        },
+        "required": ["data"]
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Auth-Token"
+      }
+    }
+  }
+}
