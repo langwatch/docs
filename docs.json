@@ -298,7 +298,7 @@
             "group": "Use Cases",
             "pages": [
               "use-cases/technical-rag",
-              "use-cases/ai-coach"
+              "use-cases/ai-coach",
               "use-cases/structured-outputs"
             ]
           },
