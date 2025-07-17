@@ -297,7 +297,8 @@
           {
             "group": "Use Cases",
             "pages": [
-              "use-cases/technical-rag"
+              "use-cases/technical-rag",
+              "use-cases/structured-outputs"
             ]
           },
           {
