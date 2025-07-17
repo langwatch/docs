@@ -8,7 +8,7 @@ This guide walks you through evaluating an LLM that powers a taxi booking chatbo
 
 We'll use LangWatch to create a simple, repeatable evaluation script to measure and track the model's accuracy.
 
-### **1. The Scenario**
+### **1. The Problem**
 
 Our LLM's job is to interpret short chat messages and extract key details for a ride booking.
 
@@ -27,7 +27,7 @@ import pandas as pd
 import json
 
 # Authenticate with LangWatch
-# This will prompt you for an API key if the environment variable is not set.
+# Sign up at app.langwatch.ai and find your API key in your project settings.
 langwatch.login()
 
 # Create a sample evaluation dataset
@@ -164,4 +164,6 @@ For example, you could quickly filter for all samples where `hallucination_check
 
 By implementing this evaluation-driven approach with LangWatch, you can systematically measure and improve the accuracy of your structured data extraction for your chatbot. The detailed field-by-field analysis helps identify specific areas for improvement, whether it's handling incomplete addresses, detecting airport mentions, or preventing hallucinations. With continuous monitoring, you can ensure your booking system remains reliable as it processes real-world, unstructured user messages.
 
-For more implementation examples, check out our [RAG cookbook](/cookbooks/build-a-simple-rag-app).
+### **7. Optimizing Your Extraction**
+
+Now that you've set up evaluation for your structured data extraction, you can use the [Optimization Studio](/optimization-studio/optimizing) to fine-tune and improve your extraction pipeline. The Optimization Studio provides powerful tools to analyze patterns in model failures, test different prompt variations, and track improvements over time.
