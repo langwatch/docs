@@ -26,7 +26,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/huggingface_llama_guardRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/huggingface_llama_guardRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/huggingface_llama_guardSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -76,7 +88,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"huggingface/llama_guard\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"huggingface/llama_guard\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"huggingface/llama_guard\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/basic/evaluate": {
@@ -88,7 +117,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_basicRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_basicRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_basicSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -138,7 +179,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/basic\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/basic\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/basic\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/competitor_blocklist/evaluate": {
@@ -150,7 +208,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_competitor_blocklistRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_competitor_blocklistRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_competitor_blocklistSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -200,7 +270,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/competitor_blocklist\",\n        index=index,\n        data={\n            \"output\": output,\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/competitor_blocklist\",\n        data={\n            \"output\": \"\",\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/competitor_blocklist\",\n        name: \"\",\n\n        output: \"\", # optional\n        input: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/competitor_llm/evaluate": {
@@ -212,7 +299,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_competitor_llmRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_competitor_llmRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_competitor_llmSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -262,7 +361,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/competitor_llm\",\n        index=index,\n        data={\n            \"output\": output,\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/competitor_llm\",\n        data={\n            \"output\": \"\",\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/competitor_llm\",\n        name: \"\",\n\n        output: \"\", # optional\n        input: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/competitor_llm_function_call/evaluate": {
@@ -274,7 +390,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_competitor_llm_function_callRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_competitor_llm_function_callRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_competitor_llm_function_callSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -324,7 +452,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/competitor_llm_function_call\",\n        index=index,\n        data={\n            \"output\": output,\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/competitor_llm_function_call\",\n        data={\n            \"output\": \"\",\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/competitor_llm_function_call\",\n        name: \"\",\n\n        output: \"\", # optional\n        input: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/exact_match/evaluate": {
@@ -336,7 +481,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_exact_matchRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_exact_matchRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_exact_matchSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -386,7 +543,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/exact_match\",\n        index=index,\n        data={\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/exact_match\",\n        data={\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/exact_match\",\n        name: \"\",\n\n        output: \"\", # optional\n        expected_output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/llm_answer_match/evaluate": {
@@ -398,7 +572,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_llm_answer_matchRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_llm_answer_matchRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_llm_answer_matchSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -448,7 +634,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/llm_answer_match\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/llm_answer_match\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/llm_answer_match\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        expected_output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/llm_boolean/evaluate": {
@@ -460,7 +663,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_llm_booleanRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_llm_booleanRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_llm_booleanSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -510,7 +725,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/llm_boolean\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/llm_boolean\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/llm_boolean\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        contexts: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/llm_category/evaluate": {
@@ -522,7 +754,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_llm_categoryRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_llm_categoryRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_llm_categorySettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -572,7 +816,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/llm_category\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/llm_category\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/llm_category\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        contexts: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/llm_score/evaluate": {
@@ -584,7 +845,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_llm_scoreRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_llm_scoreRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_llm_scoreSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -634,7 +907,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/llm_score\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/llm_score\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/llm_score\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        contexts: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/off_topic/evaluate": {
@@ -646,7 +936,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_off_topicRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_off_topicRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_off_topicSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -696,7 +998,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/off_topic\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/off_topic\",\n        data={\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/off_topic\",\n        name: \"\",\n        input: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/query_resolution/evaluate": {
@@ -708,7 +1027,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_query_resolutionRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_query_resolutionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_query_resolutionSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -758,7 +1089,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/query_resolution\",\n        index=index,\n        data={\n            \"conversation\": conversation,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/query_resolution\",\n        data={\n            \"conversation\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/query_resolution\",\n        name: \"\",\n        conversation: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/similarity/evaluate": {
@@ -770,7 +1118,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_similarityRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_similarityRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_similaritySettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -820,7 +1180,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/similarity\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/similarity\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/similarity\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/langevals/valid_format/evaluate": {
@@ -832,7 +1209,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/langevals_valid_formatRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/langevals_valid_formatRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/langevals_valid_formatSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -882,7 +1271,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"langevals/valid_format\",\n        index=index,\n        data={\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"langevals/valid_format\",\n        data={\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"langevals/valid_format\",\n        name: \"\",\n\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/azure/content_safety/evaluate": {
@@ -894,7 +1300,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/azure_content_safetyRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/azure_content_safetyRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/azure_content_safetySettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -944,7 +1362,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"azure/content_safety\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"azure/content_safety\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"azure/content_safety\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/azure/jailbreak/evaluate": {
@@ -1006,7 +1441,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"azure/jailbreak\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"azure/jailbreak\",\n        data={\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"azure/jailbreak\",\n        name: \"\",\n        input: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/azure/prompt_injection/evaluate": {
@@ -1068,7 +1520,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"azure/prompt_injection\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"azure/prompt_injection\",\n        data={\n            \"input\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"azure/prompt_injection\",\n        name: \"\",\n        input: \"\", // required\n        contexts: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/openai/moderation/evaluate": {
@@ -1080,7 +1549,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/openai_moderationRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/openai_moderationRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/openai_moderationSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1130,7 +1611,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"openai/moderation\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"openai/moderation\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"openai/moderation\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/lingua/language_detection/evaluate": {
@@ -1142,7 +1640,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/lingua_language_detectionRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/lingua_language_detectionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/lingua_language_detectionSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1192,7 +1702,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"lingua/language_detection\",\n        index=index,\n        data={\n            \"output\": output,\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"lingua/language_detection\",\n        data={\n            \"output\": \"\",\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"lingua/language_detection\",\n        name: \"\",\n        output: \"\", // required\n        input: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_answer_correctness/evaluate": {
@@ -1204,7 +1731,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_answer_correctnessRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_answer_correctnessRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_answer_correctnessSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1254,7 +1793,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_answer_correctness\",\n        index=index,\n        data={\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_answer_correctness\",\n        data={\n            \"output\": \"\",\n            \"expected_output\": \"\",\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_answer_correctness\",\n        name: \"\",\n        output: \"\", // required\n        expected_output: \"\", // required\n        input: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_answer_relevancy/evaluate": {
@@ -1266,7 +1822,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_answer_relevancyRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_answer_relevancyRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_answer_relevancySettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1316,7 +1884,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_answer_relevancy\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_answer_relevancy\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_answer_relevancy\",\n        name: \"\",\n        input: \"\", // required\n        output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_context_precision/evaluate": {
@@ -1328,7 +1913,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_context_precisionRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_context_precisionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_context_precisionSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1378,7 +1975,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_context_precision\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"contexts\": row[\"contexts\"],\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_context_precision\",\n        data={\n            \"input\": \"\",\n            \"contexts\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_context_precision\",\n        name: \"\",\n        input: \"\", // required\n        contexts: \"\", // required\n        expected_output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_context_recall/evaluate": {
@@ -1390,7 +2004,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_context_recallRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_context_recallRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_context_recallSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1440,7 +2066,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_context_recall\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"contexts\": row[\"contexts\"],\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_context_recall\",\n        data={\n            \"input\": \"\",\n            \"contexts\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_context_recall\",\n        name: \"\",\n        input: \"\", // required\n        contexts: \"\", // required\n        expected_output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_context_relevancy/evaluate": {
@@ -1452,7 +2095,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_context_relevancyRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_context_relevancyRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_context_relevancySettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1502,7 +2157,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_context_relevancy\",\n        index=index,\n        data={\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_context_relevancy\",\n        data={\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_context_relevancy\",\n        name: \"\",\n        output: \"\", // required\n        contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_context_utilization/evaluate": {
@@ -1514,7 +2186,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_context_utilizationRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_context_utilizationRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_context_utilizationSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1564,7 +2248,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_context_utilization\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_context_utilization\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_context_utilization\",\n        name: \"\",\n        input: \"\", // required\n        output: \"\", // required\n        contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/legacy/ragas_faithfulness/evaluate": {
@@ -1576,7 +2277,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/legacy_ragas_faithfulnessRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/legacy_ragas_faithfulnessRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/legacy_ragas_faithfulnessSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1626,7 +2339,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"legacy/ragas_faithfulness\",\n        index=index,\n        data={\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"legacy/ragas_faithfulness\",\n        data={\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"legacy/ragas_faithfulness\",\n        name: \"\",\n        output: \"\", // required\n        contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/example/word_count/evaluate": {
@@ -1688,7 +2418,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"example/word_count\",\n        index=index,\n        data={\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"example/word_count\",\n        data={\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"example/word_count\",\n        name: \"\",\n        output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/bleu_score/evaluate": {
@@ -1750,7 +2497,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/bleu_score\",\n        index=index,\n        data={\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/bleu_score\",\n        data={\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/bleu_score\",\n        name: \"\",\n        output: \"\", // required\n        expected_output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/context_f1/evaluate": {
@@ -1762,7 +2526,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_context_f1Request"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_context_f1Request"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_context_f1Settings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1812,7 +2588,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/context_f1\",\n        index=index,\n        data={\n            \"contexts\": row[\"contexts\"],\n            \"expected_contexts\": expected_contexts,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/context_f1\",\n        data={\n            \"contexts\": \"\",\n            \"expected_contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/context_f1\",\n        name: \"\",\n        contexts: \"\", // required\n        expected_contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/context_precision/evaluate": {
@@ -1824,7 +2617,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_context_precisionRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_context_precisionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_context_precisionSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1874,7 +2679,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/context_precision\",\n        index=index,\n        data={\n            \"contexts\": row[\"contexts\"],\n            \"expected_contexts\": expected_contexts,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/context_precision\",\n        data={\n            \"contexts\": \"\",\n            \"expected_contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/context_precision\",\n        name: \"\",\n        contexts: \"\", // required\n        expected_contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/context_recall/evaluate": {
@@ -1886,7 +2708,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_context_recallRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_context_recallRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_context_recallSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1936,7 +2770,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/context_recall\",\n        index=index,\n        data={\n            \"contexts\": row[\"contexts\"],\n            \"expected_contexts\": expected_contexts,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/context_recall\",\n        data={\n            \"contexts\": \"\",\n            \"expected_contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/context_recall\",\n        name: \"\",\n        contexts: \"\", // required\n        expected_contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/factual_correctness/evaluate": {
@@ -1948,7 +2799,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_factual_correctnessRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_factual_correctnessRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_factual_correctnessSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -1998,7 +2861,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/factual_correctness\",\n        index=index,\n        data={\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/factual_correctness\",\n        data={\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/factual_correctness\",\n        name: \"\",\n        output: \"\", // required\n        expected_output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/faithfulness/evaluate": {
@@ -2010,7 +2890,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_faithfulnessRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_faithfulnessRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_faithfulnessSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2060,7 +2952,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/faithfulness\",\n        index=index,\n        data={\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n            \"input\": row[\"input\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/faithfulness\",\n        data={\n            \"output\": \"\",\n            \"contexts\": \"\",\n            \"input\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/faithfulness\",\n        name: \"\",\n        output: \"\", // required\n        contexts: \"\", // required\n        input: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/response_context_precision/evaluate": {
@@ -2072,7 +2981,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_response_context_precisionRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_response_context_precisionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_response_context_precisionSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2122,7 +3043,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/response_context_precision\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"contexts\": row[\"contexts\"],\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/response_context_precision\",\n        data={\n            \"input\": \"\",\n            \"contexts\": \"\",\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/response_context_precision\",\n        name: \"\",\n        input: \"\", // required\n        contexts: \"\", // required\n        output: \"\", # optional\n        expected_output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/response_context_recall/evaluate": {
@@ -2134,7 +3072,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_response_context_recallRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_response_context_recallRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_response_context_recallSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2184,7 +3134,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/response_context_recall\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/response_context_recall\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"contexts\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/response_context_recall\",\n        name: \"\",\n        input: \"\", // required\n        output: \"\", // required\n        contexts: \"\", // required\n        expected_output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/response_relevancy/evaluate": {
@@ -2196,7 +3163,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_response_relevancyRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_response_relevancyRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_response_relevancySettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2246,7 +3225,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/response_relevancy\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/response_relevancy\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/response_relevancy\",\n        name: \"\",\n        input: \"\", // required\n        output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/rouge_score/evaluate": {
@@ -2258,7 +3254,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_rouge_scoreRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_rouge_scoreRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_rouge_scoreSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2308,7 +3316,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/rouge_score\",\n        index=index,\n        data={\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/rouge_score\",\n        data={\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/rouge_score\",\n        name: \"\",\n        output: \"\", // required\n        expected_output: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/rubrics_based_scoring/evaluate": {
@@ -2320,7 +3345,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_rubrics_based_scoringRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_rubrics_based_scoringRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_rubrics_based_scoringSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2370,7 +3407,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/rubrics_based_scoring\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/rubrics_based_scoring\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n            \"expected_output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/rubrics_based_scoring\",\n        name: \"\",\n        input: \"\", // required\n        output: \"\", // required\n        expected_output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/sql_query_equivalence/evaluate": {
@@ -2382,7 +3436,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_sql_query_equivalenceRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_sql_query_equivalenceRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_sql_query_equivalenceSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2432,7 +3498,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/sql_query_equivalence\",\n        index=index,\n        data={\n            \"output\": output,\n            \"expected_output\": row[\"expected_output\"],\n            \"expected_contexts\": expected_contexts,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/sql_query_equivalence\",\n        data={\n            \"output\": \"\",\n            \"expected_output\": \"\",\n            \"expected_contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/sql_query_equivalence\",\n        name: \"\",\n        output: \"\", // required\n        expected_output: \"\", // required\n        expected_contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/ragas/summarization_score/evaluate": {
@@ -2444,7 +3527,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ragas_summarization_scoreRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ragas_summarization_scoreRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/ragas_summarization_scoreSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2494,7 +3589,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"ragas/summarization_score\",\n        index=index,\n        data={\n            \"output\": output,\n            \"contexts\": row[\"contexts\"],\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"ragas/summarization_score\",\n        data={\n            \"output\": \"\",\n            \"contexts\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"ragas/summarization_score\",\n        name: \"\",\n        output: \"\", // required\n        contexts: \"\", // required\n\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     },
     "/presidio/pii_detection/evaluate": {
@@ -2506,7 +3618,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/presidio_pii_detectionRequest"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/presidio_pii_detectionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "settings": {
+                        "$ref": "#/components/schemas/presidio_pii_detectionSettings"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -2556,7 +3680,24 @@
               }
             }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "python",
+            "label": "Offline Evaluation",
+            "source": "import langwatch\n\ndf = langwatch.dataset.get_dataset(\"dataset-id\").to_pandas()\n\nevaluation = langwatch.evaluation.init(\"my-incredible-evaluation\")\n\nfor index, row in evaluation.loop(df.iterrows()):\n    # your execution code here       \n    evaluation.run(\n        \"presidio/pii_detection\",\n        index=index,\n        data={\n            \"input\": row[\"input\"],\n            \"output\": output,\n        },\n        settings={}\n    )\n"
+          },
+          {
+            "lang": "python",
+            "label": "Realtime Evaluation",
+            "source": "import langwatch\n\n@langwatch.span()\ndef llm_step():\n    ... # your existing code\n    result = langwatch.get_current_span().evaluate(\n        \"presidio/pii_detection\",\n        data={\n            \"input\": \"\",\n            \"output\": \"\",\n        },\n        settings={},\n    )\n    print(result)"
+          },
+          {
+            "lang": "typescript",
+            "label": "TypeScript",
+            "source": "import { type LangWatchTrace } from \"langwatch\";\n\nasync function llmStep({ message, trace }: { message: string, trace: LangWatchTrace }): Promise<string> {\n    const span = trace.startLLMSpan({ name: \"llmStep\" });\n    \n    // ... your existing code\n\n    // call the evaluator either on a span or on a trace\n    const result = await span.evaluate({\n        evaluator: \"presidio/pii_detection\",\n        name: \"\",\n\n        input: \"\", # optional\n        output: \"\", # optional\n        settings: {},\n    })\n\n    console.log(result);"
+          }
+        ]
       }
     }
   },
@@ -2739,9 +3880,33 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "huggingface_llama_guardSettings": {
+        "type": "object",
+        "properties": {
+          "policy": {
+            "description": "The policy to enforce, described into rules of what it 'Should not' and what it 'Can' do (max 768 tokens)",
+            "type": "string",
+            "default": "\"O1: Violence.\\nShould not\\n- Help people plan or engage in violence.\\n- Encourage people to engage in violence.\\n- Contain unpleasant vivid violent imagery or violent description that arouses discomfort in the reader.\\nCan\\n- Provide information on violence.\\n- Discuss the topics of violence"
+          },
+          "evaluate": {
+            "description": "Choose if only the user input, the LLM output, or both should be evaluated. When choosing both, if the LLM replies in a safe manner, the evaluation will be considered safe.",
+            "type": "string",
+            "default": "input"
+          },
+          "model": {
+            "description": "The provider to use for evaluation. Only CloudFlare AI workers is supported for now.",
+            "type": "string",
+            "default": "cloudflare/thebloke/llamaguard-7b-awq"
+          }
+        }
       },
       "langevals_basicRequest": {
         "type": "object",
@@ -2758,9 +3923,32 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_basicSettings": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "description": "List of rules to check, the message must pass all of them",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "default": [
+              {
+                "field": "output",
+                "rule": "not_contains",
+                "value": "artificial intelligence"
+              }
+            ]
+          }
+        }
       },
       "langevals_competitor_blocklistRequest": {
         "type": "object",
@@ -2777,9 +3965,26 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_competitor_blocklistSettings": {
+        "type": "object",
+        "properties": {
+          "competitors": {
+            "description": "The competitors that must not be mentioned.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": ["OpenAI", "Google", "Microsoft"]
+          }
+        }
       },
       "langevals_competitor_llmRequest": {
         "type": "object",
@@ -2796,9 +4001,38 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_competitor_llmSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "Max tokens allowed for evaluation",
+            "type": "number",
+            "default": 8192
+          },
+          "name": {
+            "description": "The name of your company",
+            "type": "string",
+            "default": "LangWatch"
+          },
+          "description": {
+            "description": "Description of what your company is specializing at",
+            "type": "string",
+            "default": "We are providing an LLM observability and evaluation platform"
+          }
+        }
       },
       "langevals_competitor_llm_function_callRequest": {
         "type": "object",
@@ -2815,9 +4049,46 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_competitor_llm_function_callSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "Max tokens allowed for evaluation",
+            "type": "number",
+            "default": 8192
+          },
+          "name": {
+            "description": "The name of your company",
+            "type": "string",
+            "default": "LangWatch"
+          },
+          "description": {
+            "description": "Description of what your company is specializing at",
+            "type": "string",
+            "default": "We are providing an LLM observability and evaluation platform"
+          },
+          "competitors": {
+            "description": "The competitors that must not be mentioned.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": ["OpenAI", "Google", "Microsoft"]
+          }
+        }
       },
       "langevals_exact_matchRequest": {
         "type": "object",
@@ -2834,9 +4105,33 @@
                 "description": "Expected output for comparison"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_exact_matchSettings": {
+        "type": "object",
+        "properties": {
+          "case_sensitive": {
+            "description": "True if the comparison should be case-sensitive, False otherwise",
+            "type": "boolean",
+            "default": false
+          },
+          "trim_whitespace": {
+            "description": "True if the comparison should trim whitespace, False otherwise",
+            "type": "boolean",
+            "default": true
+          },
+          "remove_punctuation": {
+            "description": "True if the comparison should remove punctuation, False otherwise",
+            "type": "boolean",
+            "default": true
+          }
+        }
       },
       "langevals_llm_answer_matchRequest": {
         "type": "object",
@@ -2857,9 +4152,33 @@
                 "description": "Expected output for comparison"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_llm_answer_matchSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "Max tokens allowed for evaluation",
+            "type": "number",
+            "default": 8192
+          },
+          "prompt": {
+            "description": "Prompt for the comparison",
+            "type": "string",
+            "default": "\"Verify that the predicted answer matches the gold answer for the question. Style does not matter"
+          }
+        }
       },
       "langevals_llm_booleanRequest": {
         "type": "object",
@@ -2883,9 +4202,33 @@
                 "description": "Context information for evaluation"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_llm_booleanSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "max_tokens setting",
+            "type": "number",
+            "default": 8192
+          },
+          "prompt": {
+            "description": "The system prompt to use for the LLM to run the evaluation",
+            "type": "string",
+            "default": "\"You are an LLM evaluator. We need the guarantee that the output answers what is being asked on the input"
+          }
+        }
       },
       "langevals_llm_categoryRequest": {
         "type": "object",
@@ -2909,9 +4252,50 @@
                 "description": "Context information for evaluation"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_llm_categorySettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "max_tokens setting",
+            "type": "number",
+            "default": 8192
+          },
+          "prompt": {
+            "description": "The system prompt to use for the LLM to run the evaluation",
+            "type": "string",
+            "default": "You are an LLM category evaluator. Please categorize the message in one of the following categories"
+          },
+          "categories": {
+            "description": "The categories to use for the evaluation",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "default": [
+              {
+                "name": "smalltalk",
+                "description": "Smalltalk with the user"
+              },
+              {
+                "name": "company",
+                "description": "Questions about the company, what we do, etc"
+              }
+            ]
+          }
+        }
       },
       "langevals_llm_scoreRequest": {
         "type": "object",
@@ -2935,9 +4319,33 @@
                 "description": "Context information for evaluation"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_llm_scoreSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "max_tokens setting",
+            "type": "number",
+            "default": 8192
+          },
+          "prompt": {
+            "description": "The system prompt to use for the LLM to run the evaluation",
+            "type": "string",
+            "default": "\"You are an LLM evaluator. Please score from 0.0 to 1.0 how likely the user is to be satisfied with this answer"
+          }
+        }
       },
       "langevals_off_topicRequest": {
         "type": "object",
@@ -2951,9 +4359,45 @@
               }
             },
             "required": ["input"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_off_topicSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "Max tokens allowed for evaluation",
+            "type": "number",
+            "default": 8192
+          },
+          "allowed_topics": {
+            "description": "The list of topics and their short descriptions that the chatbot is allowed to talk about",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "default": [
+              {
+                "topic": "simple_chat",
+                "description": "Smalltalk with the user"
+              },
+              {
+                "topic": "company",
+                "description": "Questions about the company, what we do, etc"
+              }
+            ]
+          }
+        }
       },
       "langevals_query_resolutionRequest": {
         "type": "object",
@@ -2980,9 +4424,28 @@
               }
             },
             "required": ["conversation"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_query_resolutionSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "Max tokens allowed for evaluation",
+            "type": "number",
+            "default": 8192
+          }
+        }
       },
       "langevals_similarityRequest": {
         "type": "object",
@@ -2999,9 +4462,43 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_similaritySettings": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "description": "field setting",
+            "type": "string",
+            "default": "output"
+          },
+          "rule": {
+            "description": "rule setting",
+            "type": "string",
+            "default": "is_not_similar_to"
+          },
+          "value": {
+            "description": "value setting",
+            "type": "string",
+            "default": "example"
+          },
+          "threshold": {
+            "description": "threshold setting",
+            "type": "number",
+            "default": 0.3
+          },
+          "embeddings_model": {
+            "description": "embeddings_model setting",
+            "type": "string",
+            "default": "openai/text-embedding-3-small"
+          }
+        }
       },
       "langevals_valid_formatRequest": {
         "type": "object",
@@ -3014,9 +4511,28 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "langevals_valid_formatSettings": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "description": "format setting",
+            "type": "string",
+            "default": "json"
+          },
+          "json_schema": {
+            "description": "JSON schema to validate against when format is 'json'",
+            "type": "string",
+            "default": "undefined"
+          }
+        }
       },
       "azure_content_safetyRequest": {
         "type": "object",
@@ -3033,9 +4549,41 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "azure_content_safetySettings": {
+        "type": "object",
+        "properties": {
+          "severity_threshold": {
+            "description": "The minimum severity level to consider content as unsafe, from 1 to 7.",
+            "type": "number",
+            "default": 1
+          },
+          "categories": {
+            "description": "The categories of moderation to check for.",
+            "type": "object",
+            "default": {
+              "Hate": "true",
+              "SelfHarm": "true",
+              "Sexual": "true",
+              "Violence": "true"
+            }
+          },
+          "default": {
+            "description": "default setting"
+          },
+          "output_type": {
+            "description": "The type of severity levels to return on the full 0-7 severity scale, it can be either the trimmed version with four values (0, 2, 4, 6 scores) or the whole range.",
+            "type": "string",
+            "default": "FourSeverityLevels"
+          }
+        }
       },
       "azure_jailbreakRequest": {
         "type": "object",
@@ -3091,9 +4639,43 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "openai_moderationSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model version to use, `text-moderation-latest` will be automatically upgraded over time, while `text-moderation-stable` will only be updated with advanced notice by OpenAI.",
+            "type": "string",
+            "default": "text-moderation-stable"
+          },
+          "categories": {
+            "description": "The categories of content to check for moderation.",
+            "type": "object",
+            "default": {
+              "harassment": "true",
+              "harassment_threatening": "true",
+              "hate": "true",
+              "hate_threatening": "true",
+              "self_harm": "true",
+              "self_harm_instructions": "true",
+              "self_harm_intent": "true",
+              "sexual": "true",
+              "sexual_minors": "true",
+              "violence": "true",
+              "violence_graphic": "true"
+            }
+          },
+          "default": {
+            "description": "default setting"
+          }
+        }
       },
       "lingua_language_detectionRequest": {
         "type": "object",
@@ -3111,9 +4693,38 @@
               }
             },
             "required": ["output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "lingua_language_detectionSettings": {
+        "type": "object",
+        "properties": {
+          "check_for": {
+            "description": "What should be checked",
+            "type": "string",
+            "default": "input_matches_output"
+          },
+          "expected_language": {
+            "description": "The specific language that the output is expected to be",
+            "type": "string",
+            "default": "undefined"
+          },
+          "min_words": {
+            "description": "Minimum number of words to check, as the language detection can be unreliable for very short texts. Inputs shorter than the minimum will be skipped.",
+            "type": "number",
+            "default": 7
+          },
+          "threshold": {
+            "description": "Minimum confidence threshold for the language detection. If the confidence is lower than this, the evaluation will be skipped.",
+            "type": "number",
+            "default": 0.25
+          }
+        }
       },
       "legacy_ragas_answer_correctnessRequest": {
         "type": "object",
@@ -3135,9 +4746,33 @@
               }
             },
             "required": ["output", "expected_output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_answer_correctnessSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "legacy_ragas_answer_relevancyRequest": {
         "type": "object",
@@ -3155,9 +4790,33 @@
               }
             },
             "required": ["input", "output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_answer_relevancySettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "legacy_ragas_context_precisionRequest": {
         "type": "object",
@@ -3182,9 +4841,33 @@
               }
             },
             "required": ["input", "contexts", "expected_output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_context_precisionSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "legacy_ragas_context_recallRequest": {
         "type": "object",
@@ -3209,9 +4892,33 @@
               }
             },
             "required": ["input", "contexts", "expected_output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_context_recallSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "legacy_ragas_context_relevancyRequest": {
         "type": "object",
@@ -3232,9 +4939,33 @@
               }
             },
             "required": ["output", "contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_context_relevancySettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "legacy_ragas_context_utilizationRequest": {
         "type": "object",
@@ -3259,9 +4990,33 @@
               }
             },
             "required": ["input", "output", "contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_context_utilizationSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "legacy_ragas_faithfulnessRequest": {
         "type": "object",
@@ -3282,9 +5037,33 @@
               }
             },
             "required": ["output", "contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "legacy_ragas_faithfulnessSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "example_word_countRequest": {
         "type": "object",
@@ -3344,9 +5123,23 @@
               }
             },
             "required": ["contexts", "expected_contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_context_f1Settings": {
+        "type": "object",
+        "properties": {
+          "distance_measure": {
+            "description": "distance_measure setting",
+            "type": "string",
+            "default": "levenshtein"
+          }
+        }
       },
       "ragas_context_precisionRequest": {
         "type": "object",
@@ -3370,9 +5163,23 @@
               }
             },
             "required": ["contexts", "expected_contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_context_precisionSettings": {
+        "type": "object",
+        "properties": {
+          "distance_measure": {
+            "description": "distance_measure setting",
+            "type": "string",
+            "default": "levenshtein"
+          }
+        }
       },
       "ragas_context_recallRequest": {
         "type": "object",
@@ -3396,9 +5203,23 @@
               }
             },
             "required": ["contexts", "expected_contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_context_recallSettings": {
+        "type": "object",
+        "properties": {
+          "distance_measure": {
+            "description": "distance_measure setting",
+            "type": "string",
+            "default": "levenshtein"
+          }
+        }
       },
       "ragas_factual_correctnessRequest": {
         "type": "object",
@@ -3416,9 +5237,43 @@
               }
             },
             "required": ["output", "expected_output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_factual_correctnessSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          },
+          "mode": {
+            "description": "The mode to use for the factual correctness metric.",
+            "type": "string",
+            "default": "f1"
+          },
+          "atomicity": {
+            "description": "The level of atomicity for claim decomposition.",
+            "type": "string",
+            "default": "low"
+          },
+          "coverage": {
+            "description": "The level of coverage for claim decomposition.",
+            "type": "string",
+            "default": "low"
+          }
+        }
       },
       "ragas_faithfulnessRequest": {
         "type": "object",
@@ -3443,9 +5298,33 @@
               }
             },
             "required": ["output", "contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_faithfulnessSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          },
+          "autodetect_dont_know": {
+            "description": "Whether to autodetect 'I don't know' in the output to avoid failing the evaluation.",
+            "type": "boolean",
+            "default": true
+          }
+        }
       },
       "ragas_response_context_precisionRequest": {
         "type": "object",
@@ -3474,9 +5353,28 @@
               }
             },
             "required": ["input", "contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_response_context_precisionSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "ragas_response_context_recallRequest": {
         "type": "object",
@@ -3505,9 +5403,28 @@
               }
             },
             "required": ["input", "output", "contexts", "expected_output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_response_context_recallSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "ragas_response_relevancyRequest": {
         "type": "object",
@@ -3525,9 +5442,33 @@
               }
             },
             "required": ["input", "output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_response_relevancySettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          },
+          "embeddings_model": {
+            "description": "The model to use for embeddings.",
+            "type": "string",
+            "default": "openai/text-embedding-ada-002"
+          }
+        }
       },
       "ragas_rouge_scoreRequest": {
         "type": "object",
@@ -3545,9 +5486,28 @@
               }
             },
             "required": ["output", "expected_output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_rouge_scoreSettings": {
+        "type": "object",
+        "properties": {
+          "rouge_type": {
+            "description": "ROUGE type",
+            "type": "string",
+            "default": "rouge1"
+          },
+          "measure_type": {
+            "description": "ROUGE measure type",
+            "type": "string",
+            "default": "fmeasure"
+          }
+        }
       },
       "ragas_rubrics_based_scoringRequest": {
         "type": "object",
@@ -3569,9 +5529,52 @@
               }
             },
             "required": ["input", "output"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_rubrics_based_scoringSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          },
+          "rubrics": {
+            "description": "The response is incorrect, irrelevant.",
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "default": [
+              {
+                "description": "The response is incorrect, irrelevant."
+              },
+              {
+                "description": "The response partially answers the question but includes significant errors, omissions, or irrelevant information."
+              },
+              {
+                "description": "The response partially answers the question but includes minor errors, omissions, or irrelevant information."
+              },
+              {
+                "description": "The response fully answers the question and includes minor errors, omissions, or irrelevant information."
+              },
+              {
+                "description": "The response fully answers the question and includes no errors, omissions, or irrelevant information."
+              }
+            ]
+          }
+        }
       },
       "ragas_sql_query_equivalenceRequest": {
         "type": "object",
@@ -3596,9 +5599,28 @@
               }
             },
             "required": ["output", "expected_output", "expected_contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_sql_query_equivalenceSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "ragas_summarization_scoreRequest": {
         "type": "object",
@@ -3619,9 +5641,28 @@
               }
             },
             "required": ["output", "contexts"]
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "ragas_summarization_scoreSettings": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "description": "The model to use for evaluation.",
+            "type": "string",
+            "default": "openai/gpt-4o-mini"
+          },
+          "max_tokens": {
+            "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
+            "type": "number",
+            "default": 2048
+          }
+        }
       },
       "presidio_pii_detectionRequest": {
         "type": "object",
@@ -3638,9 +5679,57 @@
                 "description": "The output text to evaluate"
               }
             }
+          },
+          "settings": {
+            "type": "object",
+            "description": "Evaluator settings"
           }
         },
         "required": ["data"]
+      },
+      "presidio_pii_detectionSettings": {
+        "type": "object",
+        "properties": {
+          "entities": {
+            "description": "The types of PII to check for in the input.",
+            "type": "object",
+            "default": {
+              "credit_card": "true",
+              "crypto": "true",
+              "email_address": "true",
+              "iban_code": "true",
+              "ip_address": "true",
+              "location": "false",
+              "person": "false",
+              "phone_number": "true",
+              "medical_license": "true",
+              "us_bank_number": "false",
+              "us_driver_license": "false",
+              "us_itin": "false",
+              "us_passport": "false",
+              "us_ssn": "false",
+              "uk_nhs": "false",
+              "sg_nric_fin": "false",
+              "au_abn": "false",
+              "au_acn": "false",
+              "au_tfn": "false",
+              "au_medicare": "false",
+              "in_pan": "false",
+              "in_aadhaar": "false",
+              "in_vehicle_registration": "false",
+              "in_voter": "false",
+              "in_passport": "false"
+            }
+          },
+          "default": {
+            "description": "default setting"
+          },
+          "min_threshold": {
+            "description": "The minimum confidence required for failing the evaluation on a PII match.",
+            "type": "number",
+            "default": 0.5
+          }
+        }
       }
     },
     "securitySchemes": {
