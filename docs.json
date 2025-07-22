@@ -24,6 +24,22 @@
       "claude"
     ]
   },
+ "api": {
+   "playground": {
+     "display": "interactive"
+   },
+   "examples": {
+     "languages": ["curl","python","typescript"],
+     "defaults": "required"
+   },
+   "mdx": {
+    "server": "https://app.langwatch.ai/api/evaluations", 
+    "auth": {
+      "method": "key",
+      "name": "x-api-key" 
+    }
+  }
+ },
   "navigation": {
     "anchors": [
       {
@@ -181,9 +197,11 @@
           },
           {
             "group": "LLM Evaluation",
+            
+            
             "pages": [
               "llm-evaluation/overview",
-              "llm-evaluation/offline/code/evaluation-api",
+            "llm-evaluation/offline/code/evaluation-api",
               {
                 "group": "Evaluation Wizard",
                 "pages": [
@@ -198,7 +216,18 @@
                   "evaluations/custom-evaluator-integration"
                 ]
               },
-              "llm-evaluation/list",
+              
+              {
+                "group": "Built-in Evaluators",
+                "pages": [
+                  "llm-evaluation/list",
+                  {
+                    "group": "API Docs",
+                    "openapi": "/api-reference/openapi-evals.json"
+                  }
+                ]
+               
+              },
               {
                 "group": "Datasets",
                 "pages": [
@@ -209,6 +238,7 @@
               },
               "features/annotations"
             ]
+            
           },
           {
             "group": "LLM Development",
