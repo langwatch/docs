@@ -1275,37 +1275,39 @@ If you are using a library that is not listed here, you can still instrument you
 
 ## FAQ: Frequently Asked Questions
 
-### How do I track LLM costs and token usage?
+<AccordionGroup>
+  <Accordion title="How do I track LLM costs and token usage?">
+    LangWatch automatically captures cost and token data for most LLM providers. If you're missing costs or token counts, our [cost tracking tutorial](/integration/python/tutorials/tracking-llm-costs) covers troubleshooting steps, model cost configuration, and manual token tracking setup.
+  </Accordion>
 
-LangWatch automatically captures cost and token data for most LLM providers. If you're missing costs or token counts, our [cost tracking tutorial](/integration/python/tutorials/tracking-llm-costs) covers troubleshooting steps, model cost configuration, and manual token tracking setup.
+  <Accordion title="How do I capture RAG (Retrieval Augmented Generation) contexts?">
+    To monitor your RAG pipelines and track retrieved documents, see our [RAG capturing guide](/integration/python/tutorials/capturing-rag). This enables specialized RAG evaluators and analytics on document usage patterns.
+  </Accordion>
 
-### How do I capture RAG (Retrieval Augmented Generation) contexts?
+  <Accordion title="How can I make input and output of the trace more human readable to better read the conversation?">
+    Our [input/output mapping guide](/integration/python/tutorials/capturing-mapping-input-output) shows how to properly structure chat messages, handle different data formats, and ensure your LLM conversations are captured correctly for analysis.
+  </Accordion>
 
-To monitor your RAG pipelines and track retrieved documents, see our [RAG capturing guide](/integration/python/tutorials/capturing-rag). This enables specialized RAG evaluators and analytics on document usage patterns.
+  <Accordion title="How do I add custom metadata and user information to traces?">
+    Learn how to enrich your traces with user IDs, session data, and custom attributes in our [metadata and attributes tutorial](/integration/python/tutorials/capturing-metadata). This is essential for user analytics and filtering traces by custom criteria.
+  </Accordion>
 
-### How can I make input and output of the trace more human readable to better read the conversation?
+  <Accordion title="How can I capture a whole conversation?">
+    To connect multiple traces into a conversation, you can use the `thread_id` metadata. See the [metadata and attributes tutorial](/integration/python/tutorials/capturing-metadata) for more details.
+  </Accordion>
 
-Our [input/output mapping guide](/integration/python/tutorials/capturing-mapping-input-output) shows how to properly structure chat messages, handle different data formats, and ensure your LLM conversations are captured correctly for analysis.
+  <Accordion title="How do I capture evaluations and guardrails tracing data?">
+    Implement automated quality checks and safety measures with our [evaluations and guardrails tutorial](/integration/python/tutorials/capturing-evaluations-guardrails). Learn to create custom evaluators and integrate safety guardrails into your LLM workflows.
+  </Accordion>
 
-### How do I add custom metadata and user information to traces?
+  <Accordion title="How can I manually instrument my application for more fine-grained control?">
+    For custom frameworks or fine-grained control, our [manual instrumentation guide](/integration/python/tutorials/manual-instrumentation) covers creating traces and spans programmatically using context managers and direct API calls.
+  </Accordion>
 
-Learn how to enrich your traces with user IDs, session data, and custom attributes in our [metadata and attributes tutorial](/integration/python/tutorials/capturing-metadata). This is essential for user analytics and filtering traces by custom criteria.
-
-### How can I capture a whole conversation?
-
-To connect multiple traces into a conversation, you can use the `thread_id` metadata. See the [metadata and attributes tutorial](/integration/python/tutorials/capturing-metadata) for more details.
-
-### How do I capture evaluations and guardrails tracing data?
-
-Implement automated quality checks and safety measures with our [evaluations and guardrails tutorial](/integration/python/tutorials/capturing-evaluations-guardrails). Learn to create custom evaluators and integrate safety guardrails into your LLM workflows.
-
-### How can I manually instrument my application for more fine-grained control?
-
-For custom frameworks or fine-grained control, our [manual instrumentation guide](/integration/python/tutorials/manual-instrumentation) covers creating traces and spans programmatically using context managers and direct API calls.
-
-### How do I integrate with existing OpenTelemetry setups?
-
-LangWatch is OpenTelemetry-based, so it can be integrated seamlessly with any OpenTelemetry-compatible application. If you already use OpenTelemetry in your application, our [OpenTelemetry integration tutorial](/integration/python/tutorials/open-telemetry) explains how to configure LangWatch alongside existing telemetry infrastructure, including custom collectors and exporters.
+  <Accordion title="How do I integrate with existing OpenTelemetry setups?">
+    LangWatch is OpenTelemetry-based, so it can be integrated seamlessly with any OpenTelemetry-compatible application. If you already use OpenTelemetry in your application, our [OpenTelemetry integration tutorial](/integration/python/tutorials/open-telemetry) explains how to configure LangWatch alongside existing telemetry infrastructure, including custom collectors and exporters.
+  </Accordion>
+</AccordionGroup>
 
 ---
 
