@@ -24,22 +24,26 @@
       "claude"
     ]
   },
- "api": {
-   "playground": {
-     "display": "interactive"
-   },
-   "examples": {
-     "languages": ["curl","python","typescript"],
-     "defaults": "required"
-   },
-   "mdx": {
-    "server": "https://app.langwatch.ai/api/evaluations",
-    "auth": {
-      "method": "key",
-      "name": "x-api-key"
+  "api": {
+    "playground": {
+      "display": "interactive"
+    },
+    "examples": {
+      "languages": [
+        "curl",
+        "python",
+        "typescript"
+      ],
+      "defaults": "required"
+    },
+    "mdx": {
+      "server": "https://app.langwatch.ai/api/evaluations",
+      "auth": {
+        "method": "key",
+        "name": "x-api-key"
+      }
     }
-  }
- },
+  },
   "navigation": {
     "anchors": [
       {
@@ -193,11 +197,9 @@
           },
           {
             "group": "LLM Evaluation",
-
-
             "pages": [
               "llm-evaluation/overview",
-            "llm-evaluation/offline/code/evaluation-api",
+              "llm-evaluation/offline/code/evaluation-api",
               {
                 "group": "Evaluation Wizard",
                 "pages": [
@@ -212,7 +214,6 @@
                   "evaluations/custom-evaluator-integration"
                 ]
               },
-
               {
                 "group": "Built-in Evaluators",
                 "pages": [
@@ -222,7 +223,6 @@
                     "openapi": "/api-reference/openapi-evals.json"
                   }
                 ]
-
               },
               {
                 "group": "Datasets",
@@ -234,7 +234,6 @@
               },
               "features/annotations"
             ]
-
           },
           {
             "group": "LLM Development",
@@ -389,7 +388,7 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1752776367",
+      "source": "/ci/cache/busted/1753195566",
       "destination": "/"
     },
     {
