@@ -1053,9 +1053,10 @@ langwatch.setup()
 ```
 
 <Note>
-  If you have an existing OpenTelemetry setup in your application, please see the [Already using OpenTelemetry?](#already-using-opentelemetry) section below.
+  If you have an existing OpenTelemetry setup in your application, please see
+  the [Already using OpenTelemetry?](#already-using-opentelemetry) section
+  below.
 </Note>
-
 
 ## Capturing Messages
 
@@ -1133,7 +1134,10 @@ async def handle_message(message: cl.Message):
 ```
 
 <Note>
-The `@langwatch.span()` decorator automatically captures the decorated function's arguments as the span's `input` and its return value as the `output`. This behavior can be controlled via the `capture_input` and `capture_output` arguments (both default to `True`).
+  The `@langwatch.span()` decorator automatically captures the decorated
+  function's arguments as the span's `input` and its return value as the
+  `output`. This behavior can be controlled via the `capture_input` and
+  `capture_output` arguments (both default to `True`).
 </Note>
 
 Spans created within a function **decorated** with `@langwatch.trace()` will automatically be nested under the main trace span. You can add additional `type`, `name`, `metadata`, and `events`, or override the automatic input/output using decorator arguments or the `update()` method on the span object obtained via `langwatch.get_current_span()`.
@@ -1188,45 +1192,63 @@ langwatch.setup(
 ### Options
 
 <ParamField path="api_key" type="str | None">
-  Your LangWatch API key. If not provided, it uses the `LANGWATCH_API_KEY` environment variable.
+  Your LangWatch API key. If not provided, it uses the `LANGWATCH_API_KEY`
+  environment variable.
 </ParamField>
 
 <ParamField path="endpoint_url" type="str | None">
-  The LangWatch endpoint URL. Defaults to the `LANGWATCH_ENDPOINT` environment variable or `https://app.langwatch.ai`.
+  The LangWatch endpoint URL. Defaults to the `LANGWATCH_ENDPOINT` environment
+  variable or `https://app.langwatch.ai`.
 </ParamField>
 
 <ParamField path="base_attributes" type="dict[str, Any] | None">
-  A dictionary of attributes to add to all spans (e.g., service name, version). Automatically includes SDK name, version, and language.
+  A dictionary of attributes to add to all spans (e.g., service name, version).
+  Automatically includes SDK name, version, and language.
 </ParamField>
 
 <ParamField path="instrumentors" type="Sequence[Instrumentor] | None">
-  A list of automatic instrumentors (e.g., `OpenAIInstrumentor`, `LangChainInstrumentor`) to capture data from supported libraries.
+  A list of automatic instrumentors (e.g., `OpenAIInstrumentor`,
+  `LangChainInstrumentor`) to capture data from supported libraries.
 </ParamField>
 
 <ParamField path="tracer_provider" type="TracerProvider | None">
-  An existing OpenTelemetry `TracerProvider`. If provided, LangWatch will use it (adding its exporter) instead of creating a new one. If not provided, LangWatch checks the global provider or creates a new one.
+  An existing OpenTelemetry `TracerProvider`. If provided, LangWatch will use it
+  (adding its exporter) instead of creating a new one. If not provided,
+  LangWatch checks the global provider or creates a new one.
 </ParamField>
 
 <ParamField path="debug" type="bool" default="False">
-  Enable debug logging for LangWatch. Defaults to `False` or checks if the `LANGWATCH_DEBUG` environment variable is set to `"true"`.
+  Enable debug logging for LangWatch. Defaults to `False` or checks if the
+  `LANGWATCH_DEBUG` environment variable is set to `"true"`.
 </ParamField>
 
 <ParamField path="disable_sending" type="bool" default="False">
-  If `True`, disables sending traces to the LangWatch server. Useful for testing or development.
+  If `True`, disables sending traces to the LangWatch server. Useful for testing
+  or development.
 </ParamField>
 
 <ParamField path="flush_on_exit" type="bool" default="True">
-  If `True` (the default), the tracer provider will attempt to flush all pending spans when the program exits via `atexit`.
+  If `True` (the default), the tracer provider will attempt to flush all pending
+  spans when the program exits via `atexit`.
 </ParamField>
 
-<ParamField path="span_exclude_rules" type="List[SpanProcessingExcludeRule] | None">
-  If provided, the SDK will exclude spans from being exported to LangWatch based on the rules defined in the list (e.g., matching span names).
+<ParamField
+  path="span_exclude_rules"
+  type="List[SpanProcessingExcludeRule] | None"
+>
+  If provided, the SDK will exclude spans from being exported to LangWatch based
+  on the rules defined in the list (e.g., matching span names).
 </ParamField>
 
-<ParamField path="ignore_global_tracer_provider_override_warning" type="bool" default="False">
-  If `True`, suppresses the warning message logged when an existing global `TracerProvider` is detected and LangWatch attaches its exporter to it instead of overriding it.
+<ParamField
+  path="ignore_global_tracer_provider_override_warning"
+  type="bool"
+  default="False"
+>
+  If `True`, suppresses the warning message logged when an existing global
+  `TracerProvider` is detected and LangWatch attaches its exporter to it instead
+  of overriding it.
 </ParamField>
-
 
 ## Integrations
 
@@ -1250,6 +1272,40 @@ Below is a list of currently supported integrations. Click on each to learn more
 - [Other Frameworks](/integration/python/integrations/other)
 
 If you are using a library that is not listed here, you can still instrument your application manually. See the [Manual Instrumentation Tutorial](/integration/python/tutorials/manual-instrumentation) for more details. Since LangWatch is built on OpenTelemetry, it also supports any library or framework that integrates with OpenTelemetry. We are also continuously working on adding support for more integrations.
+
+## FAQ: Frequently Asked Questions
+
+### How do I track LLM costs and token usage?
+
+LangWatch automatically captures cost and token data for most LLM providers. If you're missing costs or token counts, our [cost tracking tutorial](/integration/python/tutorials/tracking-llm-costs) covers troubleshooting steps, model cost configuration, and manual token tracking setup.
+
+### How do I capture RAG (Retrieval Augmented Generation) contexts?
+
+To monitor your RAG pipelines and track retrieved documents, see our [RAG capturing guide](/integration/python/tutorials/capturing-rag). This enables specialized RAG evaluators and analytics on document usage patterns.
+
+### How can I make input and output of the trace more human readable to better read the conversation?
+
+Our [input/output mapping guide](/integration/python/tutorials/capturing-mapping-input-output) shows how to properly structure chat messages, handle different data formats, and ensure your LLM conversations are captured correctly for analysis.
+
+### How do I add custom metadata and user information to traces?
+
+Learn how to enrich your traces with user IDs, session data, and custom attributes in our [metadata and attributes tutorial](/integration/python/tutorials/capturing-metadata). This is essential for user analytics and filtering traces by custom criteria.
+
+### How can I capture a whole conversation?
+
+To connect multiple traces into a conversation, you can use the `thread_id` metadata. See the [metadata and attributes tutorial](/integration/python/tutorials/capturing-metadata) for more details.
+
+### How do I capture evaluations and guardrails tracing data?
+
+Implement automated quality checks and safety measures with our [evaluations and guardrails tutorial](/integration/python/tutorials/capturing-evaluations-guardrails). Learn to create custom evaluators and integrate safety guardrails into your LLM workflows.
+
+### How can I manually instrument my application for more fine-grained control?
+
+For custom frameworks or fine-grained control, our [manual instrumentation guide](/integration/python/tutorials/manual-instrumentation) covers creating traces and spans programmatically using context managers and direct API calls.
+
+### How do I integrate with existing OpenTelemetry setups?
+
+LangWatch is OpenTelemetry-based, so it can be integrated seamlessly with any OpenTelemetry-compatible application. If you already use OpenTelemetry in your application, our [OpenTelemetry integration tutorial](/integration/python/tutorials/open-telemetry) explains how to configure LangWatch alongside existing telemetry infrastructure, including custom collectors and exporters.
 
 ---
 
@@ -5041,6 +5097,231 @@ langwatch.setup(
 
 ---
 
+# FILE: ./integration/python/tutorials/tracking-llm-costs.mdx
+
+---
+title: Tracking LLM Costs and Tokens
+sidebarTitle: Costs & Tokens
+description: Troubleshooting & adjusting cost tracking in LangWatch
+keywords: LangWatch, cost tracking, token counting, debugging, troubleshooting, model costs, metrics, LLM spans
+---
+
+By default, LangWatch will automatically capture cost and token data for your LLM calls.
+
+<img
+  src="/images/costs/llm-costs-analytics.png"
+  alt="LLM costs analytics graph"
+/>
+
+If you don't see costs being tracked or you see it being tracked as $0, this guide will help you identify and fix issues when cost and token tracking is not working as expected.
+
+## Understanding Cost and Token Tracking
+
+LangWatch calculates costs and tracks tokens by:
+
+1. **Capturing model names** in LLM spans to match against cost tables
+2. **Recording token metrics** (`prompt_tokens`, `completion_tokens`) in span data, or estimating when not available
+3. **Mapping models to costs** using the pricing table in Settings > Model Costs
+
+When any of these components are missing, you might see missing or $0 costs and tokens.
+
+## Step 1: Verify LLM Span Data Capture
+
+The most common issue is that your LLM spans aren't capturing the required data: model name, inputs, outputs, and token metrics.
+
+### Check Your Current Spans
+
+First, examine what data is being captured in your LLM spans. In the LangWatch dashboard:
+
+1. Navigate to a trace that should have cost/token data
+2. Click on the LLM span to inspect its details
+3. Look for these key fields:
+   - **Model**: Should show the model identifier (e.g., `openai/gpt-4o-mini`)
+   - **Input/Output**: Should contain the actual messages sent and received
+   - **Metrics**: Should show prompt + completion tokens
+
+<img
+  src="/images/costs/llm-span-details.png"
+  alt="LLM span showing model, input/output, and token metrics"
+/>
+
+## Step 2: Fix Missing Model Information
+
+If your spans don't show model information, the integration framework you're using might not be capturing it automatically.
+
+### Solution A: Use Framework Auto-tracking
+
+LangWatch provides auto-tracking for popular frameworks that automatically captures all the necessary data for cost calculation.
+
+Check the **Integrations** menu in the sidebar to find specific setup instructions for your framework, which will show you how to properly configure automatic model and token tracking.
+
+### Solution B: Manually Set Model Information
+
+If auto-tracking isn't available for your framework, manually update the span with model information:
+
+```python
+import langwatch
+
+# Mark the span as an LLM type span
+@langwatch.span(type="llm")
+def custom_llm_call(prompt: str):
+    # Update the current span with model information
+    langwatch.get_current_span().update(
+        model="openai/gpt-4o-mini",  # Use the exact model identifier
+        input=prompt,
+    )
+
+    # Simulate an LLM response
+    response = your_custom_llm_client.generate(prompt)
+
+    # Update with output and metrics
+    langwatch.get_current_span().update(
+        output=response.text,
+        metrics={
+            "prompt_tokens": response.usage.prompt_tokens,
+            "completion_tokens": response.usage.completion_tokens,
+        }
+    )
+
+    return response.text
+
+@langwatch.trace()
+def main_handler():
+    result = custom_llm_call("Tell me about LangWatch")
+    return result
+```
+
+### Solution C: Direct OpenTelemetry Integration (without LangWatch SDK)
+
+If you're using a framework with built-in OpenTelemetry integration or community instrumentors, they should be following the [GenAI Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/). However, if the integration isn't capturing model information or token counts correctly, you can wrap your LLM calls with a custom span to patch the missing data:
+
+```python
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+def my_llm_call_with_tracking(prompt):
+    with tracer.start_as_current_span("llm_call_wrapper") as span:
+        # Set the required attributes for cost calculation
+        span.set_attribute("gen_ai.operation.name", "chat")
+        span.set_attribute("gen_ai.request.model", "gpt-4o-mini")
+
+        # Your existing LLM call (may create its own spans)
+        response = your_framework_llm_client.generate(prompt)
+
+        # Extract and set token information if available
+        if hasattr(response, 'usage'):
+            span.set_attribute("gen_ai.usage.input_tokens", response.usage.input_tokens)
+            span.set_attribute("gen_ai.usage.completion_tokens", response.usage.completion_tokens)
+
+        return response
+```
+
+## Step 3: Configure Model Cost Mapping
+
+If your model information is being captured but costs still show $0, you need to configure the cost mapping.
+
+### Check Existing Model Costs
+
+1. Go to **Settings > Model Costs** in your LangWatch dashboard
+2. Look for your model in the list
+3. Check if the regex pattern matches your model identifier
+
+<img
+  src="/images/costs/model-costs-settings.webp"
+  alt="Model Costs settings page showing cost configuration"
+/>
+
+### Add Custom Model Costs
+
+If your model isn't in the cost table, add it:
+
+1. Click **"Add New Model"** in Settings > Model Costs
+2. Configure the model entry:
+   - **Model Name**: Descriptive name (e.g., "gpt-4.1")
+   - **Regex Match Rule**: Pattern to match your model identifier (e.g., `^gpt-4.1$`)
+   - **Input Cost**: Cost per input token (e.g., `0.0000004`)
+   - **Output Cost**: Cost per output token (e.g., `0.0000016`)
+
+### Common Model Identifier Patterns
+
+Make sure your regex patterns match how the model names appear in your spans:
+
+| Framework    | Model Identifier Format | Regex Pattern          |
+| ------------ | ----------------------- | ---------------------- |
+| OpenAI SDK   | `gpt-4o-mini`           | `^gpt-4o-mini$`        |
+| Azure OpenAI | `gpt-4o-mini`           | `^gpt-4o-mini$`        |
+| LangChain    | `openai/gpt-4o-mini`    | `^openai/gpt-4o-mini$` |
+| Custom       | `my-custom-model-v1`    | `^my-custom-model-v1$` |
+
+
+### Verification Checklist
+
+After running your test, verify in the LangWatch dashboard:
+
+✅ **Trace appears** in the dashboard \
+✅ **LLM span shows model name** (e.g., `gpt-4o-mini`) \
+✅ **Input and output are captured** \
+✅ **Token metrics are present** (`prompt_tokens`, `completion_tokens`) \
+✅ **Cost is calculated and displayed** (non-zero value)
+
+## Common Issues and Solutions
+
+### Issue: Auto-tracking not working
+
+**Symptoms**: Spans appear but without model/metrics data
+
+**Solutions**:
+
+- Ensure `autotrack_*()` is called on an active trace
+- Check that the client instance being tracked is the same one making calls
+- Verify the integration is initialized correctly
+
+### Issue: Custom models not calculating costs
+
+**Symptoms**: Model name appears but cost remains $0
+
+**Solutions**:
+
+- Check regex pattern in Model Costs settings
+- Ensure the pattern exactly matches your model identifier
+- Verify input and output costs are configured correctly
+
+### Issue: Token counts are 0 but model is captured
+
+**Symptoms**: Model name is present but token metrics are missing
+
+**Solutions**:
+
+- Manually set metrics in span updates if not automatically captured
+- Check if your LLM provider returns usage information
+- Ensure the integration is extracting token counts from responses
+
+### Issue: Framework with OpenTelemetry not capturing model data
+
+**Symptoms**: Using a framework with OpenTelemetry integration that's not capturing model names or token counts
+
+**Solutions**:
+- Follow the guidance in [Solution C: Framework with OpenTelemetry Integration](#solution-c-framework-with-opentelemetry-integration) above
+- Wrap your LLM calls with custom spans to patch missing data
+
+
+## Getting Help
+
+If you're still experiencing issues after following this guide:
+
+1. **Check the LangWatch logs** for any error messages
+2. **Verify your API key** and endpoint configuration
+3. **Share a minimal reproduction** with the specific framework you're using
+4. **Contact support** at [support@langwatch.ai](mailto:support@langwatch.ai) with:
+   - Your integration method (SDK, OpenTelemetry, etc.)
+   - Framework versions
+   - Sample span data from the dashboard
+
+Cost and token tracking should work reliably once the model information and metrics are properly captured. Most issues stem from missing model identifiers or incorrect cost table configuration.
+
+---
+
 # FILE: ./integration/typescript/guide.mdx
 
 ---
@@ -6393,7 +6674,7 @@ After following the above guide, your interactions with LLMs should now be captu
 
 ---
 title: OpenTelemetry Integration Guide
-sidebarTitle: Guide
+sidebarTitle: OpenTelemetry (without SDK)
 description: Use OpenTelemetry to capture LLM traces and send them to LangWatch
 ---
 
