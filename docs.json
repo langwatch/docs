@@ -33,10 +33,10 @@
      "defaults": "required"
    },
    "mdx": {
-    "server": "https://app.langwatch.ai/api/evaluations", 
+    "server": "https://app.langwatch.ai/api/evaluations",
     "auth": {
       "method": "key",
-      "name": "x-api-key" 
+      "name": "x-api-key"
     }
   }
  },
@@ -103,24 +103,7 @@
                 "pages": [
                   "integration/python/guide",
                   "integration/typescript/guide",
-                  {
-                    "group": "Tutorials",
-                    "pages": [
-                      "integration/python/tutorials/manual-instrumentation",
-                      "integration/python/tutorials/open-telemetry",
-                      "integration/python/tutorials/capturing-rag",
-                      "integration/python/tutorials/capturing-evaluations-guardrails",
-                      "integration/python/tutorials/capturing-metadata",
-                      "integration/python/tutorials/capturing-mapping-input-output"
-                    ]
-                  },
-                  {
-                    "group": "OpenTelemetry",
-                    "pages": [
-                      "integration/opentelemetry/guide"
-                    ]
-                  },
-                  "integration/rags-context-tracking",
+                  "integration/opentelemetry/guide",
                   {
                     "group": "API Reference",
                     "pages": [
@@ -171,6 +154,18 @@
                 ]
               },
               {
+                "group": "Tutorials",
+                "pages": [
+                  "integration/python/tutorials/manual-instrumentation",
+                  "integration/python/tutorials/open-telemetry",
+                  "integration/python/tutorials/capturing-rag",
+                  "integration/rags-context-tracking",
+                  "integration/python/tutorials/capturing-evaluations-guardrails",
+                  "integration/python/tutorials/capturing-metadata",
+                  "integration/python/tutorials/capturing-mapping-input-output"
+                ]
+              },
+              {
                 "group": "User Events",
                 "pages": [
                   "user-events/overview",
@@ -197,8 +192,8 @@
           },
           {
             "group": "LLM Evaluation",
-            
-            
+
+
             "pages": [
               "llm-evaluation/overview",
             "llm-evaluation/offline/code/evaluation-api",
@@ -216,7 +211,7 @@
                   "evaluations/custom-evaluator-integration"
                 ]
               },
-              
+
               {
                 "group": "Built-in Evaluators",
                 "pages": [
@@ -226,7 +221,7 @@
                     "openapi": "/api-reference/openapi-evals.json"
                   }
                 ]
-               
+
               },
               {
                 "group": "Datasets",
@@ -238,7 +233,7 @@
               },
               "features/annotations"
             ]
-            
+
           },
           {
             "group": "LLM Development",

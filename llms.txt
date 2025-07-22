@@ -6393,7 +6393,7 @@ After following the above guide, your interactions with LLMs should now be captu
 
 ---
 title: OpenTelemetry Integration Guide
-sidebarTitle: Guide
+sidebarTitle: OpenTelemetry (without SDK)
 description: Use OpenTelemetry to capture LLM traces and send them to LangWatch
 ---
 
