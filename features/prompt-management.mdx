@@ -282,9 +282,13 @@ curl -H "X-Auth-Token: $LW_API_KEY" \
 
 </CodeGroup>
 
-### Variables & Dynamic Content
+### Templating & Variables
 
-Define typed inputs for dynamic content in your prompts using `{{variableName}}` syntax:
+LangWatch supports both **basic variable substitution** for simple prompts and **advanced templating** with conditional logic, loops, and filters for complex use cases.
+
+#### Basic Variable Substitution
+
+For simple prompts, use `{{variableName}}` syntax with typed input validation:
 
 <CodeGroup>
 
@@ -339,11 +343,9 @@ compiled = prompt.compile({
 
 **Supported input types:** `str`, `float`, `bool`, `image`, `list[str]`, `list[float]`, `list[int]`, `list[bool]`, `dict`
 
-### Advanced Templating *(Coming Soon)*
+#### Advanced Templating with Liquid *(Coming Soon)*
 
-For complex prompts requiring conditional logic, loops, and data transformation, LangWatch supports **Liquid templating** - a powerful template engine with identical implementations in JavaScript (LiquidJS) and Python (python-liquid).
-
-**Liquid Template Features:**
+For complex prompts requiring conditional logic, loops, and data transformation, LangWatch supports **Liquid templating** - a powerful template engine with identical implementations in JavaScript and Python.
 
 <CodeGroup>
 
@@ -492,7 +494,7 @@ compiled = prompt.compile({
 
 **Jinja2 Migration Support:**
 
-Liquid syntax is very similar to Jinja2, making migration straightforward:
+For teams migrating from Jinja2, Liquid syntax is very similar:
 
 <CodeGroup>
 
@@ -531,18 +533,16 @@ langwatch prompts convert --from jinja2 --to liquid customer-email.j2
 
 </CodeGroup>
 
-**Why Liquid for LangWatch?**
+**Why Liquid for Advanced Templating?**
 
 1. **True cross-platform consistency** - liquidjs and python-liquid have feature parity
 2. **Battle-tested at scale** - powers Shopify's entire templating system
 3. **Familiar syntax** - very similar to Jinja2, easy migration path
 4. **Rich feature set** - conditionals, loops, filters, and data access
-5. **Active maintenance** - both JS and Python implementations are well-maintained
+5. **Enterprise-ready** - proven reliability and performance at massive scale
 6. **No custom language** - using proven, widely-adopted template engine
-7. **Enterprise-ready** - proven reliability and performance at massive scale
 
 **Implementation Libraries:**
-
 - **JavaScript:** `liquidjs` - feature-complete, actively maintained
 - **Python:** `python-liquid` - feature-complete, actively maintained
 - Both libraries maintain strict compatibility and identical behavior
