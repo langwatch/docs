@@ -1,0 +1,1152 @@
+---
+title: Prompt Management (Roadmap & Docs)
+description: End-to-end prompt CMS for LangWatch — roadmap, concepts, SDKs & integrations
+status: work-in-progress
+---
+
+> **Info**  
+> This document is a *living roadmap*. Sections flagged **Coming Soon** outline features that are not yet publicly available.
+
+## Overview & Benefits
+
+### What is Prompt Management?
+
+Prompt Management in **LangWatch** is a first-class **Prompt CMS**. It lets you store, version, label, compose, test, and monitor all your prompts from a single place while keeping latency low and reliability high.
+
+### Why Prompt Management?
+
+* **Decouple** prompt text from code – deploy new prompts without redeploying your app.
+* **Version control** – roll back instantly when a change under-performs.
+* **Analytics & tracing** – correlate prompt versions with downstream evaluations and costs.
+* **Collaboration** – empower non-technical team members to ship prompt updates.
+
+See also our existing [Prompt Versioning guide](/features/prompt-versioning).
+
+### Quick Start
+
+Get up and running in 30 seconds:
+
+<CodeGroup>
+
+```ts JavaScript
+// 1. Create your first prompt
+const prompt = await langwatch.prompts.create({
+  name: "greeting",
+  configData: {
+    prompt: "Hello! How can I help you today?",
+    model: "gpt-3.5-turbo"
+  }
+});
+
+// 2. Use it in your application
+const greeting = await langwatch.getPrompt("greeting");
+const response = await openai.chat.completions.create({
+  model: greeting.config.model,
+  messages: [{ role: "system", content: greeting.compile({}) }]
+});
+```
+
+```py Python
+# 1. Create your first prompt
+prompt = langwatch.prompts.create(
+    name="greeting",
+    config_data={
+        "prompt": "Hello! How can I help you today?",
+        "model": "gpt-3.5-turbo"
+    }
+)
+
+# 2. Use it in your application
+greeting = langwatch.get_prompt("greeting")
+response = openai.chat.completions.create(
+    model=greeting.config["model"],
+    messages=[{"role": "system", "content": greeting.compile({})}]
+)
+```
+
+```bash REST
+# 1. Create prompt
+curl -X POST -H "Content-Type: application/json" -H "X-Auth-Token: $LW_API_KEY" \
+  -d '{"name":"greeting","configData":{"prompt":"Hello! How can I help you today?","model":"gpt-3.5-turbo"}}' \
+  https://app.langwatch.ai/api/prompts
+
+# 2. Use the prompt ID returned from step 1
+curl -H "X-Auth-Token: $LW_API_KEY" \
+  https://app.langwatch.ai/api/prompts/greeting
+```
+
+</CodeGroup>
+
+That's it! You now have a managed prompt that can be updated without code changes.
+
+## Understanding Prompts
+
+### Prompt Basics
+
+Every prompt in LangWatch is a versioned configuration object with these key components:
+
+```json
+{
+  "id": "prompt_abc123",
+  "name": "movie-critic",                    // Unique prompt name
+  "type": "chat",                           // "text" or "chat" format
+  "version": 3,                             // Current version number
+  "model": "gpt-3.5-turbo",                 // Default model
+  "prompt": null,                           // Text template (for text type)
+  "messages": [                             // Chat messages (for chat type)
+    {
+      "role": "system",
+      "content": "You are a {{criticLevel}} movie critic."
+    },
+    {
+      "role": "user",
+      "content": "What do you think of {{movie}}?"
+    }
+  ]
+}
+```
+
+Key concepts:
+- **Immutable versions** – every update creates a new version
+- **Dual format support** – text templates or chat messages
+- **Variable syntax** – `{{variableName}}` syntax for dynamic content
+
+### Versions & Labels
+
+**Versions** are immutable. When you update a prompt, you create a new version with a higher number.
+
+**Labels** are pointers to specific versions:
+- `latest` – always points to the newest version
+- `production` – points to your live version
+- Custom labels – `staging`, `experimental`, etc.
+
+<CodeGroup>
+
+```ts JavaScript
+// Create a new version
+await prompt.newVersion({
+  commitMessage: "Improved system prompt",
+  configData: { prompt: "You are a helpful assistant." }
+});
+
+// Promote to production
+await prompt.update({ labels: ["production"] });
+
+// Fetch specific versions
+const latest = await langwatch.getPrompt("movie-critic", { label: "latest" });
+const production = await langwatch.getPrompt("movie-critic"); // defaults to production
+```
+
+```py Python
+# Create new version
+prompt.new_version(
+    commit_message="Improved system prompt",
+    config_data={"prompt": "You are a helpful assistant."}
+)
+
+# Promote to production
+prompt.update(labels=["production"])
+
+# Fetch versions
+latest = langwatch.get_prompt("movie-critic", label="latest")
+production = langwatch.get_prompt("movie-critic")  # defaults to production
+```
+
+</CodeGroup>
+
+### Text vs Chat Types *(Coming Soon)*
+
+**Text Type (`type: "text"`):**
+- Single string template: `"Translate {{text}} from {{source}} to {{target}}"`
+- Best for: completion models, simple instructions
+
+**Chat Type (`type: "chat"`):**
+- Array of messages with roles (system, user, assistant)
+- Best for: chat models, conversations, complex instructions
+- Variables work in any message content
+
+## Managing Your Prompts
+
+### Virtual Folders *(Coming Soon)*
+
+Organize prompts in a hierarchy using forward slashes in the name:
+
+<CodeGroup>
+
+```ts JavaScript
+await prompt.update({ name: "onboarding/welcome-email" });
+await prompt.update({ name: "onboarding/follow-up" });
+await prompt.update({ name: "support/troubleshooting" });
+
+// List everything under a folder
+const onboardingPrompts = await langwatch.prompts.list({ folder: "onboarding/" });
+```
+
+```py Python
+prompt.update(name="onboarding/welcome-email")
+
+# List folder contents
+onboarding_prompts = langwatch.prompts.list(folder="onboarding/")
+```
+
+</CodeGroup>
+
+### Tags *(Coming Soon)*
+
+**Tags** let you slice prompts across dimensions (domain, language, owner):
+
+<CodeGroup>
+
+```ts JavaScript
+await prompt.update({ tags: ["marketing", "german", "email"] });
+
+// Query by tags
+const germanPrompts = await langwatch.prompts.list({ tags: ["german"] });
+const marketingEmails = await langwatch.prompts.list({ tags: ["marketing", "email"] });
+```
+
+```py Python
+prompt.update(tags=["marketing", "german", "email"])
+
+german_prompts = langwatch.prompts.list(tags=["german"])
+```
+
+</CodeGroup>
+
+### Team Collaboration
+
+LangWatch's prompt management system is designed to enable effective collaboration between technical and non-technical team members. Here's how we recommend structuring your workflow:
+
+**Recommended Collaboration Workflow:**
+1. **Developers** create initial prompt structure with proper input/output schemas
+2. **Domain experts** (product managers, content specialists) refine prompt text and examples
+3. **QA teams** test prompts using different labels before promoting to production
+4. **Operations** monitor performance and coordinate rollbacks when needed
+
+**How LangWatch Facilitates This:**
+- **Commit messages** – every version includes author, timestamp, and clear change description
+- **Role-based permissions** – restrict production deployments to authorized team members
+- **Complete audit trail** – track who changed what and when for compliance and debugging
+- **Code-free editing** – non-technical team members can iterate on prompts through the UI
+- **Safe experimentation** – use staging labels to test changes without affecting production
+
+**Best Practices for Team Workflows:**
+- Establish clear naming conventions that your whole team understands
+- Use descriptive commit messages that explain the business reasoning behind changes
+- Create approval processes for production deployments using role permissions
+- Set up monitoring and alerts so the team knows when prompt performance changes
+
+## Integration & Usage
+
+### Basic Integration
+
+<CodeGroup>
+
+```ts JavaScript
+import { LangWatch } from "langwatch/prompts";
+
+const langwatch = new LangWatch({ apiKey: process.env.LANGWATCH_API_KEY });
+
+// Get and use a prompt
+const prompt = await langwatch.getPrompt("customer-classifier");
+const compiled = prompt.compile({ query: userInput });
+
+// Use with OpenAI
+const response = await openai.chat.completions.create({
+  model: prompt.config.model,
+  messages: [{ role: "user", content: compiled }]
+});
+```
+
+```py Python
+import langwatch
+
+# Get and use a prompt
+prompt = langwatch.get_prompt("customer-classifier")
+compiled = prompt.compile({"query": user_input})
+
+# Use with OpenAI
+response = openai.chat.completions.create(
+    model=prompt.config["model"],
+    messages=[{"role": "user", "content": compiled}]
+)
+```
+
+```bash REST
+# Fetch prompt
+curl -H "X-Auth-Token: $LW_API_KEY" \
+  https://app.langwatch.ai/api/prompts/customer-classifier
+
+# Use the returned prompt data in your application
+```
+
+</CodeGroup>
+
+### Templating & Variables
+
+LangWatch supports both **basic variable substitution** for simple prompts and **advanced templating** with conditional logic, loops, and filters for complex use cases.
+
+#### Basic Variable Substitution
+
+For simple prompts, use `{{variableName}}` syntax with typed input validation:
+
+<CodeGroup>
+
+```ts JavaScript
+// Create prompt with input schema
+await langwatch.prompts.create({
+  name: "product-review",
+  configData: {
+    prompt: "Review this {{productType}}: {{productName}}\nPrice: ${{price}}",
+    inputs: [
+      { identifier: "productType", type: "str" },
+      { identifier: "productName", type: "str" },
+      { identifier: "price", type: "float" }
+    ],
+    model: "gpt-4"
+  }
+});
+
+// Compile with type validation
+const prompt = await langwatch.getPrompt("product-review");
+const compiled = prompt.compile({
+  productType: "laptop",
+  productName: "MacBook Pro",
+  price: 2499.99
+});
+```
+
+```py Python
+# Create with input schema
+langwatch.prompts.create(
+    name="product-review",
+    config_data={
+        "prompt": "Review this {{productType}}: {{productName}}\nPrice: ${{price}}",
+        "inputs": [
+            {"identifier": "productType", "type": "str"},
+            {"identifier": "productName", "type": "str"},
+            {"identifier": "price", "type": "float"}
+        ],
+        "model": "gpt-4"
+    }
+)
+
+# Compile with validation
+compiled = prompt.compile({
+    "productType": "laptop",
+    "productName": "MacBook Pro",
+    "price": 2499.99
+})
+```
+
+</CodeGroup>
+
+**Supported input types:** `str`, `float`, `bool`, `image`, `list[str]`, `list[float]`, `list[int]`, `list[bool]`, `dict`
+
+#### Advanced Templating with Liquid *(Coming Soon)*
+
+For complex prompts requiring conditional logic, loops, and data transformation, LangWatch supports **Liquid templating** - a powerful template engine with identical implementations in JavaScript and Python.
+
+<CodeGroup>
+
+```liquid Liquid Template
+Hello {{customer.name}},
+
+{% if customer.is_premium %}
+Thank you for being a premium customer! Here are your exclusive benefits:
+{% for feature in premium_features %}
+- {{feature.name}}: {{feature.description}}
+{% endfor %}
+{% else %}
+Consider upgrading to premium for these benefits:
+{% for feature in premium_features %}
+- {{feature.name}} ({{feature.price | currency}}/month)  
+{% endfor %}
+{% endif %}
+
+Your recent orders:
+{% for order in recent_orders %}
+{% if forloop.first %}--- Most Recent ---{% endif %}
+Order #{{order.id}}: {{order.status}} ({{order.total | currency}})
+{% if forloop.last %}--- End of Orders ---{% endif %}
+{% endfor %}
+
+{% unless recent_orders %}
+No recent orders found.
+{% endunless %}
+
+Best regards,
+The {{company.name}} Team
+```
+
+```ts JavaScript
+// JavaScript SDK using liquidjs
+const prompt = await langwatch.getPrompt("customer-email");
+const compiled = prompt.compile({
+  customer: { name: "Sarah Johnson", is_premium: true },
+  premium_features: [
+    { name: "Priority Support", description: "24/7 dedicated support" },
+    { name: "Advanced Analytics", description: "Detailed usage insights" }
+  ],
+  recent_orders: [
+    { id: "ORD-123", status: "Delivered", total: 299.99 },
+    { id: "ORD-122", status: "Processing", total: 149.50 }
+  ],
+  company: { name: "LangWatch" }
+});
+```
+
+```py Python
+# Python SDK using python-liquid - identical template, identical result
+prompt = langwatch.get_prompt("customer-email")
+compiled = prompt.compile({
+    "customer": {"name": "Sarah Johnson", "is_premium": True},
+    "premium_features": [
+        {"name": "Priority Support", "description": "24/7 dedicated support"},
+        {"name": "Advanced Analytics", "description": "Detailed usage insights"}
+    ],
+    "recent_orders": [
+        {"id": "ORD-123", "status": "Delivered", "total": 299.99},
+        {"id": "ORD-122", "status": "Processing", "total": 149.50}
+    ],
+    "company": {"name": "LangWatch"}
+})
+```
+
+</CodeGroup>
+
+**Liquid Features:**
+
+**Control Flow:**
+- `{% if condition %}...{% endif %}` - conditionals  
+- `{% unless condition %}...{% endunless %}` - inverse conditionals
+- `{% elsif %}` and `{% else %}` - multiple conditions
+- `{% for item in array %}...{% endfor %}` - iteration
+- Loop variables: `forloop.first`, `forloop.last`, `forloop.index`
+
+**Built-in Filters:**
+- `{{ "hello" | upcase }}` - text transformation
+- `{{ 1234.56 | currency }}` - formatting
+- `{{ "now" | date: "%Y-%m-%d" }}` - date formatting  
+- `{{ array | join: ", " }}` - array operations
+- `{{ text | truncate: 100 }}` - string manipulation
+
+**Data Access:**
+- `{{ user.profile.name }}` - nested object access
+- `{{ products[0].title }}` - array indexing
+- `{{ settings["api_key"] }}` - dynamic key access
+
+**Cross-Platform Consistency:**
+
+The same template definition works identically in both SDKs:
+
+<CodeGroup>
+
+```json Template Definition (Shared)
+{
+  "type": "chat",
+  "templateEngine": "liquid",
+  "messages": [
+    {
+      "role": "system", 
+      "content": "You are a {{role}} assistant{% if specialization %} specialized in {{specialization}}{% endif %}."
+    },
+    {
+      "role": "user",
+      "content": "{% if has_context %}Given this context:\n{{context}}\n\n{% endif %}Please help with: {{user_query}}"
+    }
+  ],
+  "inputs": [
+    {"identifier": "role", "type": "str"},
+    {"identifier": "specialization", "type": "str", "required": false},
+    {"identifier": "has_context", "type": "bool"},
+    {"identifier": "context", "type": "str", "required": false}, 
+    {"identifier": "user_query", "type": "str"}
+  ]
+}
+```
+
+```ts JavaScript Implementation
+// JavaScript SDK using liquidjs under the hood
+const compiled = prompt.compile({
+  role: "helpful",
+  specialization: "data analysis", 
+  has_context: true,
+  context: "Sales data from Q3 2024",
+  user_query: "What trends do you see?"
+});
+// Result: Properly compiled template with conditionals resolved
+```
+
+```py Python Implementation  
+# Python SDK using python-liquid - identical behavior
+compiled = prompt.compile({
+    "role": "helpful",
+    "specialization": "data analysis",
+    "has_context": True, 
+    "context": "Sales data from Q3 2024",
+    "user_query": "What trends do you see?"
+})
+# Result: Identical output to JavaScript SDK
+```
+
+</CodeGroup>
+
+**Jinja2 Migration Support:**
+
+For teams migrating from Jinja2, Liquid syntax is very similar:
+
+<CodeGroup>
+
+```jinja2 Existing Jinja2
+Hello {{ customer_name }},
+
+{% if is_premium %}
+  Welcome to premium!
+  {% for feature in premium_features %}
+  - {{ feature.name }}: {{ feature.price | currency }}
+  {% endfor %}
+{% endif %}
+
+You have {{ orders | length }} total orders.
+```
+
+```liquid Converted to Liquid
+Hello {{ customer.name }},
+
+{% if customer.is_premium %}
+  Welcome to premium!
+  {% for feature in premium_features %}  
+  - {{ feature.name }}: {{ feature.price | currency }}
+  {% endfor %}
+{% endif %}
+
+You have {{ orders.size }} total orders.
+```
+
+```bash Migration Helper
+# CLI tool to assist with Jinja2 to Liquid conversion
+langwatch prompts convert --from jinja2 --to liquid customer-email.j2
+
+# Shows conversion suggestions and highlights syntax differences
+```
+
+</CodeGroup>
+
+**Why Liquid for Advanced Templating?**
+
+1. **True cross-platform consistency** - liquidjs and python-liquid have feature parity
+2. **Battle-tested at scale** - powers Shopify's entire templating system
+3. **Familiar syntax** - very similar to Jinja2, easy migration path
+4. **Rich feature set** - conditionals, loops, filters, and data access
+5. **Enterprise-ready** - proven reliability and performance at massive scale
+6. **No custom language** - using proven, widely-adopted template engine
+
+**Implementation Libraries:**
+- **JavaScript:** `liquidjs` - feature-complete, actively maintained
+- **Python:** `python-liquid` - feature-complete, actively maintained
+- Both libraries maintain strict compatibility and identical behavior
+
+### Caching & Performance *(Coming Soon)*
+
+Zero-latency prompt fetching with intelligent caching:
+
+<CodeGroup>
+
+```ts JavaScript
+// Configure caching
+const prompt = await langwatch.getPrompt("critical-system-prompt", {
+  cacheTtlSeconds: 300,  // 5 minute cache
+  fallbackStrategy: "stale-while-revalidate"
+});
+
+// Pre-warm cache on startup
+await langwatch.prompts.preload([
+  "critical-system-prompt",
+  "user-onboarding", 
+  "error-handling"
+]);
+```
+
+```py Python
+# Configure caching
+prompt = langwatch.get_prompt(
+    "critical-system-prompt",
+    cache_ttl_seconds=300,
+    fallback_strategy="stale-while-revalidate"
+)
+
+# Pre-warm cache
+langwatch.prompts.preload([
+    "critical-system-prompt",
+    "user-onboarding"
+])
+```
+
+</CodeGroup>
+
+### Trace Linking *(Coming Soon)*
+
+Automatic connection between prompt versions and trace outcomes:
+
+<CodeGroup>
+
+```ts JavaScript
+// SDK automatically captures prompt metadata in traces
+const prompt = await langwatch.getPrompt("customer-classifier");
+const response = await openai.chat.completions.create({
+  model: prompt.config.model,
+  messages: [{ role: "user", content: prompt.compile({ query: userInput }) }],
+  // Prompt version automatically captured in trace
+});
+```
+
+```py Python
+# Automatic trace linking
+prompt = langwatch.get_prompt("customer-classifier")
+response = openai.chat.completions.create(
+    model=prompt.config["model"],
+    messages=[{"role": "user", "content": prompt.compile({"query": user_input})}],
+    # Prompt version captured automatically
+)
+```
+
+</CodeGroup>
+
+### LangWatch Evaluations Integration
+
+The Prompt Manager integrates seamlessly with LangWatch's evaluation system. All prompt nodes in the Optimization Studio use the centralized prompt management system, enabling you to:
+
+**Evaluate Managed Prompts:**
+- Run batch evaluations on specific prompt versions
+- Compare performance across different prompt variants
+- Automatically track which prompt version generated each evaluation result
+
+**Optimization Studio Integration:**
+- All prompt nodes automatically pull from the Prompt Manager
+- Changes to prompts in the manager instantly reflect in your evaluation workflows
+- Version history lets you correlate evaluation performance with specific prompt changes
+- **Draft support in Optimization Studio UI** – create and test prompt drafts directly within evaluation workflows
+- **Seamless draft-to-evaluation pipeline** – run evaluations on draft prompts before committing to new versions
+
+<Frame caption="Prompt Manager integration in Optimization Studio">
+  <img className="block" src="/images/prompt-manager-optimization-studio.png" alt="Screenshot showing prompt nodes in Optimization Studio using managed prompts" />
+</Frame>
+
+<Frame caption="Evaluation results linked to prompt versions">
+  <img className="block" src="/images/evaluation-prompt-versions.png" alt="Screenshot showing evaluation results correlated with specific prompt versions" />
+</Frame>
+
+**Benefits:**
+- **Consistent evaluation** – ensure all team members evaluate the same prompt version
+- **Historical analysis** – see how prompt changes impact evaluation scores over time
+- **Automated correlation** – evaluation results automatically link to prompt versions
+- **Workflow integration** – use evaluation results to guide prompt promotion decisions
+
+## Interactive Playground *(Coming Soon)*
+
+The **LangWatch Playground** is a powerful web-based interface for testing, comparing, and iterating on your prompts in real-time. It bridges the gap between development and production, enabling rapid experimentation and collaboration.
+
+### Core Playground Features
+
+**Real-Time Testing Interface:**
+- Live prompt compilation with variable substitution
+- Instant LLM execution with multiple model support
+- Rich input forms with type validation for all prompt variables
+- Output formatting with syntax highlighting and export options
+
+**Version Management Integration:**
+- Edit prompts directly in the playground with auto-save drafts
+- One-click version creation with commit messages
+- Instant rollback and rollforward between any versions
+- Side-by-side comparison of prompt versions with diff highlighting
+
+**Draft Mode *(UI-Only Feature)*:**
+- **Uncommitted experimentation** – make changes without creating permanent versions
+- **Auto-save drafts** – your work is continuously saved as you type and test
+- **Draft isolation** – drafts are private and don't affect production or team members
+- **Easy promotion** – convert successful drafts to new versions with one click
+- **Draft history** – review your experimentation timeline and restore previous draft states
+- **Collaboration-friendly** – share draft links for feedback without committing changes
+
+<Frame caption="Interactive Playground Interface">
+  <img className="block" src="/images/playground-interface.png" alt="Screenshot of LangWatch Playground showing prompt editing, variable inputs, and real-time results" />
+</Frame>
+
+### Multi-Prompt Comparison
+
+Compare different prompts or versions side-by-side:
+
+**Comparative Testing:**
+- Load multiple prompts in split-screen view
+- Test same inputs across different prompt versions
+- Visual diff highlighting between prompt texts
+- Performance metrics comparison (latency, cost, token usage)
+- Export comparison results for team review
+
+**A/B Test Setup:**
+- Create A/B test variants directly in playground
+- Configure traffic splitting percentages
+- Preview both variants with same test inputs
+- Set up success metrics and evaluation criteria
+
+<Frame caption="Side-by-Side Prompt Comparison">
+  <img className="block" src="/images/playground-comparison.png" alt="Screenshot showing two prompt versions being compared side-by-side with results" />
+</Frame>
+
+### Log-to-Edit Workflow *(High Priority)*
+
+Seamlessly jump from production issues to prompt improvements:
+
+**From Trace to Edit:**
+- One-click "Edit Prompt" button on any trace in LangWatch
+- Auto-populate playground with exact inputs from production logs
+- Context preservation: customer ID, conversation history, metadata
+- Test prompt changes against real customer scenarios
+
+**Contextual Editing:**
+- Pre-filled variable values from actual customer interactions  
+- Historical context from previous conversation turns
+- Ability to replay entire conversation flows with new prompt versions
+- Save improved prompts directly back to production with proper versioning
+
+<Frame caption="Log-to-Edit Workflow">
+  <img className="block" src="/images/playground-log-to-edit.png" alt="Screenshot showing transition from trace log to playground with populated data" />
+</Frame>
+
+### Advanced Testing Features
+
+**Variable Testing Matrix:**
+- Batch test multiple input combinations
+- CSV upload for bulk variable testing
+- Test data templates for common scenarios
+- Results export and analysis tools
+
+**Model Comparison:**
+- Switch between different LLM providers instantly
+- Compare costs, latency, and quality across models
+- Save optimal model settings per prompt
+- Provider failover testing
+
+**Collaboration Tools:**
+- Share playground sessions via links
+- Comment and review system for prompt changes
+- Team approval workflows for production deployments
+- Integration with existing project management tools
+
+### Integration with Evaluation System
+
+**Live Evaluation in Playground:**
+- Run evaluations directly on playground outputs
+- Real-time scoring with custom and built-in evaluators
+- Compare evaluation scores across prompt versions
+- Set up automated evaluation pipelines for new versions
+
+**Golden Dataset Testing:**
+- Load test datasets directly into playground
+- Batch run prompts against golden datasets
+- Side-by-side results comparison with expected outputs
+- Export results for further analysis
+
+### Draft-to-Production Workflow
+
+The draft system (available in both Playground and Optimization Studio UIs) enables safe experimentation with a clear path to production:
+
+**Typical Workflow:**
+1. **Start with production** – Load current production prompt into playground or Optimization Studio
+2. **Create draft** – Begin editing; changes auto-save as private draft
+3. **Iterate safely** – Test multiple variations without affecting live system
+4. **Evaluate performance** – Run evaluations on draft outputs vs. production baseline
+5. **Share for review** – Send draft link to teammates for feedback
+6. **Promote or discard** – Either commit successful draft as new version or discard
+
+**Draft Management:**
+- **Multiple drafts per prompt** – work on different approaches simultaneously  
+- **Draft comparison** – compare your draft against production or other drafts
+- **Draft analytics** – see performance metrics for your experimental changes
+- **Auto-cleanup** – old drafts automatically archived after inactivity
+
+## Advanced Capabilities
+
+### Prompt Composability *(Coming Soon)*
+
+Build complex prompts from reusable components:
+
+<CodeGroup>
+
+```ts JavaScript
+// Create a base system prompt
+await langwatch.prompts.create({
+  name: "base/helpful-assistant",
+  configData: {
+    prompt: "You are a helpful assistant. Always be concise and accurate."
+  }
+});
+
+// Compose it into specialized prompts
+await langwatch.prompts.create({
+  name: "customer-support/email-reply", 
+  configData: {
+    prompt: `@@@langwatchPrompt:name=base/helpful-assistant|label=production@@@
+
+You are responding to: {{customerEmail}}
+
+Guidelines:
+- Be empathetic and professional
+- Provide actionable solutions`
+  }
+});
+
+// References are resolved automatically
+const prompt = await langwatch.getPrompt("customer-support/email-reply");
+```
+
+```py Python
+# Compose prompts using references
+langwatch.prompts.create(
+    name="customer-support/email-reply",
+    config_data={
+        "prompt": """@@@langwatchPrompt:name=base/helpful-assistant|label=production@@@
+
+You are responding to: {{customerEmail}}
+
+Guidelines:
+- Be empathetic and professional
+- Provide actionable solutions"""
+    }
+)
+```
+
+</CodeGroup>
+
+### A/B Testing
+
+Test prompt variants using labels and your own traffic splitting:
+
+<CodeGroup>
+
+```ts JavaScript
+// Create variants with different labels
+await prompt.newVersion({ commitMessage: "Version A - original" });
+await prompt.update({ labels: ["prod-a"] });
+
+await prompt.newVersion({ commitMessage: "Version B - more engaging" });
+await prompt.update({ labels: ["prod-b"] });
+
+// Implement traffic splitting
+const userId = getCurrentUserId();
+const variant = userId % 2 === 0 ? "prod-a" : "prod-b";
+const selectedPrompt = await langwatch.getPrompt("onboarding/welcome", { label: variant });
+
+// LangWatch automatically tracks metrics by prompt version
+```
+
+```py Python
+import random
+
+# Create labeled versions
+prompt.update(labels=["prod-a"])
+# ... create version B with prod-b label
+
+# Simple random split
+variant = random.choice(["prod-a", "prod-b"])
+selected_prompt = langwatch.get_prompt("onboarding/welcome", label=variant)
+
+# Metrics tracked automatically by version
+```
+
+</CodeGroup>
+
+### DSPy Optimization *(Coming Soon)*
+
+Automatically improve prompts using DSPy's optimization framework:
+
+<CodeGroup>
+
+```ts JavaScript
+// Create optimization task
+const optimization = await langwatch.dspy.createOptimization({
+  name: "customer-classifier",
+  signature: "question -> category",
+  trainingDataset: "customer_queries_dataset",
+  optimizer: "BootstrapFewShot",
+  maxDemonstrations: 8
+});
+
+// Run optimization and deploy results
+await langwatch.dspy.optimize(optimization.id);
+await langwatch.dspy.deploy(optimization.id, {
+  promptName: "customer-classifier",
+  label: "production"
+});
+```
+
+```py Python
+# DSPy optimization
+optimization = langwatch.dspy.create_optimization(
+    name="customer-classifier",
+    signature="question -> category",
+    training_dataset="customer_queries_dataset",
+    optimizer="BootstrapFewShot"
+)
+
+langwatch.dspy.optimize(optimization.id)
+langwatch.dspy.deploy(optimization.id, prompt_name="customer-classifier")
+```
+
+</CodeGroup>
+
+### External Integrations *(Coming Soon)*
+
+- **n8n Node** – Automate prompt workflows without code
+- **Langflow Integration** – Visual prompt chaining and testing
+- **MCP Server** – Enable AI assistants to manage prompts directly
+
+## Examples & Tutorials
+
+### Building a RAG System
+
+<CodeGroup>
+
+```ts JavaScript
+// Create RAG system prompt
+await langwatch.prompts.create({
+  name: "rag/qa-system",
+  configData: {
+    prompt: `Answer questions based on the provided context.
+
+Context: {{context}}
+Question: {{question}}
+
+Instructions:
+- Only answer based on the context
+- If context lacks info, say "I don't have enough information"
+- Be concise and accurate`,
+    inputs: [
+      { identifier: "context", type: "str" },
+      { identifier: "question", type: "str" }
+    ],
+    model: "gpt-4"
+  }
+});
+
+// Use in RAG pipeline
+async function answerQuestion(question: string) {
+  const context = await retrieveRelevantDocs(question);
+  const prompt = await langwatch.getPrompt("rag/qa-system");
+  
+  return await openai.chat.completions.create({
+    model: prompt.config.model,
+    messages: [{
+      role: "user", 
+      content: prompt.compile({ context, question })
+    }]
+  });
+}
+```
+
+```py Python
+# Create RAG prompt
+langwatch.prompts.create(
+    name="rag/qa-system",
+    config_data={
+        "prompt": """Answer questions based on the provided context.
+
+Context: {{context}}
+Question: {{question}}
+
+Instructions:
+- Only answer based on the context
+- If context lacks info, say "I don't have enough information"
+- Be concise and accurate""",
+        "inputs": [
+            {"identifier": "context", "type": "str"},
+            {"identifier": "question", "type": "str"}
+        ],
+        "model": "gpt-4"
+    }
+)
+
+# Use in RAG
+def answer_question(question: str):
+    context = retrieve_relevant_docs(question)
+    prompt = langwatch.get_prompt("rag/qa-system")
+    
+    return openai.chat.completions.create(
+        model=prompt.config["model"],
+        messages=[{
+            "role": "user",
+            "content": prompt.compile({"context": context, "question": question})
+        }]
+    )
+```
+
+</CodeGroup>
+
+### Multi-Step Workflows
+
+<CodeGroup>
+
+```ts JavaScript
+// Create prompts for each step
+await langwatch.prompts.create({
+  name: "analysis/extract-entities",
+  configData: {
+    prompt: "Extract key entities from: {{text}}",
+    model: "gpt-3.5-turbo"
+  }
+});
+
+await langwatch.prompts.create({
+  name: "analysis/classify-sentiment", 
+  configData: {
+    prompt: "Classify sentiment of: {{text}}\nEntities: {{entities}}",
+    model: "gpt-3.5-turbo"
+  }
+});
+
+// Chain them together
+async function analyzeText(text: string) {
+  const extractPrompt = await langwatch.getPrompt("analysis/extract-entities");
+  const entities = await callLLM(extractPrompt.compile({ text }));
+  
+  const sentimentPrompt = await langwatch.getPrompt("analysis/classify-sentiment");
+  return await callLLM(sentimentPrompt.compile({ text, entities }));
+}
+```
+
+```py Python
+# Multi-step analysis workflow
+def analyze_text(text: str):
+    # Step 1: Extract entities
+    extract_prompt = langwatch.get_prompt("analysis/extract-entities")
+    entities = call_llm(extract_prompt.compile({"text": text}))
+    
+    # Step 2: Classify sentiment
+    sentiment_prompt = langwatch.get_prompt("analysis/classify-sentiment") 
+    return call_llm(sentiment_prompt.compile({"text": text, "entities": entities}))
+```
+
+</CodeGroup>
+
+## Best Practices
+
+### Naming Conventions
+- Use forward slashes for hierarchy: `domain/feature/specific-use`
+- Be descriptive: `customer-support/escalation-email` not `cs-esc`
+- Include context: `rag/product-qa` not just `qa`
+
+### Version Management
+- Always include meaningful commit messages
+- Use production labels conservatively
+- Test new versions with staging labels first
+- Keep a rollback plan with previous production versions
+
+### Performance Optimization
+- Enable caching for frequently-used prompts
+- Pre-load critical prompts on application startup
+- Use appropriate cache TTL based on update frequency
+- Monitor prompt performance through trace linking
+
+## Technical Reference
+
+### Complete Schema Reference
+
+The full version schema includes rich configuration for advanced features:
+
+```json
+{
+  "id": "version_xyz789",
+  "authorId": "user_123", 
+  "projectId": "proj_456",
+  "configId": "prompt_abc123",
+  "schemaVersion": "1.0",
+  "commitMessage": "Improved movie critic persona",
+  "version": 3,
+  "createdAt": "2024-01-15T10:30:00Z",
+  "configData": {
+    "type": "chat",
+    "prompt": null,
+    "messages": [
+      {"role": "system", "content": "You are a {{criticLevel}} movie critic."},
+      {"role": "user", "content": "What do you think of {{movie}}?"}
+    ],
+    "inputs": [
+      {"identifier": "criticLevel", "type": "str"},
+      {"identifier": "movie", "type": "str"}
+    ],
+    "outputs": [
+      {"identifier": "review", "type": "str"}
+    ],
+    "model": "gpt-3.5-turbo",
+    "temperature": 0.7,
+    "max_tokens": 500,
+    "demonstrations": {
+      "columns": [
+        {"id": "input", "name": "Input", "type": "string"},
+        {"id": "expected", "name": "Expected Output", "type": "string"}
+      ],
+      "rows": [
+        {
+          "id": "demo_1", 
+          "input": "Inception",
+          "expected": "A mind-bending masterpiece that explores dreams within dreams."
+        }
+      ]
+    }
+  }
+}
+```
+
+### Type System Details
+
+**Input Types:**
+- `str` – String values
+- `float` – Numeric values (decimals)
+- `bool` – True/false values
+- `image` – Base64 encoded images
+- `list[str]`, `list[float]`, `list[int]`, `list[bool]` – Arrays of values
+- `dict` – Object/dictionary structures
+
+**Output Schema:**
+- `str` – Plain text responses
+- `float` – Numeric scores/values
+- `json_schema` – Structured JSON with validation schema
+
+**Validation Rules:**
+- `type` field is required and must be "text" or "chat"
+- For `type: "text"`: `prompt` required, `messages` must be null
+- For `type: "chat"`: `messages` required, `prompt` must be null
+- Variable names in `{{}}` must match input identifiers
+
+### API Documentation
+
+For complete REST API documentation:
+- [Prompts API Reference](/api-reference/prompts/overview)
+- [Create Prompt](/api-reference/prompts/create-prompt)
+- [Get Prompt](/api-reference/prompts/get-prompt)
+- [Update Prompt](/api-reference/prompts/update-prompt)
+
+## Feature Roadmap
+
+| Priority | Feature | **Available Via** | Status |
+|----------|---------|-------------------|--------|
+| 1 | Prompt Config & Versioning (CRUD) | API & SDK (JS, Py) | ✅ |
+| 2 | Prompt Type System (text vs chat) | API & SDK (JS, Py) | 🚧 |
+| 3 | Virtual Folders | API & SDK (JS, Py) | 🚧 |
+| 4 | Tags | API & SDK (JS, Py) | 🚧 |
+| 5 | Labels (auto & protected) | API & SDK (JS, Py) | 🚧 |
+| 6 | Prompt Composability | API & SDK (JS, Py) | 🚧 |
+| 7 | Variables (`{{variable}}`) | SDK (JS, Py) | ✅ (Python SDK only) |
+| 8 | Caching & Guaranteed Availability | SDK (JS, Py) | 🚧 |
+| 9 | Trace Linking | SDK (JS, Py) | 🚧 |
+| 10 | Playground | Web UI, SDK (JS, Py) | ☑️ |
+| 11 | Integrations (n8n, Langflow, MCP) | External Tools | 🚧 |
+| 12 | DSPy Integration | API & SDK (JS, Py) | 🚧 |
+
+**Status Legend:**
+- ✅ **available** - Feature is implemented and ready to use
+- ☑️ **partially available** - Incomplete feature
+- 🚧 **coming soon** - Feature is planned for future release
+
+*Priority order reflects development sequence. Features available via API can be used directly; SDK-only features require multi-step API calls for custom implementations.*
