@@ -162,7 +162,8 @@
                   "integration/rags-context-tracking",
                   "integration/python/tutorials/capturing-evaluations-guardrails",
                   "integration/python/tutorials/capturing-metadata",
-                  "integration/python/tutorials/capturing-mapping-input-output"
+                  "integration/python/tutorials/capturing-mapping-input-output",
+                  "integration/python/tutorials/tracking-llm-costs"
                 ]
               },
               {
