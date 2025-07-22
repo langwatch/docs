@@ -339,6 +339,214 @@ compiled = prompt.compile({
 
 **Supported input types:** `str`, `float`, `bool`, `image`, `list[str]`, `list[float]`, `list[int]`, `list[bool]`, `dict`
 
+### Advanced Templating *(Coming Soon)*
+
+For complex prompts requiring conditional logic, loops, and data transformation, LangWatch supports **Liquid templating** - a powerful template engine with identical implementations in JavaScript (LiquidJS) and Python (python-liquid).
+
+**Liquid Template Features:**
+
+<CodeGroup>
+
+```liquid Liquid Template
+Hello {{customer.name}},
+
+{% if customer.is_premium %}
+Thank you for being a premium customer! Here are your exclusive benefits:
+{% for feature in premium_features %}
+- {{feature.name}}: {{feature.description}}
+{% endfor %}
+{% else %}
+Consider upgrading to premium for these benefits:
+{% for feature in premium_features %}
+- {{feature.name}} ({{feature.price | currency}}/month)  
+{% endfor %}
+{% endif %}
+
+Your recent orders:
+{% for order in recent_orders %}
+{% if forloop.first %}--- Most Recent ---{% endif %}
+Order #{{order.id}}: {{order.status}} ({{order.total | currency}})
+{% if forloop.last %}--- End of Orders ---{% endif %}
+{% endfor %}
+
+{% unless recent_orders %}
+No recent orders found.
+{% endunless %}
+
+Best regards,
+The {{company.name}} Team
+```
+
+```ts JavaScript
+// JavaScript SDK using liquidjs
+const prompt = await langwatch.getPrompt("customer-email");
+const compiled = prompt.compile({
+  customer: { name: "Sarah Johnson", is_premium: true },
+  premium_features: [
+    { name: "Priority Support", description: "24/7 dedicated support" },
+    { name: "Advanced Analytics", description: "Detailed usage insights" }
+  ],
+  recent_orders: [
+    { id: "ORD-123", status: "Delivered", total: 299.99 },
+    { id: "ORD-122", status: "Processing", total: 149.50 }
+  ],
+  company: { name: "LangWatch" }
+});
+```
+
+```py Python
+# Python SDK using python-liquid - identical template, identical result
+prompt = langwatch.get_prompt("customer-email")
+compiled = prompt.compile({
+    "customer": {"name": "Sarah Johnson", "is_premium": True},
+    "premium_features": [
+        {"name": "Priority Support", "description": "24/7 dedicated support"},
+        {"name": "Advanced Analytics", "description": "Detailed usage insights"}
+    ],
+    "recent_orders": [
+        {"id": "ORD-123", "status": "Delivered", "total": 299.99},
+        {"id": "ORD-122", "status": "Processing", "total": 149.50}
+    ],
+    "company": {"name": "LangWatch"}
+})
+```
+
+</CodeGroup>
+
+**Liquid Features:**
+
+**Control Flow:**
+- `{% if condition %}...{% endif %}` - conditionals  
+- `{% unless condition %}...{% endunless %}` - inverse conditionals
+- `{% elsif %}` and `{% else %}` - multiple conditions
+- `{% for item in array %}...{% endfor %}` - iteration
+- Loop variables: `forloop.first`, `forloop.last`, `forloop.index`
+
+**Built-in Filters:**
+- `{{ "hello" | upcase }}` - text transformation
+- `{{ 1234.56 | currency }}` - formatting
+- `{{ "now" | date: "%Y-%m-%d" }}` - date formatting  
+- `{{ array | join: ", " }}` - array operations
+- `{{ text | truncate: 100 }}` - string manipulation
+
+**Data Access:**
+- `{{ user.profile.name }}` - nested object access
+- `{{ products[0].title }}` - array indexing
+- `{{ settings["api_key"] }}` - dynamic key access
+
+**Cross-Platform Consistency:**
+
+The same template definition works identically in both SDKs:
+
+<CodeGroup>
+
+```json Template Definition (Shared)
+{
+  "type": "chat",
+  "templateEngine": "liquid",
+  "messages": [
+    {
+      "role": "system", 
+      "content": "You are a {{role}} assistant{% if specialization %} specialized in {{specialization}}{% endif %}."
+    },
+    {
+      "role": "user",
+      "content": "{% if has_context %}Given this context:\n{{context}}\n\n{% endif %}Please help with: {{user_query}}"
+    }
+  ],
+  "inputs": [
+    {"identifier": "role", "type": "str"},
+    {"identifier": "specialization", "type": "str", "required": false},
+    {"identifier": "has_context", "type": "bool"},
+    {"identifier": "context", "type": "str", "required": false}, 
+    {"identifier": "user_query", "type": "str"}
+  ]
+}
+```
+
+```ts JavaScript Implementation
+// JavaScript SDK using liquidjs under the hood
+const compiled = prompt.compile({
+  role: "helpful",
+  specialization: "data analysis", 
+  has_context: true,
+  context: "Sales data from Q3 2024",
+  user_query: "What trends do you see?"
+});
+// Result: Properly compiled template with conditionals resolved
+```
+
+```py Python Implementation  
+# Python SDK using python-liquid - identical behavior
+compiled = prompt.compile({
+    "role": "helpful",
+    "specialization": "data analysis",
+    "has_context": True, 
+    "context": "Sales data from Q3 2024",
+    "user_query": "What trends do you see?"
+})
+# Result: Identical output to JavaScript SDK
+```
+
+</CodeGroup>
+
+**Jinja2 Migration Support:**
+
+Liquid syntax is very similar to Jinja2, making migration straightforward:
+
+<CodeGroup>
+
+```jinja2 Existing Jinja2
+Hello {{ customer_name }},
+
+{% if is_premium %}
+  Welcome to premium!
+  {% for feature in premium_features %}
+  - {{ feature.name }}: {{ feature.price | currency }}
+  {% endfor %}
+{% endif %}
+
+You have {{ orders | length }} total orders.
+```
+
+```liquid Converted to Liquid
+Hello {{ customer.name }},
+
+{% if customer.is_premium %}
+  Welcome to premium!
+  {% for feature in premium_features %}  
+  - {{ feature.name }}: {{ feature.price | currency }}
+  {% endfor %}
+{% endif %}
+
+You have {{ orders.size }} total orders.
+```
+
+```bash Migration Helper
+# CLI tool to assist with Jinja2 to Liquid conversion
+langwatch prompts convert --from jinja2 --to liquid customer-email.j2
+
+# Shows conversion suggestions and highlights syntax differences
+```
+
+</CodeGroup>
+
+**Why Liquid for LangWatch?**
+
+1. **True cross-platform consistency** - liquidjs and python-liquid have feature parity
+2. **Battle-tested at scale** - powers Shopify's entire templating system
+3. **Familiar syntax** - very similar to Jinja2, easy migration path
+4. **Rich feature set** - conditionals, loops, filters, and data access
+5. **Active maintenance** - both JS and Python implementations are well-maintained
+6. **No custom language** - using proven, widely-adopted template engine
+7. **Enterprise-ready** - proven reliability and performance at massive scale
+
+**Implementation Libraries:**
+
+- **JavaScript:** `liquidjs` - feature-complete, actively maintained
+- **Python:** `python-liquid` - feature-complete, actively maintained
+- Both libraries maintain strict compatibility and identical behavior
+
 ### Caching & Performance *(Coming Soon)*
 
 Zero-latency prompt fetching with intelligent caching:
@@ -418,6 +626,8 @@ The Prompt Manager integrates seamlessly with LangWatch's evaluation system. All
 - All prompt nodes automatically pull from the Prompt Manager
 - Changes to prompts in the manager instantly reflect in your evaluation workflows
 - Version history lets you correlate evaluation performance with specific prompt changes
+- **Draft support in Optimization Studio UI** – create and test prompt drafts directly within evaluation workflows
+- **Seamless draft-to-evaluation pipeline** – run evaluations on draft prompts before committing to new versions
 
 <Frame caption="Prompt Manager integration in Optimization Studio">
   <img className="block" src="/images/prompt-manager-optimization-studio.png" alt="Screenshot showing prompt nodes in Optimization Studio using managed prompts" />
@@ -432,6 +642,129 @@ The Prompt Manager integrates seamlessly with LangWatch's evaluation system. All
 - **Historical analysis** – see how prompt changes impact evaluation scores over time
 - **Automated correlation** – evaluation results automatically link to prompt versions
 - **Workflow integration** – use evaluation results to guide prompt promotion decisions
+
+## Interactive Playground *(Coming Soon)*
+
+The **LangWatch Playground** is a powerful web-based interface for testing, comparing, and iterating on your prompts in real-time. It bridges the gap between development and production, enabling rapid experimentation and collaboration.
+
+### Core Playground Features
+
+**Real-Time Testing Interface:**
+- Live prompt compilation with variable substitution
+- Instant LLM execution with multiple model support
+- Rich input forms with type validation for all prompt variables
+- Output formatting with syntax highlighting and export options
+
+**Version Management Integration:**
+- Edit prompts directly in the playground with auto-save drafts
+- One-click version creation with commit messages
+- Instant rollback and rollforward between any versions
+- Side-by-side comparison of prompt versions with diff highlighting
+
+**Draft Mode *(UI-Only Feature)*:**
+- **Uncommitted experimentation** – make changes without creating permanent versions
+- **Auto-save drafts** – your work is continuously saved as you type and test
+- **Draft isolation** – drafts are private and don't affect production or team members
+- **Easy promotion** – convert successful drafts to new versions with one click
+- **Draft history** – review your experimentation timeline and restore previous draft states
+- **Collaboration-friendly** – share draft links for feedback without committing changes
+
+<Frame caption="Interactive Playground Interface">
+  <img className="block" src="/images/playground-interface.png" alt="Screenshot of LangWatch Playground showing prompt editing, variable inputs, and real-time results" />
+</Frame>
+
+### Multi-Prompt Comparison
+
+Compare different prompts or versions side-by-side:
+
+**Comparative Testing:**
+- Load multiple prompts in split-screen view
+- Test same inputs across different prompt versions
+- Visual diff highlighting between prompt texts
+- Performance metrics comparison (latency, cost, token usage)
+- Export comparison results for team review
+
+**A/B Test Setup:**
+- Create A/B test variants directly in playground
+- Configure traffic splitting percentages
+- Preview both variants with same test inputs
+- Set up success metrics and evaluation criteria
+
+<Frame caption="Side-by-Side Prompt Comparison">
+  <img className="block" src="/images/playground-comparison.png" alt="Screenshot showing two prompt versions being compared side-by-side with results" />
+</Frame>
+
+### Log-to-Edit Workflow *(High Priority)*
+
+Seamlessly jump from production issues to prompt improvements:
+
+**From Trace to Edit:**
+- One-click "Edit Prompt" button on any trace in LangWatch
+- Auto-populate playground with exact inputs from production logs
+- Context preservation: customer ID, conversation history, metadata
+- Test prompt changes against real customer scenarios
+
+**Contextual Editing:**
+- Pre-filled variable values from actual customer interactions  
+- Historical context from previous conversation turns
+- Ability to replay entire conversation flows with new prompt versions
+- Save improved prompts directly back to production with proper versioning
+
+<Frame caption="Log-to-Edit Workflow">
+  <img className="block" src="/images/playground-log-to-edit.png" alt="Screenshot showing transition from trace log to playground with populated data" />
+</Frame>
+
+### Advanced Testing Features
+
+**Variable Testing Matrix:**
+- Batch test multiple input combinations
+- CSV upload for bulk variable testing
+- Test data templates for common scenarios
+- Results export and analysis tools
+
+**Model Comparison:**
+- Switch between different LLM providers instantly
+- Compare costs, latency, and quality across models
+- Save optimal model settings per prompt
+- Provider failover testing
+
+**Collaboration Tools:**
+- Share playground sessions via links
+- Comment and review system for prompt changes
+- Team approval workflows for production deployments
+- Integration with existing project management tools
+
+### Integration with Evaluation System
+
+**Live Evaluation in Playground:**
+- Run evaluations directly on playground outputs
+- Real-time scoring with custom and built-in evaluators
+- Compare evaluation scores across prompt versions
+- Set up automated evaluation pipelines for new versions
+
+**Golden Dataset Testing:**
+- Load test datasets directly into playground
+- Batch run prompts against golden datasets
+- Side-by-side results comparison with expected outputs
+- Export results for further analysis
+
+### Draft-to-Production Workflow
+
+The draft system (available in both Playground and Optimization Studio UIs) enables safe experimentation with a clear path to production:
+
+**Typical Workflow:**
+1. **Start with production** – Load current production prompt into playground or Optimization Studio
+2. **Create draft** – Begin editing; changes auto-save as private draft
+3. **Iterate safely** – Test multiple variations without affecting live system
+4. **Evaluate performance** – Run evaluations on draft outputs vs. production baseline
+5. **Share for review** – Send draft link to teammates for feedback
+6. **Promote or discard** – Either commit successful draft as new version or discard
+
+**Draft Management:**
+- **Multiple drafts per prompt** – work on different approaches simultaneously  
+- **Draft comparison** – compare your draft against production or other drafts
+- **Draft analytics** – see performance metrics for your experimental changes
+- **Auto-cleanup** – old drafts automatically archived after inactivity
 
 ## Advanced Capabilities
 
@@ -807,8 +1140,9 @@ For complete REST API documentation:
 | 7 | Variables (`{{variable}}`) | SDK (JS, Py) | ✅ (Python SDK only) |
 | 8 | Caching & Guaranteed Availability | SDK (JS, Py) | 🚧 |
 | 9 | Trace Linking | SDK (JS, Py) | 🚧 |
-| 10 | Integrations (n8n, Langflow, MCP) | External Tools | 🚧 |
-| 11 | DSPy Integration | API & SDK (JS, Py) | 🚧 |
+| 10 | Playground | Web UI, SDK (JS, Py) | ☑️ |
+| 11 | Integrations (n8n, Langflow, MCP) | External Tools | 🚧 |
+| 12 | DSPy Integration | API & SDK (JS, Py) | 🚧 |
 
 **Status Legend:**
 - ✅ **available** - Feature is implemented and ready to use
