@@ -10,9 +10,10 @@ LangWatch supports sign-in via various SSO providers. There are two ways to set 
 
 ## 1. **Self-Hosted Deployment**: 
 
-We have setup the below providers for you. If you would like a different provider, please contact us at [support@langwatch.ai](mailto:support@langwatch.ai). 
+We’ve set up the following providers for you.  
+If you'd prefer a different provider, feel free to reach out to us at [support@langwatch.ai](mailto:support@langwatch.ai).
 
-For the full list of supported providers, see the [NextAuth.js documentation](https://next-auth.js.org/configuration/providers).
+For a complete list of possible supported providers, please refer to the [NextAuth.js documentation](https://next-auth.js.org/providers).
 
 
 ### Azure AD/Entra ID
@@ -21,7 +22,7 @@ For the full list of supported providers, see the [NextAuth.js documentation](ht
 
 | Configuration      | Value                                                                                     |
 | ------------------ | ----------------------------------------------------------------------------------------- |
-| Required ENV Variables | `AUTH_AZURE_AD_CLIENT_ID`<br/>`AUTH_AZURE_AD_CLIENT_SECRET`<br/>`AUTH_AZURE_AD_TENANT_ID` |
+| Required Variables | `AUTH_AZURE_AD_CLIENT_ID`<br/>`AUTH_AZURE_AD_CLIENT_SECRET`<br/>`AUTH_AZURE_AD_TENANT_ID` |
 | OAuth Redirect URL | `/api/auth/callback/azure-ad`   
 
 Set `NEXTAUTH_PROVIDER` to `azure-ad` in your `.env` file.
