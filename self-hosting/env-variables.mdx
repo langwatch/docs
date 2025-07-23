@@ -16,17 +16,18 @@ This page provides a comprehensive list of all environment variables that can be
 | `NODE_ENV` | Application environment (development, test, production) | Yes | - |
 | `BASE_HOST` | Base URL of the application | Yes | - |
 | `API_TOKEN_JWT_SECRET` | Secret key for JWT token signing | Yes | - |
+| `CREDENTIALS_SECRET` | Secret for credential encryption, Base16 encoded | Yes | - |
 | **Authentication (NextAuth)** |
 | `NEXTAUTH_PROVIDER` | Authentication provider (azure-ad, okta, auth0, etc.) | No | email |
 | `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | Yes | - |
 | `NEXTAUTH_URL` | URL of the authentication service | Yes | - |
 | **Search & Storage** |
-| `ELASTICSEARCH_NODE_URL` | Elasticsearch cluster endpoint | Yes | - |
-| `ELASTICSEARCH_API_KEY` | Elasticsearch API key for authentication | Yes | - |
+| `ELASTICSEARCH_NODE_URL` | Elasticsearch/OpenSearch cluster endpoint | Yes | - |
+| `ELASTICSEARCH_API_KEY` | Elasticsearch/OpenSearch API key for authentication | Yes | - |
 | `IS_OPENSEARCH` | Flag to indicate OpenSearch instead of Elasticsearch | No | false |
 | `IS_QUICKWIT` | Flag to indicate Quickwit instead of Elasticsearch | No | false |
 | `REDIS_URL` | Redis connection URL | No | - |
-| `REDIS_CLUSTER_ENDPOINTS` | Redis cluster endpoints (comma-separated) | No | - |
+| `REDIS_CLUSTER_ENDPOINTS` | If using Redis cluster, specify the endpoints (comma-separated) | No | - |
 | **S3 Storage** |
 | `USE_S3_STORAGE` | Enable S3-compatible storage for datasets | No | false |
 | `S3_ENDPOINT` | S3-compatible storage endpoint | No | - |
@@ -34,28 +35,21 @@ This page provides a comprehensive list of all environment variables that can be
 | `S3_SECRET_ACCESS_KEY` | S3 secret access key | No | - |
 | `S3_BUCKET_NAME` | S3 bucket name for dataset storage | No | - |
 | `S3_KEY_SALT` | Salt for S3 key encryption | No | - |
-| `DATASET_STORAGE_LOCAL` | Use local storage instead of S3 | No | false |
-| **LLM Providers** |
-| `OPENAI_API_KEY` | OpenAI API key | No | - |
-| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL | No | - |
-| `AZURE_OPENAI_KEY` | Azure OpenAI API key | No | - |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Google Cloud service account credentials | No | - |
+| **Evaluation Providers** |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint URL for jailbreak and content safety evaluators | No | - |
+| `AZURE_OPENAI_KEY` | Azure OpenAI API key for jailbreak and content safety evaluators | No | - |
+| `GOOGLE_APPLICATION_CREDENTIALS` | Google Cloud service account credentials for PII detection fallback (when internal Presidio check fails) | No | - |
 | **NLP Services** |
 | `LANGWATCH_NLP_SERVICE` | Custom NLP service endpoint | Yes | - |
 | `TOPIC_CLUSTERING_SERVICE` | Topic clustering service endpoint | Yes | - |
 | `LANGEVALS_ENDPOINT` | LangEvals evaluation service endpoint | No | - |
 | `LANGWATCH_NLP_LAMBDA_CONFIG` | Lambda configuration for NLP services | No | - |
-| **Security & Encryption** |
-| `CREDENTIALS_SECRET` | Secret for credential encryption, Base16 encoded | No | - |
 | **Email Services** |
 | `SENDGRID_API_KEY` | SendGrid API key for email delivery | No | - |
-| `USE_AWS_SES` | Use AWS SES for email delivery | No | - |
 | `EMAIL_DEFAULT_FROM` | Default sender email address | No | - |
 | **AWS Configuration** |
 | `AWS_REGION` | AWS region for services | No | - |
 | **Analytics & Monitoring** |
-| `POSTHOG_KEY` | PostHog analytics key | No | - |
-| `POSTHOG_HOST` | PostHog host URL | No | - |
 | `DISABLE_USAGE_STATS` | Disable usage statistics collection | No | false |
 | `SENTRY_DSN` | Sentry DSN for error tracking | No | - |
 | **SSO Providers** |
