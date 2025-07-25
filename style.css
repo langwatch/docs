@@ -65,6 +65,43 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
   width: 1.125rem !important;
 }
 
+/* Fix chevron visibility and alignment */
+#sidebar-content svg[viewBox="0 -9 3 24"] {
+  stroke-width: 1px !important; /* Make chevron thicker */
+  height: 28px !important; /* Restore height */
+  width: 12px !important; /* Restore width */
+  opacity: 0.8 !important; /* Make it more visible */
+}
+
+/* Make the chevron container position absolute to align right */
+#sidebar-content .group {
+  position: relative !important;
+  padding-right: 20px !important; /* Add space for the chevron */
+}
+
+/* Position the chevron to the right */
+#sidebar-content .group svg[viewBox="0 -9 3 24"] {
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Override the inline transform style for rotation */
+#sidebar-content .duration-75 {
+  transform: none !important; 
+}
+
+/* Handle the rotation separately with a pseudo-element */
+#sidebar-content .group svg[viewBox="0 -9 3 24"].duration-75 {
+  transform: translateY(-50%) !important;
+}
+
+/* Apply rotation to the rotated class */
+#sidebar-content .group svg[viewBox="0 -9 3 24"].duration-75.rotate-90 {
+  transform: translateY(-50%) rotate(90deg) !important;
+}
+
 .line-highlight {
   background: rgb(85 215 153 / 0.2) !important;
 }
