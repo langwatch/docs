@@ -26,6 +26,45 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
   margin-top: 8px;
 }
 
+/* Sidebar navigation styling */
+#sidebar-content .lg\:text-sm {
+  font-size: 0.850rem !important;
+}
+
+#sidebar-content .lg\:leading-6 {
+  line-height: 1.375rem !important;
+}
+
+#sidebar-content .mb-5 {
+  margin-bottom: 0.75rem !important;
+}
+
+#sidebar-content .sm\:mb-4 {
+  margin-bottom: 0.5rem !important;
+}
+
+#sidebar-content .py-1\.5 {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+#sidebar-content .mt-12 .lg\:mt-8 {
+  margin-top: 2rem !important;
+}
+
+#sidebar-content .mb-3\.5 {
+  margin-bottom: 0.5rem !important;
+}
+
+#sidebar-content h5 {
+  font-size: 0.900rem !important;
+}
+
+#sidebar-content svg {
+  height: 1.125rem !important;
+  width: 1.125rem !important;
+}
+
 .line-highlight {
   background: rgb(85 215 153 / 0.2) !important;
 }
