@@ -70,6 +70,7 @@
                       "hybrid-setup/s3-storage"
                     ]
                   },
+                  "self-hosting/env-variables",
                   "hybrid-setup/sso-setup-langwatch"
                 ]
               },
