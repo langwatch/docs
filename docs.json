@@ -60,6 +60,7 @@
                   "self-hosting/overview",
                   "self-hosting/docker-compose",
                   "self-hosting/helm",
+                  "self-hosting/grafana",
                   "self-hosting/onprem",
                   {
                     "group": "Hybrid Setup",
