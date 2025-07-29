@@ -148,14 +148,15 @@
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
                   "integration/flowise",
-                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/haystack",
+                  "integration/python/integrations/google-ai",
+                  "integration/python/integrations/haystack",               
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
                   "integration/python/integrations/lite-llm",
                   "integration/typescript/integrations/mastra",
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
+                  "integration/python/integrations/smolagents",
                   "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/python/integrations/other"
                 ]
