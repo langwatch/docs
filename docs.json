@@ -152,6 +152,7 @@
                   "integration/python/integrations/haystack",               
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
+                  "integration/python/integrations/llamaindex",
                   "integration/python/integrations/lite-llm",
                   "integration/typescript/integrations/mastra",
                   "integration/python/integrations/open-ai-agents",
