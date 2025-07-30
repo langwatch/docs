@@ -258,7 +258,8 @@
                 ]
               },
               "integration/mcp",
-              "features/prompt-versioning"
+              "features/prompt-versioning",
+              "features/prompt-management"
             ]
           },
           {
