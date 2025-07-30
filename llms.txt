@@ -1264,6 +1264,8 @@ Below is a list of currently supported integrations. Click on each to learn more
 - [Google ADK](/integration/python/integrations/google-ai)
 - [Haystack](/integration/python/integrations/haystack)
 - [SmolAgents](/integration/python/integrations/smolagents)
+- [Strand Agents](/integration/python/integrations/strand-agents)
+- [AutoGen](/integration/python/integrations/autogen)
 - [Langchain](/integration/python/integrations/langchain)
 - [LangGraph](/integration/python/integrations/langgraph)
 - [LiteLLM](/integration/python/integrations/lite-llm)
