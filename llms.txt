@@ -1267,6 +1267,7 @@ Below is a list of currently supported integrations. Click on each to learn more
 - [Langchain](/integration/python/integrations/langchain)
 - [LangGraph](/integration/python/integrations/langgraph)
 - [LiteLLM](/integration/python/integrations/lite-llm)
+- [LlamaIndex](/integration/python/integrations/llamaindex)
 - [OpenAI](/integration/python/integrations/open-ai)
 - [OpenAI Agents](/integration/python/integrations/open-ai-agents)
 - [OpenAI Azure](/integration/python/integrations/open-ai-azure)
