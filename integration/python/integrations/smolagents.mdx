@@ -116,31 +116,6 @@ def run_agent_interaction(user_message: str):
 
 With this setup, all agent interactions, model calls, and tool executions will be automatically traced and sent to LangWatch, providing comprehensive visibility into your SmolAgents-powered applications.
 
-## Environment Variables
-
-Make sure to set the following environment variables:
-
-```bash
-# For OpenAI
-export OPENAI_API_KEY=your-openai-api-key
-
-# For Anthropic
-export ANTHROPIC_API_KEY=your-anthropic-api-key
-
-# LangWatch API key
-export LANGWATCH_API_KEY=your-langwatch-api-key
-```
-
-## Supported Models
-
-SmolAgents supports various LLM providers including:
-
-- OpenAI (GPT-4, GPT-3.5-turbo, etc.)
-- Anthropic (Claude models)
-- Other providers supported by SmolAgents
-
-All model interactions and agent executions will be automatically traced and captured by LangWatch.
-
 ## Notes
 
 - You do **not** need to set any OpenTelemetry environment variables or configure exporters manually—`langwatch.setup()` handles everything.

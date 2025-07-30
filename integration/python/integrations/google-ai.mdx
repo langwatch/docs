@@ -149,32 +149,6 @@ def run_agent_interaction(user_message: str):
 
 With this setup, all agent interactions, tool calls, and model completions will be automatically traced and sent to LangWatch, providing comprehensive visibility into your ADK-powered applications.
 
-## Environment Variables
-
-Make sure to set the following environment variables:
-
-```bash
-# For Gemini API access
-export GOOGLE_API_KEY=your-gemini-api-key
-
-# For service account authentication (production)
-export GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
-export GOOGLE_CLOUD_PROJECT=your-project-id
-
-# LangWatch API key
-export LANGWATCH_API_KEY=your-langwatch-api-key
-```
-
-## Supported Models
-
-Google ADK supports various Gemini models including:
-
-- `gemini-2.0-flash` - Fast, efficient model
-- `gemini-2.0-pro` - More capable model
-- `gemini-1.5-flash` - Legacy model
-- `gemini-1.5-pro` - Legacy model
-
-All model interactions and tool calls will be automatically traced and captured by LangWatch.
 
 ## Notes
 

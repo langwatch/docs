@@ -121,31 +121,6 @@ def run_query(user_question: str):
 
 With this setup, all document processing, indexing, querying, and LLM interactions will be automatically traced and sent to LangWatch, providing comprehensive visibility into your LlamaIndex-powered applications.
 
-## Environment Variables
-
-Make sure to set the following environment variables:
-
-```bash
-# For OpenAI
-export OPENAI_API_KEY=your-openai-api-key
-
-# For Anthropic
-export ANTHROPIC_API_KEY=your-anthropic-api-key
-
-# LangWatch API key
-export LANGWATCH_API_KEY=your-langwatch-api-key
-```
-
-## Supported Models
-
-LlamaIndex supports various LLM providers including:
-
-- OpenAI (GPT-4, GPT-3.5-turbo, etc.)
-- Anthropic (Claude models)
-- Local models (via Ollama, etc.)
-- Other providers supported by LlamaIndex
-
-All model interactions, document processing, and query operations will be automatically traced and captured by LangWatch.
 
 ## Notes
 
