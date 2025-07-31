@@ -124,26 +124,26 @@
                   {
                     "group": "Azure AI",
                     "pages": [
-                      "integration/typescript/integrations/azure",
-                      "integration/python/integrations/azure-ai"
+                      "integration/python/integrations/azure-ai",
+                      "integration/typescript/integrations/azure"
                     ]
                   },
                   {
                     "group": "LangChain",
                     "pages": [
-                      "integration/typescript/integrations/langchain",
-                      "integration/python/integrations/langchain"
+                      "integration/python/integrations/langchain",
+                      "integration/typescript/integrations/langchain"
                     ]
                   },
                   {
                     "group": "OpenAI",
                     "pages": [
-                      "integration/typescript/integrations/open-ai",
-                      "integration/python/integrations/open-ai"
+                      "integration/python/integrations/open-ai",
+                      "integration/typescript/integrations/open-ai"
                     ]
-                  },
-                
+                  },             
                   "integration/python/integrations/agno",
+                  "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
@@ -158,10 +158,10 @@
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
-                  "integration/python/integrations/strand-agents",
-                  "integration/python/integrations/autogen",
-                  "integration/typescript/integrations/vercel-ai-sdk",
+                  "integration/python/integrations/strand-agents",    
+                  "integration/typescript/integrations/vercel-ai-sdk",          
                   "integration/python/integrations/other"
+                  
                 ]
               },
               {
