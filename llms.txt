@@ -1266,6 +1266,7 @@ Below is a list of currently supported integrations. Click on each to learn more
 - [SmolAgents](/integration/python/integrations/smolagents)
 - [Strand Agents](/integration/python/integrations/strand-agents)
 - [AutoGen](/integration/python/integrations/autogen)
+- [PromptFlow](/integration/python/integrations/promptflow)
 - [Langchain](/integration/python/integrations/langchain)
 - [LangGraph](/integration/python/integrations/langgraph)
 - [LiteLLM](/integration/python/integrations/lite-llm)
