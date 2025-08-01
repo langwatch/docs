@@ -1,0 +1,867 @@
+---
+title: TypeScript SDK API Reference
+sidebarTitle: TS/JS
+description: LangWatch TypeScript SDK API reference
+---
+
+## Setup
+
+### `setup()`
+
+Initializes the LangWatch client for Node.js environments, enabling data collection and tracing for your LLM application. This is typically the first function you'll call when integrating LangWatch.
+
+<CodeGroup>
+```typescript Basic Setup
+import { setup } from "langwatch/node";
+
+await setup({
+  apiKey: process.env.LANGWATCH_API_KEY,
+  endpoint: process.env.LANGWATCH_ENDPOINT_URL // Optional, defaults to LangWatch Cloud
+});
+```
+
+```typescript Advanced Setup
+import { setup } from "langwatch/node";
+import { SpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { SpanProcessingExcludeRule } from "langwatch";
+
+// Example: Configure with custom span processors and exclude rules
+const customSpanProcessor: SpanProcessor = /* your custom processor */;
+const excludeRules: SpanProcessingExcludeRule[] = [
+  {
+    fieldName: "span_name",
+    matchValue: "InternalHealthCheck",
+    matchOperation: "exact_match"
+  }
+];
+
+await setup({
+  apiKey: process.env.LANGWATCH_API_KEY,
+  endpoint: process.env.LANGWATCH_ENDPOINT_URL,
+  otelSpanProcessors: [customSpanProcessor],
+  otelSpanProcessingExcludeRules: excludeRules,
+  disableAutomaticInputCapture: false,
+  disableAutomaticOutputCapture: false
+});
+```
+</CodeGroup>
+
+<ParamField path="apiKey" type="Optional<string>" default="process.env.LANGWATCH_API_KEY">
+  Your LangWatch API key. It's recommended to set this via an environment variable (e.g., `LANGWATCH_API_KEY`) and retrieve it using `process.env.LANGWATCH_API_KEY`.
+</ParamField>
+
+<ParamField path="endpoint" type="Optional<string>" default="https://app.langwatch.ai">
+  The URL of the LangWatch backend where traces will be sent. Defaults to the LangWatch Cloud service. For self-hosted instances, you'll need to provide this.
+</ParamField>
+
+<ParamField path="otelSpanProcessors" type="Optional<SpanProcessor[]>" default="[]">
+  Additional OpenTelemetry span processors to add to the SDK. These will be added after the LangWatch SDK has been initialized.
+</ParamField>
+
+<ParamField path="otelSpanProcessingExcludeRules" type="Optional<SpanProcessingExcludeRule[]>" default="[]">
+  Rules to filter out specific spans from being exported to LangWatch, based on span name or attributes. See `SpanProcessingExcludeRule` for details.
+</ParamField>
+
+<ParamField path="disableOpenTelemetryAutomaticSetup" type="Optional<boolean>" default="false">
+  If `true`, disables the automatic setup of the OpenTelemetry SDK. You will need to setup the OpenTelemetry SDK yourself, and ensure that a SpanProcessor is added that will send traces to the LangWatch API.
+</ParamField>
+
+<ParamField path="disableAutomaticInputCapture" type="Optional<boolean>" default="false">
+  If `true`, disables the automatic capture of input data in spans.
+</ParamField>
+
+<ParamField path="disableAutomaticOutputCapture" type="Optional<boolean>" default="false">
+  If `true`, disables the automatic capture of output data in spans.
+</ParamField>
+
+### Browser Setup
+
+For browser environments, use the browser-specific setup:
+
+```typescript
+import { setup } from "langwatch/browser";
+
+await setup({
+  apiKey: "your-api-key",
+  endpoint: "https://app.langwatch.ai"
+});
+```
+
+The browser setup accepts the same options as the Node.js setup, except for `otelSpanProcessors` which are not supported in browser environments.
+
+## Tracing
+
+### `getLangWatchTracer()`
+
+Returns a LangWatch tracer instance that provides enhanced tracing capabilities for LLM applications.
+
+```typescript
+import { getLangWatchTracer } from "langwatch";
+
+const tracer = getLangWatchTracer("my-service", "1.0.0");
+```
+
+<ParamField path="name" type="string" required>
+  The name of the tracer/service.
+</ParamField>
+
+<ParamField path="version" type="Optional<string>" default="undefined">
+  The version of the tracer/service.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="tracer" type="LangWatchTracer">
+  A `LangWatchTracer` instance with enhanced methods for LLM observability.
+</ResponseField>
+
+### `LangWatchTracer`
+
+The `LangWatchTracer` extends the standard OpenTelemetry `Tracer` with additional methods for LLM observability.
+
+#### Methods
+
+<ParamField path="startSpan" type="(name: string, options?: SpanOptions, context?: Context) => LangWatchSpan">
+  Starts a new `LangWatchSpan` without setting it on context. This method does NOT modify the current Context.
+</ParamField>
+
+<ParamField path="startActiveSpan" type="(name: string, fn: (span: LangWatchSpan) => T) => T">
+  Starts a new `LangWatchSpan` and calls the given function passing it the created span as first argument. The new span gets set in context and this context is activated for the duration of the function call.
+</ParamField>
+
+<ParamField path="withActiveSpan" type="(name: string, fn: (span: LangWatchSpan) => Promise<T> | T) => Promise<T>">
+  Starts a new `LangWatchSpan`, runs the provided async function, and automatically handles error recording, status setting, and span ending. This is a safer and more ergonomic alternative to manually using try/catch/finally blocks.
+</ParamField>
+
+### `LangWatchSpan`
+
+The `LangWatchSpan` extends the standard OpenTelemetry `Span` with additional methods for LLM observability.
+
+#### GenAI Event Methods
+
+<ParamField path="addGenAISystemMessageEvent" type="(body: LangWatchSpanGenAISystemMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
+  Adds a GenAI system message event to the span. This logs a system/instruction message sent to the model.
+</ParamField>
+
+<ParamField path="addGenAIUserMessageEvent" type="(body: LangWatchSpanGenAIUserMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
+  Adds a GenAI user message event to the span. This logs a user/customer message sent to the model.
+</ParamField>
+
+<ParamField path="addGenAIAssistantMessageEvent" type="(body: LangWatchSpanGenAIAssistantMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
+  Adds a GenAI assistant message event to the span. This logs an assistant/bot response, including tool calls if present.
+</ParamField>
+
+<ParamField path="addGenAIToolMessageEvent" type="(body: LangWatchSpanGenAIToolMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
+  Adds a GenAI tool message event to the span. This logs a message from a tool/function invoked by the assistant.
+</ParamField>
+
+<ParamField path="addGenAIChoiceEvent" type="(body: LangWatchSpanGenAIChoiceEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
+  Adds a GenAI choice event to the span. This logs a model output choice, including finish reason and message content.
+</ParamField>
+
+#### Span Configuration Methods
+
+<ParamField path="setType" type="(type: SpanType) => this">
+  Set the type of the span (e.g., 'llm', 'rag', 'tool', etc). This is used for downstream filtering and analytics.
+</ParamField>
+
+<ParamField path="setRequestModel" type="(model: string) => this">
+  Set the request model name for the span. This is typically the model name sent in the API request (e.g., 'gpt-4', 'claude-3').
+</ParamField>
+
+<ParamField path="setResponseModel" type="(model: string) => this">
+  Set the response model name for the span. This is the model name returned in the API response, if different from the request.
+</ParamField>
+
+<ParamField path="setRAGContexts" type="(ragContexts: LangWatchSpanRAGContext[]) => this">
+  Set multiple RAG contexts for the span. Use this to record all retrieved documents/chunks used as context for a generation.
+</ParamField>
+
+<ParamField path="setRAGContext" type="(ragContext: LangWatchSpanRAGContext) => this">
+  Set a single RAG context for the span. Use this if only one context was retrieved.
+</ParamField>
+
+<ParamField path="setMetrics" type="(metrics: LangWatchSpanMetrics) => this">
+  Set the metrics for the span.
+</ParamField>
+
+<ParamField path="setSelectedPrompt" type="(prompt: Prompt) => this">
+  Set the selected prompt for the span. This will attach this prompt to the trace. If this is set on multiple spans, the last one will be used.
+</ParamField>
+
+<ParamField path="setInput" type="(input: unknown) => this">
+  Record the input to the span as a JSON-serializable value. The input is stringified and stored as a span attribute for later analysis.
+</ParamField>
+
+<ParamField path="setInputString" type="(input: string) => this">
+  Record the input to the span as a plain string. Use this for raw text prompts or queries.
+</ParamField>
+
+<ParamField path="setOutput" type="(output: unknown) => this">
+  Record the output from the span as a JSON-serializable value. The output is stringified and stored as a span attribute for later analysis.
+</ParamField>
+
+<ParamField path="setOutputString" type="(output: string) => this">
+  Record the output from the span as a plain string. Use this for raw text completions or responses.
+</ParamField>
+
+<ParamField path="setOutputEvaluation" type="(guardrail: boolean, output: EvaluationResultModel) => this">
+  Set the evaluation output for the span.
+</ParamField>
+
+<ParamField path="recordEvaluation" type="(details: RecordedEvaluationDetails, attributes?: Attributes) => this">
+  Record the evaluation result for the span.
+</ParamField>
+
+## Evaluation
+
+### `runEvaluation()`
+
+Runs an evaluation using a saved evaluator or LangEvals evaluator.
+
+```typescript
+import { runEvaluation } from "langwatch/evaluation";
+
+// Using a saved evaluator
+const result = await runEvaluation({
+  slug: "sentiment-analyzer",
+  data: {
+    input: "I love this product!",
+    output: "Positive sentiment detected."
+  },
+  asGuardrail: false
+});
+
+// Using a LangEvals evaluator
+const result = await runEvaluation({
+  evaluator: "sentiment",
+  data: {
+    input: "I love this product!",
+    output: "Positive sentiment detected."
+  },
+  settings: {
+    threshold: 0.5
+  }
+});
+```
+
+<ParamField path="details" type="EvaluationDetails" required>
+  The evaluation details. Can be either a `SavedEvaluationDetails` (using a saved evaluator) or `LangEvalsEvaluationDetails` (using a LangEvals evaluator).
+</ParamField>
+
+**Returns**
+
+<ResponseField name="result" type="SingleEvaluationResult">
+  The evaluation result containing status, passed, score, and other details.
+</ResponseField>
+
+### `recordEvaluation()`
+
+Records an evaluation result manually.
+
+```typescript
+import { recordEvaluation } from "langwatch/evaluation";
+
+recordEvaluation({
+  name: "Custom Evaluation",
+  type: "custom",
+  isGuardrail: false,
+  status: "processed",
+  passed: true,
+  score: 0.95,
+  label: "Excellent",
+  details: "All checks passed.",
+  cost: 0.001
+});
+```
+
+<ParamField path="details" type="RecordedEvaluationDetails" required>
+  The evaluation details to record.
+</ParamField>
+
+<ParamField path="attributes" type="Optional<Attributes>" default="undefined">
+  Additional OpenTelemetry attributes to add to the evaluation span.
+</ParamField>
+
+## Prompt Management
+
+### `getPrompt()`
+
+Retrieves a prompt from the LangWatch platform.
+
+```typescript
+import { getPrompt } from "langwatch/prompt";
+
+// Get a prompt without variables
+const prompt = await getPrompt("prompt-id");
+
+// Get a prompt with variables (returns compiled prompt)
+const compiledPrompt = await getPrompt("prompt-id", {
+  user_name: "John",
+  product_name: "LangWatch"
+});
+```
+
+<ParamField path="id" type="string" required>
+  The ID of the prompt to retrieve.
+</ParamField>
+
+<ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
+  Template variables to compile the prompt with. If provided, returns a compiled prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt | CompiledPrompt">
+  The prompt or compiled prompt object.
+</ResponseField>
+
+### `getPromptVersion()`
+
+Retrieves a specific version of a prompt from the LangWatch platform.
+
+```typescript
+import { getPromptVersion } from "langwatch";
+
+// Get a prompt version without variables
+const promptVersion = await getPromptVersion("prompt-id", "version-id");
+
+// Get a prompt version with variables (returns compiled prompt)
+const compiledPromptVersion = await getPromptVersion("prompt-id", "version-id", {
+  user_name: "John",
+  product_name: "LangWatch"
+});
+```
+
+<ParamField path="id" type="string" required>
+  The ID of the prompt to retrieve.
+</ParamField>
+
+<ParamField path="versionId" type="string" required>
+  The ID of the specific version to retrieve.
+</ParamField>
+
+<ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
+  Template variables to compile the prompt with. If provided, returns a compiled prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt | CompiledPrompt">
+  The prompt version or compiled prompt object.
+</ResponseField>
+
+**Throws**
+
+<ResponseField name="error" type="Error">
+  Throws an error if the specified prompt version is not found.
+</ResponseField>
+
+## Processors
+
+### `FilterableBatchSpanProcessor`
+
+A span processor that filters spans before processing them.
+
+```typescript
+import { FilterableBatchSpanProcessor } from "langwatch/observability";
+import { LangWatchExporter } from "langwatch/observability";
+
+const processor = new FilterableBatchSpanProcessor(
+  new LangWatchExporter(), // Uses environment variables
+  [
+    {
+      fieldName: "span_name",
+      matchValue: "health-check",
+      matchOperation: "exact_match"
+    }
+  ]
+);
+```
+
+<ParamField path="exporter" type="SpanExporter" required>
+  The span exporter to use.
+</ParamField>
+
+<ParamField path="excludeRules" type="SpanProcessingExcludeRule[]" required>
+  Rules to exclude spans from processing.
+</ParamField>
+
+## Exporters
+
+### `LangWatchExporter`
+
+A LangWatch exporter for sending traces to the LangWatch platform. Extends the OpenTelemetry OTLP HTTP trace exporter with proper authentication and metadata headers.
+
+```typescript
+import { LangWatchExporter } from "langwatch/observability";
+
+// Using environment variables/fallback configuration
+const exporter = new LangWatchExporter();
+
+// Using custom API key and endpoint
+const exporter = new LangWatchExporter('api-key', 'https://custom.langwatch.com');
+```
+
+<ParamField path="apiKey" type="Optional<string>" default="getApiKey()">
+  Optional API key for LangWatch authentication. If not provided, will use environment variables or fallback configuration.
+</ParamField>
+
+<ParamField path="endpointURL" type="Optional<string>" default="getEndpoint()">
+  Optional custom endpoint URL for LangWatch ingestion. If not provided, will use environment variables or fallback configuration.
+</ParamField>
+
+The exporter automatically configures:
+- Authorization headers using the provided API key or environment variables/fallback
+- SDK version and language identification headers
+- Proper endpoint configuration for LangWatch ingestion using provided URL or environment variables/fallback
+
+## Core Data Types
+
+### `SpanType`
+
+Supported types of spans for LangWatch observability:
+
+```typescript
+type SpanType = 
+  | "span"
+  | "llm"
+  | "chain"
+  | "tool"
+  | "agent"
+  | "guardrail"
+  | "evaluation"
+  | "rag"
+  | "prompt"
+  | "workflow"
+  | "component"
+  | "module"
+  | "server"
+  | "client"
+  | "producer"
+  | "consumer"
+  | "task"
+  | "unknown";
+```
+
+### `LangWatchSpanRAGContext`
+
+Context for a RAG (Retrieval-Augmented Generation) span.
+
+<ResponseField name="document_id" type="string" required>
+  Unique identifier for the source document.
+</ResponseField>
+
+<ResponseField name="chunk_id" type="string" required>
+  Unique identifier for the chunk within the document.
+</ResponseField>
+
+<ResponseField name="content" type="string" required>
+  The actual content of the chunk provided to the model.
+</ResponseField>
+
+### `LangWatchSpanMetrics`
+
+Metrics for a LangWatch span.
+
+<ResponseField name="promptTokens" type="Optional<number>">
+  The number of prompt tokens used.
+</ResponseField>
+
+<ResponseField name="completionTokens" type="Optional<number>">
+  The number of completion tokens used.
+</ResponseField>
+
+<ResponseField name="cost" type="Optional<number>">
+  The cost of the span.
+</ResponseField>
+
+### `SpanProcessingExcludeRule`
+
+Defines a rule to filter out spans before they are exported to LangWatch.
+
+<ResponseField name="fieldName" type="'span_name'" required>
+  The field of the span to match against. Currently, only `"span_name"` is supported.
+</ResponseField>
+
+<ResponseField name="matchValue" type="string" required>
+  The value to match for the specified `fieldName`.
+</ResponseField>
+
+<ResponseField name="matchOperation" type="'includes' | 'exact_match' | 'starts_with' | 'ends_with'" required>
+  The operation to use for matching.
+</ResponseField>
+
+### `LangWatchSpanGenAISystemMessageEventBody`
+
+Body for a system message event in a GenAI span.
+
+<ResponseField name="content" type="Optional<string>">
+  Content of the system message.
+</ResponseField>
+
+<ResponseField name="role" type="Optional<'system' | 'instruction'>">
+  Role of the message (system or instruction).
+</ResponseField>
+
+### `LangWatchSpanGenAIUserMessageEventBody`
+
+Body for a user message event in a GenAI span.
+
+<ResponseField name="content" type="Optional<string>">
+  Content of the user message.
+</ResponseField>
+
+<ResponseField name="role" type="Optional<'user' | 'customer'>">
+  Role of the message (user or customer).
+</ResponseField>
+
+### `LangWatchSpanGenAIAssistantMessageEventBody`
+
+Body for an assistant message event in a GenAI span.
+
+<ResponseField name="content" type="Optional<string>">
+  Content of the assistant message.
+</ResponseField>
+
+<ResponseField name="role" type="Optional<'assistant' | 'bot'>">
+  Role of the message (assistant or bot).
+</ResponseField>
+
+<ResponseField name="tool_calls" type="Optional<ToolCall[]>">
+  Tool calls made by the assistant.
+</ResponseField>
+
+### `LangWatchSpanGenAIToolMessageEventBody`
+
+Body for a tool message event in a GenAI span.
+
+<ResponseField name="content" type="Optional<string>">
+  Content of the tool message.
+</ResponseField>
+
+<ResponseField name="id" type="string" required>
+  Tool call identifier.
+</ResponseField>
+
+<ResponseField name="role" type="Optional<'tool' | 'function'>">
+  Role of the message (tool or function).
+</ResponseField>
+
+### `LangWatchSpanGenAIChoiceEventBody`
+
+Body for a choice event in a GenAI span.
+
+<ResponseField name="finish_reason" type="string" required>
+  Reason the generation finished.
+</ResponseField>
+
+<ResponseField name="index" type="number" required>
+  Index of the choice.
+</ResponseField>
+
+<ResponseField name="message" type="Optional<Message>">
+  Message content for the choice.
+</ResponseField>
+
+### `RecordedEvaluationDetails`
+
+Details for recording an evaluation.
+
+<ResponseField name="evaluationId" type="Optional<string>">
+  Unique identifier for the evaluation.
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Name of the evaluation.
+</ResponseField>
+
+<ResponseField name="type" type="Optional<string>">
+  Type of the evaluation.
+</ResponseField>
+
+<ResponseField name="isGuardrail" type="Optional<boolean>">
+  Whether this is a guardrail evaluation.
+</ResponseField>
+
+<ResponseField name="status" type="Optional<'processed' | 'skipped' | 'error'>">
+  Status of the evaluation.
+</ResponseField>
+
+<ResponseField name="passed" type="Optional<boolean>">
+  Whether the evaluation passed.
+</ResponseField>
+
+<ResponseField name="score" type="Optional<number>">
+  Score of the evaluation.
+</ResponseField>
+
+<ResponseField name="label" type="Optional<string>">
+  Label for the evaluation result.
+</ResponseField>
+
+<ResponseField name="details" type="Optional<string>">
+  Additional details about the evaluation.
+</ResponseField>
+
+<ResponseField name="cost" type="Optional<number | { currency: string; amount: number }>">
+  Cost of the evaluation.
+</ResponseField>
+
+<ResponseField name="error" type="Optional<Error>">
+  Error that occurred during evaluation.
+</ResponseField>
+
+<ResponseField name="timestamps" type="Optional<{ startedAtUnixMs: number; finishedAtUnixMs: number }>">
+  Timestamps for the evaluation.
+</ResponseField>
+
+### `EvaluationDetails`
+
+Union type for evaluation details.
+
+```typescript
+type EvaluationDetails = SavedEvaluationDetails | LangEvalsEvaluationDetails<EvaluatorTypes>;
+```
+
+### `SavedEvaluationDetails`
+
+Details for using a saved evaluator.
+
+<ResponseField name="slug" type="string" required>
+  The slug of the saved evaluator.
+</ResponseField>
+
+<ResponseField name="data" type="BasicEvaluationData | Record<string, unknown>" required>
+  The evaluation data.
+</ResponseField>
+
+<ResponseField name="name" type="Optional<string>">
+  Name for the evaluation.
+</ResponseField>
+
+<ResponseField name="contexts" type="Optional<RAGChunk[] | string[]>">
+  Context data for the evaluation.
+</ResponseField>
+
+<ResponseField name="conversation" type="Optional<Conversation>">
+  Conversation data for the evaluation.
+</ResponseField>
+
+<ResponseField name="asGuardrail" type="Optional<boolean>">
+  Whether to run as a guardrail.
+</ResponseField>
+
+<ResponseField name="settings" type="Optional<Record<string, unknown>>">
+  Settings for the evaluator.
+</ResponseField>
+
+### `LangEvalsEvaluationDetails`
+
+Details for using a LangEvals evaluator.
+
+<ResponseField name="evaluator" type="EvaluatorTypes" required>
+  The LangEvals evaluator type.
+</ResponseField>
+
+<ResponseField name="data" type="BasicEvaluationData | Record<string, unknown>" required>
+  The evaluation data.
+</ResponseField>
+
+<ResponseField name="name" type="Optional<string>">
+  Name for the evaluation.
+</ResponseField>
+
+<ResponseField name="contexts" type="Optional<RAGChunk[] | string[]>">
+  Context data for the evaluation.
+</ResponseField>
+
+<ResponseField name="conversation" type="Optional<Conversation>">
+  Conversation data for the evaluation.
+</ResponseField>
+
+<ResponseField name="asGuardrail" type="Optional<boolean>">
+  Whether to run as a guardrail.
+</ResponseField>
+
+<ResponseField name="settings" type="Optional<Evaluators[T]['settings']>">
+  Settings for the evaluator.
+</ResponseField>
+
+### `BasicEvaluationData`
+
+Basic evaluation data structure.
+
+<ResponseField name="input" type="Optional<string>">
+  Input text for evaluation.
+</ResponseField>
+
+<ResponseField name="output" type="Optional<string>">
+  Output text for evaluation.
+</ResponseField>
+
+<ResponseField name="expected_output" type="Optional<unknown>">
+  Expected output for evaluation.
+</ResponseField>
+
+<ResponseField name="contexts" type="Optional<RAGChunk[] | string[]>">
+  Context data for evaluation.
+</ResponseField>
+
+<ResponseField name="expected_contexts" type="Optional<RAGChunk[] | string[]>">
+  Expected context data for evaluation.
+</ResponseField>
+
+<ResponseField name="conversation" type="Optional<Conversation>">
+  Conversation data for evaluation.
+</ResponseField>
+
+### `SingleEvaluationResult`
+
+Result of an evaluation.
+
+<ResponseField name="status" type="'processed' | 'skipped' | 'error'">
+  Status of the evaluation.
+</ResponseField>
+
+<ResponseField name="passed" type="Optional<boolean>">
+  Whether the evaluation passed.
+</ResponseField>
+
+<ResponseField name="score" type="Optional<number>">
+  Score of the evaluation.
+</ResponseField>
+
+<ResponseField name="label" type="Optional<string>">
+  Label for the evaluation result.
+</ResponseField>
+
+<ResponseField name="details" type="Optional<string>">
+  Additional details about the evaluation.
+</ResponseField>
+
+<ResponseField name="error" type="Optional<string>">
+  Error message if the evaluation failed.
+</ResponseField>
+
+<ResponseField name="cost" type="Optional<{ currency: string; amount: number }>">
+  Cost of the evaluation.
+</ResponseField>
+
+## Usage Examples
+
+### Basic Tracing
+
+```typescript
+import { setup } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+
+await setup({ apiKey: process.env.LANGWATCH_API_KEY });
+
+const tracer = getLangWatchTracer("my-service");
+
+await tracer.withActiveSpan("process-request", async (span) => {
+  span.setType("llm");
+  span.setRequestModel("gpt-4");
+  
+  // Your LLM call here
+  const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [{ role: "user", content: "Hello!" }]
+  });
+  
+  span.setOutput(response.choices[0].message.content);
+  span.setMetrics({
+    promptTokens: response.usage?.prompt_tokens,
+    completionTokens: response.usage?.completion_tokens
+  });
+});
+```
+
+### RAG Operations
+
+```typescript
+await tracer.withActiveSpan("rag-query", async (span) => {
+  span.setType("rag");
+  
+  // Retrieve documents
+  const documents = await vectorStore.similaritySearch("query", 5);
+  
+  // Set RAG contexts
+  span.setRAGContexts(documents.map(doc => ({
+    document_id: doc.metadata.id,
+    chunk_id: doc.metadata.chunk_id,
+    content: doc.pageContent
+  })));
+  
+  // Generate response
+  const response = await llm.generate([documents, "query"]);
+  span.setOutput(response);
+});
+```
+
+### Evaluation
+
+```typescript
+import { runEvaluation } from "langwatch/evaluation";
+
+const result = await runEvaluation({
+  slug: "toxicity-check",
+  data: {
+    input: "User input",
+    output: "Generated response"
+  },
+  asGuardrail: true
+});
+
+if (!result.passed) {
+  console.log("Content flagged as toxic");
+}
+```
+
+### Prompt Management
+
+```typescript
+import { getPrompt, getPromptVersion } from "langwatch";
+
+// Get the latest version of a prompt
+const compiledPrompt = await getPrompt("customer-support", {
+  customer_name: "John Doe",
+  issue_type: "billing"
+});
+
+// Get a specific version of a prompt
+const specificVersion = await getPromptVersion("customer-support", "v1.2.3", {
+  customer_name: "John Doe",
+  issue_type: "billing"
+});
+
+console.log(compiledPrompt.content);
+console.log(specificVersion.content);
+```
+
+### Prompt Selection in Tracing
+
+```typescript
+import { getLangWatchTracer } from "langwatch";
+import { getPrompt } from "langwatch";
+
+const tracer = getLangWatchTracer("my-service");
+
+await tracer.withActiveSpan("llm-call", async (span) => {
+  // Get a prompt and set it as selected for this span
+  const prompt = await getPrompt("customer-support");
+  span.setSelectedPrompt(prompt);
+  
+  // Use the prompt in your LLM call
+  const response = await openai.chat.completions.create({
+    model: "gpt-4",
+    messages: [
+      { role: "system", content: prompt.content },
+      { role: "user", content: "Help me with billing" }
+    ]
+  });
+  
+  span.setOutput(response.choices[0].message.content);
+});
+```

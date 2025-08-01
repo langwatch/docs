@@ -113,6 +113,7 @@
                     "group": "API Reference",
                     "pages": [
                       "integration/python/reference",
+                      "integration/typescript/reference",
                       "integration/rest-api"
                     ]
                   }
