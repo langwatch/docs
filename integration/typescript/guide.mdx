@@ -33,7 +33,7 @@ First, you need a LangWatch API key. Sign up at [app.langwatch.ai](https://app.l
 First, ensure you have the SDK installed:
 
 ```bash
-npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks @opentelemetry/core
+npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks
 ```
 
 Initialize LangWatch early in your Node.js application, typically where you configure services:
@@ -153,9 +153,9 @@ import { getLangWatchTracer } from "langwatch";
 const tracer = getLangWatchTracer("my-service");
 
 async function ragRetrieval(query: string) {
-  return await tracer.withActiveSpan("rag-retrieval", { 
-    attributes: { type: "rag" } 
-  }, async (span) => {
+  return await tracer.withActiveSpan("rag-retrieval", async (span) => {
+    span.setType("rag");
+
     // ... logic to retrieve documents ...
     const searchResults = [
       { id: "doc-1", content: "..." },
@@ -422,3 +422,223 @@ Below is a list of currently supported integrations. Click on each to learn more
 - [Other Frameworks](/integration/typescript/integrations/other)
 
 ## Full Setup
+
+Here's a complete example showing how to integrate LangWatch with a typical LLM application using the Vercel AI SDK, including RAG retrieval, generation, and data storage.
+
+### Complete Example
+
+<CodeGroup>
+```typescript app.ts
+import { setup } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+import { z } from "zod";
+
+// Initialize LangWatch
+await setup({
+  apiKey: process.env.LANGWATCH_API_KEY, // Optional: defaults to environment variable `LANGWATCH_API_KEY`
+  endpoint: process.env.LANGWATCH_ENDPOINT, // Optional: defaults to `LANGWATCH_ENDPOINT` or hosted cloud endpoint
+  baseAttributes: {
+    "service.name": "chatbot-service",
+    "service.version": "1.0.0",
+    "deployment.environment": process.env.NODE_ENV,
+  },
+  spanExcludeRules: [{
+    fieldName: ["span_name"],
+    matchValue: "health-check",
+    matchOperation: "exact_match"
+  }]
+});
+
+// Create a reusable tracer
+const tracer = getLangWatchTracer("chatbot-service");
+
+// Mock database for storing conversation data
+const conversationStore = new Map<string, any[]>();
+
+// Mock RAG retrieval function
+async function retrieveRelevantDocuments(query: string) {
+  return await tracer.withActiveSpan("rag-retrieval", async (span) => {
+    span.setType("rag");
+
+    // Simulate document retrieval
+    const documents = [
+      { id: "doc-1", content: "LangWatch is an observability platform for LLM applications." },
+      { id: "doc-2", content: "It provides tracing, evaluation, and monitoring capabilities." },
+      { id: "doc-3", content: "The platform supports multiple programming languages and frameworks." }
+    ];
+
+    // Filter documents based on query (simplified)
+    const relevantDocs = documents.filter(doc => 
+      doc.content.toLowerCase().includes(query.toLowerCase())
+    );
+
+    // Record RAG contexts
+    span.setRAGContexts(
+      relevantDocs.map(doc => ({
+        document_id: doc.id,
+        chunk_id: doc.id,
+        content: doc.content
+      }))
+    );
+
+    span.setInputString(query);
+    
+    return relevantDocs;
+  });
+}
+
+// Main message handling function
+async function handleUserMessage(
+  userId: string, 
+  threadId: string, 
+  message: string
+) {
+  return await tracer.withActiveSpan("handle-user-message", {
+    attributes: {
+      "user.id": userId,
+      "thread.id": threadId,
+      "message.type": "user"
+    }
+  }, async (span) => {
+    // 1. Retrieve relevant documents
+    const documents = await retrieveRelevantDocuments(message);
+    
+    // 2. Generate response using Vercel AI SDK
+    const response = await generateText({
+      model: openai("gpt-4"),
+      prompt: `Based on the following context, answer the user's question:
+
+Context:
+${documents.map(doc => doc.content).join('\n')}
+
+User Question: ${message}
+
+Answer:`,
+      maxTokens: 500,
+      temperature: 0.7,
+      // This is required for LangWatch to capture the LLM input and output, and other data.
+      experimental_telemetry: { isEnabled: true },
+    });
+
+    // 3. Store conversation data
+    const conversationData = {
+      timestamp: new Date().toISOString(),
+      userMessage: message,
+      assistantResponse: response.text,
+      retrievedDocuments: documents,
+      threadId,
+      userId
+    };
+
+    // Store in mock database
+    const userConversations = conversationStore.get(userId) || [];
+    userConversations.push(conversationData);
+    conversationStore.set(userId, userConversations);
+
+    // 4. Record the complete interaction
+    span.setType("llm");
+
+    // 5. Record metrics
+    span.setMetrics({
+      promptTokens: response.usage?.promptTokens || 0,
+      completionTokens: response.usage?.completionTokens || 0,
+      cost: response.usage?.cost || 0
+    });
+
+    // 6. Record input, the pure LLM input is automatically captured via the Vercel AI SDK.
+    span.setInput({
+      userMessage: message,
+      retrievedDocuments: documents,
+      threadId,
+      userId
+    });
+
+    // 6. Record output, the pure LLM output is automatically captured via the Vercel AI SDK.
+    span.setOutput({
+      assistantResponse: response.text,
+      conversationId: conversationData.timestamp
+    });
+
+    return {
+      response: response.text,
+      conversationId: conversationData.timestamp,
+      retrievedDocuments: documents
+    };
+  });
+}
+
+// API endpoint handler (Express.js example)
+app.post('/api/chat', async (req, res) => {
+  const { userId, threadId, message } = req.body;
+
+  try {
+    const result = await handleUserMessage(userId, threadId, message);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get conversation history
+app.get('/api/conversations/:userId', (req, res) => {
+  const { userId } = req.params;
+  const conversations = conversationStore.get(userId) || [];
+  res.json(conversations);
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  tracer.withActiveSpan("health-check", async (span) => {
+    span.setStatus({ code: SpanStatusCode.OK });
+    res.json({ status: 'ok' });
+  });
+});
+```
+
+```bash .env
+LANGWATCH_API_KEY=your_api_key_here
+NODE_ENV=production
+```
+
+```json package.json
+{
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.23",
+    "@opentelemetry/context-async-hooks": "^2.0.1",
+    "@opentelemetry/sdk-node": "^0.203.0",
+    "ai": "^4.3.19",
+    "express": "^4.18.0",
+    "langwatch": "^0.3.0",
+    "zod": "^4.0.10"
+  }
+}
+```
+
+```typescript instrumentation.ts
+import { registerOTel } from '@vercel/otel';
+
+export function register() {
+  registerOTel({
+    serviceName: 'next-app',
+    // Note: LangWatch SDK automatically sets up the trace exporter,
+    // so no manual configuration is needed here
+  });
+}
+```
+</CodeGroup>
+
+### Key Features Demonstrated
+
+- **Tracing**: Complete request flow from user message to response
+- **RAG Context**: Document retrieval with proper context recording
+- **LLM Events**: Structured conversation flow with system, user, and assistant messages
+- **Metrics**: Token usage and cost tracking
+- **Error Handling**: Proper error recording and status setting
+- **Data Storage**: Conversation persistence with trace correlation
+- **Thread Management**: Conversation grouping with thread IDs
+- **User Analytics**: User ID tracking for analytics
+- **Custom Attributes**: Service metadata and environment information
+
+This example shows how LangWatch can capture every aspect of your LLM application, from the initial user request through document retrieval, LLM generation, and data storage, providing complete observability into your AI pipeline.
