@@ -52,30 +52,32 @@ result = customer_support_generation()
 <Tab title="TypeScript SDK">
 
 ```typescript
-import { getPrompt } from "langwatch";
-import OpenAI from "openai";
+import { getPrompt, setupLangWatch } from "langwatch";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
 
-// Initialize LangWatch (tracing is automatic when API key is set)
-const openai = new OpenAI();
+// Initialize LangWatch for tracing and instrumentation
+await setupLangWatch();
 
 async function customerSupportGeneration() {
   // Get prompt (automatically linked to trace when API key is present)
   const prompt = await getPrompt("customer-support-bot");
 
-  // Compile prompt with variables
+  // Compile prompt with variables - you can pass variables as the second argument
   const compiledPrompt = prompt.compile({
     user_name: "John Doe",
     user_email: "john.doe@example.com",
     input: "I need help with my account",
   });
 
-  // Use with OpenAI client
-  const completion = await openai.chat.completions.create({
-    model: prompt.model.replace("openai/", ""),
+  // Use with AI SDK (native instrumentation support)
+  const result = await generateText({
+    model: openai(prompt.model.replace("openai/", "")),
     messages: compiledPrompt.messages,
+    experimental_telemetry: { isEnabled: true },
   });
 
-  return completion.choices[0].message.content;
+  return result.text;
 }
 
 // Call the function
