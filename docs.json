@@ -159,7 +159,8 @@
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
-                  "integration/python/integrations/strand-agents",    
+                  "integration/python/integrations/strand-agents",
+                  "integration/python/integrations/semantic-kernel",                 
                   "integration/typescript/integrations/vercel-ai-sdk",          
                   "integration/python/integrations/other"
                   
