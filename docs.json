@@ -90,7 +90,8 @@
                   {
                     "group": "Essential",
                     "pages": [
-                      "prompt-management/features/essential/version-control"
+                      "prompt-management/features/essential/version-control",
+                      "prompt-management/features/essential/analytics"
                     ]
                   },
                   {
