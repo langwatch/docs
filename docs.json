@@ -92,6 +92,12 @@
                     "pages": [
                       "prompt-management/features/essential/version-control"
                     ]
+                  },
+                  {
+                    "group": "Advanced",
+                    "pages": [
+                      "prompt-management/features/advanced/link-to-traces"
+                    ]
                   }
                 ]
               }
