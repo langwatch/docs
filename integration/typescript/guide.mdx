@@ -1,8 +1,10 @@
 ---
 title: TypeScript Integration Guide
-sidebarTitle: TypeScript
+sidebarTitle: TypeScript/JS
 description: LangWatch TypeScript SDK integration guide
 ---
+
+import LLMsTxtProtip from "/snippets/llms-txt-protip.mdx";
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
   <div>
@@ -18,16 +20,33 @@ description: LangWatch TypeScript SDK integration guide
   </div>
 </div>
 
-LangWatch library is the easiest way to integrate your TypeScript application with LangWatch, the messages are synced on the background so it doesn't intercept or block your LLM calls.
-
-import LLMsTxtProtip from "/snippets/llms-txt-protip.mdx";
+Integrate LangWatch into your TypeScript/JavaScript application to start observing your LLM interactions. This guide covers the setup and basic usage of the LangWatch TypeScript SDK.
 
 <LLMsTxtProtip />
 
-import Prerequisites from "/snippets/prerequests-ts.mdx";
+## Get your LangWatch API Key
 
-<Prerequisites />
+First, you need a LangWatch API key. Sign up at [app.langwatch.ai](https://app.langwatch.ai) and find your API key in your project settings. The SDK will automatically use the `LANGWATCH_API_KEY` environment variable if it is set.
 
+## Start Instrumenting
+
+First, ensure you have the SDK installed:
+
+```bash
+npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks
+```
+
+Initialize LangWatch early in your Node.js application, typically where you configure services:
+
+```typescript
+import { setupLangWatch } from "langwatch/node";
+
+await setupLangWatch(); // This will setup the SDK, and setup the observability SDK.
+```
+
+<Note>
+  If you have an existing OpenTelemetry setup in your application, please see the [Already using OpenTelemetry?](#already-using-opentelemetry) section below.
+</Note>
 
 ## Basic Concepts
 
@@ -39,408 +58,505 @@ import Prerequisites from "/snippets/prerequests-ts.mdx";
 - [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
   - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
 
+## Integrations
 
-## Integration
+LangWatch offers seamless integrations with a variety of popular TypeScript libraries and frameworks. These integrations provide automatic instrumentation, capturing relevant data from your LLM applications with minimal setup.
 
-<Tabs>
-<Tab title="Vercel AI SDK">
-The Vercel AI SDK supports tracing via Next.js OpenTelemetry integration. By using the `LangWatchExporter`, you can automatically collect those traces to LangWatch.
+Below is a list of currently supported integrations. Click on each to learn more about specific setup instructions and available features:
 
-First, you need to install the necessary dependencies:
+{/* - [AWS Bedrock](/integration/typescript/integrations/aws-bedrock) */}
+{/* - [Azure AI](/integration/typescript/integrations/azure-ai) */}
+- [Langchain](/integration/typescript/integrations/langchain)
+{/* - [LangGraph](/integration/typescript/integrations/langgraph) */}
+{/* - [Mastra](/integration/typescript/integrations/mastra) */}
+{/* - [n8n](/integration/typescript/integrations/n8n) */}
+{/* - [OpenAI Agents](/integration/typescript/integrations/open-ai-agents) */}
+{/* - [OpenAI Azure](/integration/typescript/integrations/open-ai-azure) */}
+{/* - [OpenAI](/integration/typescript/integrations/open-ai) */}
+{/* - [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk) */}
+{/* - [Other Frameworks](/integration/typescript/integrations/other) */}
 
-```bash
-npm install @vercel/otel langwatch @opentelemetry/api-logs @opentelemetry/instrumentation @opentelemetry/sdk-logs
+## Capturing Messages
+
+<Tip>
+  For most use cases, we recommend using `withActiveSpan` as it automatically handles error recording, status setting, and span ending. Use `startActiveSpan` when you need more control over span lifecycle, and `startSpan` only when you need complete manual control.
+</Tip>
+
+Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces). A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline. Spans can be nested to capture the pipeline structure.
+
+### Creating a Trace
+
+To capture an end-to-end operation, like processing a user message, you can use the `withActiveSpan` method. This is a helper method provided by the LangWatch SDK (not part of standard OpenTelemetry) that automatically creates a span for the entire operation and handles error recording, status setting, and span ending.
+
+#### Tracer Best Practices
+
+The tracer should be created once and reused throughout your application. Here are some recommended patterns:
+
+<CodeGroup>
+```typescript Module-level (Recommended)
+// tracer.ts
+import { getLangWatchTracer } from "langwatch";
+
+export const tracer = getLangWatchTracer("my-service");
 ```
 
-Then, set up the OpenTelemetry for your application, follow one of the tabs below depending whether you are using AI SDK with Next.js or on Node.js:
-
-<Tabs>
-<Tab title="Next.js">
-You need to enable the `instrumentationHook` in your `next.config.js` file if you haven't already:
-
-```javascript
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    instrumentationHook: true,
-  },
-};
-
-module.exports = nextConfig;
-```
-
-Next, you need to create a file named `instrumentation.ts` (or `.js`) in the __root directory__ of the project (or inside `src` folder if using one), with `LangWatchExporter` as the traceExporter:
-
-```typescript
-import { registerOTel } from '@vercel/otel'
-import { LangWatchExporter } from 'langwatch'
-
-export function register() {
-  registerOTel({
-    serviceName: 'next-app',
-    traceExporter: new LangWatchExporter({
-      apiKey: process.env.LANGWATCH_API_KEY
-    })
-  })
+```typescript Class-based
+class MyService {
+  private tracer = getLangWatchTracer("my-service");
+  
+  async handleRequest() {
+    return await this.tracer.withActiveSpan("handle-request", async (span) => {
+      // ... your logic
+    });
+  }
 }
 ```
 
-(Read more about Next.js OpenTelemetry configuration [on the official guide](https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry#manual-opentelemetry-configuration))
-
-Finally, enable `experimental_telemetry` tracking on the AI SDK calls you want to trace:
-
-```typescript
-const result = await generateText({
-  model: openai('gpt-4o-mini'),
-  prompt: 'Explain why a chicken would make a terrible astronaut, be creative and humorous about it.',
-  experimental_telemetry: {
-    isEnabled: true,
-    // optional metadata
-    metadata: {
-      userId: "myuser-123",
-      threadId: "mythread-123",
-    },
-  },
-});
+```typescript Function-level (Not recommended)
+async function handleRequest() {
+  const tracer = getLangWatchTracer("my-service"); // Creates new tracer each time
+  return await tracer.withActiveSpan("handle-request", async (span) => {
+    // ... your logic
+  });
+}
 ```
-</Tab>
-<Tab title="Node.js">
-For Node.js, start by following the official OpenTelemetry guide:
+</CodeGroup>
 
-- [OpenTelemetry Node.js Getting Started](https://opentelemetry.io/docs/languages/js/getting-started/nodejs/)
+<Tip>
+  Create your tracer at the module level and export it for reuse across your application. This ensures consistent service naming and avoids unnecessary tracer creation overhead.
+</Tip>
 
-Once you have set up OpenTelemetry, you can use the `LangWatchExporter` to automatically send your traces to LangWatch:
-
-```typescript
-import { LangWatchExporter } from 'langwatch'
-
-const sdk = new NodeSDK({
-  traceExporter: new LangWatchExporter({
-    apiKey: process.env.LANGWATCH_API_KEY
-  }),
-  // ...
-});
-```
-</Tab>
-</Tabs>
-
-That's it! Your messages will now be visible on LangWatch:
-
-![Vercel AI SDK](/images/integration/vercel-ai-sdk.png)
-
-## Example Project
-
-You can find a full example project with a more complex pipeline and Vercel AI SDK and LangWatch integration [on our GitHub](https://github.com/langwatch/langwatch/blob/main/typescript-sdk/example/lib/chat/vercel-ai.tsx).
-
-## Manual Integration
-
-The docs from here below are for manual integration, in case you are not using the Vercel AI SDK OpenTelemetry integration,
-you can manually start a trace to capture your messages:
+#### Basic Usage
 
 ```typescript
-import { LangWatch } from 'langwatch';
+import { getLangWatchTracer } from "langwatch";
 
-const langwatch = new LangWatch();
+const tracer = getLangWatchTracer("my-service");
 
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
-});
-```
-
-Then, you can start an LLM span inside the trace with the input about to be sent to the LLM.
-
-```typescript
-import { convertFromVercelAIMessages } from 'langwatch'
-
-const span = trace.startLLMSpan({
-  name: "llm",
-  model: model,
-  input: {
-    type: "chat_messages",
-    value: convertFromVercelAIMessages(messages)
-  },
-});
-```
-
-This will capture the LLM input and register the time the call started. Once the LLM call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation, e.g.:
-
-```typescript
-span.end({
-  output: {
-    type: "chat_messages",
-    value: convertFromVercelAIMessages(output), // assuming output is Message[]
-  },
-  metrics: {
-    promptTokens: chatCompletion.usage?.prompt_tokens,
-    completionTokens: chatCompletion.usage?.completion_tokens,
-  },
-});
-```
-
-</Tab>
-<Tab title="OpenAI">
-Start by initializing LangWatch client and creating a new trace to capture your messages:
-
-```typescript
-import { LangWatch } from 'langwatch';
-
-const langwatch = new LangWatch();
-
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
-});
-```
-
-Then to capture your LLM calls, you can start an LLM span inside the trace with the input about to be sent to the LLM.
-
-First, define the model and the messages you are going to use for your LLM call separately, so you can capture them:
-
-```typescript
-import { OpenAI } from "openai";
-
-// Model to be used and messages that will be sent to the LLM
-const model = "gpt-4o"
-const messages : OpenAI.Chat.ChatCompletionMessageParam[] = [
-  { role: "system", content: "You are a helpful assistant." },
-  {
-    role: "user",
-    content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
-  },
-]
-```
-
-Then, start the LLM span from the trace, giving it the model and input messages:
-
-```typescript
-const span = trace.startLLMSpan({
-  name: "llm",
-  model: model,
-  input: {
-    type: "chat_messages",
-    value: messages
-  },
-});
-```
-
-This will capture the LLM input and register the time the call started. Now, continue with the LLM call normally, using the same parameters:
-
-```typescript
-const openai = new OpenAI();
-const chatCompletion = await openai.chat.completions.create({
-  messages: messages,
-  model: model,
-});
-```
-
-Finally, after the OpenAI call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation:
-
-```typescript
-span.end({
-  output: {
-    type: "chat_messages",
-    value: [chatCompletion.choices[0]!.message],
-  },
-  metrics: {
-    promptTokens: chatCompletion.usage?.prompt_tokens,
-    completionTokens: chatCompletion.usage?.completion_tokens,
-  },
-});
-```
-</Tab>
-<Tab title="Azure">
-Start by initializing LangWatch client and creating a new trace to capture your messages:
-
-```typescript
-import { LangWatch } from 'langwatch';
-
-const langwatch = new LangWatch();
-
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
-});
-```
-
-Then to capture your LLM calls, you can start an LLM span inside the trace with the input about to be sent to the LLM.
-
-First, define the model and the messages you are going to use for your LLM call separately, so you can capture them:
-
-```typescript
-import { AzureOpenAI } from "openai";
-
-// Model to be used and messages that will be sent to the LLM
-const model = "gpt-4-turbo-2024-04-09"
-const messages : OpenAI.Chat.ChatCompletionMessageParam[] = [
-  { role: "system", content: "You are a helpful assistant." },
-  {
-    role: "user",
-    content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
-  },
-]
-```
-
-Then, start the LLM span from the trace, giving it the model and input messages:
-
-```typescript
-const span = trace.startLLMSpan({
-  name: "llm",
-  model: model,
-  input: {
-    type: "chat_messages",
-    value: messages
-  },
-});
-```
-
-This will capture the LLM input and register the time the call started. Now, continue with the LLM call normally, using the same parameters:
-
-```typescript
-const openai = new AzureOpenAI({
-  apiKey: process.env.AZURE_OPENAI_API_KEY,
-  apiVersion: "2024-02-01",
-  endpoint: process.env.AZURE_OPENAI_ENDPOINT,
-});
-const chatCompletion = await openai.chat.completions.create({
-  messages: messages,
-  model: model,
-});
-```
-
-Finally, after the OpenAI call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation:
-
-```typescript
-span.end({
-  output: {
-    type: "chat_messages",
-    value: [chatCompletion.choices[0]!.message],
-  },
-  metrics: {
-    promptTokens: chatCompletion.usage?.prompt_tokens,
-    completionTokens: chatCompletion.usage?.completion_tokens,
-  },
-});
-```
-</Tab>
-<Tab title="LangChain.js">
-Start by initializing LangWatch client and creating a new trace to capture your chain:
-
-```typescript
-import { LangWatch } from 'langwatch';
-
-const langwatch = new LangWatch();
-
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
-});
-```
-
-Then, to capture your LLM calls and all other chain steps, LangWatch provides a callback hook for LangChain.js that automatically tracks everything for you.
-
-First, define your chain as you would normally do:
-
-```typescript
-import { StringOutputParser } from '@langchain/core/output_parsers'
-import { ChatPromptTemplate } from '@langchain/core/prompts'
-import { ChatOpenAI } from '@langchain/openai'
-
-const prompt = ChatPromptTemplate.fromMessages([
-  ['system', 'Translate the following from English into Italian'],
-  ['human', '{input}']
-])
-const model = new ChatOpenAI({ model: 'gpt-3.5-turbo' })
-const outputParser = new StringOutputParser()
-
-const chain = prompt.pipe(model).pipe(outputParser)
-```
-
-Now, when calling your chain either with `invoke` or `stream`, pass in `trace.getLangChainCallback()` as one of the callbacks:
-
-```typescript
-const stream = await chain.stream(
-  { input: message },
-  { callbacks: [trace.getLangChainCallback()] }
-)
-```
-
-That's it! The full trace with all spans for each chain step will be sent automatically to LangWatch in the background on periodic intervals. After capturing your first LLM Span, go to [LangWatch Dashboard](https://app.langwatch.ai), your message should be there!
-</Tab>
-</Tabs>
-
-<Note>
-On short-live environments like Lambdas or Serverless Functions, be sure to call <br /> `await trace.sendSpans();` to wait for all pending requests to be sent before the runtime is destroyed.
-</Note>
-
-## Capture a RAG Span
-
-Appart from LLM spans, another very used type of span is the RAG span. This is used to capture the retrieved contexts from a RAG that will be used by the LLM, and enables a whole new set of RAG-based features evaluations for RAG quality on LangWatch.
-
-import TypeScriptRAG from "/snippets/typescript-rag.mdx";
-
-<TypeScriptRAG />
-
-## Capture an arbritary Span
-
-You can also use generic spans to capture any type of operation, its inputs and outputs, for example for a function call:
-
-```typescript
-// before the function starts
-const span = trace.startSpan({
-  name: "weather_function",
-  input: {
-    type: "json",
-    value: {
-      city: "Tokyo",
-    },
-  },
-});
-
-// ...after the function ends
-span.end({
-  output: {
-    type: "json",
-    value: {
-      weather: "sunny",
-    },
-  },
-});
-```
-
-You can also nest spans one inside the other, capturing your pipeline structure, for example:
-
-```typescript
-const span = trace.startSpan({
-  name: "pipeline",
-});
-
-const nestedSpan = span.startSpan({
-  name: "nested_pipeline",
-});
-
-nestedSpan.end()
-
-span.end()
-```
-
-Both LLM and RAG spans can also be nested like any arbritary span.
-
-## Capturing Exceptions
-
-To capture also when your code throws an exception, you can simply wrap your code around a try/catch, and update or end the span with the exception:
-
-```typescript
-try {
-  throw new Error("unexpected error");
-} catch (error) {
-  span.end({
-    error: error,
+async function handleMessage() {
+  return await tracer.withActiveSpan("handle-message", async (span) => {
+    // This whole function execution is now a single trace
+    span.setType("llm");
+    
+    // ... rest of your message handling logic ...
+    return "response";
   });
 }
 ```
 
-## Capturing custom evaluation results
+You can also add initial attributes and metadata:
 
-[LangWatch Evaluators](/llm-evaluation/list) can run automatically on your traces, but if you have an in-house custom evaluator, you can also capture the evaluation
-results of your custom evaluator on the current trace or span by using the `.addEvaluation` method:
+```typescript
+await tracer.withActiveSpan(
+  "handle-message", 
+  { 
+    attributes: { 
+      "user.id": "user-123",
+      "thread.id": "thread-456" 
+    } 
+  }, 
+  async (span) => {
+    // ... your logic ...
+  }
+);
+```
 
-import TypeScriptCustomEvaluation from "/snippets/typescript-custom-evaluation.mdx"
+### Capturing a Span
 
-<TypeScriptCustomEvaluation />
+To instrument specific parts of your pipeline within a trace (like an LLM operation, RAG retrieval, or external API call), use the `startActiveSpan` method.
+
+```typescript
+import { getLangWatchTracer } from "langwatch";
+
+const tracer = getLangWatchTracer("my-service");
+
+async function ragRetrieval(query: string) {
+  return await tracer.withActiveSpan("rag-retrieval", async (span) => {
+    span.setType("rag");
+
+    // ... logic to retrieve documents ...
+    const searchResults = [
+      { id: "doc-1", content: "..." },
+      { id: "doc-2", content: "..." }
+    ];
+
+    // Add specific context data to the span
+    span.setRAGContexts(
+      searchResults.map(doc => ({
+        document_id: doc.id,
+        chunk_id: doc.id,
+        content: doc.content
+      })),
+    );
+
+    return searchResults;
+  });
+}
+
+async function handleMessage() {
+  return await tracer.withActiveSpan("handle-message", async (span) => {
+    // ... other logic ...
+    const retrievedDocs = await ragRetrieval("user query"); // This creates a nested span
+    // ... rest of logic ...
+  });
+}
+```
+
+### Manual Span Management
+
+For more control, you can manually manage spans. There are three approaches:
+
+#### Using startActiveSpan (Recommended for manual control)
+
+`startActiveSpan` is the standard OpenTelemetry method that creates a span, sets it in context (so child spans are nested), but requires manual error handling and ending:
+
+```typescript
+tracer.startActiveSpan("my-operation", (span) => {
+  try {
+    span.setType("llm");
+    span.setInput("Hello, world!");
+    
+    // ... your logic ...
+    
+    span.setOutput("Hello! How can I help you?");
+    span.setStatus({ code: SpanStatusCode.OK });
+  } catch (error) {
+    span.setStatus({ 
+      code: SpanStatusCode.ERROR, 
+      message: error.message 
+    });
+    span.recordException(error);
+    throw error;
+  } finally {
+    span.end();
+  }
+});
+```
+
+#### Using startSpan (Complete manual control)
+
+`startSpan` is the standard OpenTelemetry method that creates a span but does NOT set it in context, so child spans won't be nested. Use this only when you need complete control:
+
+```typescript
+const span = tracer.startSpan("my-operation");
+try {
+  span.setType("llm");
+  span.setInput("Hello, world!");
+  
+  // ... your logic ...
+  
+  span.setOutput("Hello! How can I help you?");
+  span.setStatus({ code: SpanStatusCode.OK });
+} catch (error) {
+  span.setStatus({ 
+    code: SpanStatusCode.ERROR, 
+    message: error.message 
+  });
+  span.recordException(error);
+  throw error;
+} finally {
+  span.end();
+}
+```
+
+### Setting Input and Output
+
+You can record structured input and output data:
+
+<CodeGroup>
+```typescript JSON Input/Output
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Record JSON input
+  span.setInput({ 
+    prompt: "Hello", 
+    temperature: 0.7 
+  });
+  
+  // Record JSON output
+  span.setOutput({ 
+    response: "I'm doing well!", 
+    confidence: 0.95 
+  });
+});
+```
+
+```typescript String Input/Output
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Record string input
+  span.setInputString("Hello, how are you?");
+  
+  // Record string output
+  span.setOutputString("I'm doing well!");
+});
+```
+
+```typescript Mixed Types
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Record JSON input
+  span.setInput({ 
+    prompt: "Hello", 
+    temperature: 0.7 
+  });
+  
+  // Record string output
+  span.setOutputString("I'm doing well!");
+});
+```
+</CodeGroup>
+
+### Adding Metrics
+
+Track token usage and costs:
+
+<CodeGroup>
+```typescript Basic Metrics
+await tracer.withActiveSpan("llm-call", async (span) => {
+  span.setMetrics({
+    promptTokens: 150,
+    completionTokens: 50,
+    cost: 0.002
+  });
+});
+```
+
+```typescript Partial Metrics
+await tracer.withActiveSpan("llm-call", async (span) => {
+  // Only track tokens
+  span.setMetrics({
+    promptTokens: 150,
+    completionTokens: 50
+  });
+});
+```
+
+```typescript Cost Only
+await tracer.withActiveSpan("llm-call", async (span) => {
+  // Only track cost
+  span.setMetrics({
+    cost: 0.002
+  });
+});
+```
+</CodeGroup>
+
+## Full Setup
+
+Here's a complete example showing how to integrate LangWatch with a typical LLM application using the Vercel AI SDK, including RAG retrieval, generation, and data storage.
+
+### Complete Example
+
+<CodeGroup>
+```typescript app.ts
+import { setupLangWatch } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+import { z } from "zod";
+
+// Initialize LangWatch
+await setupLangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY, // Optional: defaults to environment variable `LANGWATCH_API_KEY`
+  endpoint: process.env.LANGWATCH_ENDPOINT, // Optional: defaults to `LANGWATCH_ENDPOINT` or hosted cloud endpoint
+  baseAttributes: {
+    "service.name": "chatbot-service",
+    "service.version": "1.0.0",
+    "deployment.environment": process.env.NODE_ENV,
+  },
+  spanExcludeRules: [{
+    fieldName: ["span_name"],
+    matchValue: "health-check",
+    matchOperation: "exact_match"
+  }]
+});
+
+// Create a reusable tracer
+const tracer = getLangWatchTracer("chatbot-service");
+
+// Mock database for storing conversation data
+const conversationStore = new Map<string, any[]>();
+
+// Mock RAG retrieval function
+async function retrieveRelevantDocuments(query: string) {
+  return await tracer.withActiveSpan("rag-retrieval", async (span) => {
+    span.setType("rag");
+
+    // Simulate document retrieval
+    const documents = [
+      { id: "doc-1", content: "LangWatch is an observability platform for LLM applications." },
+      { id: "doc-2", content: "It provides tracing, evaluation, and monitoring capabilities." },
+      { id: "doc-3", content: "The platform supports multiple programming languages and frameworks." }
+    ];
+
+    // Filter documents based on query (simplified)
+    const relevantDocs = documents.filter(doc => 
+      doc.content.toLowerCase().includes(query.toLowerCase())
+    );
+
+    // Record RAG contexts
+    span.setRAGContexts(
+      relevantDocs.map(doc => ({
+        document_id: doc.id,
+        chunk_id: doc.id,
+        content: doc.content
+      }))
+    );
+
+    span.setInputString(query);
+    
+    return relevantDocs;
+  });
+}
+
+// Main message handling function
+async function handleUserMessage(
+  userId: string, 
+  threadId: string, 
+  message: string
+) {
+  return await tracer.withActiveSpan("handle-user-message", {
+    attributes: {
+      "user.id": userId,
+      "thread.id": threadId,
+      "message.type": "user"
+    }
+  }, async (span) => {
+    // 1. Retrieve relevant documents
+    const documents = await retrieveRelevantDocuments(message);
+    
+    // 2. Generate response using Vercel AI SDK
+    const response = await generateText({
+      model: openai("gpt-4"),
+      prompt: `Based on the following context, answer the user's question:
+
+Context:
+${documents.map(doc => doc.content).join('\n')}
+
+User Question: ${message}
+
+Answer:`,
+      maxTokens: 500,
+      temperature: 0.7,
+      // This is required for LangWatch to capture the LLM input and output, and other data.
+      experimental_telemetry: { isEnabled: true },
+    });
+
+    // 3. Store conversation data
+    const conversationData = {
+      timestamp: new Date().toISOString(),
+      userMessage: message,
+      assistantResponse: response.text,
+      retrievedDocuments: documents,
+      threadId,
+      userId
+    };
+
+    // Store in mock database
+    const userConversations = conversationStore.get(userId) || [];
+    userConversations.push(conversationData);
+    conversationStore.set(userId, userConversations);
+
+    // 4. Record the complete interaction
+    span.setType("llm");
+
+    // 5. Record metrics
+    span.setMetrics({
+      promptTokens: response.usage?.promptTokens || 0,
+      completionTokens: response.usage?.completionTokens || 0,
+      cost: response.usage?.cost || 0
+    });
+
+    // 6. Record input, the pure LLM input is automatically captured via the Vercel AI SDK.
+    span.setInput({
+      userMessage: message,
+      retrievedDocuments: documents,
+      threadId,
+      userId
+    });
+
+    // 6. Record output, the pure LLM output is automatically captured via the Vercel AI SDK.
+    span.setOutput({
+      assistantResponse: response.text,
+      conversationId: conversationData.timestamp
+    });
+
+    return {
+      response: response.text,
+      conversationId: conversationData.timestamp,
+      retrievedDocuments: documents
+    };
+  });
+}
+
+// API endpoint handler (Express.js example)
+app.post('/api/chat', async (req, res) => {
+  const { userId, threadId, message } = req.body;
+
+  try {
+    const result = await handleUserMessage(userId, threadId, message);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get conversation history
+app.get('/api/conversations/:userId', (req, res) => {
+  const { userId } = req.params;
+  const conversations = conversationStore.get(userId) || [];
+  res.json(conversations);
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  tracer.withActiveSpan("health-check", async (span) => {
+    span.setStatus({ code: SpanStatusCode.OK });
+    res.json({ status: 'ok' });
+  });
+});
+```
+
+```bash .env
+LANGWATCH_API_KEY=your_api_key_here
+NODE_ENV=production
+```
+
+```json package.json
+{
+  "dependencies": {
+    "@ai-sdk/openai": "^1.3.23",
+    "@opentelemetry/context-async-hooks": "^2.0.1",
+    "@opentelemetry/sdk-node": "^0.203.0",
+    "ai": "^4.3.19",
+    "express": "^4.18.0",
+    "langwatch": "^0.3.0",
+    "zod": "^4.0.10"
+  }
+}
+```
+
+```typescript instrumentation.ts
+import { registerOTel } from '@vercel/otel';
+
+export function register() {
+  registerOTel({
+    serviceName: 'next-app',
+    // Note: LangWatch SDK automatically sets up the trace exporter,
+    // so no manual configuration is needed here
+  });
+}
+```
+</CodeGroup>
+
+### Key Features Demonstrated
+
+- **Tracing**: Complete request flow from user message to response
+- **RAG Context**: Document retrieval with proper context recording
+- **LLM Events**: Structured conversation flow with system, user, and assistant messages
+- **Metrics**: Token usage and cost tracking
+- **Error Handling**: Proper error recording and status setting
+- **Data Storage**: Conversation persistence with trace correlation
+- **Thread Management**: Conversation grouping with thread IDs
+- **User Analytics**: User ID tracking for analytics
+- **Custom Attributes**: Service metadata and environment information
+
+This example shows how LangWatch can capture every aspect of your LLM application, from the initial user request through document retrieval, LLM generation, and data storage, providing complete observability into your AI pipeline.

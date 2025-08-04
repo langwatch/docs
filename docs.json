@@ -114,6 +114,7 @@
                     "group": "API Reference",
                     "pages": [
                       "integration/python/reference",
+                      "integration/typescript/reference",
                       "integration/rest-api"
                     ]
                   }
@@ -142,7 +143,7 @@
                       "integration/python/integrations/open-ai",
                       "integration/typescript/integrations/open-ai"
                     ]
-                  },             
+                  },
                   "integration/python/integrations/agno",
                   "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",
