@@ -96,7 +96,8 @@
                   {
                     "group": "Advanced",
                     "pages": [
-                      "prompt-management/features/advanced/link-to-traces"
+                      "prompt-management/features/advanced/link-to-traces",
+                      "prompt-management/features/advanced/optimization-studio"
                     ]
                   }
                 ]
@@ -277,8 +278,7 @@
                   "dspy-visualization/rag-visualization"
                 ]
               },
-              "integration/mcp",
-              "features/prompt-versioning"
+              "integration/mcp"
             ]
           },
           {
