@@ -1,0 +1,227 @@
+---
+title: "Get Started"
+description: "Create your first prompt and use it in your application"
+---
+
+# Get Started with Prompt Management
+
+This quickstart helps you create your first prompt and use it in your application.
+
+## Get API keys
+
+1. Create a LangWatch account or set up self-hosted LangWatch
+2. Create new API credentials in your project settings
+3. Note your API key for use in the steps below
+
+## Create a prompt
+
+### LangWatch UI
+
+Use the LangWatch UI to create a new prompt or update an existing one.
+
+1. Navigate to your project dashboard
+2. Go to **Prompt Management** in the sidebar
+3. Click **"Create New Prompt"**
+4. Fill in the prompt details and save
+
+```bash
+pip install langwatch
+```
+
+```bash
+npm install langwatch
+```
+
+Add your LangWatch credentials as environment variables:
+
+```bash .env
+LANGWATCH_API_KEY = "your-api-key"
+LANGWATCH_HOST = "https://app.langwatch.ai"
+```
+
+Use the SDK to create a new prompt:
+
+<CodeGroup>
+
+```python create_prompt.py
+import langwatch
+
+# Initialize client
+langwatch.init(
+    api_key="your-api-key",
+    host="https://app.langwatch.ai"
+)
+
+# Create a text prompt
+langwatch.create_prompt(
+    name="customer-support",
+    prompt="You are a helpful customer support agent. Help the user with: {{user_question}}",
+    description="Customer support chatbot prompt",
+    tags=["production", "support"]
+)
+
+# Create a chat prompt
+langwatch.create_prompt(
+    name="customer-support-chat",
+    prompt=[
+        {"role": "system", "content": "You are a helpful customer support agent"},
+        {"role": "user", "content": "Help me with: {{user_question}}"}
+    ],
+    description="Customer support chat prompt",
+    tags=["production", "support"]
+)
+```
+
+```javascript create_prompt.js
+import { LangWatch } from "langwatch";
+
+// Initialize client
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  host: "https://app.langwatch.ai",
+});
+
+// Create a text prompt
+await langwatch.createPrompt({
+  name: "customer-support",
+  prompt:
+    "You are a helpful customer support agent. Help the user with: {{user_question}}",
+  description: "Customer support chatbot prompt",
+  tags: ["production", "support"],
+});
+
+// Create a chat prompt
+await langwatch.createPrompt({
+  name: "customer-support-chat",
+  prompt: [
+    { role: "system", content: "You are a helpful customer support agent" },
+    { role: "user", content: "Help me with: {{user_question}}" },
+  ],
+  description: "Customer support chat prompt",
+  tags: ["production", "support"],
+});
+```
+
+```bash create_prompt.sh
+curl -X POST "https://app.langwatch.ai/api/prompts" \
+  -H "Content-Type: application/json" \
+  -H "X-Auth-Token: your-api-key" \
+  -d '{
+    "name": "customer-support",
+    "prompt": "You are a helpful customer support agent. Help the user with: {{user_question}}",
+    "description": "Customer support chatbot prompt",
+    "tags": ["production", "support"]
+  }'
+```
+
+</CodeGroup>
+
+## Use prompt
+
+At runtime, you can fetch the latest version of your prompt from LangWatch.
+
+<CodeGroup>
+
+```python use_prompt.py
+import langwatch
+
+# Get the latest prompt
+prompt = langwatch.get_prompt("customer-support")
+
+# Use the prompt with variables
+formatted_prompt = prompt.format(user_question="How do I reset my password?")
+
+# Use with your LLM
+response = your_llm.generate(formatted_prompt)
+```
+
+```javascript use_prompt.js
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  host: "https://app.langwatch.ai",
+});
+
+// Get the latest prompt
+const prompt = await langwatch.getPrompt("customer-support");
+
+// Use the prompt with variables
+const formattedPrompt = prompt.format({
+  user_question: "How do I reset my password?",
+});
+
+// Use with your LLM
+const response = await yourLLM.generate(formattedPrompt);
+```
+
+```bash use_prompt.sh
+curl -X GET "https://app.langwatch.ai/api/prompts/customer-support" \
+  -H "X-Auth-Token: your-api-key"
+```
+
+</CodeGroup>
+
+## Link with LangWatch Tracing (optional)
+
+You can link your prompt to LLM generation traces to track performance and see which prompt versions work best.
+
+<CodeGroup>
+
+```python tracing.py
+import langwatch
+
+# Get prompt
+prompt = langwatch.get_prompt("customer-support")
+
+# Start a trace
+with langwatch.trace("customer-support-generation") as trace:
+    # Link prompt to the trace
+    trace.set_prompt(prompt)
+
+    # Your LLM call here
+    response = your_llm.generate(prompt.format(user_question="Help me"))
+
+    # Update trace with results
+    trace.update(output=response)
+```
+
+```javascript tracing.js
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  host: "https://app.langwatch.ai",
+});
+
+// Get prompt
+const prompt = await langwatch.getPrompt("customer-support");
+
+// Start a trace
+const trace = await langwatch.trace("customer-support-generation");
+
+// Link prompt to the trace
+trace.setPrompt(prompt);
+
+// Your LLM call here
+const response = await yourLLM.generate(
+  prompt.format({ user_question: "Help me" })
+);
+
+// Update trace with results
+await trace.update({ output: response });
+```
+
+</CodeGroup>
+
+## End-to-end examples
+
+Check out our example notebooks and integrations:
+
+- [OpenAI Integration Example](/integration/openai)
+- [LangChain Integration Example](/integration/langchain)
+- [Custom LLM Integration Example](/integration/custom)
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)

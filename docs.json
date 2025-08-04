@@ -79,6 +79,13 @@
             ]
           },
           {
+            "group": "Prompt Management",
+            "pages": [
+              "prompt-management/overview",
+              "prompt-management/getting-started"
+            ]
+          },
+          {
             "group": "Agent Simulations",
             "pages": [
               "agent-simulations/introduction",
@@ -234,10 +241,6 @@
           {
             "group": "LLM Development",
             "pages": [
-              {
-                "group": "Prompt Management",
-                "pages": ["prompt-management/overview"]
-              },
               {
                 "group": "Prompt Optimization Studio",
                 "pages": [
