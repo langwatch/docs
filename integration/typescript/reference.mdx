@@ -6,22 +6,31 @@ description: LangWatch TypeScript SDK API reference
 
 ## Setup
 
-### `setup()`
+### `setupLangWatch()`
 
-Initializes the LangWatch client for Node.js environments, enabling data collection and tracing for your LLM application. This is typically the first function you'll call when integrating LangWatch.
+Initializes the LangWatch client for Node.js or browser environments, enabling data collection and tracing for your LLM application. This is typically the first function you'll call when integrating LangWatch.
 
 <CodeGroup>
-```typescript Basic Setup
-import { setup } from "langwatch/node";
+```typescript Node.js Setup
+import { setupLangWatch } from "langwatch/node";
 
-await setup({
-  apiKey: process.env.LANGWATCH_API_KEY,
+await setupLangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY, // Optional, defaults to process.env.LANGWATCH_API_KEY
   endpoint: process.env.LANGWATCH_ENDPOINT_URL // Optional, defaults to LangWatch Cloud
 });
 ```
 
+```typescript Browser Setup
+import { setupLangWatch } from "langwatch/browser";
+
+await setupLangWatch({
+  apiKey: "your-api-key",
+  endpoint: "https://app.langwatch.ai"
+});
+```
+
 ```typescript Advanced Setup
-import { setup } from "langwatch/node";
+import { setupLangWatch } from "langwatch/node";
 import { SpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { SpanProcessingExcludeRule } from "langwatch";
 
@@ -35,11 +44,12 @@ const excludeRules: SpanProcessingExcludeRule[] = [
   }
 ];
 
-await setup({
+await setupLangWatch({
   apiKey: process.env.LANGWATCH_API_KEY,
   endpoint: process.env.LANGWATCH_ENDPOINT_URL,
   otelSpanProcessors: [customSpanProcessor],
   otelSpanProcessingExcludeRules: excludeRules,
+  skipOpenTelemetryAutomaticSetup: false,
   disableAutomaticInputCapture: false,
   disableAutomaticOutputCapture: false
 });
@@ -55,15 +65,15 @@ await setup({
 </ParamField>
 
 <ParamField path="otelSpanProcessors" type="Optional<SpanProcessor[]>" default="[]">
-  Additional OpenTelemetry span processors to add to the SDK. These will be added after the LangWatch SDK has been initialized.
+  Additional OpenTelemetry span processors to add to the SDK. These will be added after the LangWatch SDK has been initialized. **Not supported in browser environments.**
 </ParamField>
 
 <ParamField path="otelSpanProcessingExcludeRules" type="Optional<SpanProcessingExcludeRule[]>" default="[]">
   Rules to filter out specific spans from being exported to LangWatch, based on span name or attributes. See `SpanProcessingExcludeRule` for details.
 </ParamField>
 
-<ParamField path="disableOpenTelemetryAutomaticSetup" type="Optional<boolean>" default="false">
-  If `true`, disables the automatic setup of the OpenTelemetry SDK. You will need to setup the OpenTelemetry SDK yourself, and ensure that a SpanProcessor is added that will send traces to the LangWatch API.
+<ParamField path="skipOpenTelemetryAutomaticSetup" type="Optional<boolean>" default="false">
+  If `true`, skips the automatic setup of the OpenTelemetry SDK. You will need to setup the OpenTelemetry SDK yourself, and ensure that a SpanProcessor is added that will send traces to the LangWatch API.
 </ParamField>
 
 <ParamField path="disableAutomaticInputCapture" type="Optional<boolean>" default="false">
@@ -73,21 +83,6 @@ await setup({
 <ParamField path="disableAutomaticOutputCapture" type="Optional<boolean>" default="false">
   If `true`, disables the automatic capture of output data in spans.
 </ParamField>
-
-### Browser Setup
-
-For browser environments, use the browser-specific setup:
-
-```typescript
-import { setup } from "langwatch/browser";
-
-await setup({
-  apiKey: "your-api-key",
-  endpoint: "https://app.langwatch.ai"
-});
-```
-
-The browser setup accepts the same options as the Node.js setup, except for `otelSpanProcessors` which are not supported in browser environments.
 
 ## Tracing
 
@@ -387,6 +382,49 @@ const processor = new FilterableBatchSpanProcessor(
   Rules to exclude spans from processing.
 </ParamField>
 
+## LangChain Integration
+
+### `LangWatchCallbackHandler`
+
+A LangChain callback handler that automatically traces LangChain operations and integrates them with LangWatch.
+
+```typescript
+import { LangWatchCallbackHandler } from "langwatch/observability/instrumentation/langchain";
+import { ChatOpenAI } from "@langchain/openai";
+
+const handler = new LangWatchCallbackHandler();
+const llm = new ChatOpenAI({
+  callbacks: [handler]
+});
+
+// All operations will now be automatically traced
+const response = await llm.invoke("Hello, world!");
+```
+
+The `LangWatchCallbackHandler` automatically:
+- Creates spans for LLM calls, chains, tools, and retrievers
+- Captures input/output data
+- Sets appropriate span types and metadata
+- Handles errors and status codes
+- Integrates with the LangWatch tracing system
+
+### `convertFromLangChainMessages`
+
+Utility function to convert LangChain messages to a format compatible with LangWatch GenAI events.
+
+```typescript
+import { convertFromLangChainMessages } from "langwatch/observability/instrumentation/langchain";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+
+const messages = [
+  new SystemMessage("You are a helpful assistant."),
+  new HumanMessage("Hello!")
+];
+
+const convertedMessages = convertFromLangChainMessages(messages);
+// Use with span.addGenAIUserMessageEvent(), etc.
+```
+
 ## Exporters
 
 ### `LangWatchExporter`
@@ -415,6 +453,88 @@ The exporter automatically configures:
 - Authorization headers using the provided API key or environment variables/fallback
 - SDK version and language identification headers
 - Proper endpoint configuration for LangWatch ingestion using provided URL or environment variables/fallback
+
+## Semantic Conventions
+
+The `langwatch/observability` module provides semantic convention constants for consistent attribute naming and event types across the LangWatch ecosystem.
+
+### Attributes
+
+```typescript
+import { semconv } from "langwatch/observability";
+
+// LangWatch-specific attributes
+semconv.ATTR_LANGWATCH_INPUT           // "langwatch.input"
+semconv.ATTR_LANGWATCH_OUTPUT          // "langwatch.output"
+semconv.ATTR_LANGWATCH_SPAN_TYPE       // "langwatch.span.type"
+semconv.ATTR_LANGWATCH_RAG_CONTEXTS    // "langwatch.contexts"
+semconv.ATTR_LANGWATCH_METRICS         // "langwatch.metrics"
+semconv.ATTR_LANGWATCH_SDK_VERSION     // "langwatch.sdk.version"
+semconv.ATTR_LANGWATCH_SDK_NAME        // "langwatch.sdk.name"
+semconv.ATTR_LANGWATCH_SDK_LANGUAGE    // "langwatch.sdk.language"
+semconv.ATTR_LANGWATCH_TIMESTAMPS      // "langwatch.timestamps"
+semconv.ATTR_LANGWATCH_EVALUATION_CUSTOM // "langwatch.evaluation.custom"
+semconv.ATTR_LANGWATCH_PARAMS          // "langwatch.params"
+semconv.ATTR_LANGWATCH_CUSTOMER_ID     // "langwatch.customer.id"
+semconv.ATTR_LANGWATCH_THREAD_ID       // "langwatch.thread.id"
+semconv.ATTR_LANGWATCH_STREAMING       // "langwatch.gen_ai.streaming"
+semconv.ATTR_LANGWATCH_PROMPT_ID       // "langwatch.prompt.id"
+semconv.ATTR_LANGWATCH_PROMPT_VERSION_ID // "langwatch.prompt.version.id"
+semconv.ATTR_LANGWATCH_PROMPT_VARIABLES // "langwatch.prompt.variables"
+semconv.ATTR_LANGWATCH_PROMPT_SELECTED_ID // "langwatch.prompt.selected.id"
+semconv.ATTR_LANGWATCH_PROMPT_VERSION_NUMBER // "langwatch.prompt.version.number"
+
+// LangChain-specific attributes
+semconv.ATTR_LANGWATCH_LANGCHAIN_TAGS  // "langwatch.langchain.tags"
+semconv.ATTR_LANGWATCH_LANGCHAIN_EVENT_NAME // "langwatch.langchain.event_name"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_ID // "langwatch.langchain.run.id"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_TAGS // "langwatch.langchain.run.tags"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_TYPE // "langwatch.langchain.run.type"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_METADATA // "langwatch.langchain.run.metadata"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_EXTRA_PARAMS // "langwatch.langchain.run.extra_params"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_PARENT_ID // "langwatch.langchain.run.parent.id"
+```
+
+### Events
+
+```typescript
+import { semconv } from "langwatch/observability";
+
+// GenAI event names
+semconv.LOG_EVNT_GEN_AI_SYSTEM_MESSAGE    // "gen.ai.system_message"
+semconv.LOG_EVNT_GEN_AI_USER_MESSAGE      // "gen.ai.user_message"
+semconv.LOG_EVNT_GEN_AI_ASSISTANT_MESSAGE // "gen.ai.assistant_message"
+semconv.LOG_EVNT_GEN_AI_TOOL_MESSAGE      // "gen.ai.tool_message"
+semconv.LOG_EVNT_GEN_AI_CHOICE            // "gen.ai.choice"
+
+// LangChain event names
+semconv.EVNT_LANGWATCH_LANGCHAIN_CALLBACK // "langwatch.langchain.callback"
+```
+
+### Values
+
+```typescript
+import { semconv } from "langwatch/observability";
+
+// GenAI system identifiers
+semconv.VAL_GEN_AI_SYSTEM_OPENAI         // "openai"
+semconv.VAL_GEN_AI_SYSTEM_ANTHROPIC      // "anthropic"
+semconv.VAL_GEN_AI_SYSTEM_AWS_BEDROCK   // "aws.bedrock"
+semconv.VAL_GEN_AI_SYSTEM_AZURE_AI_OPENAI // "azure.ai.openai"
+semconv.VAL_GEN_AI_SYSTEM_GCP_GEMINI    // "gcp.gemini"
+semconv.VAL_GEN_AI_SYSTEM_COHERE        // "cohere"
+semconv.VAL_GEN_AI_SYSTEM_GROQ          // "groq"
+semconv.VAL_GEN_AI_SYSTEM_MISTRAL_AI    // "mistral_ai"
+semconv.VAL_GEN_AI_SYSTEM_PERPLEXITY    // "perplexity"
+semconv.VAL_GEN_AI_SYSTEM_XAI           // "xai"
+
+// GenAI finish reasons
+semconv.VAL_GEN_AI_FINISH_REASON_STOP           // "stop"
+semconv.VAL_GEN_AI_FINISH_REASON_LENGTH         // "length"
+semconv.VAL_GEN_AI_FINISH_REASON_CONTENT_FILTER // "content_filter"
+semconv.VAL_GEN_AI_FINISH_REASON_ERROR          // "error"
+semconv.VAL_GEN_AI_FINISH_REASON_TOOL_CALLS    // "tool_calls"
+```
 
 ## Core Data Types
 
@@ -616,6 +736,38 @@ Details for recording an evaluation.
   Timestamps for the evaluation.
 </ResponseField>
 
+### `EvaluationResultModel`
+
+Result model for evaluation output.
+
+<ResponseField name="status" type="'processed' | 'skipped' | 'error'">
+  Status of the evaluation.
+</ResponseField>
+
+<ResponseField name="passed" type="Optional<boolean>">
+  Whether the evaluation passed.
+</ResponseField>
+
+<ResponseField name="score" type="Optional<number>">
+  Score of the evaluation.
+</ResponseField>
+
+<ResponseField name="details" type="Optional<string>">
+  Additional details about the evaluation.
+</ResponseField>
+
+<ResponseField name="label" type="Optional<string>">
+  Label for the evaluation result.
+</ResponseField>
+
+<ResponseField name="cost" type="Optional<{ currency: string; amount: number }>">
+  Cost of the evaluation.
+</ResponseField>
+
+<ResponseField name="raw_response" type="Optional<any>">
+  Raw response from the evaluation.
+</ResponseField>
+
 ### `EvaluationDetails`
 
 Union type for evaluation details.
@@ -748,6 +900,82 @@ Result of an evaluation.
   Cost of the evaluation.
 </ResponseField>
 
+### `Prompt`
+
+A prompt object retrieved from the LangWatch platform.
+
+<ResponseField name="id" type="string">
+  Unique identifier for the prompt.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Name of the prompt.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string">
+  Last update timestamp.
+</ResponseField>
+
+<ResponseField name="version" type="number">
+  Version number.
+</ResponseField>
+
+<ResponseField name="versionId" type="string">
+  Version identifier.
+</ResponseField>
+
+<ResponseField name="versionCreatedAt" type="string">
+  Version creation timestamp.
+</ResponseField>
+
+<ResponseField name="model" type="string">
+  Model used for the prompt.
+</ResponseField>
+
+<ResponseField name="prompt" type="string">
+  The prompt template.
+</ResponseField>
+
+<ResponseField name="messages" type="Array">
+  Array of message objects.
+</ResponseField>
+
+<ResponseField name="response_format" type="Optional<object>">
+  Response format configuration.
+</ResponseField>
+
+### `CompiledPrompt`
+
+A compiled prompt with variables substituted.
+
+<ResponseField name="content" type="string">
+  The compiled prompt content with variables substituted.
+</ResponseField>
+
+<ResponseField name="original" type="Prompt">
+  The original prompt object.
+</ResponseField>
+
+### `TemplateVariables`
+
+Template variables for prompt compilation.
+
+```typescript
+type TemplateVariables = Record<string, string | number | boolean | object | null>;
+```
+
+### `PromptCompilationError`
+
+Error thrown when prompt compilation fails.
+
+<ResponseField name="template" type="string">
+  The template that failed to compile.
+</ResponseField>
+
+<ResponseField name="originalError" type="Optional<any>">
+  The original compilation error.
+</ResponseField>
+
 ## Usage Examples
 
 ### Basic Tracing
@@ -800,68 +1028,33 @@ await tracer.withActiveSpan("rag-query", async (span) => {
 });
 ```
 
-### Evaluation
+### Using Semantic Conventions
 
 ```typescript
-import { runEvaluation } from "langwatch/evaluation";
-
-const result = await runEvaluation({
-  slug: "toxicity-check",
-  data: {
-    input: "User input",
-    output: "Generated response"
-  },
-  asGuardrail: true
-});
-
-if (!result.passed) {
-  console.log("Content flagged as toxic");
-}
-```
-
-### Prompt Management
-
-```typescript
-import { getPrompt, getPromptVersion } from "langwatch";
-
-// Get the latest version of a prompt
-const compiledPrompt = await getPrompt("customer-support", {
-  customer_name: "John Doe",
-  issue_type: "billing"
-});
-
-// Get a specific version of a prompt
-const specificVersion = await getPromptVersion("customer-support", "v1.2.3", {
-  customer_name: "John Doe",
-  issue_type: "billing"
-});
-
-console.log(compiledPrompt.content);
-console.log(specificVersion.content);
-```
-
-### Prompt Selection in Tracing
-
-```typescript
+import { semconv } from "langwatch/observability";
 import { getLangWatchTracer } from "langwatch";
-import { getPrompt } from "langwatch";
 
 const tracer = getLangWatchTracer("my-service");
 
 await tracer.withActiveSpan("llm-call", async (span) => {
-  // Get a prompt and set it as selected for this span
-  const prompt = await getPrompt("customer-support");
-  span.setSelectedPrompt(prompt);
+  // Use semantic convention attributes for consistency
+  span.setAttribute(semconv.ATTR_LANGWATCH_SPAN_TYPE, "llm");
+  span.setAttribute(semconv.ATTR_LANGWATCH_STREAMING, false);
   
-  // Use the prompt in your LLM call
-  const response = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [
-      { role: "system", content: prompt.content },
-      { role: "user", content: "Help me with billing" }
-    ]
+  // Add GenAI events with proper system identifiers
+  span.addGenAISystemMessageEvent(
+    { content: "You are a helpful assistant." },
+    semconv.VAL_GEN_AI_SYSTEM_OPENAI
+  );
+  
+  span.addGenAIUserMessageEvent(
+    { content: "Hello!" },
+    semconv.VAL_GEN_AI_SYSTEM_OPENAI
+  );
+  
+  // Record events with proper event names
+  span.addEvent(semconv.LOG_EVNT_GEN_AI_ASSISTANT_MESSAGE, {
+    content: "Hello! How can I help you today?"
   });
-  
-  span.setOutput(response.choices[0].message.content);
 });
 ```

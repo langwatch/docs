@@ -142,7 +142,7 @@
                       "integration/python/integrations/open-ai",
                       "integration/typescript/integrations/open-ai"
                     ]
-                  },             
+                  },
                   "integration/python/integrations/agno",
                   "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",

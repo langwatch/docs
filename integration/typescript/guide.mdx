@@ -39,9 +39,9 @@ npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks
 Initialize LangWatch early in your Node.js application, typically where you configure services:
 
 ```typescript
-import { setup } from "langwatch/node";
+import { setupLangWatch } from "langwatch/node";
 
-await setup(); // This will setup the SDK, and setup the observability SDK.
+await setupLangWatch(); // This will setup the SDK, and setup the observability SDK.
 ```
 
 <Note>
@@ -60,21 +60,21 @@ await setup(); // This will setup the SDK, and setup the observability SDK.
 
 ## Integrations
 
-LangWatch offers seamless integrations with a variety of popular Python libraries and frameworks. These integrations provide automatic instrumentation, capturing relevant data from your LLM applications with minimal setup.
+LangWatch offers seamless integrations with a variety of popular TypeScript libraries and frameworks. These integrations provide automatic instrumentation, capturing relevant data from your LLM applications with minimal setup.
 
 Below is a list of currently supported integrations. Click on each to learn more about specific setup instructions and available features:
 
-- [AWS Bedrock](/integration/typescript/integrations/aws-bedrock)
-- [Azure AI](/integration/typescript/integrations/azure-ai)
+{/* - [AWS Bedrock](/integration/typescript/integrations/aws-bedrock) */}
+{/* - [Azure AI](/integration/typescript/integrations/azure-ai) */}
 - [Langchain](/integration/typescript/integrations/langchain)
-- [LangGraph](/integration/typescript/integrations/langgraph)
-- [Mastra](/integration/typescript/integrations/mastra)
-- [n8n](/integration/typescript/integrations/n8n)
-- [OpenAI Agents](/integration/typescript/integrations/open-ai-agents)
-- [OpenAI Azure](/integration/typescript/integrations/open-ai-azure)
-- [OpenAI](/integration/typescript/integrations/open-ai)
-- [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk)
-- [Other Frameworks](/integration/typescript/integrations/other)
+{/* - [LangGraph](/integration/typescript/integrations/langgraph) */}
+{/* - [Mastra](/integration/typescript/integrations/mastra) */}
+{/* - [n8n](/integration/typescript/integrations/n8n) */}
+{/* - [OpenAI Agents](/integration/typescript/integrations/open-ai-agents) */}
+{/* - [OpenAI Azure](/integration/typescript/integrations/open-ai-azure) */}
+{/* - [OpenAI](/integration/typescript/integrations/open-ai) */}
+{/* - [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk) */}
+{/* - [Other Frameworks](/integration/typescript/integrations/other) */}
 
 ## Capturing Messages
 
@@ -347,14 +347,14 @@ Here's a complete example showing how to integrate LangWatch with a typical LLM 
 
 <CodeGroup>
 ```typescript app.ts
-import { setup } from "langwatch/node";
+import { setupLangWatch } from "langwatch/node";
 import { getLangWatchTracer } from "langwatch";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { z } from "zod";
 
 // Initialize LangWatch
-await setup({
+await setupLangWatch({
   apiKey: process.env.LANGWATCH_API_KEY, // Optional: defaults to environment variable `LANGWATCH_API_KEY`
   endpoint: process.env.LANGWATCH_ENDPOINT, // Optional: defaults to `LANGWATCH_ENDPOINT` or hosted cloud endpoint
   baseAttributes: {
