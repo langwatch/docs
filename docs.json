@@ -83,7 +83,18 @@
             "pages": [
               "prompt-management/overview",
               "prompt-management/getting-started",
-              "prompt-management/data-model"
+              "prompt-management/data-model",
+              {
+                "group": "Features",
+                "pages": [
+                  {
+                    "group": "Essential",
+                    "pages": [
+                      "prompt-management/features/essential/version-control"
+                    ]
+                  }
+                ]
+              }
             ]
           },
           {

@@ -1,0 +1,124 @@
+---
+title: "Version Control"
+description: "Manage prompt versions and track changes over time"
+---
+
+# Prompt Version Control
+
+LangWatch provides a robust version control system for managing your prompts. Each prompt can have multiple versions, allowing you to track changes, experiment with different approaches, and rollback when needed.
+
+## Version Management
+
+Every prompt in LangWatch automatically maintains a version history. When you create a new prompt, it starts with version 1, and each subsequent change creates a new version with an incremented number.
+
+## Managing Versions
+
+<Tabs>
+<Tab title="UI">
+
+Use the LangWatch UI to manage prompt versions:
+
+1. Navigate to the **Prompt Management** section
+2. Select a prompt to view its version history
+3. Click on any version to see the full configuration
+4. Use the version selector to switch between versions
+5. Create new versions by making changes and saving
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/prompt-versions-in-studio.png"
+    alt="LangWatch Prompt Versions in Studio"
+  />
+</Frame>
+
+</Tab>
+<Tab title="REST API">
+
+Use the REST API to manage prompt versions:
+
+```bash
+# Get all versions of a prompt
+curl -X GET "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
+  -H "Authorization: Bearer your-api-key"
+
+# Get a specific prompt (latest version)
+curl -X GET "https://app.langwatch.ai/api/prompts/{prompt_id}" \
+  -H "Authorization: Bearer your-api-key"
+
+# Create a new version
+curl -X POST "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
+  -H "Authorization: Bearer your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "configData": {
+      "version": 2,
+      "prompt": "Updated prompt text...",
+      "messages": [...],
+      "inputs": [...],
+      "outputs": [...],
+      "model": "openai/gpt-4o-mini"
+    },
+    "commitMessage": "Improved customer support prompt"
+  }'
+```
+
+</Tab>
+</Tabs>
+
+## Version Information
+
+Each prompt version includes metadata such as version number, commit message, author, and creation timestamp. For detailed information about the version structure and data model, see the [Data Model](/prompt-management/data-model) page.
+
+## Version History
+
+LangWatch provides a clear view of how your prompts have evolved over time:
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/prompt-manager-edit.png"
+    alt="LangWatch Prompt Editor"
+  />
+</Frame>
+
+### Viewing Version History
+
+1. **Version List**: See all versions with timestamps and commit messages
+2. **Commit Messages**: Understand what was changed in each version
+3. **Author Information**: See who made each change
+4. **Version Selection**: Switch between different versions to view their content
+
+## Rollbacks
+
+You can easily rollback to previous versions:
+
+1. Navigate to the prompt's version history
+2. Select the version you want to restore
+3. Create a new version based on the selected version
+4. The new version will include the restored content
+
+## Team Collaboration
+
+All prompt versions are shared across your project team. For organization-scoped prompts, versions are also shared across all projects in the organization.
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/prompt-manager.png"
+    alt="LangWatch Prompt Manager"
+  />
+</Frame>
+
+### Collaboration Features
+
+- **Shared Access**: All team members can view all versions
+- **Author Tracking**: See who created each version
+- **Cross-Project Sharing**: Organization-scoped prompts are shared across projects
+- **Version Comments**: Add commit messages to explain changes
+
+For more information about prompt scoping and sharing, see the [Data Model](/prompt-management/data-model#prompt-versions) page.
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)
