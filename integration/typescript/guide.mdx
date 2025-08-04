@@ -58,6 +58,24 @@ await setup(); // This will setup the SDK, and setup the observability SDK.
 - [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
   - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
 
+## Integrations
+
+LangWatch offers seamless integrations with a variety of popular Python libraries and frameworks. These integrations provide automatic instrumentation, capturing relevant data from your LLM applications with minimal setup.
+
+Below is a list of currently supported integrations. Click on each to learn more about specific setup instructions and available features:
+
+- [AWS Bedrock](/integration/typescript/integrations/aws-bedrock)
+- [Azure AI](/integration/typescript/integrations/azure-ai)
+- [Langchain](/integration/typescript/integrations/langchain)
+- [LangGraph](/integration/typescript/integrations/langgraph)
+- [Mastra](/integration/typescript/integrations/mastra)
+- [n8n](/integration/typescript/integrations/n8n)
+- [OpenAI Agents](/integration/typescript/integrations/open-ai-agents)
+- [OpenAI Azure](/integration/typescript/integrations/open-ai-azure)
+- [OpenAI](/integration/typescript/integrations/open-ai)
+- [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk)
+- [Other Frameworks](/integration/typescript/integrations/other)
+
 ## Capturing Messages
 
 <Tip>
@@ -168,7 +186,7 @@ async function ragRetrieval(query: string) {
         document_id: doc.id,
         chunk_id: doc.id,
         content: doc.content
-      }))
+      })),
     );
 
     return searchResults;
@@ -240,88 +258,6 @@ try {
   span.end();
 }
 ```
-
-### Recording LLM Interactions
-
-For LLM operations, you can use the specialized GenAI event methods to capture the conversation flow:
-
-<CodeGroup>
-```typescript Complete Example
-await tracer.withActiveSpan("llm-call", async (span) => {
-  span.setType("llm");
-  span.setRequestModel("gpt-4");
-  
-  // Record system message
-  span.addGenAISystemMessageEvent({
-    content: "You are a helpful assistant.",
-    role: "system"
-  });
-  
-  // Record user message
-  span.addGenAIUserMessageEvent({
-    content: "What is the weather today?",
-    role: "user"
-  });
-  
-  // Record assistant response
-  span.addGenAIAssistantMessageEvent({
-    content: "I don't have access to real-time weather data.",
-    role: "assistant"
-  });
-  
-  // Record the model's choice
-  span.addGenAIChoiceEvent({
-    finish_reason: "stop",
-    index: 0,
-    message: {
-      content: "I don't have access to real-time weather data.",
-      role: "assistant"
-    }
-  });
-});
-```
-
-```typescript Individual Events
-// Record system message
-span.addGenAISystemMessageEvent({
-  content: "You are a helpful assistant.",
-  role: "system"
-});
-
-// Record user message
-span.addGenAIUserMessageEvent({
-  content: "What is the weather today?",
-  role: "user"
-});
-
-// Record assistant response
-span.addGenAIAssistantMessageEvent({
-  content: "I don't have access to real-time weather data.",
-  role: "assistant"
-});
-
-// Record tool calls (if applicable)
-span.addGenAIAssistantMessageEvent({
-  content: "Let me check the weather for you.",
-  role: "assistant",
-  tool_calls: [{
-    function: {
-      name: "get_weather",
-      arguments: '{"location": "New York"}'
-    },
-    id: "call_123",
-    type: "function"
-  }]
-});
-
-// Record tool response
-span.addGenAIToolMessageEvent({
-  content: '{"temperature": 72, "condition": "sunny"}',
-  id: "call_123",
-  role: "tool"
-});
-```
-</CodeGroup>
 
 ### Setting Input and Output
 
@@ -402,24 +338,6 @@ await tracer.withActiveSpan("llm-call", async (span) => {
 });
 ```
 </CodeGroup>
-
-## Integrations
-
-LangWatch offers seamless integrations with a variety of popular Python libraries and frameworks. These integrations provide automatic instrumentation, capturing relevant data from your LLM applications with minimal setup.
-
-Below is a list of currently supported integrations. Click on each to learn more about specific setup instructions and available features:
-
-- [AWS Bedrock](/integration/typescript/integrations/aws-bedrock)
-- [Azure AI](/integration/typescript/integrations/azure-ai)
-- [Langchain](/integration/typescript/integrations/langchain)
-- [LangGraph](/integration/typescript/integrations/langgraph)
-- [Mastra](/integration/typescript/integrations/mastra)
-- [n8n](/integration/typescript/integrations/n8n)
-- [OpenAI Agents](/integration/typescript/integrations/open-ai-agents)
-- [OpenAI Azure](/integration/typescript/integrations/open-ai-azure)
-- [OpenAI](/integration/typescript/integrations/open-ai)
-- [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk)
-- [Other Frameworks](/integration/typescript/integrations/other)
 
 ## Full Setup
 
