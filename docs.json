@@ -151,7 +151,7 @@
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/haystack",               
+                  "integration/python/integrations/haystack",
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
                   "integration/python/integrations/llamaindex",
@@ -160,10 +160,9 @@
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
-                  "integration/python/integrations/strand-agents",    
-                  "integration/typescript/integrations/vercel-ai-sdk",          
+                  "integration/python/integrations/strand-agents",
+                  "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/python/integrations/other"
-                  
                 ]
               },
               {
@@ -245,6 +244,33 @@
             ]
           },
           {
+            "group": "Prompt Management",
+            "pages": [
+              "prompt-management/overview",
+              "prompt-management/getting-started",
+              "prompt-management/data-model",
+              {
+                "group": "Features",
+                "pages": [
+                  {
+                    "group": "Essential",
+                    "pages": [
+                      "prompt-management/features/essential/version-control",
+                      "prompt-management/features/essential/analytics"
+                    ]
+                  },
+                  {
+                    "group": "Advanced",
+                    "pages": [
+                      "prompt-management/features/advanced/link-to-traces",
+                      "prompt-management/features/advanced/optimization-studio"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "group": "LLM Development",
             "pages": [
               {
@@ -265,8 +291,7 @@
                   "dspy-visualization/rag-visualization"
                 ]
               },
-              "integration/mcp",
-              "features/prompt-versioning"
+              "integration/mcp"
             ]
           },
           {
