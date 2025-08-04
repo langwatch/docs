@@ -17,23 +17,14 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": [
-        "curl",
-        "python",
-        "typescript"
-      ],
+      "languages": ["curl", "python", "typescript"],
       "defaults": "required"
     },
     "mdx": {
@@ -195,10 +186,7 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": [
-                  "features/triggers",
-                  "features/embedded-analytics"
-                ]
+                "pages": ["features/triggers", "features/embedded-analytics"]
               },
               "integration/code-examples"
             ]
@@ -249,6 +237,7 @@
               "prompt-management/overview",
               "prompt-management/getting-started",
               "prompt-management/data-model",
+              "prompt-management/cli",
               {
                 "group": "Features",
                 "pages": [
@@ -256,14 +245,16 @@
                     "group": "Essential",
                     "pages": [
                       "prompt-management/features/essential/version-control",
-                      "prompt-management/features/essential/analytics"
+                      "prompt-management/features/essential/analytics",
+                      "prompt-management/features/essential/github-integration"
                     ]
                   },
                   {
                     "group": "Advanced",
                     "pages": [
                       "prompt-management/features/advanced/link-to-traces",
-                      "prompt-management/features/advanced/optimization-studio"
+                      "prompt-management/features/advanced/optimization-studio",
+                      "prompt-management/features/advanced/guaranteed-availability"
                     ]
                   }
                 ]
@@ -308,13 +299,6 @@
                 ]
               },
               {
-                "group": "Scenarios",
-                "pages": [
-                  "api-reference/scenarios/overview",
-                  "api-reference/scenarios/create-event"
-                ]
-              },
-              {
                 "group": "Prompts",
                 "pages": [
                   "api-reference/prompts/overview",
@@ -341,14 +325,17 @@
               },
               {
                 "group": "Datasets",
-                "pages": [
-                  "api-reference/datasets/post-dataset-entries"
-                ]
+                "pages": ["api-reference/datasets/post-dataset-entries"]
               },
               {
                 "group": "Triggers",
+                "pages": ["api-reference/triggers/create-slack-trigger"]
+              },
+              {
+                "group": "Scenarios",
                 "pages": [
-                  "api-reference/triggers/create-slack-trigger"
+                  "api-reference/scenarios/overview",
+                  "api-reference/scenarios/create-event"
                 ]
               }
             ]
@@ -363,10 +350,7 @@
           },
           {
             "group": "Support",
-            "pages": [
-              "support",
-              "status"
-            ]
+            "pages": ["support", "status"]
           }
         ]
       }
