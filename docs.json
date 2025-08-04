@@ -150,7 +150,8 @@
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/haystack",               
+                  "integration/python/integrations/haystack",  
+                  "integration/python/integrations/instructor",             
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
                   "integration/python/integrations/llamaindex",
@@ -159,8 +160,7 @@
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
-                  "integration/python/integrations/strand-agents",    
-                  "integration/python/integrations/instructor",
+                  "integration/python/integrations/strand-agents",                 
                   "integration/typescript/integrations/vercel-ai-sdk",          
                   "integration/python/integrations/other"
                   
