@@ -59,6 +59,7 @@
                 "pages": [
                   "self-hosting/overview",
                   "self-hosting/docker-compose",
+                  "self-hosting/docker-images",
                   "self-hosting/helm",
                   "self-hosting/onprem",
                   {
