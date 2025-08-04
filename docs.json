@@ -82,7 +82,8 @@
             "group": "Prompt Management",
             "pages": [
               "prompt-management/overview",
-              "prompt-management/getting-started"
+              "prompt-management/getting-started",
+              "prompt-management/data-model"
             ]
           },
           {

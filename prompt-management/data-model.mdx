@@ -1,0 +1,355 @@
+---
+title: "Data Model"
+description: "Understand the structure of prompts in LangWatch"
+---
+
+# Prompt Data Model
+
+This page explains the structure of prompts in LangWatch and how they're organized.
+
+## Overview
+
+Prompts in LangWatch are organized with a two-level structure:
+
+- **Prompt Configuration**: The main prompt entity with metadata
+- **Prompt Versions**: Individual versions of the prompt content
+
+## Prompt Configuration
+
+Each prompt has a configuration that contains metadata and references to its versions.
+
+```json
+{
+  "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
+  "name": "Customer Support Bot",
+  "handle": "proj_123/customer-support-bot",
+  "scope": "PROJECT",
+  "projectId": "proj_123",
+  "organizationId": null,
+  "createdAt": "2024-01-15T10:30:00Z",
+  "updatedAt": "2024-01-15T10:30:00Z",
+  "deletedAt": null
+}
+```
+
+### Fields
+
+- **`id`**: Unique identifier for the prompt
+- **`name`**: Human-readable name for the prompt
+- **`handle`**: Optional globally unique identifier (format: `projectId/prompt-name` for project scope or `organizationId/prompt-name` for organization scope)
+- **`scope`**: Either `"PROJECT"` (default) or `"ORGANIZATION"` for shared prompts
+- **`projectId`**: The project this prompt belongs to
+- **`organizationId`**: The organization this prompt belongs to (null for project scope)
+- **`createdAt`**: When the prompt was created
+- **`updatedAt`**: When the prompt was last updated
+- **`deletedAt`**: Soft delete timestamp (null if not deleted)
+
+## Prompt Versions
+
+Each prompt can have multiple versions, with the latest version being used by default.
+
+```json
+{
+  "id": "version_abc123",
+  "version": 1,
+  "configId": "prompt_TrYXZLsiTJkn9N6PiZiae",
+  "projectId": "proj_123",
+  "configData": {
+    "version": 1,
+    "prompt": "You are a helpful customer support agent. The user is {{user_name}} and their email is {{user_email}}",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful customer support agent"
+      },
+      {
+        "role": "user",
+        "content": "{{input}}"
+      }
+    ],
+    "inputs": [
+      {
+        "identifier": "user_name",
+        "type": "str"
+      },
+      {
+        "identifier": "user_email",
+        "type": "str"
+      },
+      {
+        "identifier": "input",
+        "type": "str"
+      }
+    ],
+    "outputs": [
+      {
+        "identifier": "response",
+        "type": "str"
+      }
+    ],
+    "model": "openai/gpt-4o-mini",
+    "temperature": 0.7,
+    "max_tokens": 1000,
+    "demonstrations": {
+      "columns": [
+        {
+          "id": "input",
+          "name": "User Input",
+          "type": "string"
+        },
+        {
+          "id": "output",
+          "name": "Expected Output",
+          "type": "string"
+        }
+      ],
+      "rows": []
+    }
+  },
+  "schemaVersion": "1.0",
+  "commitMessage": "Initial customer support prompt",
+  "authorId": "user_123",
+  "createdAt": "2024-01-15T10:30:00Z"
+}
+```
+
+### Version Fields
+
+- **`id`**: Unique identifier for this version
+- **`version`**: Version number (incremental)
+- **`configId`**: Reference to the parent prompt configuration
+- **`projectId`**: The project this version belongs to
+- **`configData`**: The actual prompt configuration (see Config Data Structure below)
+- **`schemaVersion`**: Version of the config schema (currently "1.0")
+- **`commitMessage`**: Optional description of changes
+- **`authorId`**: User who created this version (nullable)
+- **`createdAt`**: When this version was created
+
+## Config Data Structure
+
+The `configData` contains the actual prompt configuration with comprehensive metadata:
+
+```json
+{
+  "version": 1,
+  "prompt": "You are a helpful customer support agent. The user is {{user_name}} and their email is {{user_email}}",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful customer support agent"
+    },
+    {
+      "role": "user",
+      "content": "{{input}}"
+    }
+  ],
+  "inputs": [
+    {
+      "identifier": "user_name",
+      "type": "str"
+    },
+    {
+      "identifier": "user_email",
+      "type": "str"
+    },
+    {
+      "identifier": "input",
+      "type": "str"
+    }
+  ],
+  "outputs": [
+    {
+      "identifier": "response",
+      "type": "str"
+    }
+  ],
+  "model": "openai/gpt-4o-mini",
+  "temperature": 0.7,
+  "max_tokens": 1000,
+  "demonstrations": {
+    "columns": [
+      {
+        "id": "input",
+        "name": "User Input",
+        "type": "string"
+      },
+      {
+        "id": "output",
+        "name": "Expected Output",
+        "type": "string"
+      }
+    ],
+    "rows": []
+  }
+}
+```
+
+### Config Data Fields
+
+- **`version`**: Version number within the config data
+- **`prompt`**: The main prompt text with variable placeholders
+- **`messages`**: Array of chat messages with roles and content
+- **`inputs`**: Array of input variable definitions with identifiers and types
+- **`outputs`**: Array of output variable definitions with identifiers and types
+- **`model`**: The LLM model to use (e.g., `"openai/gpt-4o-mini"`)
+- **`temperature`**: Optional temperature setting for the model
+- **`max_tokens`**: Optional maximum token limit
+- **`demonstrations`**: Optional few-shot examples with columns and rows structure
+
+### Demonstrations Structure
+
+The `demonstrations` field supports few-shot learning with example inputs and outputs:
+
+```json
+{
+  "demonstrations": {
+    "columns": [
+      {
+        "id": "input",
+        "name": "User Input",
+        "type": "string"
+      },
+      {
+        "id": "output",
+        "name": "Expected Output",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      {
+        "id": "example_1",
+        "input": "I need help with my account",
+        "output": "I'd be happy to help you with your account. What specific issue are you experiencing?"
+      },
+      {
+        "id": "example_2",
+        "input": "How do I reset my password?",
+        "output": "To reset your password, please visit our password reset page or contact support for assistance."
+      }
+    ]
+  }
+}
+```
+
+**Column Types:**
+
+- `"string"` - Text data
+- `"boolean"` - True/false values
+- `"number"` - Numeric data
+- `"date"` - Date/time values
+- `"list"` - Array data
+- `"json"` - JSON objects
+- `"spans"` - Trace span data
+- `"rag_contexts"` - RAG context data
+- `"chat_messages"` - Chat message arrays
+- `"annotations"` - Annotation data
+- `"evaluations"` - Evaluation results
+
+## Variable Formatting
+
+Prompts use `{{ variable_name }}` syntax for dynamic content:
+
+```text
+You are a helpful customer support agent. The user is {{user_name}} and their email is {{user_email}}.
+
+Please help them with: {{input}}
+```
+
+### Supported Variable Types
+
+- **Strings**: `{{user_name}}`
+- **Numbers**: `{{count}}`
+- **Booleans**: `{{is_premium}}`
+- **Lists**: `{{items}}`
+- **Objects**: `{{user_data}}` (will be converted to string)
+
+### Input/Output Type System
+
+The `inputs` and `outputs` arrays define the expected variable types:
+
+**Input Types:**
+
+- `"str"` - String values
+- `"float"` - Floating point numbers
+- `"bool"` - Boolean values
+- `"image"` - Image data
+- `"list[str]"` - List of strings
+- `"list[float]"` - List of floats
+- `"list[int]"` - List of integers
+- `"list[bool]"` - List of booleans
+- `"dict"` - Dictionary/object
+
+**Output Types:**
+
+- `"str"` - String responses
+- `"float"` - Numeric responses
+- `"bool"` - Boolean responses
+- `"json_schema"` - Structured JSON responses
+
+## API Response Format
+
+When retrieving a prompt via API, you get the configuration with the latest version:
+
+```json
+{
+  "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
+  "name": "Customer Support Bot",
+  "handle": "proj_123/customer-support-bot",
+  "version": 1,
+  "versionId": "version_abc123",
+  "versionCreatedAt": "2024-01-15T10:30:00Z",
+  "model": "openai/gpt-4o-mini",
+  "prompt": "You are a helpful customer support agent...",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful customer support agent"
+    },
+    {
+      "role": "user",
+      "content": "{{input}}"
+    }
+  ],
+  "response_format": {
+    "type": "json_schema",
+    "json_schema": {
+      "name": "customer_response",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "updatedAt": "2024-01-15T10:30:00Z"
+}
+```
+
+## Scope and Access
+
+### Project Scope (Default)
+
+- Prompts are only accessible within the project
+- `scope: "PROJECT"`
+- `organizationId: null`
+
+### Organization Scope
+
+- Prompts are shared across all projects in the organization
+- `scope: "ORGANIZATION"`
+- `organizationId: "org_456"`
+
+## Version Management
+
+- Each prompt starts with version 1
+- New versions increment the version number
+- The latest version is automatically used
+- You can retrieve specific versions by version ID
+- Version history is preserved for rollback
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)
