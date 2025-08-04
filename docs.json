@@ -17,23 +17,14 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": [
-        "curl",
-        "python",
-        "typescript"
-      ],
+      "languages": ["curl", "python", "typescript"],
       "defaults": "required"
     },
     "mdx": {
@@ -151,7 +142,7 @@
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/haystack",               
+                  "integration/python/integrations/haystack",
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
                   "integration/python/integrations/llamaindex",
@@ -160,10 +151,9 @@
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
-                  "integration/python/integrations/strand-agents",    
-                  "integration/typescript/integrations/vercel-ai-sdk",          
+                  "integration/python/integrations/strand-agents",
+                  "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/python/integrations/other"
-                  
                 ]
               },
               {
@@ -196,10 +186,7 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": [
-                  "features/triggers",
-                  "features/embedded-analytics"
-                ]
+                "pages": ["features/triggers", "features/embedded-analytics"]
               },
               "integration/code-examples"
             ]
@@ -247,6 +234,10 @@
           {
             "group": "LLM Development",
             "pages": [
+              {
+                "group": "Prompt Management",
+                "pages": ["prompt-management/overview"]
+              },
               {
                 "group": "Prompt Optimization Studio",
                 "pages": [
@@ -316,15 +307,11 @@
               },
               {
                 "group": "Datasets",
-                "pages": [
-                  "api-reference/datasets/post-dataset-entries"
-                ]
+                "pages": ["api-reference/datasets/post-dataset-entries"]
               },
               {
                 "group": "Triggers",
-                "pages": [
-                  "api-reference/triggers/create-slack-trigger"
-                ]
+                "pages": ["api-reference/triggers/create-slack-trigger"]
               }
             ]
           },
@@ -338,10 +325,7 @@
           },
           {
             "group": "Support",
-            "pages": [
-              "support",
-              "status"
-            ]
+            "pages": ["support", "status"]
           }
         ]
       }
