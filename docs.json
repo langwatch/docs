@@ -17,14 +17,23 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": ["curl", "python", "typescript"],
+      "languages": [
+        "curl",
+        "python",
+        "typescript"
+      ],
       "defaults": "required"
     },
     "mdx": {
@@ -74,33 +83,6 @@
                   "/cookbooks/tool-selection",
                   "/cookbooks/finetuning-agents",
                   "/cookbooks/evaluating-multi-turn-conversations"
-                ]
-              }
-            ]
-          },
-          {
-            "group": "Prompt Management",
-            "pages": [
-              "prompt-management/overview",
-              "prompt-management/getting-started",
-              "prompt-management/data-model",
-              {
-                "group": "Features",
-                "pages": [
-                  {
-                    "group": "Essential",
-                    "pages": [
-                      "prompt-management/features/essential/version-control",
-                      "prompt-management/features/essential/analytics"
-                    ]
-                  },
-                  {
-                    "group": "Advanced",
-                    "pages": [
-                      "prompt-management/features/advanced/link-to-traces",
-                      "prompt-management/features/advanced/optimization-studio"
-                    ]
-                  }
                 ]
               }
             ]
@@ -213,7 +195,10 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": ["features/triggers", "features/embedded-analytics"]
+                "pages": [
+                  "features/triggers",
+                  "features/embedded-analytics"
+                ]
               },
               "integration/code-examples"
             ]
@@ -256,6 +241,33 @@
                 ]
               },
               "features/annotations"
+            ]
+          },
+          {
+            "group": "Prompt Management",
+            "pages": [
+              "prompt-management/overview",
+              "prompt-management/getting-started",
+              "prompt-management/data-model",
+              {
+                "group": "Features",
+                "pages": [
+                  {
+                    "group": "Essential",
+                    "pages": [
+                      "prompt-management/features/essential/version-control",
+                      "prompt-management/features/essential/analytics"
+                    ]
+                  },
+                  {
+                    "group": "Advanced",
+                    "pages": [
+                      "prompt-management/features/advanced/link-to-traces",
+                      "prompt-management/features/advanced/optimization-studio"
+                    ]
+                  }
+                ]
+              }
             ]
           },
           {
@@ -329,11 +341,15 @@
               },
               {
                 "group": "Datasets",
-                "pages": ["api-reference/datasets/post-dataset-entries"]
+                "pages": [
+                  "api-reference/datasets/post-dataset-entries"
+                ]
               },
               {
                 "group": "Triggers",
-                "pages": ["api-reference/triggers/create-slack-trigger"]
+                "pages": [
+                  "api-reference/triggers/create-slack-trigger"
+                ]
               }
             ]
           },
@@ -347,7 +363,10 @@
           },
           {
             "group": "Support",
-            "pages": ["support", "status"]
+            "pages": [
+              "support",
+              "status"
+            ]
           }
         ]
       }

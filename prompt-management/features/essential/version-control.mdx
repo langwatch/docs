@@ -19,18 +19,11 @@ Every prompt in LangWatch automatically maintains a version history. When you cr
 Use the LangWatch UI to manage prompt versions:
 
 1. Navigate to the **Prompt Management** section
-2. Select a prompt to view its version history
-3. Click on any version to see the full configuration
+2. Select a prompt
+3. Click on the version history icon at the bottom of the prompt editor
 4. Use the version selector to switch between versions
 5. Create new versions by making changes and saving
 
-<Frame>
-  <img
-    className="block"
-    src="/images/prompts/prompt-versions-in-studio.png"
-    alt="LangWatch Prompt Versions in Studio"
-  />
-</Frame>
 
 </Tab>
 <Tab title="TypeScript SDK">
@@ -47,7 +40,6 @@ await setupLangWatch();
 const prompt = await getPrompt("customer-support-bot");
 
 // The prompt object contains version information
-console.log(`Prompt: ${prompt.name}`);
 console.log(`Version: ${prompt.version}`);
 console.log(`Version ID: ${prompt.versionId}`);
 
@@ -99,10 +91,6 @@ curl -X POST "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
 </Tab>
 </Tabs>
 
-## Version Information
-
-Each prompt version includes metadata such as version number, commit message, author, and creation timestamp. For detailed information about the version structure and data model, see the [Data Model](/prompt-management/data-model) page.
-
 ## Version History
 
 LangWatch provides a clear view of how your prompts have evolved over time:
@@ -110,17 +98,20 @@ LangWatch provides a clear view of how your prompts have evolved over time:
 <Frame>
   <img
     className="block"
-    src="/images/prompts/prompt-manager-edit.png"
-    alt="LangWatch Prompt Editor"
+    src="/images/prompts/view-versioning.png"
+    alt="LangWatch Prompt Versions in Studio"
   />
 </Frame>
 
-### Viewing Version History
 
-1. **Version List**: See all versions with timestamps and commit messages
-2. **Commit Messages**: Understand what was changed in each version
-3. **Author Information**: See who made each change
-4. **Version Selection**: Switch between different versions to view their content
+- **Version List**: See all versions with timestamps and commit messages
+- **Commit Messages**: Understand what was changed in each version
+- **Author Information**: See who made each change
+- **Version Selection**: Switch between different versions to view their content
+
+## Version Information
+
+Each prompt version includes metadata such as version number, commit message, author, and creation timestamp. For detailed information about the version structure and data model, see the [Data Model](/prompt-management/data-model) page.
 
 ## Rollbacks
 
@@ -138,7 +129,7 @@ All prompt versions are shared across your project team. For organization-scoped
 <Frame>
   <img
     className="block"
-    src="/images/prompts/prompt-manager.png"
+    src="/images/prompts/view-set-prompt-scope.png"
     alt="LangWatch Prompt Manager"
   />
 </Frame>

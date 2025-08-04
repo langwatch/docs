@@ -21,8 +21,7 @@ Each prompt has a configuration that contains metadata and references to its ver
 ```json
 {
   "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
-  "name": "Customer Support Bot",
-  "handle": "proj_123/customer-support-bot",
+  "handle": "customer-support-bot",
   "scope": "PROJECT",
   "projectId": "proj_123",
   "organizationId": null,
@@ -35,8 +34,7 @@ Each prompt has a configuration that contains metadata and references to its ver
 ### Fields
 
 - **`id`**: Unique identifier for the prompt
-- **`name`**: Human-readable name for the prompt
-- **`handle`**: Optional globally unique identifier (format: `projectId/prompt-name` for project scope or `organizationId/prompt-name` for organization scope)
+- **`handle`**: Optional globally unique identifier
 - **`scope`**: Either `"PROJECT"` (default) or `"ORGANIZATION"` for shared prompts
 - **`projectId`**: The project this prompt belongs to
 - **`organizationId`**: The organization this prompt belongs to (null for project scope)
@@ -191,7 +189,7 @@ The `configData` contains the actual prompt configuration with comprehensive met
 - **`messages`**: Array of chat messages with roles and content
 - **`inputs`**: Array of input variable definitions with identifiers and types
 - **`outputs`**: Array of output variable definitions with identifiers and types
-- **`model`**: The LLM model to use (e.g., `"openai/gpt-4o-mini"`)
+- **`model`**: The LLM model to use (e.g., `"openai/gpt-4o-mini"`) - model names follow the litellm structure ("provider/model")
 - **`temperature`**: Optional temperature setting for the model
 - **`max_tokens`**: Optional maximum token limit
 - **`demonstrations`**: Optional few-shot examples with columns and rows structure
@@ -293,8 +291,7 @@ When retrieving a prompt via API, you get the configuration with the latest vers
 ```json
 {
   "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
-  "name": "Customer Support Bot",
-  "handle": "proj_123/customer-support-bot",
+  "handle": "customer-support-bot",
   "version": 1,
   "versionId": "version_abc123",
   "versionCreatedAt": "2024-01-15T10:30:00Z",
@@ -341,6 +338,10 @@ When retrieving a prompt via API, you get the configuration with the latest vers
 - Prompts are shared across all projects in the organization
 - `scope: "ORGANIZATION"`
 - `organizationId: "org_456"`
+
+<Note>
+Only the original project can modify a shared prompt
+</Note>
 
 ## Version Management
 
