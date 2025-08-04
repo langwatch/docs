@@ -33,6 +33,36 @@ Use the LangWatch UI to manage prompt versions:
 </Frame>
 
 </Tab>
+<Tab title="TypeScript SDK">
+
+LangWatch's TypeScript SDK supports retrieving prompts and specific versions:
+
+```typescript
+import { getPrompt, getPromptVersion } from "langwatch";
+
+// Get a specific prompt (latest version by default)
+const prompt = await getPrompt("customer-support-bot");
+
+// The prompt object contains version information
+console.log(`Prompt: ${prompt.name}`);
+console.log(`Version: ${prompt.version}`);
+console.log(`Version ID: ${prompt.versionId}`);
+
+// Get a specific version of a prompt
+const specificVersion = await getPromptVersion(
+  "customer-support-bot",
+  "version_abc123"
+);
+
+// Compile with variables
+const compiledPrompt = specificVersion.compile({
+  user_name: "John Doe",
+  user_email: "john.doe@example.com",
+  input: "I need help with my account",
+});
+```
+
+</Tab>
 <Tab title="REST API">
 
 Use the REST API to manage prompt versions:

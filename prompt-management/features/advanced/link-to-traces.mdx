@@ -11,7 +11,10 @@ For more information about traces and spans, see the [Concepts](/concepts) guide
 
 ## How to Link Prompts to Traces
 
-When you use `langwatch.prompt.get_prompt()` within a trace context, LangWatch automatically links the prompt to the trace:
+When you use `getPrompt()` within a trace context, LangWatch automatically links the prompt to the trace:
+
+<Tabs>
+<Tab title="Python SDK">
 
 ```python
 import langwatch
@@ -45,7 +48,44 @@ def customer_support_generation():
 result = customer_support_generation()
 ```
 
-For more detailed information about setting up tracing in your Python application, see the [Python Integration Guide](/integration/python/guide).
+</Tab>
+<Tab title="TypeScript SDK">
+
+```typescript
+import { getPrompt } from "langwatch";
+import OpenAI from "openai";
+
+// Initialize LangWatch (tracing is automatic when API key is set)
+const openai = new OpenAI();
+
+async function customerSupportGeneration() {
+  // Get prompt (automatically linked to trace when API key is present)
+  const prompt = await getPrompt("customer-support-bot");
+
+  // Compile prompt with variables
+  const compiledPrompt = prompt.compile({
+    user_name: "John Doe",
+    user_email: "john.doe@example.com",
+    input: "I need help with my account",
+  });
+
+  // Use with OpenAI client
+  const completion = await openai.chat.completions.create({
+    model: prompt.model.replace("openai/", ""),
+    messages: compiledPrompt.messages,
+  });
+
+  return completion.choices[0].message.content;
+}
+
+// Call the function
+const result = await customerSupportGeneration();
+```
+
+</Tab>
+</Tabs>
+
+For more detailed information about setting up tracing in your application, see the [Python Integration Guide](/integration/python/guide) or [TypeScript Integration Guide](/integration/typescript/guide).
 
 ---
 

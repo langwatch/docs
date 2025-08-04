@@ -78,6 +78,35 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
 
   </Tab>
 
+  <Tab title="TypeScript SDK">
+    ```typescript use_prompt.ts
+    import { getPrompt } from "langwatch";
+    import OpenAI from "openai";
+
+    // Get the latest prompt (can use handle or ID)
+    const prompt = await getPrompt("customer-support-bot"); // by handle
+    // or
+    // const prompt = await getPrompt("prompt_TrYXZLsiTJkn9N6PiZiae"); // by ID
+
+    // Compile prompt with variables
+    const compiledPrompt = prompt.compile({
+      user_name: "John Doe",
+      user_email: "john.doe@example.com",
+      input: "How do I reset my password?"
+    });
+
+    // Use with OpenAI client
+    const openai = new OpenAI();
+    const completion = await openai.chat.completions.create({
+      model: prompt.model.replace("openai/", ""), // Remove "openai/" prefix
+      messages: compiledPrompt.messages
+    });
+
+    console.log(completion.choices[0].message.content);
+    ```
+
+  </Tab>
+
   <Tab title="REST API">
     ```bash use_prompt.sh
     # Get by handle
