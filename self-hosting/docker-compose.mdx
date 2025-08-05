@@ -1,18 +1,17 @@
 ---
 title: Docker Compose
 description: LangWatch is available as a Docker Compose setup for easy deployment on your local machine
+keywords: self-hosting, docker, docker-compose, deployment, langwatch
 ---
 
 <Note>
 While the open-source version is available for local use and experimentation, for commercial use please reach out for a [demo call with our team](https://get.langwatch.ai/request-a-demo).
 </Note>
 
-
 ### Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
-
 
 ## Running with Docker Compose
 
@@ -29,21 +28,6 @@ The application will be available at [http://localhost:5560](http://localhost:55
 <Note>
  Curiosity: we decided on 5560 because that's where the letters "LLM" are, on a T9 keyboard.
 </Note>
-
-## Running outside Docker
-
-To run the project locally, you need to start the databases and LangWatch services.
-Start just the databases using docker and leave it running:
-
-```bash
-docker compose up redis postgres opensearch
-```
-Then, on another terminal, install the dependencies and start LangWatch:
-
-```bash
-make install
-make start
-```
 
 ## Helm Chart for LangWatch
 
