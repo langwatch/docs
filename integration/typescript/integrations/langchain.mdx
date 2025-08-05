@@ -1,60 +1,475 @@
 ---
-title: LangChain
-sidebarTitle: TS/JS
-description: LangWatch LangChain TypeScript integration guide
+title: LangChain Instrumentation
+sidebarTitle: TypeScript
+description: Learn how to instrument Langchain applications with the LangWatch TypeScript SDK.
+keywords: langchain, instrumentation, callback, opentelemetry, langwatch, typescript, tracing, openllmetry
 ---
 
-import TypeScriptIntro from "/snippets/typescript-intro.mdx";
+Langchain is a powerful framework for building LLM applications. LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
 
-<TypeScriptIntro />
+This guide covers the primary approaches to instrumenting Langchain with LangWatch:
 
-## Integration
+1. **Using LangWatch's Langchain Callback Handler (Recommended)**: The most direct method, using a specific callback provided by LangWatch to capture rich Langchain-specific trace data.
+2. **Using Community OpenTelemetry Instrumentors**: Leveraging dedicated Langchain instrumentors like those from OpenLLMetry.
+3. **Utilizing Langchain's Native OpenTelemetry Export (Advanced)**: Configuring Langchain to send its own OpenTelemetry traces to an endpoint where LangWatch can collect them.
 
+## 1. Using LangWatch's Langchain Callback Handler (Recommended)
 
-Start by initializing LangWatch client and creating a new trace to capture your chain:
+This is the preferred and most comprehensive method for instrumenting Langchain with LangWatch. The LangWatch SDK provides a `LangWatchCallbackHandler` that deeply integrates with Langchain's event system.
 
 ```typescript
-import { LangWatch } from 'langwatch';
+import { setupLangWatch } from "langwatch/node";
+import { LangWatchCallbackHandler } from "langwatch/observability/instrumentation/langchain";
+import { getLangWatchTracer } from "langwatch";
+import { semconv } from "langwatch/observability";
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 
-const langwatch = new LangWatch();
+// Initialize LangWatch
+await setupLangWatch();
 
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
+const tracer = getLangWatchTracer("langchain-example");
+
+async function handleMessageWithCallback(userQuestion: string) {
+  return await tracer.withActiveSpan("Langchain - QA with Callback", {
+    attributes: {
+      [semconv.ATTR_LANGWATCH_THREAD_ID]: "callback-user",
+    },
+  }, async (span) => {
+    const langWatchCallback = new LangWatchCallbackHandler();
+
+    const model = new ChatOpenAI({
+      modelName: "gpt-4o-mini",
+      temperature: 0.7,
+      callbacks: [langWatchCallback],
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([
+      ["system", "You are a concise assistant."],
+      ["human", "{question}"],
+    ]);
+
+    // Modern LCEL (LangChain Expression Language) syntax
+    const chain = prompt.pipe(model).pipe(new StringOutputParser());
+
+    const response = await chain.invoke({ question: userQuestion });
+    return response;
+  });
+}
+
+async function mainCallback() {
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OPENAI_API_KEY not set. Skipping Langchain callback example.");
+    return;
+  }
+  
+  const response = await handleMessageWithCallback("What is Langchain? Explain briefly.");
+  console.log(`AI (Callback): ${response}`);
+}
+
+mainCallback().catch(console.error);
+```
+
+**How it Works:**
+- `setupLangWatch()`: Initializes LangWatch with default configuration.
+- `getLangWatchTracer()`: Creates a tracer instance for your application.
+- `tracer.withActiveSpan()`: Creates a parent LangWatch trace with automatic error handling and span management.
+- `LangWatchCallbackHandler`: A LangWatch-specific callback handler that captures Langchain events and converts them into detailed LangWatch spans.
+- The callback handler is passed to Langchain components via the `callbacks` option.
+
+**Key points:**
+- Provides the most detailed Langchain-specific structural information (chains, agents, tools, LLMs as distinct steps).
+- Works for all Langchain execution methods (`invoke`, `stream`, `batch`, etc.).
+- Automatically handles span lifecycle management with `withActiveSpan()`.
+
+## 2. Using Community OpenTelemetry Instrumentors
+
+Dedicated Langchain instrumentors from libraries like OpenLLMetry can also be used to capture Langchain operations as OpenTelemetry traces, which LangWatch can then ingest.
+
+### Instrumenting Langchain with Dedicated Instrumentors
+
+#### i. Via `setupLangWatch()`
+
+<CodeGroup>
+```typescript OpenLLMetry
+// OpenLLMetry Example
+import { setupLangWatch } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+import { ChatOpenAI } from "@langchain/openai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+// Note: OpenLLMetry TypeScript instrumentation would need to be imported here
+// import { LangchainInstrumentor } from "opentelemetry-instrumentation-langchain";
+
+await setupLangWatch({
+  // instrumentors: [new LangchainInstrumentor()] // Add OpenLLMetry LangchainInstrumentor
+});
+
+const tracer = getLangWatchTracer("langchain-openllmetry");
+
+async function handleMessageOpenLLMetry(userQuestion: string) {
+  return await tracer.withActiveSpan("Langchain - OpenLLMetry via Setup", async (span) => {
+    const model = new ChatOpenAI({
+      modelName: "gpt-4o-mini",
+      temperature: 0.7,
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([
+      ["system", "You are brief."],
+      ["human", "{question}"],
+    ]);
+
+    const chain = prompt.pipe(model).pipe(new StringOutputParser());
+    const response = await chain.invoke({ question: userQuestion });
+    return response;
+  });
+}
+
+async function mainOpenLLMetry() {
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OPENAI_API_KEY not set. Skipping OpenLLMetry Langchain example.");
+    return;
+  }
+  
+  const response = await handleMessageOpenLLMetry("Explain Langchain instrumentation with OpenLLMetry.");
+  console.log(`AI (OpenLLMetry): ${response}`);
+}
+
+mainOpenLLMetry().catch(console.error);
+```
+</CodeGroup>
+
+#### ii. Direct Instrumentation
+
+<CodeGroup>
+```typescript OpenLLMetry
+// OpenLLMetry Example
+import { setupLangWatch } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+import { ChatOpenAI } from "@langchain/openai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+// Note: OpenLLMetry TypeScript instrumentation would need to be imported here
+// import { LangchainInstrumentor } from "opentelemetry-instrumentation-langchain";
+
+await setupLangWatch();
+
+// Instrument Langchain directly
+// LangchainInstrumentor().instrument();
+
+const tracer = getLangWatchTracer("langchain-openllmetry-direct");
+
+async function handleMessageOpenLLMetryDirect(userQuestion: string) {
+  return await tracer.withActiveSpan("Langchain - OpenLLMetry Direct", async (span) => {
+    const model = new ChatOpenAI({
+      modelName: "gpt-4o-mini",
+      temperature: 0.7,
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([
+      ["system", "You are very brief."],
+      ["human", "{question}"],
+    ]);
+
+    const chain = prompt.pipe(model).pipe(new StringOutputParser());
+    const response = await chain.invoke({ question: userQuestion });
+    return response;
+  });
+}
+
+async function mainOpenLLMetryDirect() {
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OPENAI_API_KEY not set. Skipping OpenLLMetry Langchain (direct) example.");
+    return;
+  }
+  
+  const response = await handleMessageOpenLLMetryDirect("How does direct Langchain instrumentation work with OpenLLMetry?");
+  console.log(`AI (OpenLLMetry Direct): ${response}`);
+}
+
+mainOpenLLMetryDirect().catch(console.error);
+```
+</CodeGroup>
+
+**Key points for dedicated Langchain instrumentors:**
+- Directly instrument Langchain operations, providing traces from Langchain's perspective.
+- Requires installing the respective instrumentation package (e.g., `opentelemetry-instrumentation-langchain` for OpenLLMetry).
+- Note: TypeScript versions of these instrumentors may have different availability compared to Python.
+
+## 3. Utilizing Langchain's Native OpenTelemetry Export (Advanced)
+
+Langchain itself can be configured to export OpenTelemetry traces. If you set this up and configure Langchain to send traces to an OpenTelemetry collector endpoint that LangWatch is also configured to receive from (or if LangWatch *is* your OTLP endpoint), then LangWatch can ingest these natively generated Langchain traces.
+
+**Setup (Conceptual):**
+1. Configure Langchain for OpenTelemetry export. This usually involves setting environment variables:
+   ```bash
+   export LANGCHAIN_TRACING_V2=true
+   export LANGCHAIN_ENDPOINT= # Your OTLP gRPC endpoint (e.g., http://localhost:4317)
+   # Potentially other OTEL_EXPORTER_OTLP_* variables for more granular control
+   ```
+2. Initialize LangWatch: `await setupLangWatch()`.
+
+```typescript
+// This example assumes Langchain is configured via environment variables
+// to send OTel traces to an endpoint LangWatch can access.
+import { setupLangWatch } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+import { ChatOpenAI } from "@langchain/openai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+
+await setupLangWatch(); // LangWatch is ready to receive OTel traces
+
+const tracer = getLangWatchTracer("langchain-native-otel");
+
+async function handleMessageNativeOtel(userQuestion: string) {
+  return await tracer.withActiveSpan("Langchain - Native OTel Export", async (span) => {
+    const model = new ChatOpenAI({
+      modelName: "gpt-4o-mini",
+      temperature: 0.7,
+    });
+
+    const prompt = ChatPromptTemplate.fromMessages([
+      ["system", "You are brief."],
+      ["human", "{question}"],
+    ]);
+
+    const chain = prompt.pipe(model).pipe(new StringOutputParser());
+    const response = await chain.invoke({ question: userQuestion });
+    return response;
+  });
+}
+
+async function mainNativeOtel() {
+  if (!process.env.OPENAI_API_KEY || process.env.LANGCHAIN_TRACING_V2 !== "true") {
+    console.log("Required env vars (OPENAI_API_KEY, LANGCHAIN_TRACING_V2='true') not set. Skipping native OTel.");
+    return;
+  }
+  
+  const response = await handleMessageNativeOtel("Tell me about Langchain OTel export itself.");
+  console.log(`AI (Native OTel): ${response}`);
+}
+
+mainNativeOtel().catch(console.error);
+```
+
+**Key points for Langchain's native OTel export:**
+- LangWatch acts as a backend/collector for OpenTelemetry traces generated directly by Langchain.
+- Requires careful configuration of Langchain's environment variables.
+- The level of detail depends on Langchain's native OpenTelemetry instrumentation quality.
+
+<Note>
+### Which Approach to Choose?
+
+- **LangWatch's Langchain Callback Handler (Recommended)**: Provides the richest, most Langchain-aware traces directly integrated with LangWatch's tracing context. Ideal for most users.
+- **Dedicated Langchain Instrumentors (OpenLLMetry)**: Good alternatives if you prefer an explicit instrumentor pattern for Langchain itself or are standardizing on OpenLLMetry's OpenTelemetry ecosystem.
+- **Langchain's Native OTel Export (Advanced)**: Suitable if you have an existing OpenTelemetry collection infrastructure and want Langchain to be another OTel-compliant source.
+
+For the best Langchain-specific observability within LangWatch, the **Langchain Callback Handler** is the generally recommended approach, with dedicated **Langchain Instrumentors** as strong alternatives for instrumentor-based setups.
+</Note>
+
+## Common Mistakes and Caveats
+
+### 1. Setup and Initialization Issues
+
+<Warning>
+**Multiple setup calls**: `setupLangWatch()` can only be called once per process. Subsequent calls will throw an error.
+</Warning>
+
+```typescript
+// ❌ Wrong - Multiple setup calls
+await setupLangWatch();
+await setupLangWatch(); // This will throw an error
+
+// ✅ Correct - Single setup call
+await setupLangWatch();
+```
+
+<Warning>
+**Missing await**: Always await the setup function to ensure proper initialization.
+</Warning>
+
+```typescript
+// ❌ Wrong - Missing await
+setupLangWatch(); // This won't properly initialize
+
+// ✅ Correct - Properly awaited
+await setupLangWatch();
+```
+
+### 2. Callback Handler Usage
+
+<Warning>
+**Reusing callback handlers**: Each trace should use a fresh `LangWatchCallbackHandler` instance to avoid span conflicts.
+</Warning>
+
+```typescript
+// ❌ Wrong - Reusing callback handler
+const callback = new LangWatchCallbackHandler();
+
+async function processMultipleRequests() {
+  // This can cause span conflicts
+  const model1 = new ChatOpenAI({ callbacks: [callback] });
+  const model2 = new ChatOpenAI({ callbacks: [callback] });
+}
+
+// ✅ Correct - Fresh callback handler per trace
+async function processMultipleRequests() {
+  const callback1 = new LangWatchCallbackHandler();
+  const callback2 = new LangWatchCallbackHandler();
+  
+  const model1 = new ChatOpenAI({ callbacks: [callback1] });
+  const model2 = new ChatOpenAI({ callbacks: [callback2] });
+}
+```
+
+### 3. Span Management
+
+<Warning>
+**Manual span management**: Avoid manually managing spans when using `withActiveSpan()`. The function handles span lifecycle automatically.
+</Warning>
+
+```typescript
+// ❌ Wrong - Manual span management with withActiveSpan
+await tracer.withActiveSpan("my-operation", async (span) => {
+  span.setStatus({ code: SpanStatusCode.OK });
+  span.end(); // Don't manually end spans in withActiveSpan
+});
+
+// ✅ Correct - Let withActiveSpan handle span lifecycle
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Your code here - span is automatically ended
 });
 ```
 
-Then, to capture your LLM calls and all other chain steps, LangWatch provides a callback hook for LangChain.js that automatically tracks everything for you.
+### 4. Environment Configuration
 
-First, define your chain as you would normally do:
-
-```typescript
-import { StringOutputParser } from '@langchain/core/output_parsers'
-import { ChatPromptTemplate } from '@langchain/core/prompts'
-import { ChatOpenAI } from '@langchain/openai'
-
-const prompt = ChatPromptTemplate.fromMessages([
-  ['system', 'Translate the following from English into Italian'],
-  ['human', '{input}']
-])
-const model = new ChatOpenAI({ model: 'gpt-3.5-turbo' })
-const outputParser = new StringOutputParser()
-
-const chain = prompt.pipe(model).pipe(outputParser)
-```
-
-Now, when calling your chain either with `invoke` or `stream`, pass in `trace.getLangChainCallback()` as one of the callbacks:
+<Warning>
+**Missing environment variables**: Ensure all required environment variables are set before running your application.
+</Warning>
 
 ```typescript
-const stream = await chain.stream(
-  { input: message },
-  { callbacks: [trace.getLangChainCallback()] }
-)
+// ❌ Wrong - No environment validation
+await setupLangWatch();
+const model = new ChatOpenAI(); // May fail if OPENAI_API_KEY not set
+
+// ✅ Correct - Environment validation
+if (!process.env.OPENAI_API_KEY) {
+  console.error("OPENAI_API_KEY environment variable is required");
+  process.exit(1);
+}
+
+await setupLangWatch();
+const model = new ChatOpenAI();
 ```
 
-That's it! The full trace with all spans for each chain step will be sent automatically to LangWatch in the background on periodic intervals. After capturing your first LLM Span, go to [LangWatch Dashboard](https://app.langwatch.ai), your message should be there!
+### 5. TypeScript-Specific Issues
 
+<Warning>
+**Import path confusion**: Use the correct import paths for Node.js vs browser environments.
+</Warning>
 
-import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
+```typescript
+// ❌ Wrong - Using browser import in Node.js
+import { setupLangWatch } from "langwatch"; // This won't work in Node.js
 
-<TypeScriptSharedSpanExcepEval />
+// ✅ Correct - Use appropriate import for environment
+import { setupLangWatch } from "langwatch/node"; // For Node.js
+import { setupLangWatch } from "langwatch"; // For browser
+```
 
+<Warning>
+**Missing type definitions**: Ensure you have proper TypeScript configuration for the LangWatch SDK.
+</Warning>
+
+```json
+// tsconfig.json - Ensure proper module resolution
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
+```
+
+### 6. Performance Considerations
+
+<Tip>
+**Batch processing**: When processing multiple requests, consider using batch operations to reduce the number of spans created.
+</Tip>
+
+```typescript
+// ❌ Inefficient - Individual processing
+for (const question of questions) {
+  await handleMessageWithCallback(question); // Creates separate trace per question
+}
+
+// ✅ Efficient - Batch processing
+await tracer.withActiveSpan("batch-processing", async (span) => {
+  const results = await Promise.all(
+    questions.map(question => handleMessageWithCallback(question))
+  );
+  return results;
+});
+```
+
+### 7. Error Handling
+
+<Warning>
+**Unhandled promise rejections**: Always handle errors in async operations to prevent unhandled promise rejections.
+</Warning>
+
+```typescript
+// ❌ Wrong - Unhandled promise rejection
+mainCallback(); // This can cause unhandled promise rejection
+
+// ✅ Correct - Proper error handling
+mainCallback().catch(console.error);
+// or
+try {
+  await mainCallback();
+} catch (error) {
+  console.error("Error in main callback:", error);
+}
+```
+
+### 8. Memory Management
+
+<Tip>
+**Callback handler cleanup**: While the SDK handles most cleanup automatically, be mindful of callback handler instances in long-running applications.
+</Tip>
+
+```typescript
+// For long-running applications, consider cleaning up callback handlers
+class ChatService {
+  private callbackHandlers: LangWatchCallbackHandler[] = [];
+  
+  async processMessage(message: string) {
+    const callback = new LangWatchCallbackHandler();
+    this.callbackHandlers.push(callback);
+    
+    // Process message...
+    
+    // Clean up old handlers periodically
+    if (this.callbackHandlers.length > 100) {
+      this.callbackHandlers = this.callbackHandlers.slice(-50);
+    }
+  }
+}
+```
+
+<Info>
+### Best Practices Summary
+
+1. **Always await `setupLangWatch()`** and call it only once per process
+2. **Use fresh callback handlers** for each trace to avoid conflicts
+3. **Let `withActiveSpan()` handle span lifecycle** - don't manually end spans
+4. **Validate environment variables** before starting your application
+5. **Use appropriate import paths** for your environment (Node.js vs browser)
+6. **Handle errors properly** to avoid unhandled promise rejections
+7. **Consider performance implications** when processing multiple requests
+8. **Monitor memory usage** in long-running applications
+</Info>
