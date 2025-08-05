@@ -98,7 +98,7 @@
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/google-genai",
+                  "integration/python/integrations/google-genai", 
                   "integration/python/integrations/haystack",
                   "integration/python/integrations/instructor",
                   "integration/langflow",
@@ -113,6 +113,7 @@
                   "integration/python/integrations/strand-agents",
                   "integration/python/integrations/semantic-kernel",
                   "integration/typescript/integrations/vercel-ai-sdk",
+                  "integration/python/integrations/vertex-ai",
                   "integration/python/integrations/other"
                 ]
               },
