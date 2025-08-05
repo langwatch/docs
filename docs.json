@@ -98,6 +98,7 @@
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
+                  "integration/python/integrations/google-genai",
                   "integration/python/integrations/haystack",
                   "integration/python/integrations/instructor",
                   "integration/langflow",
