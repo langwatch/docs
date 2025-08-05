@@ -138,6 +138,7 @@
                   },
                   "integration/python/integrations/agno",
                   "integration/python/integrations/autogen",
+                  "integration/python/integrations/promptflow",
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
