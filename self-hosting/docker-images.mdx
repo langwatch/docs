@@ -76,93 +76,16 @@ graph TD
     A --> F[Redis]
 ```
 
-## Docker Compose Configuration
+## Running from a docker image
 
-Here's a minimal Docker Compose configuration for LangWatch:
+For detailed instructions on how to deploy LangWatch using Docker or Kubernetes, see our deployment guides:
 
-```yaml
-version: "3.8"
+<CardGroup cols={2}>
+<Card title="Docker Compose" icon="docker" href="/self-hosting/docker-compose">
+  Easily get started with LangWatch using Docker Compose.
+</Card>
 
-services:
-  app:
-    image: langwatch/langwatch:latest
-    environment:
-      DATABASE_URL: postgresql://prisma:prisma@postgres:5432/mydb?schema=mydb
-      ELASTICSEARCH_NODE_URL: http://opensearch:9200
-      IS_OPENSEARCH: true
-      REDIS_URL: redis://redis:6379
-      LANGWATCH_NLP_SERVICE: http://langwatch_nlp:5561
-      LANGEVALS_ENDPOINT: http://langevals:5562
-      NODE_ENV: production
-    ports:
-      - "5560:5560"
-    depends_on:
-      - postgres
-      - redis
-      - opensearch
-
-  langwatch_nlp:
-    image: langwatch/langwatch_nlp:latest
-    ports:
-      - "5561:5561"
-    environment:
-      - LANGWATCH_ENDPOINT=http://app:5560
-
-  langevals:
-    image: langwatch/langevals:latest
-    ports:
-      - "5562:5562"
-
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: prisma
-      POSTGRES_PASSWORD: prisma
-    volumes:
-      - db-data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:alpine
-    volumes:
-      - redis-data:/data
-
-  opensearch:
-    image: langwatch/opensearch-lite:latest
-    environment:
-      - discovery.type=single-node
-      - DISABLE_SECURITY_PLUGIN=true
-      - OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m
-    ports:
-      - "9200:9200"
-    volumes:
-      - opensearch-data:/usr/share/opensearch/data
-
-volumes:
-  db-data:
-  redis-data:
-  opensearch-data:
-```
-
-## Health Checks
-
-Each service provides health check endpoints:
-
-- **Main App:** `GET http://localhost:5560/api/health`
-- **NLP Service:** `GET http://localhost:5561/health`
-- **LangEvals:** `GET http://localhost:5562/health`
-
-## Scaling Considerations
-
-- **Main App:** Can be scaled horizontally for high availability
-- **NLP Service:** Can be scaled based on evaluation workload
-- **LangEvals:** Can be scaled based on evaluation volume
-
-## Security Notes
-
-- All services should be deployed behind a reverse proxy in production
-- Use environment variables for sensitive configuration
-- Consider using secrets management for API keys
-- Implement proper network segmentation between services
-
-For more detailed configuration options, see the [Environment Variables](/self-hosting/env-variables) page. 
+<Card title="Helm Chart" icon="dharmachakra" href="/self-hosting/helm">
+  Run LangWatch on Kubernetes with our pre-configured Helm chart.
+</Card>
+</CardGroup>

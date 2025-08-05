@@ -1,9 +1,11 @@
 ---
 title: Helm Chart
 description: LangWatch is available as a Helm chart for easy deployment on Kubernetes
+keywords: self-hosting, helm, kubernetes, deployment, langwatch
 ---
 
-LangWatch is available as a Helm chart for easy deployment on Kubernetes. This section provides instructions for installing the langwatch Helm chart.
+This document runs thought how to get LangWatch up and running quickly, using our
+pre-configured Helm chart.
 
 <Note>
   While the open-source version is available for local use and experimentation,
@@ -22,6 +24,14 @@ When installing this chart, the following environment variables must be provided
 - `app.env.NEXTAUTH_URL`: The URL of the authentication service (usually same as `BASE_HOST`).
 
 ## Example Setup
+
+<Warning>
+The Helm Chart includes a non-managed OpenSearch pod that is not optimized for production
+workloads. This deployment is suitable for testing and evaluation purposes. For production
+deployments with high availability and performance requirements, please
+[contact our team](https://get.langwatch.ai/request-a-demo) to discuss your specific
+infrastructure needs.
+</Warning>
 
 ```bash
 # Generate secure secrets
