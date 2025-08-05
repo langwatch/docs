@@ -145,6 +145,7 @@
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
                   "integration/python/integrations/haystack",
+                  "integration/python/integrations/instructor",
                   "integration/langflow",
                   "integration/python/integrations/langgraph",
                   "integration/python/integrations/llamaindex",
