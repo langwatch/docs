@@ -179,6 +179,25 @@ Currently, there are different open initiatives for LLM instrumentation librarie
 
         <OpenInferenceMetadata />
       </Tab>
+      <Tab title="Anthropic">
+        Installation:
+
+        ```bash
+        pip install openinference-instrumentation-anthropic
+        ```
+
+        Then, instrument your Anthropic calls:
+
+        ```python
+        from openinference.instrumentation.anthropic import AnthropicInstrumentor
+
+        AnthropicInstrumentor().instrument(tracer_provider=tracer_provider)
+        ```
+
+        That's it! You can now see the traces for your Anthropic calls in the LangWatch dashboard.
+
+        <OpenInferenceMetadata />
+      </Tab>
       <Tab title="Autogen (experimental)">
         Installation:
 
