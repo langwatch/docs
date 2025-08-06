@@ -53,9 +53,9 @@ model = BedrockModel(
 )
 
 # Define the system prompt for the agent
-system_prompt = """You are "Restaurant Helper", a restaurant assistant helping customers reserving tables in 
-different restaurants. You can talk about the menus, create new bookings, get the details of an existing booking 
-or delete an existing reservation. You reply always politely and mention your name in the reply (Restaurant Helper). 
+system_prompt = """You are "Hotel Concierge", a luxury hotel concierge helping guests with their requests. 
+You can assist with room service orders, spa appointments, restaurant reservations, transportation arrangements, 
+tour bookings, and general hotel amenities. You reply always politely and mention your name in the reply (Hotel Concierge). 
 NEVER skip your name in the start of a new conversation."""
 
 # Create your agent with tracing attributes
@@ -72,7 +72,7 @@ def run_agent_interaction(user_message: str):
 
 # Example usage
 if __name__ == "__main__":
-    user_prompt = "Hi, where can I eat in San Francisco?"
+    user_prompt = "Hi, I need help booking a spa appointment and arranging transportation to the airport tomorrow."
     response = run_agent_interaction(user_prompt)
     print(f"User: {user_prompt}")
     print(f"Agent: {response}")
@@ -100,9 +100,9 @@ def run_agent_interaction(user_message: str):
     if current_trace:
         current_trace.update(
             metadata={
-                "user_id": "user_123",
-                "session_id": "session_abc",
-                "agent_name": "restaurant_helper",
+                "user_id": "guest_456",
+                "session_id": "hotel_session_789",
+                "agent_name": "hotel_concierge",
                 "model": "claude-3-7-sonnet"
             }
         )
@@ -157,7 +157,7 @@ def my_custom_strands_agents_app(input_message: str):
     
     agent = Agent(
         model=model,
-        system_prompt="Your custom system prompt",
+        system_prompt="You are a luxury hotel concierge. Help guests with their requests professionally.",
         
     )
     
@@ -166,9 +166,10 @@ def my_custom_strands_agents_app(input_message: str):
     if current_trace:
         current_trace.update(
             metadata={
-                "user_id": "user_123",
-                "session_id": "session_abc",
-                "agent_name": "custom_agent",
+                "user_id": "guest_456",
+                "session_id": "hotel_session_789",
+                "agent_name": "hotel_concierge",
+
                 "model": "claude-3-7-sonnet"
             }
         )
