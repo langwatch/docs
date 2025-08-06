@@ -43,7 +43,7 @@ langwatch.setup()
 
 # Configure the telemetry with LangWatch endpoint
 strands_telemetry = StrandsTelemetry().setup_otlp_exporter(
-    endpoint="https://api.langwatch.ai/v1/otel",
+    endpoint="https://api.langwatch.ai/api/otel/v1/traces",
     headers={"Authorization": f"Bearer {os.environ['LANGWATCH_API_KEY']}"}
 )
 
