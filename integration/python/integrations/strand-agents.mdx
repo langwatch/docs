@@ -104,7 +104,7 @@ def run_agent_interaction(user_message: str):
                 "session_id": "hotel_session_789",
                 "agent_name": "hotel_concierge",
                 "model": "claude-3-7-sonnet"
-            }
+            },
         )
     
     response = agent(user_message)
@@ -158,6 +158,12 @@ def my_custom_strands_agents_app(input_message: str):
     agent = Agent(
         model=model,
         system_prompt="You are a luxury hotel concierge. Help guests with their requests professionally.",
+        trace_attributes={
+            "agent_name": "hotel_concierge",
+            "model": "claude-3-7-sonnet",
+            "service": "hotel_concierge",
+            "environment": "production",
+    },
         
     )
     
@@ -169,7 +175,6 @@ def my_custom_strands_agents_app(input_message: str):
                 "user_id": "guest_456",
                 "session_id": "hotel_session_789",
                 "agent_name": "hotel_concierge",
-
                 "model": "claude-3-7-sonnet"
             }
         )
