@@ -78,7 +78,7 @@ import os
 # langwatch.setup()
 
 @langwatch.trace(
-    name="UserIntentProcessing", 
+    name="UserIntentProcessing",
     input={"user_query": "Book a flight to London"},
     # Output can be set later via update() if determined by function logic
 )
@@ -87,12 +87,12 @@ def process_user_intent(raw_query_data: dict):
     # The 'input' parameter above provides a clean version.
     intent = "book_flight"
     entities = {"destination": "London"}
-    
+
     # Explicitly set the output for the root span of the trace
     current_trace = langwatch.get_current_trace()
     if current_trace:
         current_trace.update(output={"intent": intent, "entities": entities})
-        
+
     return {"status": "success", "intent": intent} # Actual function return
 
 process_user_intent({"query": "Book a flight to London", "user_id": "123"})
@@ -109,20 +109,20 @@ from langwatch.domain import ChatMessage
 @langwatch.trace(name="ChatbotInteraction")
 def handle_chat():
     user_message = ChatMessage(role="user", content="What is LangWatch?")
-    
+
     with langwatch.span(
-        name="LLMCall", 
-        type="llm", 
+        name="LLMCall",
+        type="llm",
         input=[user_message],
-        model="gpt-4o-mini"
+        model="gpt-5"
     ) as llm_span:
         # Simulate LLM call
         assistant_response_content = "LangWatch helps you monitor your LLM applications."
         assistant_message = ChatMessage(role="assistant", content=assistant_response_content)
-        
+
         # Set output on the span object
         llm_span.update(output=[assistant_message])
-        
+
     print("Chat finished.")
 
 handle_chat()
@@ -145,19 +145,19 @@ import os
 @langwatch.trace(name="DataTransformationPipeline")
 def run_pipeline(initial_data: dict):
     # Initial input is automatically captured if capture_input=True (default)
-    
+
     with langwatch.span(name="Step1_CleanData") as step1_span:
         # Suppose initial_data is complex, we want to record a summary as input
         step1_span.update(input={"data_keys": list(initial_data.keys())})
         cleaned_data = {k: v for k, v in initial_data.items() if v is not None}
         step1_span.update(output={"cleaned_item_count": len(cleaned_data)})
-    
+
     # ... further steps ...
-    
+
     # Update the root span's output for the entire trace
     final_result = {"status": "completed", "items_processed": len(cleaned_data)}
     langwatch.get_current_trace().update(output=final_result)
-    
+
     return final_result
 
 run_pipeline({"a": 1, "b": None, "c": 3})
@@ -193,8 +193,8 @@ def advanced_chat_example():
         ChatMessage(role="system", content="You are a helpful assistant."),
         ChatMessage(role="user", content="What is the weather in London?")
     ]
-    
-    with langwatch.span(name="GetWeatherToolCall", type="llm", input=messages, model="gpt-4o-mini") as llm_span:
+
+    with langwatch.span(name="GetWeatherToolCall", type="llm", input=messages, model="gpt-5") as llm_span:
         # Simulate model deciding to call a tool
         tool_call_id = "call_abc123"
         assistant_response_with_tool = ChatMessage(
@@ -213,7 +213,7 @@ def advanced_chat_example():
     with langwatch.span(name="RunGetWeatherTool", type="tool") as tool_span:
         tool_input = {"tool_name": "get_weather", "arguments": {"location": "London"}}
         tool_span.update(input=tool_input)
-        
+
         tool_result_content = '''{"temperature": "15C", "condition": "Cloudy"}'''
         tool_span.update(output=tool_result_content)
 
@@ -227,7 +227,7 @@ def advanced_chat_example():
         messages.append(assistant_response_with_tool) # Assistant's decision to call tool
         messages.append(tool_response_message)      # Tool's response
 
-    with langwatch.span(name="FinalLLMResponse", type="llm", input=messages, model="gpt-4o-mini") as final_llm_span:
+    with langwatch.span(name="FinalLLMResponse", type="llm", input=messages, model="gpt-5") as final_llm_span:
         final_assistant_content = "The weather in London is 15°C and cloudy."
         final_assistant_message = ChatMessage(role="assistant", content=final_assistant_content)
         final_llm_span.update(output=[final_assistant_message])
@@ -258,13 +258,13 @@ def handle_user_data(user_profile: dict):
     # user_profile might contain PII
     # Automatic capture is on by default.
     # Let's update the input to a redacted version for the root span.
-    
+
     redacted_input = {
         "user_id": user_profile.get("id"),
         "has_email": "email" in user_profile
     }
     langwatch.get_current_trace().update(input=redacted_input)
-    
+
     # Process data...
     result = {"status": "processed", "user_id": user_profile.get("id")}
     langwatch.get_current_trace().update(output=result)

@@ -98,10 +98,10 @@ def run_query(user_question: str):
                 "user_id": "user_123",
                 "session_id": "session_abc",
                 "index_name": "my_documents",
-                "model": "gpt-4o-mini"
+                "model": "gpt-5"
             }
         )
-    
+
     response = query_engine.query(user_question)
     return response
 ```
@@ -155,7 +155,7 @@ def my_custom_llamaindex_app(user_question: str):
     documents = SimpleDirectoryReader('data').load_data()
     index = VectorStoreIndex.from_documents(documents)
     query_engine = index.as_query_engine()
-    
+
     # Update the current trace with additional metadata
     current_trace = langwatch.get_current_trace()
     if current_trace:
@@ -164,14 +164,14 @@ def my_custom_llamaindex_app(user_question: str):
                 "user_id": "user_123",
                 "session_id": "session_abc",
                 "index_name": "custom_index",
-                "model": "gpt-4o-mini"
+                "model": "gpt-5"
             }
         )
-    
+
     # Run your query
     response = query_engine.query(user_question)
-    
+
     return response
 ```
 
-This approach allows you to combine the automatic tracing capabilities of LlamaIndex with the rich metadata and custom attributes provided by LangWatch. 
+This approach allows you to combine the automatic tracing capabilities of LlamaIndex with the rich metadata and custom attributes provided by LangWatch.

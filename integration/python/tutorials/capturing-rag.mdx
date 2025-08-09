@@ -35,8 +35,8 @@ def generate_answer_from_context(contexts: list[str], user_query: str):
     response = f"Based on the context, the answer to '{user_query}' is..."
     # You can update the LLM span with model details, token counts, etc.
     langwatch.get_current_span().update(
-        model="gpt-4o-mini", 
-        prompt=f"Contexts: {contexts}\nQuery: {user_query}", 
+        model="gpt-5",
+        prompt=f"Contexts: {contexts}\nQuery: {user_query}",
         completion=response
     )
     return response
@@ -51,11 +51,11 @@ def perform_rag(user_query: str):
         "RAG combines retrieval with generation for better answers.",
         "Python is a popular language for AI development."
     ]
-    
+
     # Update the current RAG span with the retrieved contexts
     # You can pass a list of strings directly
     langwatch.get_current_span().update(contexts=retrieved_docs)
-    
+
     # Alternatively, for richer context information:
     # from langwatch.types import RAGChunk
     # rag_chunks = [
@@ -66,7 +66,7 @@ def perform_rag(user_query: str):
 
     # 2. Generate answer using the contexts
     final_answer = generate_answer_from_context(contexts=retrieved_docs, user_query=user_query)
-    
+
     # The RAG span automatically captures its input (user_query) and output (final_answer)
     # if capture_input and capture_output are not set to False.
     return final_answer
@@ -74,12 +74,12 @@ def perform_rag(user_query: str):
 @langwatch.trace(name="User Question Handler")
 def handle_user_question(question: str):
     langwatch.get_current_trace().update(
-        input=question, 
+        input=question,
         metadata={"user_id": "example_user_123"}
     )
-    
+
     answer = perform_rag(user_query=question)
-    
+
     langwatch.get_current_trace().update(output=answer)
     return answer
 
@@ -147,7 +147,7 @@ langwatch_retriever_tool = create_retriever_tool(
 
 # 4. Use the wrapped retriever in your agent/chain
 tools = [langwatch_retriever_tool]
-model = ChatOpenAI(model="gpt-4o-mini", streaming=True)
+model = ChatOpenAI(model="gpt-5", streaming=True)
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", "You are a helpful assistant. Answer questions based on the retrieved context.\n{agent_scratchpad}"),
@@ -169,7 +169,7 @@ def run_langchain_rag(user_input: str):
             callbacks=[current_trace.get_langchain_callback()]
         ),
     )
-    
+
     output = response.get("output", "No output found.")=
     return output
 

@@ -49,7 +49,7 @@ os.environ["OPENAI_API_KEY"] = "your-openai-api-key"
 # Configure your agents
 config_list = [
     {
-        "model": "gpt-4o-mini",
+        "model": "gpt-5",
         "api_key": os.environ["OPENAI_API_KEY"],
     }
 ]
@@ -113,10 +113,10 @@ def run_agent_conversation(user_message: str):
                 "user_id": "user_123",
                 "session_id": "session_abc",
                 "agent_count": 2,
-                "model": "gpt-4o-mini"
+                "model": "gpt-5"
             }
         )
-    
+
     user_proxy.initiate_chat(
         assistant,
         message=user_message
@@ -171,24 +171,24 @@ def my_custom_autogen_app(input_message: str):
     # Your AutoGen code here
     config_list = [
         {
-            "model": "gpt-4o-mini",
+            "model": "gpt-5",
             "api_key": os.environ["OPENAI_API_KEY"],
         }
     ]
-    
+
     assistant = autogen.AssistantAgent(
         name="assistant",
         llm_config={"config_list": config_list},
         system_message="You are a helpful AI assistant."
     )
-    
+
     user_proxy = autogen.UserProxyAgent(
         name="user_proxy",
         human_input_mode="NEVER",
         max_consecutive_auto_reply=10,
         llm_config={"config_list": config_list},
     )
-    
+
     # Update the current trace with additional metadata
     current_trace = langwatch.get_current_trace()
     if current_trace:
@@ -197,17 +197,17 @@ def my_custom_autogen_app(input_message: str):
                 "user_id": "user_123",
                 "session_id": "session_abc",
                 "agent_count": 2,
-                "model": "gpt-4o-mini"
+                "model": "gpt-5"
             }
         )
-    
+
     # Run your agents
     user_proxy.initiate_chat(
         assistant,
         message=input_message
     )
-    
+
     return "Conversation completed"
 ```
 
-This approach allows you to combine the automatic tracing capabilities of AutoGen with the rich metadata and custom attributes provided by LangWatch. 
+This approach allows you to combine the automatic tracing capabilities of AutoGen with the rich metadata and custom attributes provided by LangWatch.

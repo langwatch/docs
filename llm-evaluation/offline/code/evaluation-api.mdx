@@ -196,7 +196,7 @@ for index, row in evaluation.loop(df.iterrows()):
                 "contexts": contexts,
             },
             settings={
-                "model": "openai/gpt-4o-mini",
+                "model": "openai/gpt-5",
                 "max_tokens": 2048,
             }
         )
@@ -240,7 +240,7 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
                 "contexts": contexts,
             },
             settings={
-                "model": "openai/gpt-4o-mini",
+                "model": "openai/gpt-5",
                 "max_tokens": 2048,
                 "autodetect_dont_know": True,
             }

@@ -35,7 +35,7 @@ First, examine what data is being captured in your LLM spans. In the LangWatch d
 1. Navigate to a trace that should have cost/token data
 2. Click on the LLM span to inspect its details
 3. Look for these key fields:
-   - **Model**: Should show the model identifier (e.g., `openai/gpt-4o-mini`)
+   - **Model**: Should show the model identifier (e.g., `openai/gpt-5`)
    - **Input/Output**: Should contain the actual messages sent and received
    - **Metrics**: Should show prompt + completion tokens
 
@@ -66,7 +66,7 @@ import langwatch
 def custom_llm_call(prompt: str):
     # Update the current span with model information
     langwatch.get_current_span().update(
-        model="openai/gpt-4o-mini",  # Use the exact model identifier
+        model="openai/gpt-5",  # Use the exact model identifier
         input=prompt,
     )
 
@@ -103,7 +103,7 @@ def my_llm_call_with_tracking(prompt):
     with tracer.start_as_current_span("llm_call_wrapper") as span:
         # Set the required attributes for cost calculation
         span.set_attribute("gen_ai.operation.name", "chat")
-        span.set_attribute("gen_ai.request.model", "gpt-4o-mini")
+        span.set_attribute("gen_ai.request.model", "gpt-5")
 
         # Your existing LLM call (may create its own spans)
         response = your_framework_llm_client.generate(prompt)
@@ -137,8 +137,8 @@ If your model isn't in the cost table, add it:
 
 1. Click **"Add New Model"** in Settings > Model Costs
 2. Configure the model entry:
-   - **Model Name**: Descriptive name (e.g., "gpt-4.1")
-   - **Regex Match Rule**: Pattern to match your model identifier (e.g., `^gpt-4.1$`)
+   - **Model Name**: Descriptive name (e.g., "gpt-5")
+   - **Regex Match Rule**: Pattern to match your model identifier (e.g., `^gpt-5$`)
    - **Input Cost**: Cost per input token (e.g., `0.0000004`)
    - **Output Cost**: Cost per output token (e.g., `0.0000016`)
 
@@ -148,9 +148,9 @@ Make sure your regex patterns match how the model names appear in your spans:
 
 | Framework    | Model Identifier Format | Regex Pattern          |
 | ------------ | ----------------------- | ---------------------- |
-| OpenAI SDK   | `gpt-4o-mini`           | `^gpt-4o-mini$`        |
-| Azure OpenAI | `gpt-4o-mini`           | `^gpt-4o-mini$`        |
-| LangChain    | `openai/gpt-4o-mini`    | `^openai/gpt-4o-mini$` |
+| OpenAI SDK   | `gpt-5`           | `^gpt-5$`        |
+| Azure OpenAI | `gpt-5`           | `^gpt-5$`        |
+| LangChain    | `openai/gpt-5`    | `^openai/gpt-5$` |
 | Custom       | `my-custom-model-v1`    | `^my-custom-model-v1$` |
 
 
@@ -159,7 +159,7 @@ Make sure your regex patterns match how the model names appear in your spans:
 After running your test, verify in the LangWatch dashboard:
 
 ✅ **Trace appears** in the dashboard \
-✅ **LLM span shows model name** (e.g., `gpt-4o-mini`) \
+✅ **LLM span shows model name** (e.g., `gpt-5`) \
 ✅ **Input and output are captured** \
 ✅ **Token metrics are present** (`prompt_tokens`, `completion_tokens`) \
 ✅ **Cost is calculated and displayed** (non-zero value)

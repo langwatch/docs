@@ -103,7 +103,7 @@ export const tracer = getLangWatchTracer("my-service");
 ```typescript Class-based
 class MyService {
   private tracer = getLangWatchTracer("my-service");
-  
+
   async handleRequest() {
     return await this.tracer.withActiveSpan("handle-request", async (span) => {
       // ... your logic
@@ -137,7 +137,7 @@ async function handleMessage() {
   return await tracer.withActiveSpan("handle-message", async (span) => {
     // This whole function execution is now a single trace
     span.setType("llm");
-    
+
     // ... rest of your message handling logic ...
     return "response";
   });
@@ -148,13 +148,13 @@ You can also add initial attributes and metadata:
 
 ```typescript
 await tracer.withActiveSpan(
-  "handle-message", 
-  { 
-    attributes: { 
+  "handle-message",
+  {
+    attributes: {
       "user.id": "user-123",
-      "thread.id": "thread-456" 
-    } 
-  }, 
+      "thread.id": "thread-456"
+    }
+  },
   async (span) => {
     // ... your logic ...
   }
@@ -215,15 +215,15 @@ tracer.startActiveSpan("my-operation", (span) => {
   try {
     span.setType("llm");
     span.setInput("Hello, world!");
-    
+
     // ... your logic ...
-    
+
     span.setOutput("Hello! How can I help you?");
     span.setStatus({ code: SpanStatusCode.OK });
   } catch (error) {
-    span.setStatus({ 
-      code: SpanStatusCode.ERROR, 
-      message: error.message 
+    span.setStatus({
+      code: SpanStatusCode.ERROR,
+      message: error.message
     });
     span.recordException(error);
     throw error;
@@ -242,15 +242,15 @@ const span = tracer.startSpan("my-operation");
 try {
   span.setType("llm");
   span.setInput("Hello, world!");
-  
+
   // ... your logic ...
-  
+
   span.setOutput("Hello! How can I help you?");
   span.setStatus({ code: SpanStatusCode.OK });
 } catch (error) {
-  span.setStatus({ 
-    code: SpanStatusCode.ERROR, 
-    message: error.message 
+  span.setStatus({
+    code: SpanStatusCode.ERROR,
+    message: error.message
   });
   span.recordException(error);
   throw error;
@@ -267,15 +267,15 @@ You can record structured input and output data:
 ```typescript JSON Input/Output
 await tracer.withActiveSpan("my-operation", async (span) => {
   // Record JSON input
-  span.setInput({ 
-    prompt: "Hello", 
-    temperature: 0.7 
+  span.setInput({
+    prompt: "Hello",
+    temperature: 0.7
   });
-  
+
   // Record JSON output
-  span.setOutput({ 
-    response: "I'm doing well!", 
-    confidence: 0.95 
+  span.setOutput({
+    response: "I'm doing well!",
+    confidence: 0.95
   });
 });
 ```
@@ -284,7 +284,7 @@ await tracer.withActiveSpan("my-operation", async (span) => {
 await tracer.withActiveSpan("my-operation", async (span) => {
   // Record string input
   span.setInputString("Hello, how are you?");
-  
+
   // Record string output
   span.setOutputString("I'm doing well!");
 });
@@ -293,11 +293,11 @@ await tracer.withActiveSpan("my-operation", async (span) => {
 ```typescript Mixed Types
 await tracer.withActiveSpan("my-operation", async (span) => {
   // Record JSON input
-  span.setInput({ 
-    prompt: "Hello", 
-    temperature: 0.7 
+  span.setInput({
+    prompt: "Hello",
+    temperature: 0.7
   });
-  
+
   // Record string output
   span.setOutputString("I'm doing well!");
 });
@@ -388,7 +388,7 @@ async function retrieveRelevantDocuments(query: string) {
     ];
 
     // Filter documents based on query (simplified)
-    const relevantDocs = documents.filter(doc => 
+    const relevantDocs = documents.filter(doc =>
       doc.content.toLowerCase().includes(query.toLowerCase())
     );
 
@@ -402,15 +402,15 @@ async function retrieveRelevantDocuments(query: string) {
     );
 
     span.setInputString(query);
-    
+
     return relevantDocs;
   });
 }
 
 // Main message handling function
 async function handleUserMessage(
-  userId: string, 
-  threadId: string, 
+  userId: string,
+  threadId: string,
   message: string
 ) {
   return await tracer.withActiveSpan("handle-user-message", {
@@ -422,10 +422,10 @@ async function handleUserMessage(
   }, async (span) => {
     // 1. Retrieve relevant documents
     const documents = await retrieveRelevantDocuments(message);
-    
+
     // 2. Generate response using Vercel AI SDK
     const response = await generateText({
-      model: openai("gpt-4"),
+      model: openai("gpt-5"),
       prompt: `Based on the following context, answer the user's question:
 
 Context:

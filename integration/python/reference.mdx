@@ -271,7 +271,7 @@ When `langwatch.trace()` is used as a context manager, it yields a `LangWatchTra
   with langwatch.trace(name="ProcessWithRemoteEval") as current_trace:
       output_to_evaluate = "Some generated text."
       current_trace.evaluate(
-          slug="sentiment-analyzer", 
+          slug="sentiment-analyzer",
           output=output_to_evaluate,
           as_guardrail=False
       )
@@ -379,9 +379,9 @@ def complex_op():
         # rag_span.update(contexts=[{"document_id": "doc1", "content": "..."}])
         retrieved_data = "some data from RAG"
         rag_span.update(output=retrieved_data)
-    
+
     # ... more work ...
-    with langwatch.span(name="LLMCall", type="llm", input={"prompt": "Summarize this"}, model="gpt-4o-mini") as llm_span:
+    with langwatch.span(name="LLMCall", type="llm", input={"prompt": "Summarize this"}, model="gpt-5") as llm_span:
         summary = "summary from LLM"
         llm_span.update(output=summary, metrics={"input_tokens": 50, "output_tokens": 15})
     return summary
@@ -436,7 +436,7 @@ complex_op()
 </ParamField>
 
 <ParamField path="model" type="Optional[str]" default="None">
-  The name or identifier of the model used in this operation (e.g., `'gpt-4o-mini'`, `'text-embedding-ada-002'`).
+  The name or identifier of the model used in this operation (e.g., `'gpt-5'`, `'text-embedding-ada-002'`).
 </ParamField>
 
 <ParamField path="params" type="Optional[Union[SpanParams, Dict[str, Any]]]" default="None">
@@ -521,10 +521,10 @@ When `langwatch.span()` is used as a context manager, it yields a `LangWatchSpan
   with langwatch.span(name="SubOperation") as current_span:
       # ... operation ...
       eval_data = {
-          "name": "Correctness Check", 
-          "status": "processed", 
-          "passed": False, 
-          "score": 0.2, 
+          "name": "Correctness Check",
+          "status": "processed",
+          "passed": False,
+          "score": 0.2,
           "label": "Incorrect"
       } # Example, more fields available
       current_span.add_evaluation(**eval_data)
@@ -655,7 +655,7 @@ def user_flow():
     with langwatch.span(name="Step1") as span1:
         # ... step 1 logic ...
         enrich_span_data("step1_result", "success")
-    
+
     with langwatch.span(name="Step2") as span2:
         # ... step 2 logic ...
         enrich_span_data("step2_details", {"info": "more data"})

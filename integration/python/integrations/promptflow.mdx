@@ -66,7 +66,7 @@ if __name__ == "__main__":
         "question": "What is the capital of France?",
         "context": "Geography information"
     }
-    
+
     result = run_promptflow_flow(flow_path, inputs)
     print(f"Flow result: {result}")
 ```
@@ -102,7 +102,7 @@ def run_promptflow_flow(flow_path: str, inputs: dict):
                 "input_count": len(inputs)
             }
         )
-    
+
     result = pf.run(
         flow=flow_path,
         inputs=inputs
@@ -145,7 +145,7 @@ export LANGWATCH_API_KEY=your-langwatch-api-key
 
 PromptFlow supports various LLM providers including:
 
-- OpenAI (GPT-4, GPT-3.5-turbo, etc.)
+- OpenAI (GPT-5, GPT-4o, etc.)
 - Anthropic (Claude models)
 - Local models (via Ollama, etc.)
 - Other providers supported by PromptFlow
@@ -182,7 +182,7 @@ langwatch.setup(
 def my_custom_promptflow_app(flow_path: str, inputs: dict):
     # Your PromptFlow code here
     pf = PFClient()
-    
+
     # Update the current trace with additional metadata
     current_trace = langwatch.get_current_trace()
     if current_trace:
@@ -194,14 +194,14 @@ def my_custom_promptflow_app(flow_path: str, inputs: dict):
                 "input_count": len(inputs)
             }
         )
-    
+
     # Run your flow
     result = pf.run(
         flow=flow_path,
         inputs=inputs
     )
-    
+
     return result
 ```
 
-This approach allows you to combine the automatic tracing capabilities of PromptFlow with the rich metadata and custom attributes provided by LangWatch. 
+This approach allows you to combine the automatic tracing capabilities of PromptFlow with the rich metadata and custom attributes provided by LangWatch.

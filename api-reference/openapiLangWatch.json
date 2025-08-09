@@ -513,7 +513,7 @@
                           },
                           "model": {
                             "type": "string",
-                            "example": "openai/gpt-4o"
+                            "example": "openai/gpt-5"
                           },
                           "metrics": {
                             "type": "object",

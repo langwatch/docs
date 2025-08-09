@@ -41,12 +41,12 @@ def handle_user_query(query: str):
     # Your application logic here
     # For example, process the query and interact with an LLM
     processed_query = f"Query processed: {query}"
-    
+
     # You can also update trace metadata from within the trace
     current_trace = langwatch.get_current_trace()
     if current_trace:
         current_trace.update(metadata={"query_language": "en"})
-        
+
     return processed_query
 
 handle_user_query("Hello, LangWatch!")
@@ -79,16 +79,16 @@ def process_customer_request(customer_id: str, request_details: dict):
     with langwatch.trace(name="CustomerRequestFlow", metadata=trace_metadata) as current_trace:
         # Simulate some processing
         print(f"Processing request for customer {customer_id}")
-        
+
         # Update metadata based on some condition or result
         is_priority_customer = customer_id.startswith("vip_")
         current_trace.update(metadata={"priority_customer": is_priority_customer})
-        
+
         # ... further processing ...
-        
+
         if request_details.get("type") == "complaint":
             current_trace.update(metadata={"escalation_needed": True})
-            
+
         print(f"Trace ID: {current_trace.id}") # Example of accessing trace properties
 
 process_customer_request(f"vip_{uuid.uuid4()}", {"type": "complaint", "content": "Service issue"})
@@ -123,18 +123,18 @@ def generate_article(topic: str):
         # Simulate fetching data
         research_data = f"Data about {topic}"
         research_span.update(
-            source="internal_db", 
+            source="internal_db",
             query_complexity="medium",
             items_retrieved=10
         )
         # research_span.set_attributes({"source": "internal_db"}) # Also works
 
     with langwatch.span(name="GenerateText", type="llm") as llm_span:
-        llm_span.update(model="gpt-4o-mini", prompt_length=len(topic))
+        llm_span.update(model="gpt-5", prompt_length=len(topic))
         # Simulate LLM call
         article_text = f"Here's an article about {topic} based on {research_data}."
         llm_span.update(output_length=len(article_text), tokens_used=150)
-    
+
     return article_text
 
 generate_article("AI in Healthcare")

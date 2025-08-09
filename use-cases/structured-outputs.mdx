@@ -71,7 +71,7 @@ client = OpenAI()
 
 def extract_booking_details(message: str) -> BookingDetails:
     response = client.responses.parse(
-        model="gpt-4o",
+        model="gpt-5",
         instructions="Extract structured booking details from the user message. Only include fields you are confident about.",
         response_format=BookingDetails,
         input=[{"role": "user", "content": message}],
@@ -98,7 +98,7 @@ for idx, row in evaluation.loop(df.iterrows()):
     extracted_data = extract_booking_details(user_message)
 
     # 2. Compare extracted data to ground truth and log metrics
-    
+
     # Check if the pickup address was extracted correctly
     pickup_correct = extracted_data.pickup_address == ground_truth.get("pickup_address")
     evaluation.log(
@@ -122,7 +122,7 @@ for idx, row in evaluation.loop(df.iterrows()):
             "expected": ground_truth.get("airport_found")
         }
     )
-    
+
     # Check for hallucinations (fields that shouldn't exist)
     hallucinated_destination = "destination_address" in extracted_data and ground_truth.get("destination_address") is None
     evaluation.log(

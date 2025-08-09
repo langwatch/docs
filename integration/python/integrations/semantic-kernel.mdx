@@ -55,7 +55,7 @@ kernel = sk.Kernel()
 kernel.add_service(
     OpenAIChatCompletion(
         service_id="chat-gpt",
-        ai_model_id="gpt-4o-mini",
+        ai_model_id="gpt-5",
         api_key=os.environ["OPENAI_API_KEY"]
     )
 )
@@ -63,10 +63,10 @@ kernel.add_service(
 # Use the kernel as usual—traces will be sent to LangWatch automatically
 async def run_semantic_kernel_example(user_input: str):
     # Create a prompt template
-    prompt = """You are a helpful assistant. 
+    prompt = """You are a helpful assistant.
     User: {{$input}}
     Assistant: Let me help you with that."""
-    
+
     # Create a function from the prompt
     kernel.add_function(
         plugin_name="chat_plugin",
@@ -74,7 +74,7 @@ async def run_semantic_kernel_example(user_input: str):
         function_name="chat",
         description="A helpful chat function"
     )
-    
+
     # Invoke the function
     result = await kernel.invoke(
         function_name="chat",
@@ -115,7 +115,7 @@ kernel = sk.Kernel()
 kernel.add_service(
     OpenAIChatCompletion(
         service_id="chat-gpt",
-        ai_model_id="gpt-4o-mini",
+        ai_model_id="gpt-5",
         api_key=os.environ["OPENAI_API_KEY"]
     )
 )
@@ -128,22 +128,22 @@ async def chat_with_context(user_input: str):
         current_trace.update(
             metadata={
                 "kernel_function": "chat",
-                "model": "gpt-4o-mini",
+                "model": "gpt-5",
                 "input_length": len(user_input)
             }
         )
-    
-    prompt = """You are a helpful assistant. 
+
+    prompt = """You are a helpful assistant.
     User: {{$input}}
     Assistant: Let me help you with that."""
-    
+
     kernel.add_function(
         plugin_name="chat_plugin",
         prompt=prompt,
         function_name="chat",
         description="A helpful chat function"
     )
-    
+
     result = await kernel.invoke(
         function_name="chat",
         plugin_name="chat_plugin",
@@ -202,7 +202,7 @@ kernel = sk.Kernel()
 kernel.add_service(
     OpenAIChatCompletion(
         service_id="chat-gpt",
-        ai_model_id="gpt-4o-mini",
+        ai_model_id="gpt-5",
         api_key=os.environ["OPENAI_API_KEY"]
     )
 )
@@ -215,23 +215,23 @@ async def run_kernel_pipeline(user_input: str):
         current_trace.update(
             metadata={
                 "pipeline_type": "semantic_kernel",
-                "model": "gpt-4o-mini",
+                "model": "gpt-5",
                 "input_length": len(user_input)
             }
         )
-    
+
     # Your Semantic Kernel code here
-    prompt = """You are a helpful assistant. 
+    prompt = """You are a helpful assistant.
     User: {{$input}}
     Assistant: Let me help you with that."""
-    
+
     kernel.add_function(
         plugin_name="chat_plugin",
         prompt=prompt,
         function_name="chat",
         description="A helpful chat function"
     )
-    
+
     result = await kernel.invoke(
         function_name="chat",
         plugin_name="chat_plugin",
@@ -240,4 +240,4 @@ async def run_kernel_pipeline(user_input: str):
     return result
 ```
 
-This approach allows you to combine the tracing capabilities of Semantic Kernel with the rich metadata and custom attributes provided by LangWatch. 
+This approach allows you to combine the tracing capabilities of Semantic Kernel with the rich metadata and custom attributes provided by LangWatch.

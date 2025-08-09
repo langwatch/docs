@@ -161,7 +161,7 @@ The `LangWatchSpan` extends the standard OpenTelemetry `Span` with additional me
 </ParamField>
 
 <ParamField path="setRequestModel" type="(model: string) => this">
-  Set the request model name for the span. This is typically the model name sent in the API request (e.g., 'gpt-4', 'claude-3').
+  Set the request model name for the span. This is typically the model name sent in the API request (e.g., 'gpt-5', 'claude-3').
 </ParamField>
 
 <ParamField path="setResponseModel" type="(model: string) => this">
@@ -543,7 +543,7 @@ semconv.VAL_GEN_AI_FINISH_REASON_TOOL_CALLS    // "tool_calls"
 Supported types of spans for LangWatch observability:
 
 ```typescript
-type SpanType = 
+type SpanType =
   | "span"
   | "llm"
   | "chain"
@@ -990,14 +990,14 @@ const tracer = getLangWatchTracer("my-service");
 
 await tracer.withActiveSpan("process-request", async (span) => {
   span.setType("llm");
-  span.setRequestModel("gpt-4");
-  
+  span.setRequestModel("gpt-5");
+
   // Your LLM call here
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-5",
     messages: [{ role: "user", content: "Hello!" }]
   });
-  
+
   span.setOutput(response.choices[0].message.content);
   span.setMetrics({
     promptTokens: response.usage?.prompt_tokens,
@@ -1011,17 +1011,17 @@ await tracer.withActiveSpan("process-request", async (span) => {
 ```typescript
 await tracer.withActiveSpan("rag-query", async (span) => {
   span.setType("rag");
-  
+
   // Retrieve documents
   const documents = await vectorStore.similaritySearch("query", 5);
-  
+
   // Set RAG contexts
   span.setRAGContexts(documents.map(doc => ({
     document_id: doc.metadata.id,
     chunk_id: doc.metadata.chunk_id,
     content: doc.pageContent
   })));
-  
+
   // Generate response
   const response = await llm.generate([documents, "query"]);
   span.setOutput(response);
@@ -1040,18 +1040,18 @@ await tracer.withActiveSpan("llm-call", async (span) => {
   // Use semantic convention attributes for consistency
   span.setAttribute(semconv.ATTR_LANGWATCH_SPAN_TYPE, "llm");
   span.setAttribute(semconv.ATTR_LANGWATCH_STREAMING, false);
-  
+
   // Add GenAI events with proper system identifiers
   span.addGenAISystemMessageEvent(
     { content: "You are a helpful assistant." },
     semconv.VAL_GEN_AI_SYSTEM_OPENAI
   );
-  
+
   span.addGenAIUserMessageEvent(
     { content: "Hello!" },
     semconv.VAL_GEN_AI_SYSTEM_OPENAI
   );
-  
+
   // Record events with proper event names
   span.addEvent(semconv.LOG_EVNT_GEN_AI_ASSISTANT_MESSAGE, {
     content: "Hello! How can I help you today?"

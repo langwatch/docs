@@ -85,7 +85,7 @@ Each prompt can have multiple versions, with the latest version being used by de
         "type": "str"
       }
     ],
-    "model": "openai/gpt-4o-mini",
+    "model": "openai/gpt-5",
     "temperature": 0.7,
     "max_tokens": 1000,
     "demonstrations": {
@@ -161,7 +161,7 @@ The `configData` contains the actual prompt configuration with comprehensive met
       "type": "str"
     }
   ],
-  "model": "openai/gpt-4o-mini",
+  "model": "openai/gpt-5",
   "temperature": 0.7,
   "max_tokens": 1000,
   "demonstrations": {
@@ -189,7 +189,7 @@ The `configData` contains the actual prompt configuration with comprehensive met
 - **`messages`**: Array of chat messages with roles and content
 - **`inputs`**: Array of input variable definitions with identifiers and types
 - **`outputs`**: Array of output variable definitions with identifiers and types
-- **`model`**: The LLM model to use (e.g., `"openai/gpt-4o-mini"`) - model names follow the litellm structure ("provider/model")
+- **`model`**: The LLM model to use (e.g., `"openai/gpt-5"`) - model names follow the litellm structure ("provider/model")
 - **`temperature`**: Optional temperature setting for the model
 - **`max_tokens`**: Optional maximum token limit
 - **`demonstrations`**: Optional few-shot examples with columns and rows structure
@@ -295,7 +295,7 @@ When retrieving a prompt via API, you get the configuration with the latest vers
   "version": 1,
   "versionId": "version_abc123",
   "versionCreatedAt": "2024-01-15T10:30:00Z",
-  "model": "openai/gpt-4o-mini",
+  "model": "openai/gpt-5",
   "prompt": "You are a helpful customer support agent...",
   "messages": [
     {

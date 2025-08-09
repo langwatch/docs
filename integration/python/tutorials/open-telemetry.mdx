@@ -112,7 +112,7 @@ def handle_request(user_query: str):
 
     try:
         completion = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-5",
             messages=[
                 {"role": "system", "content": f"Use this context: {context_docs}"},
                 {"role": "user", "content": user_query}

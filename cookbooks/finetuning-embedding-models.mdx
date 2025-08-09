@@ -154,7 +154,7 @@ async def generate_transaction(category):
             """
 
     return await client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5",
         messages=[{"role": "system", "content": prompt}],
         context={"category": category},
         response_model=Transaction,

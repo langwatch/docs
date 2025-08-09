@@ -4015,7 +4015,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "Max tokens allowed for evaluation",
@@ -4063,7 +4063,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "Max tokens allowed for evaluation",
@@ -4166,7 +4166,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "Max tokens allowed for evaluation",
@@ -4216,7 +4216,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "max_tokens setting",
@@ -4266,7 +4266,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "max_tokens setting",
@@ -4333,7 +4333,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "max_tokens setting",
@@ -4373,7 +4373,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "Max tokens allowed for evaluation",
@@ -4438,7 +4438,7 @@
           "model": {
             "description": "The model to use for evaluation",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "Max tokens allowed for evaluation",
@@ -4760,7 +4760,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -4804,7 +4804,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -4855,7 +4855,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -4906,7 +4906,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -4953,7 +4953,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -5004,7 +5004,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -5051,7 +5051,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "embeddings_model": {
             "description": "The model to use for embeddings.",
@@ -5251,7 +5251,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5312,7 +5312,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5367,7 +5367,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5417,7 +5417,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5456,7 +5456,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5543,7 +5543,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5613,7 +5613,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",
@@ -5655,7 +5655,7 @@
           "model": {
             "description": "The model to use for evaluation.",
             "type": "string",
-            "default": "openai/gpt-4o-mini"
+            "default": "openai/gpt-5"
           },
           "max_tokens": {
             "description": "The maximum number of tokens allowed for evaluation, a too high number can be costly. Entries above this amount will be skipped.",

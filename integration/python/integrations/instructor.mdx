@@ -67,7 +67,7 @@ class UserList(BaseModel):
 # Use the client as usual—traces will be sent to LangWatch automatically
 def extract_user_info(text: str) -> User:
     return client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5",
         response_model=User,
         messages=[
             {"role": "user", "content": f"Extract user information from: {text}"}
@@ -76,7 +76,7 @@ def extract_user_info(text: str) -> User:
 
 def extract_multiple_users(text: str) -> UserList:
     return client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5",
         response_model=UserList,
         messages=[
             {"role": "user", "content": f"Extract all users from: {text}"}
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     text = "John is 25 years old and his email is john@example.com"
     user = extract_user_info(text)
     print(f"Extracted user: {user}")
-    
+
     multiple_text = "Alice is 30 (alice@example.com) and Bob is 28 (bob@example.com)"
     users = extract_multiple_users(multiple_text)
     print(f"Extracted users: {users}")
@@ -128,13 +128,13 @@ def extract_product_info(text: str) -> Product:
         current_trace.update(
             metadata={
                 "extraction_type": "product_info",
-                "model": "gpt-4o-mini",
+                "model": "gpt-5",
                 "source_text_length": len(text)
             }
         )
-    
+
     return client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5",
         response_model=Product,
         messages=[
             {"role": "user", "content": f"Extract product information from: {text}"}
@@ -206,14 +206,14 @@ def extract_tasks_from_text(text: str) -> List[Task]:
         current_trace.update(
             metadata={
                 "pipeline_type": "task_extraction",
-                "model": "gpt-4o-mini",
+                "model": "gpt-5",
                 "input_length": len(text)
             }
         )
-    
+
     # Your Instructor AI code here
     return client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-5",
         response_model=List[Task],
         messages=[
             {"role": "user", "content": f"Extract tasks from: {text}"}
@@ -221,4 +221,4 @@ def extract_tasks_from_text(text: str) -> List[Task]:
     )
 ```
 
-This approach allows you to combine the automatic tracing capabilities of Instructor AI with the rich metadata and custom attributes provided by LangWatch. 
+This approach allows you to combine the automatic tracing capabilities of Instructor AI with the rich metadata and custom attributes provided by LangWatch.

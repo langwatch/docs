@@ -70,7 +70,7 @@ def generate_answer(question: str, contexts: List[str]) -> str:
     system_prompt = "You are a helpful technical assistant. Use the following document chunks to answer the user's question accurately."
 
     response = client.responses.create(
-        model="gpt-4o",
+        model="gpt-5",
         instructions=system_prompt,
         input=[{"role": "user", "content": f"Documents:\n{chr(10).join(contexts)}"}, {"role": "user", "content": f"Question: {question}"}
         ]
@@ -108,7 +108,7 @@ for idx, row in evaluation.loop(df.iterrows()):
             "contexts": retrieved_contexts,
         }
     )
-    
+
     # This runs 'ragas/answer_relevancy' to check if the answer is relevant to the question.
     evaluation.run(
         "ragas/answer_relevancy",
