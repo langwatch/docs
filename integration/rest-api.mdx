@@ -1,5 +1,5 @@
 ---
-title: REST API 
+title: REST API
 description: Integrate LangWatch with any language by using the REST API
 ---
 
@@ -75,8 +75,8 @@ curl -X POST "$LANGWATCH_ENDPOINT/api/collector" \
         "completion_tokens": 150
       },
       "timestamps": {
-        "started_at": 1706628806000,
-        "finished_at": 1706628808000
+        "started_at": $(($(date +%s) * 1000)),
+        "finished_at": $((($(date +%s) + 1) * 1000))
       }
     }
   ],

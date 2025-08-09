@@ -9080,8 +9080,8 @@ curl -X POST "$LANGWATCH_ENDPOINT/api/collector" \
         "completion_tokens": 150
       },
       "timestamps": {
-        "started_at": 1706628806000,
-        "finished_at": 1706628808000
+        "started_at": $(($(date +%s) * 1000)),
+        "finished_at": $((($(date +%s) + 1) * 1000))
       }
     }
   ],
@@ -9716,9 +9716,8 @@ curl -X POST "https://app.langwatch.ai/api/collector" \\
           "value": "What is the capital of France?"
       },
       "timestamps": {
-          "started_at": 1702485035000,
-          "first_token_at": null,
-          "finished_at": 1702485041000
+          "started_at": $(($(date +%s) * 1000)),
+          "finished_at": $((($(date +%s) + 1) * 1000))
       },
       "contexts": [
         {
@@ -9770,8 +9769,8 @@ curl -X POST "https://app.langwatch.ai/api/collector" \\
         "completion_tokens": 150
       },
       "timestamps": {
-        "started_at": 1617981376000,
-        "finished_at": 1617981378000
+        "started_at": $(($(date +%s) * 1000)),
+        "finished_at": $((($(date +%s) + 1) * 1000))
       }
     }
   ],
