@@ -28,35 +28,51 @@ Integrate LangWatch into your TypeScript/JavaScript application to start observi
 
 First, you need a LangWatch API key. Sign up at [app.langwatch.ai](https://app.langwatch.ai) and find your API key in your project settings. The SDK will automatically use the `LANGWATCH_API_KEY` environment variable if it is set.
 
-## Start Instrumenting
+## Quick Start
 
-First, ensure you have the SDK installed:
+Install the SDK and get started in minutes:
 
 ```bash
 npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks
+
+# Optional: Vercel AI SDK for the example below
+npm install @ai-sdk/openai ai
 ```
 
-Initialize LangWatch early in your Node.js application, typically where you configure services:
-
 ```typescript
-import { setupLangWatch } from "langwatch/node";
+import { getLangWatchTracer } from "langwatch";
+import { setupObservability } from "langwatch/observability/setup/node";
 
-await setupLangWatch(); // This will setup the SDK, and setup the observability SDK.
+// Optional: Vercel AI SDK for LLM calls
+// npm install @ai-sdk/openai ai
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+
+// Initialize LangWatch (uses `LANGWATCH_API_KEY` by default)
+setupObservability({ serviceName: "my-laundry-startup" });
+
+// Create a reusable tracer
+const tracer = getLangWatchTracer("laundry-messaging-service");
+
+async function handleUserMessage(message: string) {
+  return await tracer.withActiveSpan("handle-user-message", async (span) => {
+    // Generate response using Vercel AI SDK
+    const response = await generateText({
+      model: openai("gpt-4"),
+      prompt: message,
+
+      // Automatically capture input/output, metrics, etc.
+      experimental_telemetry: { isEnabled: true },
+    });
+
+    return response.text;
+  });
+}
 ```
 
 <Note>
   If you have an existing OpenTelemetry setup in your application, please see the [Already using OpenTelemetry?](#already-using-opentelemetry) section below.
 </Note>
-
-## Basic Concepts
-
-- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
-- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
-  - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
-  - Different types of [Spans](/concepts#spans) capture different parameters.
-  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
-- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
-  - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
 
 ## Integrations
 
@@ -76,21 +92,150 @@ Below is a list of currently supported integrations. Click on each to learn more
 {/* - [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk) */}
 {/* - [Other Frameworks](/integration/typescript/integrations/other) */}
 
-## Capturing Messages
+## Core Concepts
+
+- Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces).
+- A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline.
+  - A span can be an LLM call, a database query for a RAG retrieval, or a simple function transformation.
+  - Different types of [Spans](/concepts#spans) capture different parameters.
+  - [Spans](/concepts#spans) can be nested to capture the pipeline structure.
+- [Traces](/concepts#traces) can be grouped together on LangWatch Dashboard by having the same [`thread_id`](/concepts#threads) in their metadata, making the individual messages become part of a conversation.
+  - It is also recommended to provide the [`user_id`](/concepts#user-id) metadata to track user analytics.
+
+## Basic Usage
+
+LangWatch automatically captures your LLM interactions when you use the `withActiveSpan` method. This creates a trace for each operation and handles error recording, status setting, and span ending automatically.
 
 <Tip>
-  For most use cases, we recommend using `withActiveSpan` as it automatically handles error recording, status setting, and span ending. Use `startActiveSpan` when you need more control over span lifecycle, and `startSpan` only when you need complete manual control.
+  Create your tracer at the module level and export it for reuse across your application. This ensures consistent service naming and avoids unnecessary tracer creation overhead.
 </Tip>
 
-Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces). A [Trace](/concepts#traces) contains multiple [Spans](/concepts#spans), which are the steps inside your pipeline. Spans can be nested to capture the pipeline structure.
+### Adding Context and Metadata
 
-### Creating a Trace
+You can add user and thread information to group conversations:
 
-To capture an end-to-end operation, like processing a user message, you can use the `withActiveSpan` method. This is a helper method provided by the LangWatch SDK (not part of standard OpenTelemetry) that automatically creates a span for the entire operation and handles error recording, status setting, and span ending.
+```typescript
+await tracer.withActiveSpan(
+  "handle-message",
+  {
+    attributes: {
+      "user.id": "user-123",
+      "thread.id": "thread-456"
+    }
+  },
+  async (span) => {
+    // ... your logic ...
+  }
+);
+```
 
-#### Tracer Best Practices
+### Recording Input and Output
 
-The tracer should be created once and reused throughout your application. Here are some recommended patterns:
+LangWatch automatically detects the type of your input/output data, but you can also specify the type explicitly for more control.
+
+<CodeGroup>
+```typescript Automatic Type Detection
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Automatically detects: strings → text, ChatMessage[] → chat_messages,
+  // arrays → list, objects → json
+  span.setInput({
+    prompt: "Hello",
+    temperature: 0.7
+  }); // Detected as "json"
+  
+  span.setInput("Hello, how are you?"); // Detected as "text"
+  span.setInput([{ role: "user", content: "Hello" }]); // Detected as "chat_messages"
+  
+  span.setOutput({
+    response: "I'm doing well!",
+    confidence: 0.95
+  }); // Detected as "json"
+});
+```
+
+```typescript Explicit Type Control
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Force specific types
+  span.setInput("text", "Hello, how are you?");
+  span.setInput("json", { prompt: "Hello", temperature: 0.7 });
+  span.setInput("chat_messages", [
+    { role: "user", content: "Hello" },
+    { role: "assistant", content: "Hi there!" }
+  ]);
+  
+  span.setOutput("text", "I'm doing well!");
+  span.setOutput("json", { response: "I'm doing well!", confidence: 0.95 });
+});
+```
+
+```typescript Raw Data
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // For any data type that doesn't fit the standard types
+  span.setInput("raw", someComplexObject);
+  span.setOutput("raw", someComplexResponse);
+});
+```
+</CodeGroup>
+
+### Setting Span Types
+
+Categorize your spans for better filtering and analysis:
+
+<CodeGroup>
+```typescript LLM Operations
+await tracer.withActiveSpan("llm-call", async (span) => {
+  span.setType("llm");
+  // ... your LLM logic
+});
+```
+
+```typescript RAG Operations
+await tracer.withActiveSpan("rag-retrieval", async (span) => {
+  span.setType("rag");
+  span.setRAGContexts([
+    {
+      document_id: "doc-123",
+      chunk_id: "chunk-456", 
+      content: "Relevant passage from the document."
+    }
+  ]);
+  // ... your RAG logic
+});
+```
+
+```typescript Tool Operations
+await tracer.withActiveSpan("tool-call", async (span) => {
+  span.setType("tool");
+  // ... your tool logic
+});
+```
+
+```typescript Other Types
+await tracer.withActiveSpan("my-operation", async (span) => {
+  // Available types: 'span', 'llm', 'chain', 'tool', 'agent', 'guardrail', 
+  // 'evaluation', 'rag', 'prompt', 'workflow', 'component', 'module', 
+  // 'server', 'client', 'producer', 'consumer', 'task', 'unknown'
+  span.setType("workflow");
+  // ... your logic
+});
+```
+</CodeGroup>
+
+### Adding Metrics
+
+Track token usage and costs:
+
+```typescript
+await tracer.withActiveSpan("llm-call", async (span) => {
+  span.setMetrics({
+    promptTokens: 150,
+    completionTokens: 50,
+    cost: 0.002
+  });
+});
+```
+
+### Tracer Best Practices
 
 <CodeGroup>
 ```typescript Module-level (Recommended)
@@ -122,258 +267,174 @@ async function handleRequest() {
 ```
 </CodeGroup>
 
-<Tip>
-  Create your tracer at the module level and export it for reuse across your application. This ensures consistent service naming and avoids unnecessary tracer creation overhead.
-</Tip>
+## Configuration
 
-#### Basic Usage
+The LangWatch observability SDK provides comprehensive configuration options for different use cases.
 
-```typescript
-import { getLangWatchTracer } from "langwatch";
-
-const tracer = getLangWatchTracer("my-service");
-
-async function handleMessage() {
-  return await tracer.withActiveSpan("handle-message", async (span) => {
-    // This whole function execution is now a single trace
-    span.setType("llm");
-
-    // ... rest of your message handling logic ...
-    return "response";
-  });
-}
-```
-
-You can also add initial attributes and metadata:
+### Basic Setup Options
 
 ```typescript
-await tracer.withActiveSpan(
-  "handle-message",
-  {
-    attributes: {
-      "user.id": "user-123",
-      "thread.id": "thread-456"
-    }
+import { setupObservability } from "langwatch/observability/setup/node";
+
+const handle = await setupObservability({
+  // LangWatch configuration
+  langwatch: {
+    apiKey: process.env.LANGWATCH_API_KEY,
+    endpoint: process.env.LANGWATCH_ENDPOINT,
+    processorType: 'batch' // 'simple' or 'batch'
   },
-  async (span) => {
-    // ... your logic ...
-  }
-);
+  
+  // Service identification
+  serviceName: "my-service",
+  
+  // Global attributes for all spans
+  attributes: {
+    "service.version": "1.0.0",
+    "deployment.environment": process.env.NODE_ENV,
+    "team.name": "ai-platform"
+  },
+  
+  // Data capture configuration
+  dataCapture: "all", // 'all', 'input', 'output', 'none', or custom function
+});
 ```
 
-### Capturing a Span
+### Data Capture Configuration
 
-To instrument specific parts of your pipeline within a trace (like an LLM operation, RAG retrieval, or external API call), use the `startActiveSpan` method.
+Control what data is captured by LangWatch instrumentations:
 
-```typescript
-import { getLangWatchTracer } from "langwatch";
-
-const tracer = getLangWatchTracer("my-service");
-
-async function ragRetrieval(query: string) {
-  return await tracer.withActiveSpan("rag-retrieval", async (span) => {
-    span.setType("rag");
-
-    // ... logic to retrieve documents ...
-    const searchResults = [
-      { id: "doc-1", content: "..." },
-      { id: "doc-2", content: "..." }
-    ];
-
-    // Add specific context data to the span
-    span.setRAGContexts(
-      searchResults.map(doc => ({
-        document_id: doc.id,
-        chunk_id: doc.id,
-        content: doc.content
-      })),
-    );
-
-    return searchResults;
-  });
-}
-
-async function handleMessage() {
-  return await tracer.withActiveSpan("handle-message", async (span) => {
-    // ... other logic ...
-    const retrievedDocs = await ragRetrieval("user query"); // This creates a nested span
-    // ... rest of logic ...
-  });
-}
+<CodeGroup>
+```typescript Simple Modes
+const handle = await setupObservability({
+  dataCapture: "all"     // Capture everything (default)
+  // dataCapture: "input"  // Capture only input data
+  // dataCapture: "output" // Capture only output data
+  // dataCapture: "none"   // Capture nothing
+});
 ```
 
-### Manual Span Management
-
-For more control, you can manually manage spans. There are three approaches:
-
-#### Using startActiveSpan (Recommended for manual control)
-
-`startActiveSpan` is the standard OpenTelemetry method that creates a span, sets it in context (so child spans are nested), but requires manual error handling and ending:
-
-```typescript
-tracer.startActiveSpan("my-operation", (span) => {
-  try {
-    span.setType("llm");
-    span.setInput("Hello, world!");
-
-    // ... your logic ...
-
-    span.setOutput("Hello! How can I help you?");
-    span.setStatus({ code: SpanStatusCode.OK });
-  } catch (error) {
-    span.setStatus({
-      code: SpanStatusCode.ERROR,
-      message: error.message
-    });
-    span.recordException(error);
-    throw error;
-  } finally {
-    span.end();
+```typescript Environment-Aware Configuration
+const handle = await setupObservability({
+  dataCapture: (context) => {
+    // Don't capture sensitive data in production
+    if (context.environment === "production" && 
+        context.operationName.includes("password")) {
+      return "none";
+    }
+    // Capture everything else
+    return "all";
   }
 });
 ```
 
-#### Using startSpan (Complete manual control)
+```typescript Custom Configuration Object
+const handle = await setupObservability({
+  dataCapture: {
+    mode: "all"
+    // Additional configuration options
+  }
+});
+```
+</CodeGroup>
 
-`startSpan` is the standard OpenTelemetry method that creates a span but does NOT set it in context, so child spans won't be nested. Use this only when you need complete control:
+## Already using OpenTelemetry?
+
+If you already have OpenTelemetry set up in your application, you have several options:
+
+<Note>
+  For advanced OpenTelemetry configuration, custom span processors, and migration strategies, see our [Manual Span Management & OpenTelemetry Migration](/integration/typescript/tutorials/manual-span-management) guide.
+</Note>
+
+### Option 1: Replace with LangWatch (Recommended)
+
+Remove your existing OpenTelemetry setup and use LangWatch exclusively:
 
 ```typescript
-const span = tracer.startSpan("my-operation");
-try {
-  span.setType("llm");
-  span.setInput("Hello, world!");
+// Remove existing OpenTelemetry setup
+// import { NodeSDK } from "@opentelemetry/sdk-node";
+// const sdk = new NodeSDK({ ... });
 
-  // ... your logic ...
-
-  span.setOutput("Hello! How can I help you?");
-  span.setStatus({ code: SpanStatusCode.OK });
-} catch (error) {
-  span.setStatus({
-    code: SpanStatusCode.ERROR,
-    message: error.message
-  });
-  span.recordException(error);
-  throw error;
-} finally {
-  span.end();
-}
-```
-
-### Setting Input and Output
-
-You can record structured input and output data:
-
-<CodeGroup>
-```typescript JSON Input/Output
-await tracer.withActiveSpan("my-operation", async (span) => {
-  // Record JSON input
-  span.setInput({
-    prompt: "Hello",
-    temperature: 0.7
-  });
-
-  // Record JSON output
-  span.setOutput({
-    response: "I'm doing well!",
-    confidence: 0.95
-  });
+// Use LangWatch instead
+import { setupObservability } from "langwatch/observability/setup/node";
+const handle = await setupObservability({
+  langwatch: {
+    apiKey: process.env.LANGWATCH_API_KEY
+  }
 });
 ```
 
-```typescript String Input/Output
-await tracer.withActiveSpan("my-operation", async (span) => {
-  // Record string input
-  span.setInputString("Hello, how are you?");
+### Option 2: Add LangWatch to Existing Setup
 
-  // Record string output
-  span.setOutputString("I'm doing well!");
+Keep your existing OpenTelemetry setup and add LangWatch exporters:
+
+```typescript
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { LangWatchTraceExporter } from "langwatch";
+
+const sdk = new NodeSDK({
+  spanProcessors: [
+    // Keep your existing processors
+    new BatchSpanProcessor(new JaegerExporter()),
+    // Add LangWatch processor
+    new BatchSpanProcessor(new LangWatchTraceExporter({
+      apiKey: process.env.LANGWATCH_API_KEY
+    }))
+  ]
 });
 ```
 
-```typescript Mixed Types
-await tracer.withActiveSpan("my-operation", async (span) => {
-  // Record JSON input
-  span.setInput({
-    prompt: "Hello",
-    temperature: 0.7
-  });
+### Option 3: Skip OpenTelemetry Setup
 
-  // Record string output
-  span.setOutputString("I'm doing well!");
+Handle OpenTelemetry setup yourself and use LangWatch only for tracing:
+
+```typescript
+import { setupObservability } from "langwatch/observability/setup/node";
+
+// Skip OpenTelemetry setup, handle it yourself
+const handle = await setupObservability({
+  advanced: {
+    skipOpenTelemetrySetup: true
+  }
 });
-```
-</CodeGroup>
 
-### Adding Metrics
-
-Track token usage and costs:
-
-<CodeGroup>
-```typescript Basic Metrics
-await tracer.withActiveSpan("llm-call", async (span) => {
-  span.setMetrics({
-    promptTokens: 150,
-    completionTokens: 50,
-    cost: 0.002
-  });
-});
+// Your existing OpenTelemetry setup continues to work
+// LangWatch tracers will use your existing setup
 ```
 
-```typescript Partial Metrics
-await tracer.withActiveSpan("llm-call", async (span) => {
-  // Only track tokens
-  span.setMetrics({
-    promptTokens: 150,
-    completionTokens: 50
-  });
-});
-```
+## Complete Example
 
-```typescript Cost Only
-await tracer.withActiveSpan("llm-call", async (span) => {
-  // Only track cost
-  span.setMetrics({
-    cost: 0.002
-  });
-});
-```
-</CodeGroup>
-
-## Full Setup
-
-Here's a complete example showing how to integrate LangWatch with a typical LLM application using the Vercel AI SDK, including RAG retrieval, generation, and data storage.
-
-### Complete Example
+Here's a complete example showing how to integrate LangWatch with a typical LLM application using the Vercel AI SDK, including RAG retrieval and generation.
 
 <CodeGroup>
 ```typescript app.ts
-import { setupLangWatch } from "langwatch/node";
+import { setupObservability } from "langwatch/observability/setup/node";
 import { getLangWatchTracer } from "langwatch";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
-import { z } from "zod";
 
-// Initialize LangWatch
-await setupLangWatch({
-  apiKey: process.env.LANGWATCH_API_KEY, // Optional: defaults to environment variable `LANGWATCH_API_KEY`
-  endpoint: process.env.LANGWATCH_ENDPOINT, // Optional: defaults to `LANGWATCH_ENDPOINT` or hosted cloud endpoint
-  baseAttributes: {
-    "service.name": "chatbot-service",
+// Initialize LangWatch observability
+const handle = await setupObservability({
+  langwatch: {
+    apiKey: process.env.LANGWATCH_API_KEY,
+    processorType: 'batch'
+  },
+  serviceName: "chatbot-service",
+  attributes: {
     "service.version": "1.0.0",
     "deployment.environment": process.env.NODE_ENV,
   },
-  spanExcludeRules: [{
-    fieldName: ["span_name"],
-    matchValue: "health-check",
-    matchOperation: "exact_match"
-  }]
+  dataCapture: "all"
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  await handle.shutdown();
+  process.exit(0);
 });
 
 // Create a reusable tracer
 const tracer = getLangWatchTracer("chatbot-service");
-
-// Mock database for storing conversation data
-const conversationStore = new Map<string, any[]>();
 
 // Mock RAG retrieval function
 async function retrieveRelevantDocuments(query: string) {
@@ -383,8 +444,7 @@ async function retrieveRelevantDocuments(query: string) {
     // Simulate document retrieval
     const documents = [
       { id: "doc-1", content: "LangWatch is an observability platform for LLM applications." },
-      { id: "doc-2", content: "It provides tracing, evaluation, and monitoring capabilities." },
-      { id: "doc-3", content: "The platform supports multiple programming languages and frameworks." }
+      { id: "doc-2", content: "It provides tracing, evaluation, and monitoring capabilities." }
     ];
 
     // Filter documents based on query (simplified)
@@ -402,7 +462,6 @@ async function retrieveRelevantDocuments(query: string) {
     );
 
     span.setInputString(query);
-
     return relevantDocs;
   });
 }
@@ -425,7 +484,7 @@ async function handleUserMessage(
 
     // 2. Generate response using Vercel AI SDK
     const response = await generateText({
-      model: openai("gpt-5"),
+      model: openai("gpt-4"),
       prompt: `Based on the following context, answer the user's question:
 
 Context:
@@ -436,87 +495,28 @@ User Question: ${message}
 Answer:`,
       maxTokens: 500,
       temperature: 0.7,
-      // This is required for LangWatch to capture the LLM input and output, and other data.
       experimental_telemetry: { isEnabled: true },
     });
 
-    // 3. Store conversation data
-    const conversationData = {
-      timestamp: new Date().toISOString(),
-      userMessage: message,
-      assistantResponse: response.text,
-      retrievedDocuments: documents,
-      threadId,
-      userId
-    };
-
-    // Store in mock database
-    const userConversations = conversationStore.get(userId) || [];
-    userConversations.push(conversationData);
-    conversationStore.set(userId, userConversations);
-
-    // 4. Record the complete interaction
+    // 3. Record the complete interaction
     span.setType("llm");
-
-    // 5. Record metrics
     span.setMetrics({
       promptTokens: response.usage?.promptTokens || 0,
       completionTokens: response.usage?.completionTokens || 0,
       cost: response.usage?.cost || 0
     });
 
-    // 6. Record input, the pure LLM input is automatically captured via the Vercel AI SDK.
-    span.setInput({
-      userMessage: message,
-      retrievedDocuments: documents,
-      threadId,
-      userId
-    });
-
-    // 6. Record output, the pure LLM output is automatically captured via the Vercel AI SDK.
-    span.setOutput({
-      assistantResponse: response.text,
-      conversationId: conversationData.timestamp
-    });
-
     return {
       response: response.text,
-      conversationId: conversationData.timestamp,
       retrievedDocuments: documents
     };
   });
 }
-
-// API endpoint handler (Express.js example)
-app.post('/api/chat', async (req, res) => {
-  const { userId, threadId, message } = req.body;
-
-  try {
-    const result = await handleUserMessage(userId, threadId, message);
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get conversation history
-app.get('/api/conversations/:userId', (req, res) => {
-  const { userId } = req.params;
-  const conversations = conversationStore.get(userId) || [];
-  res.json(conversations);
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  tracer.withActiveSpan("health-check", async (span) => {
-    span.setStatus({ code: SpanStatusCode.OK });
-    res.json({ status: 'ok' });
-  });
-});
 ```
 
 ```bash .env
 LANGWATCH_API_KEY=your_api_key_here
+LANGWATCH_ENDPOINT=https://api.langwatch.ai
 NODE_ENV=production
 ```
 
@@ -527,9 +527,7 @@ NODE_ENV=production
     "@opentelemetry/context-async-hooks": "^2.0.1",
     "@opentelemetry/sdk-node": "^0.203.0",
     "ai": "^4.3.19",
-    "express": "^4.18.0",
-    "langwatch": "^0.3.0",
-    "zod": "^4.0.10"
+    "langwatch": "^0.3.0"
   }
 }
 ```
@@ -554,9 +552,18 @@ export function register() {
 - **LLM Events**: Structured conversation flow with system, user, and assistant messages
 - **Metrics**: Token usage and cost tracking
 - **Error Handling**: Proper error recording and status setting
-- **Data Storage**: Conversation persistence with trace correlation
 - **Thread Management**: Conversation grouping with thread IDs
 - **User Analytics**: User ID tracking for analytics
-- **Custom Attributes**: Service metadata and environment information
+- **Graceful Shutdown**: Proper cleanup of observability resources
 
-This example shows how LangWatch can capture every aspect of your LLM application, from the initial user request through document retrieval, LLM generation, and data storage, providing complete observability into your AI pipeline.
+## Advanced Topics
+
+For advanced usage patterns, debugging, and complex configurations, see our additional guides:
+
+- [Debugging and Troubleshooting](/tutorials/debugging-typescript) - Console tracing, custom loggers, and error handling
+- [Manual Span Management](/tutorials/manual-span-management) - Advanced span control and custom exporters
+- [OpenTelemetry Migration](/tutorials/opentelemetry-migration) - Complex NodeSDK configuration and migration strategies
+
+<Tip>
+  The LangWatch observability SDK is a drop-in replacement for NodeSDK that adds LangWatch integration while maintaining full compatibility with all OpenTelemetry configuration options.
+</Tip>
