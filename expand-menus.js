@@ -1,4 +1,4 @@
-const expandables = ["Language APIs & SDKs"];
+const expandables = ["SDKs"];
 const expanded = [];
 
 const expandAllGroups = () => {
