@@ -10,73 +10,115 @@ import TypeScriptIntro from "/snippets/typescript-intro.mdx";
 
 ## Integration
 
-Start by initializing LangWatch client and creating a new trace to capture your messages:
+Start by setting up observability and initializing the LangWatch tracer:
 
 ```typescript
-import { LangWatch } from 'langwatch';
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
 
-const langwatch = new LangWatch();
+// Setup observability first
+setupObservability();
 
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
-});
+const tracer = getLangWatchTracer("my-service");
 ```
 
-Then to capture your LLM calls, you can start an LLM span inside the trace with the input about to be sent to the LLM.
-
-First, define the model and the messages you are going to use for your LLM call separately, so you can capture them:
+Then to capture your LLM calls, you can use the `withActiveSpan` method to create an LLM span with automatic lifecycle management:
 
 ```typescript
 import { OpenAI } from "openai";
 
 // Model to be used and messages that will be sent to the LLM
-const model = "gpt-5"
-const messages : OpenAI.Chat.ChatCompletionMessageParam[] = [
+const model = "gpt-5-mini";
+const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
   { role: "system", content: "You are a helpful assistant." },
   {
     role: "user",
     content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
   },
-]
-```
+];
 
-Then, start the LLM span from the trace, giving it the model and input messages:
-
-```typescript
-const span = trace.startLLMSpan({
-  name: "llm",
-  model: model,
-  input: {
-    type: "chat_messages",
-    value: messages
-  },
-});
-```
-
-This will capture the LLM input and register the time the call started. Now, continue with the LLM call normally, using the same parameters:
-
-```typescript
 const openai = new OpenAI();
-const chatCompletion = await openai.chat.completions.create({
-  messages: messages,
-  model: model,
-});
-```
 
-Finally, after the OpenAI call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation:
+// Use withActiveSpan for automatic error handling and span cleanup
+const result = await tracer.withActiveSpan("llm-call", async (span) => {
+  // Set span type and input
+  span.setType("llm");
+  span.setInput("chat_messages", messages);
+  span.setRequestModel(model);
 
-```typescript
-span.end({
-  output: {
-    type: "chat_messages",
-    value: [chatCompletion.choices[0]!.message],
-  },
-  metrics: {
+  // Make the OpenAI call
+  const chatCompletion = await openai.chat.completions.create({
+    messages: messages,
+    model: model,
+  });
+
+  // Set output and metrics
+  span.setOutput("chat_messages", [chatCompletion.choices[0]!.message]);
+  span.setMetrics({
     promptTokens: chatCompletion.usage?.prompt_tokens,
     completionTokens: chatCompletion.usage?.completion_tokens,
-  },
+  });
+
+  return chatCompletion;
 });
 ```
+
+The `withActiveSpan` method automatically:
+- Creates the span with the specified name
+- Handles errors and sets appropriate span status
+- Ends the span when the function completes
+- Returns the result of your async function
+
+## Community Auto-Instrumentation
+
+For automatic instrumentation without manual span creation, you can use the [OpenInference instrumentation for OpenAI](https://github.com/Arize-ai/openinference/tree/main/js/packages/openinference-instrumentation-openai):
+
+<Steps>
+<Step title="Install the OpenInference instrumentation">
+  ```bash
+  npm install @arizeai/openinference-instrumentation-openai
+  ```
+</Step>
+
+<Step title="Register the instrumentation">
+  ```typescript
+  import { NodeSDK } from "@opentelemetry/sdk-node";
+  import { OpenAIInstrumentation } from "@arizeai/openinference-instrumentation-openai";
+  import { setupObservability } from "langwatch/observability/node";
+
+  // Setup observability with the instrumentation
+  setupObservability({
+    instrumentations: [new OpenAIInstrumentation()],
+  });
+  ```
+</Step>
+
+<Step title="Use OpenAI normally">
+  ```typescript
+  import { OpenAI } from "openai";
+
+  const openai = new OpenAI();
+  
+  // This call will be automatically instrumented
+  const completion = await openai.chat.completions.create({
+    model: "gpt-5-mini",
+    messages: [{ role: "user", content: "Hello!" }],
+  });
+  ```
+</Step>
+</Steps>
+
+<Info>
+The OpenInference instrumentation automatically captures:
+- Input messages and model configuration
+- Output responses and token usage
+- Error handling and status codes
+- Request/response timing
+</Info>
+
+<Warning>
+When using auto-instrumentation, you may need to configure data capture settings to control what information is sent to LangWatch. See the [data capture configuration](/integration/typescript/configuration#data-capture) documentation for details.
+</Warning>
 
 import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
 
