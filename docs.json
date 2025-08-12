@@ -167,6 +167,7 @@
                 "pages": [
                   {
                     "group": "Python",
+                    "icon": "python",
                     "pages": [
                       "integration/python/guide",
                       "integration/python/reference",
@@ -181,6 +182,7 @@
                   },
                   {
                     "group": "TypeScript",
+                    "icon": "square-js",
                     "pages": [
                       "integration/typescript/guide",
                       "integration/typescript/reference",
