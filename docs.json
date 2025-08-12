@@ -17,14 +17,23 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": ["curl", "python", "typescript"],
+      "languages": [
+        "curl",
+        "python",
+        "typescript"
+      ],
       "defaults": "required"
     },
     "mdx": {
@@ -86,19 +95,19 @@
                   {
                     "group": "OpenAI",
                     "pages": [
-                                        "integration/python/integrations/open-ai",
-                  "integration/typescript/integrations/open-ai"
-                ]
-              },
+                      "integration/python/integrations/open-ai",
+                      "integration/typescript/integrations/open-ai"
+                    ]
+                  },
                   "integration/python/integrations/agno",
                   "integration/python/integrations/anthropic",
-                  "integration/python/integrations/autogen",             
+                  "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/google-genai", 
+                  "integration/python/integrations/google-genai",
                   "integration/python/integrations/haystack",
                   "integration/python/integrations/instructor",
                   "integration/langflow",
@@ -148,27 +157,51 @@
               "concepts",
               "integration/quick-start",
               {
-                "group": "Language APIs & SDKs",
+                "group": "SDKs",
                 "pages": [
-                  "integration/python/guide",
-                  "integration/typescript/guide",
-                  "integration/opentelemetry/guide",
                   {
-                    "group": "API Reference",
+                    "group": "Python",
                     "pages": [
+                      "integration/python/guide",
                       "integration/python/reference",
+                      {
+                        "group": "Advanced",
+                        "pages": [
+                          "integration/python/tutorials/manual-instrumentation",
+                          "integration/python/tutorials/open-telemetry",
+                          "integration/python/tutorials/capturing-rag",
+                          "integration/python/tutorials/capturing-evaluations-guardrails"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "TypeScript",
+                    "pages": [
+                      "integration/typescript/guide",
                       "integration/typescript/reference",
-                      "integration/rest-api"
+                      {
+                        "group": "Advanced",
+                        "pages": [
+                          "integration/typescript/tutorials/debugging",
+                          "integration/typescript/tutorials/manual-instrumentation",
+                          "integration/typescript/tutorials/semantic-convention",
+                          "integration/typescript/tutorials/opentelemetry-migration"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "OpenTelemetry",
+                    "pages": [
+                      "integration/opentelemetry/guide"
                     ]
                   }
                 ]
               },
-
               {
                 "group": "Tutorials",
                 "pages": [
-                  "integration/python/tutorials/manual-instrumentation",
-                  "integration/python/tutorials/open-telemetry",
                   "integration/python/tutorials/capturing-rag",
                   "integration/rags-context-tracking",
                   "integration/python/tutorials/capturing-evaluations-guardrails",
@@ -194,7 +227,10 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": ["features/triggers", "features/embedded-analytics"]
+                "pages": [
+                  "features/triggers",
+                  "features/embedded-analytics"
+                ]
               },
               "integration/code-examples"
             ]
@@ -333,11 +369,15 @@
               },
               {
                 "group": "Datasets",
-                "pages": ["api-reference/datasets/post-dataset-entries"]
+                "pages": [
+                  "api-reference/datasets/post-dataset-entries"
+                ]
               },
               {
                 "group": "Triggers",
-                "pages": ["api-reference/triggers/create-slack-trigger"]
+                "pages": [
+                  "api-reference/triggers/create-slack-trigger"
+                ]
               },
               {
                 "group": "Scenarios",
@@ -358,7 +398,10 @@
           },
           {
             "group": "Support",
-            "pages": ["support", "status"]
+            "pages": [
+              "support",
+              "status"
+            ]
           }
         ]
       }
