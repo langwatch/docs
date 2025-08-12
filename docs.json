@@ -93,12 +93,21 @@
                     ]
                   },
                   {
+                    "group": "LangGraph",
+                    "pages": [
+                      "integration/python/integrations/langgraph",
+                      "integration/typescript/integrations/langgraph"
+                    ]
+                  },
+                  {
                     "group": "OpenAI",
                     "pages": [
                       "integration/python/integrations/open-ai",
                       "integration/typescript/integrations/open-ai"
                     ]
                   },
+                  "integration/typescript/integrations/vercel-ai-sdk",
+                  "integration/typescript/integrations/mastra",
                   "integration/python/integrations/agno",
                   "integration/python/integrations/anthropic",
                   "integration/python/integrations/autogen",
@@ -111,17 +120,14 @@
                   "integration/python/integrations/haystack",
                   "integration/python/integrations/instructor",
                   "integration/langflow",
-                  "integration/python/integrations/langgraph",
                   "integration/python/integrations/llamaindex",
                   "integration/python/integrations/lite-llm",
-                  "integration/typescript/integrations/mastra",
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/promptflow",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
                   "integration/python/integrations/strand-agents",
                   "integration/python/integrations/semantic-kernel",
-                  "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/python/integrations/vertex-ai",
                   "integration/python/integrations/other"
                 ]
