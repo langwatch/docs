@@ -545,7 +545,7 @@ def handle_request(user_query: str):
 
     try:
         completion = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-5-mini",
             messages=[
                 {"role": "system", "content": f"Use this context: {context_docs}"},
                 {"role": "user", "content": user_query}
@@ -682,7 +682,7 @@ async function handleRequest(userQuery: string): Promise<string> {
       
       // Call OpenAI
       const completion = await client.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-5-mini",
         messages: [
           { role: "system", content: `Use this context: ${contextDocs.join(" ")}` },
           { role: "user", content: userQuery }

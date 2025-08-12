@@ -931,7 +931,7 @@ setupObservability();
 const handler = new LangWatchCallbackHandler();
 const llm = new ChatOpenAI({
   callbacks: [handler],
-  model: "gpt-4"
+  model: "gpt-5-mini"
 });
 
 // All operations are automatically traced

@@ -197,7 +197,7 @@ public class LLMService {
         try (var scope = span.makeCurrent()) {
             // Add relevant attributes
             span.setAttribute("llm.provider", "custom-provider");
-            span.setAttribute("llm.model", "gpt-4");
+            span.setAttribute("llm.model", "gpt-5-mini");
             span.setAttribute("llm.prompt", prompt);
             
             // Your LLM call here
