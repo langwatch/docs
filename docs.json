@@ -168,8 +168,7 @@
                         "group": "Advanced",
                         "pages": [
                           "integration/python/tutorials/manual-instrumentation",
-                          "integration/python/tutorials/open-telemetry",
-                          "integration/python/tutorials/capturing-evaluations-guardrails"
+                          "integration/python/tutorials/open-telemetry"
                         ]
                       }
                     ]
@@ -209,11 +208,32 @@
                       "integration/typescript/tutorials/capturing-input-output"
                     ]
                   },
-                  "integration/python/tutorials/capturing-rag",
+                  {
+                    "group": "Capturing RAG",
+                    "icon": "layer-group",
+                    "pages": [
+                      "integration/python/tutorials/capturing-rag",
+                      "integration/typescript/tutorials/capturing-rag"
+                    ]
+                  },
+                  {
+                    "group": "Metadata & Attributes",
+                    "icon": "tags",
+                    "pages": [
+                      "integration/python/tutorials/capturing-metadata",
+                      "integration/typescript/tutorials/capturing-metadata"
+                    ]
+                  },
+                  {
+                    "group": "Tracking Costs",
+                    "icon": "dollar-sign",
+                    "pages": [
+                      "integration/python/tutorials/tracking-llm-costs",
+                      "integration/typescript/tutorials/tracking-llm-costs"
+                    ]
+                  },
                   "integration/rags-context-tracking",
-                  "integration/python/tutorials/capturing-evaluations-guardrails",
-                  "integration/python/tutorials/capturing-metadata",
-                  "integration/python/tutorials/tracking-llm-costs"
+                  "integration/python/tutorials/capturing-evaluations-guardrails"
                 ]
               },
               {
