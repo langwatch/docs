@@ -39,8 +39,13 @@ Before you start, make sure you have:
 ### Step 1: Install Dependencies
 
 ```bash
-npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks @ai-sdk/openai ai
+npm install langwatch @opentelemetry/sdk-node @opentelemetry/context-async-hooks
+npm install @ai-sdk/openai ai
 ```
+
+<Note>
+The `@ai-sdk/openai` and `ai` packages are only required for the example in this guide. You can skip this step if you're only looking to install the LangWatch SDK.
+</Note>
 
 ### Step 2: Set Up API Keys
 
@@ -69,13 +74,13 @@ import { getLangWatchTracer } from "langwatch";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
-// Initialize LangWatch (uses LANGWATCH_API_KEY by default)
-await setupObservability({ 
-  serviceName: "my-first-llm-app" 
+// Setup LangWatch Observability (uses LANGWATCH_API_KEY by default)
+await setupObservability({
+  serviceName: "my-ai-laundry-startup",
 });
 
 // Create a tracer
-const tracer = getLangWatchTracer("my-service");
+const tracer = getLangWatchTracer("laundry-chatbot");
 
 // Your first traced LLM interaction
 async function askAI(question: string) {
