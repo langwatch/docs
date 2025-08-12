@@ -61,8 +61,8 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
 }
 
 #sidebar-content svg {
-  height: 1.125rem !important;
-  width: 1.125rem !important;
+  height: 0.8rem !important;
+  width: 0.8rem !important;
 }
 
 /* Fix chevron visibility and alignment */
