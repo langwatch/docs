@@ -1,7 +1,8 @@
 ---
 title: Vercel AI SDK
-sidebarTitle: Vercel AI SDK
 description: LangWatch Vercel AI SDK integration guide
+sidebarTitle: Vercel AI SDK
+keywords: vercel ai sdk, langwatch, tracing, observability, vercel, ai, sdk, langwatch, tracing, observability
 ---
 
 import TypeScriptIntro from "/snippets/typescript-intro.mdx";
@@ -38,25 +39,29 @@ module.exports = nextConfig;
 
 Next, you need to create a file named `instrumentation.ts` (or `.js`) in the __root directory__ of the project (or inside `src` folder if using one), with `LangWatchExporter` as the traceExporter:
 
+<CodeGroup>
 ```typescript
-import { registerOTel } from '@vercel/otel'
-import { LangWatchExporter } from 'langwatch'
+import { registerOTel } from '@vercel/otel';
+import { LangWatchExporter } from 'langwatch';
 
 export function register() {
   registerOTel({
     serviceName: 'next-app',
     traceExporter: new LangWatchExporter({
       apiKey: process.env.LANGWATCH_API_KEY
-    })
+    }),
   })
 }
 ```
+</CodeGroup>
 
 (Read more about Next.js OpenTelemetry configuration [on the official guide](https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry#manual-opentelemetry-configuration))
 
 Finally, enable `experimental_telemetry` tracking on the AI SDK calls you want to trace:
 
 ```typescript
+import { attributes } from 'langwatch';
+
 const result = await generateText({
   model: openai('gpt-5'),
   prompt: 'Explain why a chicken would make a terrible astronaut, be creative and humorous about it.',
@@ -64,8 +69,8 @@ const result = await generateText({
     isEnabled: true,
     // optional metadata
     metadata: {
-      userId: "myuser-123",
-      threadId: "mythread-123",
+      "langwatch.user.id": "myuser-123",
+      "langwatch.thread.id": "mythread-123",
     },
   },
 });
@@ -76,16 +81,17 @@ For Node.js, start by following the official OpenTelemetry guide:
 
 - [OpenTelemetry Node.js Getting Started](https://opentelemetry.io/docs/languages/js/getting-started/nodejs/)
 
-Once you have set up OpenTelemetry, you can use the `LangWatchExporter` to automatically send your traces to LangWatch:
+Once you have set up OpenTelemetry, you can use `setupObservability` from the LangWatch
+SDK to automatically instrument your application and send your traces to LangWatch:
 
 ```typescript
-import { LangWatchExporter } from 'langwatch'
+import { setupObservability } from 'langwatch/observability/setup/node';
 
-const sdk = new NodeSDK({
-  traceExporter: new LangWatchExporter({
-    apiKey: process.env.LANGWATCH_API_KEY
-  }),
-  // ...
+const handle = await setupObservability({
+  langwatch: {
+    apiKey: process.env.LANGWATCH_API_KEY, // optional, defaults to LANGWATCH_API_KEY env var
+  },
+  serviceName: "my-service",
 });
 ```
 </Tab>
@@ -97,54 +103,4 @@ That's it! Your messages will now be visible on LangWatch:
 
 ## Example Project
 
-You can find a full example project with a more complex pipeline and Vercel AI SDK and LangWatch integration [on our GitHub](https://github.com/langwatch/langwatch/blob/main/typescript-sdk/example/lib/chat/vercel-ai.tsx).
-
-## Manual Integration
-
-The docs from here below are for manual integration, in case you are not using the Vercel AI SDK OpenTelemetry integration,
-you can manually start a trace to capture your messages:
-
-```typescript
-import { LangWatch } from 'langwatch';
-
-const langwatch = new LangWatch();
-
-const trace = langwatch.getTrace({
-  metadata: { threadId: "mythread-123", userId: "myuser-123" },
-});
-```
-
-Then, you can start an LLM span inside the trace with the input about to be sent to the LLM.
-
-```typescript
-import { convertFromVercelAIMessages } from 'langwatch'
-
-const span = trace.startLLMSpan({
-  name: "llm",
-  model: model,
-  input: {
-    type: "chat_messages",
-    value: convertFromVercelAIMessages(messages)
-  },
-});
-```
-
-This will capture the LLM input and register the time the call started. Once the LLM call is done, end the span to get the finish timestamp to be registered, and capture the output and the token metrics, which will be used for cost calculation, e.g.:
-
-```typescript
-span.end({
-  output: {
-    type: "chat_messages",
-    value: convertFromVercelAIMessages(output), // assuming output is Message[]
-  },
-  metrics: {
-    promptTokens: chatCompletion.usage?.prompt_tokens,
-    completionTokens: chatCompletion.usage?.completion_tokens,
-  },
-});
-```
-
-import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
-
-<TypeScriptSharedSpanExcepEval />
-
+You can find a full example project with a more complex pipeline and Vercel AI SDK and LangWatch integration [on our GitHub](https://github.com/langwatch/langwatch/tree/main/typescript-sdk/examples/vercel-ai).
