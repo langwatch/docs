@@ -14,9 +14,9 @@ This guide covers how to instrument Langchain with LangWatch using the **LangWat
 This is the preferred and most comprehensive method for instrumenting Langchain with LangWatch. The LangWatch SDK provides a `LangWatchCallbackHandler` that deeply integrates with Langchain's event system.
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { LangWatchCallbackHandler } from "langwatch/observability/instrumentation/langchain";
-import { getLangWatchTracer } from "langwatch/observability";
+import { getLangWatchTracer } from "langwatch";
 import { ChatOpenAI } from "@langchain/openai";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
