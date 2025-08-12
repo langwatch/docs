@@ -1,0 +1,73 @@
+---
+title: Groq Integration
+sidebarTitle: Groq
+description: Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
+keywords: go, golang, groq, groqcloud, instrumentation, langwatch, opentelemetry, openai-compatible, fast llm
+---
+
+LangWatch can trace calls to the Groq API, allowing you to monitor its high-speed inference capabilities. Since Groq provides an OpenAI-compatible endpoint, you can use the standard `otelopenai` middleware with minimal changes.
+
+## Setup
+
+You will need a Groq API key from the [GroqCloud Console](https://console.groq.com/keys).
+
+Set your Groq API key as an environment variable:
+
+```bash
+export GROQ_API_KEY="your-groq-api-key"
+```
+
+## Example
+
+Configure your `openai.Client` to use Groq's base URL and your API key. Set the `gen_ai.system` attribute to `"groq"` to correctly identify the provider in LangWatch.
+
+<Note>
+The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
+</Note>
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	"github.com/langwatch/langwatch/sdk-go"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+
+	client := openai.NewClient(
+		// Use the Groq API endpoint
+		oaioption.WithBaseURL("https://api.groq.com/openai/v1"),
+
+		// Use your Groq API key
+		oaioption.WithAPIKey(os.Getenv("GROQ_API_KEY")),
+
+		// Add the middleware, identifying the system as "groq"
+		oaioption.WithMiddleware(otelopenai.Middleware("my-groq-app",
+			otelopenai.WithGenAISystem("groq"),
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	// Make a call to a model on Groq
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: "llama3-70b-8192",
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage("Hello, Groq! Can you explain the concept of inference speed?"),
+		},
+	})
+
+	if err != nil {
+		log.Fatalf("Groq API call failed: %v", err)
+	}
+
+	log.Printf("Response from Groq: %s", response.Choices[0].Message.Content)
+} 
