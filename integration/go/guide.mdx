@@ -310,13 +310,18 @@ func retrieveDocuments(ctx context.Context, query string) {
 The context `ctx` is crucial. It carries the active span information, ensuring that `tracer.Start()` correctly creates a nested span instead of a new trace.
 </Note>
 
-## Multi-Provider Support
+## Integrations
 
-The OpenAI instrumentation is compatible with any provider that adheres to the OpenAI API spec. This includes Anthropic, Azure OpenAI, Groq, and local models via Ollama.
+LangWatch offers integrations with popular OpenAI, and any other OpenAI-compatible providers:
 
 See the dedicated guides for more details:
-- [OpenAI Integration](/integration/go/integrations/open-ai)
-- [Other Provider Integrations](/integration/go/integrations/other)
+- [Anthropic](/integration/go/integrations/anthropic)
+- [OpenAI](/integration/go/integrations/open-ai)
+- [Azure OpenAI](/integration/go/integrations/azure-openai)
+- [Groq](/integration/go/integrations/groq)
+- [Google Gemini](/integration/go/integrations/google-gemini)
+- [Ollama](/integration/go/integrations/ollama)
+- [OpenRouter](/integration/go/integrations/openrouter)
 
 ## Environment Variables
 
@@ -326,7 +331,7 @@ The SDK respects these environment variables for configuration:
 | --- | --- |
 | `LANGWATCH_API_KEY` | **Required.** Your LangWatch project API key. |
 | `LANGWATCH_ENDPOINT` | The LangWatch collector endpoint. Defaults to `https://app.langwatch.ai`. |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | A standard OpenTelemetry variable that can also be used to set the endpoint URL. If set, it overrides `LANGWATCH_ENDPOINT`. |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | A standard OpenTelemetry variable that can also be used to set the endpoint URL. If set, it overrides `LANGWATCH_ENDPOINT`. This must be set to the trace-specific endpoint `https://app.langwatch.ai/api/otel/v1/traces` |
 
 ## Features
 
@@ -338,13 +343,6 @@ The SDK respects these environment variables for configuration:
 * 🧵 **Thread support** - Group related LLM interactions together
 * 📝 **Custom input/output recording** - Fine-grained control over what's captured
 * 🔄 **Streaming support** - Real-time capture of streaming responses
-
-## Integrations
-
-LangWatch offers integrations with popular Go libraries and OpenAI-compatible providers:
-
-- [OpenAI](/integration/go/integrations/open-ai) - Official OpenAI Go client
-- [Other Providers](/integration/go/integrations/other) - Anthropic, Azure, local models, and more
 
 Since LangWatch is built on OpenTelemetry, it also supports any library or framework that integrates with OpenTelemetry.
 
@@ -387,7 +385,4 @@ If you're still having issues:
 ## Next Steps
 
 - Learn about specific [OpenAI integration](/integration/go/integrations/open-ai) patterns
-- Explore [RAG implementation](/integration/go/tutorials/capturing-rag) with context tracking
-- Set up [conversation threads](/integration/go/tutorials/capturing-threads) for multi-turn chats
-- Add [custom metadata](/integration/go/tutorials/capturing-metadata) to your traces
 - Check the [API reference](/integration/go/reference) for detailed documentation 
