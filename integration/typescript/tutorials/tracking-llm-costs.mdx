@@ -1,6 +1,6 @@
 ---
 title: Tracking LLM Costs and Tokens
-sidebarTitle: Python
+sidebarTitle: TypeScript/JS
 description: Troubleshooting & adjusting cost tracking in LangWatch
 keywords: LangWatch, cost tracking, token counting, debugging, troubleshooting, model costs, metrics, LLM spans
 ---
@@ -58,62 +58,35 @@ Check the **Integrations** menu in the sidebar to find specific setup instructio
 
 If auto-tracking isn't available for your framework, manually update the span with model information:
 
-```python
-import langwatch
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
 
-# Mark the span as an LLM type span
-@langwatch.span(type="llm")
-def custom_llm_call(prompt: str):
-    # Update the current span with model information
-    langwatch.get_current_span().update(
-        model="openai/gpt-5",  # Use the exact model identifier
-        input=prompt,
-    )
+// Setup observability
+setupObservability();
 
-    # Simulate an LLM response
-    response = your_custom_llm_client.generate(prompt)
+const tracer = getLangWatchTracer("cost-tracking-example");
 
-    # Update with output and metrics
-    langwatch.get_current_span().update(
-        output=response.text,
-        metrics={
-            "prompt_tokens": response.usage.prompt_tokens,
-            "completion_tokens": response.usage.completion_tokens,
-        }
-    )
+async function customLLMCall(prompt: string): Promise<string> {
+  return await tracer.withActiveSpan("CustomLLMCall", async (span) => {
+    // Mark the span as an LLM type span
+    span.setType("llm");
+    span.setRequestModel("gpt-5-mini"); // Use the exact model identifier
+    span.setInput("text", prompt);
 
-    return response.text
+    // Simulate an LLM response
+    const response = await yourCustomLLMClient.generate(prompt);
 
-@langwatch.trace()
-def main_handler():
-    result = custom_llm_call("Tell me about LangWatch")
-    return result
-```
+    // Set output and token metrics
+    span.setOutput("text", response.text);
+    span.setMetrics({
+      promptTokens: response.usage.prompt_tokens,
+      completionTokens: response.usage.completion_tokens,
+    });
 
-### Solution C: Direct OpenTelemetry Integration (without LangWatch SDK)
-
-If you're using a framework with built-in OpenTelemetry integration or community instrumentors, they should be following the [GenAI Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/). However, if the integration isn't capturing model information or token counts correctly, you can wrap your LLM calls with a custom span to patch the missing data:
-
-```python
-from opentelemetry import trace
-
-tracer = trace.get_tracer(__name__)
-
-def my_llm_call_with_tracking(prompt):
-    with tracer.start_as_current_span("llm_call_wrapper") as span:
-        # Set the required attributes for cost calculation
-        span.set_attribute("gen_ai.operation.name", "chat")
-        span.set_attribute("gen_ai.request.model", "gpt-5")
-
-        # Your existing LLM call (may create its own spans)
-        response = your_framework_llm_client.generate(prompt)
-
-        # Extract and set token information if available
-        if hasattr(response, 'usage'):
-            span.set_attribute("gen_ai.usage.input_tokens", response.usage.input_tokens)
-            span.set_attribute("gen_ai.usage.completion_tokens", response.usage.completion_tokens)
-
-        return response
+    return response.text;
+  });
+}
 ```
 
 ## Step 3: Configure Model Cost Mapping
@@ -137,8 +110,8 @@ If your model isn't in the cost table, add it:
 
 1. Click **"Add New Model"** in Settings > Model Costs
 2. Configure the model entry:
-   - **Model Name**: Descriptive name (e.g., "gpt-5")
-   - **Regex Match Rule**: Pattern to match your model identifier (e.g., `^gpt-5$`)
+   - **Model Name**: Descriptive name (e.g., "gpt-5-mini")
+   - **Regex Match Rule**: Pattern to match your model identifier (e.g., `^gpt-5-mini$`)
    - **Input Cost**: Cost per input token (e.g., `0.0000004`)
    - **Output Cost**: Cost per output token (e.g., `0.0000016`)
 
@@ -148,18 +121,17 @@ Make sure your regex patterns match how the model names appear in your spans:
 
 | Framework    | Model Identifier Format | Regex Pattern          |
 | ------------ | ----------------------- | ---------------------- |
-| OpenAI SDK   | `gpt-5`           | `^gpt-5$`        |
-| Azure OpenAI | `gpt-5`           | `^gpt-5$`        |
-| LangChain    | `openai/gpt-5`    | `^openai/gpt-5$` |
+| OpenAI SDK   | `gpt-5-mini`           | `^gpt-5-mini$`        |
+| Azure OpenAI | `gpt-5-mini`           | `^gpt-5-mini$`        |
+| LangChain    | `openai/gpt-5-mini`    | `^openai/gpt-5-mini$` |
 | Custom       | `my-custom-model-v1`    | `^my-custom-model-v1$` |
-
 
 ### Verification Checklist
 
 After running your test, verify in the LangWatch dashboard:
 
 ✅ **Trace appears** in the dashboard \
-✅ **LLM span shows model name** (e.g., `gpt-5`) \
+✅ **LLM span shows model name** (e.g., `gpt-5-mini`) \
 ✅ **Input and output are captured** \
 ✅ **Token metrics are present** (`prompt_tokens`, `completion_tokens`) \
 ✅ **Cost is calculated and displayed** (non-zero value)
@@ -172,7 +144,7 @@ After running your test, verify in the LangWatch dashboard:
 
 **Solutions**:
 
-- Ensure `autotrack_*()` is called on an active trace
+- Ensure `setupObservability()` is called before any LLM operations
 - Check that the client instance being tracked is the same one making calls
 - Verify the integration is initialized correctly
 
@@ -192,7 +164,7 @@ After running your test, verify in the LangWatch dashboard:
 
 **Solutions**:
 
-- Manually set metrics in span updates if not automatically captured
+- Manually set token metrics using `span.setMetrics()` if not automatically captured
 - Check if your LLM provider returns usage information
 - Ensure the integration is extracting token counts from responses
 
@@ -204,6 +176,58 @@ After running your test, verify in the LangWatch dashboard:
 - Follow the guidance in [Solution C: Framework with OpenTelemetry Integration](#solution-c-framework-with-opentelemetry-integration) above
 - Wrap your LLM calls with custom spans to patch missing data
 
+## Advanced Examples
+
+### LangChain Integration
+
+The `LangWatchCallbackHandler` automatically captures model information and token metrics:
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { LangWatchCallbackHandler } from "langwatch/instrumentation/langchain";
+import { ChatOpenAI } from "@langchain/openai";
+
+setupObservability();
+
+const llm = new ChatOpenAI({
+  modelName: "gpt-5-mini",
+  temperature: 0.7,
+  callbacks: [new LangWatchCallbackHandler()],
+});
+```
+
+### Manual Token Counting
+
+If your LLM provider doesn't return token counts:
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
+
+const tracer = getLangWatchTracer("manual-token-counting");
+
+async function llmWithManualTokenCounting(prompt: string): Promise<string> {
+  return await tracer.withActiveSpan("LLMWithManualCounting", async (span) => {
+    span.setType("llm");
+    span.setRequestModel("custom-model-v1");
+    span.setInput("text", prompt);
+
+    const response = await yourCustomLLMClient.generate(prompt);
+
+    // Manual token counting (simplified example)
+    const estimatedPromptTokens = Math.ceil(prompt.length / 4);
+    const estimatedCompletionTokens = Math.ceil(response.text.length / 4);
+
+    span.setOutput("text", response.text);
+    span.setMetrics({
+      promptTokens: estimatedPromptTokens,
+      completionTokens: estimatedCompletionTokens,
+    });
+
+    return response.text;
+  });
+}
+```
 
 ## Getting Help
 
@@ -212,9 +236,5 @@ If you're still experiencing issues after following this guide:
 1. **Check the LangWatch logs** for any error messages
 2. **Verify your API key** and endpoint configuration
 3. **Share a minimal reproduction** with the specific framework you're using
-4. **Contact support** at [support@langwatch.ai](mailto:support@langwatch.ai) with:
-   - Your integration method (SDK, OpenTelemetry, etc.)
-   - Framework versions
-   - Sample span data from the dashboard
 
 Cost and token tracking should work reliably once the model information and metrics are properly captured. Most issues stem from missing model identifiers or incorrect cost table configuration.

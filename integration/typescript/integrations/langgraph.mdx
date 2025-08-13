@@ -1,0 +1,436 @@
+---
+title: LangGraph Instrumentation
+sidebarTitle: TypeScript
+description: Learn how to instrument LangGraph applications with the LangWatch TypeScript SDK.
+keywords: langgraph, instrumentation, callback, opentelemetry, langwatch, typescript, tracing, openllmetry, state graph, workflow
+---
+
+LangGraph is a powerful framework for building stateful, multi-step AI applications with complex workflows. LangWatch integrates with LangGraph to provide detailed observability into your state graphs, node executions, routing decisions, and workflow patterns.
+
+This guide covers how to instrument LangGraph with LangWatch using the **LangWatch LangChain Callback Handler** - the most direct and comprehensive method for capturing rich LangGraph-specific trace data.
+
+## Using LangWatch's LangChain Callback Handler with LangGraph
+
+LangGraph is built on top of LangChain, so we can use the same `LangWatchCallbackHandler` to instrument LangGraph applications. This provides comprehensive tracing of your state graphs, node executions, and workflow patterns.
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { LangWatchCallbackHandler } from "langwatch/observability/instrumentation/langchain";
+import { getLangWatchTracer } from "langwatch";
+import { ChatOpenAI } from "@langchain/openai";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { StateGraph, END, START } from "@langchain/langgraph";
+import { MemorySaver } from "@langchain/langgraph";
+import { z } from "zod";
+
+// Initialize LangWatch
+setupObservability();
+
+const tracer = getLangWatchTracer("langgraph-example");
+
+// Define the state schema using Zod
+const GraphState = z.object({
+  question: z.string(),
+  current_step: z.string().default("start"),
+  needs_search: z.boolean().default(false),
+  search_results: z.string().default(""),
+  analysis: z.string().default(""),
+  final_answer: z.string().default(""),
+  iterations: z.number().default(0),
+});
+
+type GraphStateType = z.infer<typeof GraphState>;
+
+async function handleWorkflowWithCallback(userQuestion: string) {
+  return await tracer.withActiveSpan("LangGraph - Research Workflow", {
+    attributes: {
+      "langwatch.thread_id": "langgraph-user",
+      "langwatch.tags": ["langgraph", "research-agent", "multi-step"],
+    },
+  }, async (span) => {
+    span.setType("workflow");
+    
+    const langWatchCallback = new LangWatchCallbackHandler();
+
+    const chatModel = new ChatOpenAI({
+      modelName: "gpt-4o-mini",
+      temperature: 0.3,
+      callbacks: [langWatchCallback],
+    });
+
+    // Node 1: Analyze the question
+    const analyzeQuestion = async (state: GraphStateType) => {
+      const prompt = `
+      Analyze this question and determine if it requires current/recent information that would need web search.
+
+      Question: ${state.question}
+
+      Respond with just "YES" if web search is needed, "NO" if general knowledge is sufficient.
+      `;
+
+      const result = await chatModel.invoke([
+        new SystemMessage("You are a question analyzer. Respond with only YES or NO."),
+        new HumanMessage(prompt),
+      ]);
+
+      const needsSearch = (result.content as string).toUpperCase().includes("YES");
+
+      return {
+        current_step: "question_analyzed",
+        needs_search: needsSearch,
+      };
+    };
+
+    // Mock search tool for demo purposes
+    const performWebSearch = async (query: string): Promise<string> => {
+      // Simulate search delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return `Mock search results for "${query}":
+- Recent developments and current information
+- Latest news and analysis from reliable sources
+- Expert opinions and academic research
+- Current market trends and data points`;
+    };
+
+    // Node 2: Perform web search
+    const performSearch = async (state: GraphStateType) => {
+      const searchResults = await performWebSearch(state.question);
+
+      return {
+        current_step: "search_completed",
+        search_results: searchResults,
+      };
+    };
+
+    // Node 3: Analyze information
+    const analyzeInformation = async (state: GraphStateType) => {
+      const context = state.search_results
+        ? `Search Results:\n${state.search_results}\n\n`
+        : "Using general knowledge (no search performed).\n\n";
+
+      const prompt = `
+      ${context}Question: ${state.question}
+
+      Provide a thorough analysis of this question, considering multiple perspectives and available information.
+      `;
+
+      const result = await chatModel.invoke([
+        new SystemMessage("You are an expert analyst. Provide comprehensive analysis."),
+        new HumanMessage(prompt),
+      ]);
+
+      return {
+        current_step: "analysis_completed",
+        analysis: result.content as string,
+      };
+    };
+
+    // Node 4: Generate final answer
+    const generateAnswer = async (state: GraphStateType) => {
+      const prompt = `
+      Question: ${state.question}
+      Analysis: ${state.analysis}
+      ${state.search_results ? `Search Results: ${state.search_results}` : ""}
+
+      Based on the analysis and available information, provide a comprehensive, well-structured answer.
+      `;
+
+      const result = await chatModel.invoke([
+        new SystemMessage("You are a helpful assistant. Provide clear, comprehensive answers."),
+        new HumanMessage(prompt),
+      ]);
+
+      return {
+        current_step: "answer_generated",
+        final_answer: result.content as string,
+      };
+    };
+
+    // Router function to determine the next step
+    const router = (state: GraphStateType): string => {
+      switch (state.current_step) {
+        case "question_analyzed":
+          return state.needs_search ? "search" : "analyze";
+        case "search_completed":
+          return "analyze";
+        case "analysis_completed":
+          return "generate_answer";
+        case "answer_generated":
+          return END;
+        default:
+          return "analyze_question";
+      }
+    };
+
+    // Build the StateGraph
+    const workflow = new StateGraph(GraphState)
+      .addNode("analyze_question", analyzeQuestion)
+      .addNode("search", performSearch)
+      .addNode("analyze", analyzeInformation)
+      .addNode("generate_answer", generateAnswer)
+      .addEdge(START, "analyze_question")
+      .addConditionalEdges("analyze_question", router, {
+        search: "search",
+        analyze: "analyze",
+      })
+      .addConditionalEdges("search", router, {
+        analyze: "analyze",
+      })
+      .addConditionalEdges("analyze", router, {
+        generate_answer: "generate_answer",
+      })
+      .addConditionalEdges("generate_answer", router, {
+        [END]: END,
+      });
+
+    // Compile the graph with memory and callbacks
+    const memory = new MemorySaver();
+    const app = workflow
+      .compile({ checkpointer: memory })
+      .withConfig({ callbacks: [langWatchCallback] });
+
+    // Create initial state
+    const initialState: GraphStateType = {
+      question: userQuestion,
+      current_step: "start",
+      needs_search: false,
+      search_results: "",
+      analysis: "",
+      final_answer: "",
+      iterations: 0,
+    };
+
+    // Execute the workflow
+    const config = {
+      configurable: { thread_id: "langgraph-user" },
+    };
+
+    let finalState: GraphStateType = initialState;
+
+    // Stream through each node execution
+    for await (const step of await app.stream(initialState, config)) {
+      const nodeNames = Object.keys(step);
+      
+      // Update final state with all node outputs
+      for (const nodeName of nodeNames) {
+        const nodeOutput = (step as any)[nodeName];
+        if (nodeOutput && typeof nodeOutput === "object") {
+          finalState = { ...finalState, ...nodeOutput };
+        }
+      }
+    }
+
+    return finalState.final_answer;
+  });
+}
+
+async function mainCallback() {
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OPENAI_API_KEY not set. Skipping LangGraph callback example.");
+    return;
+  }
+
+  const response = await handleWorkflowWithCallback("What is LangGraph? Explain briefly.");
+  console.log(`AI (LangGraph): ${response}`);
+}
+
+mainCallback().catch(console.error);
+```
+
+**How it Works:**
+- `setupObservability()`: Initializes LangWatch with default configuration.
+- `getLangWatchTracer()`: Creates a tracer instance for your application.
+- `tracer.withActiveSpan()`: Creates a parent LangWatch trace that encompasses the entire workflow.
+- `LangWatchCallbackHandler`: Captures LangGraph node executions and LangChain events, converting them into detailed LangWatch spans.
+- `StateGraph`: Defines the workflow structure with nodes and conditional edges.
+- `app.stream()`: Executes the workflow with streaming support for real-time tracing.
+- The callback handler is passed to both individual LangChain components and the compiled graph.
+
+**Key points:**
+- Provides detailed tracing of each node execution within the state graph.
+- Captures routing decisions and workflow patterns.
+- Works with all LangGraph execution methods (`invoke`, `stream`, `batch`).
+- Automatically handles span lifecycle management with `withActiveSpan()`.
+
+<Note>
+### Why Use the LangWatch LangChain Callback Handler with LangGraph?
+
+The **LangWatch LangChain Callback Handler** provides comprehensive tracing for LangGraph applications by capturing both the LangGraph workflow structure and the underlying LangChain operations. This gives you complete visibility into your multi-step AI workflows.
+</Note>
+
+## Advanced Patterns
+
+### Node-Level Tracing
+
+You can add custom tracing to individual nodes for more detailed observability:
+
+```typescript
+const analyzeQuestion = async (state: GraphStateType) => {
+  return await tracer.withActiveSpan("Analyze Question Node", {
+    attributes: {
+      "node.type": "analyzer",
+      "node.input.question": state.question,
+    },
+  }, async (span) => {
+    const result = await chatModel.invoke([
+      new SystemMessage("You are a question analyzer."),
+      new HumanMessage(`Analyze: ${state.question}`),
+    ]);
+
+    const needsSearch = (result.content as string).toUpperCase().includes("YES");
+    
+    span.setAttributes({
+      "node.output.needs_search": needsSearch,
+    });
+
+    return {
+      current_step: "question_analyzed",
+      needs_search: needsSearch,
+    };
+  });
+};
+```
+
+## Common Mistakes and Caveats
+
+### 1. Setup and Initialization Issues
+
+<Warning>
+**Multiple setup calls**: `setupObservability()` can only be called once per process. Subsequent calls will throw an error.
+</Warning>
+
+```typescript
+// ❌ Wrong - Multiple setup calls
+setupObservability();
+setupObservability(); // This will throw an error
+
+// ✅ Correct - Single setup call
+setupObservability();
+```
+
+### 2. Callback Handler Usage
+
+<Warning>
+**Reusing callback handlers**: Each workflow execution should use a fresh `LangWatchCallbackHandler` instance to avoid span conflicts.
+</Warning>
+
+```typescript
+// ❌ Wrong - Reusing callback handler across workflows
+const callback = new LangWatchCallbackHandler();
+
+async function processMultipleWorkflows() {
+  // This can cause span conflicts
+  const app1 = workflow1.compile().withConfig({ callbacks: [callback] });
+  const app2 = workflow2.compile().withConfig({ callbacks: [callback] });
+}
+
+// ✅ Correct - Fresh callback handler per workflow execution
+async function processMultipleWorkflows() {
+  const callback1 = new LangWatchCallbackHandler();
+  const callback2 = new LangWatchCallbackHandler();
+
+  const app1 = workflow1.compile().withConfig({ callbacks: [callback1] });
+  const app2 = workflow2.compile().withConfig({ callbacks: [callback2] });
+}
+```
+
+### 3. State Management
+
+<Warning>
+**State mutation**: Avoid directly mutating state objects in LangGraph nodes. Always return new state objects.
+</Warning>
+
+```typescript
+// ❌ Wrong - Mutating state directly
+const analyzeQuestion = async (state: GraphStateType) => {
+  state.current_step = "question_analyzed"; // Don't mutate
+  state.needs_search = true; // Don't mutate
+  return state;
+};
+
+// ✅ Correct - Return new state object
+const analyzeQuestion = async (state: GraphStateType) => {
+  return {
+    ...state,
+    current_step: "question_analyzed",
+    needs_search: true,
+  };
+};
+```
+
+### 4. Error Handling in Workflows
+
+<Warning>
+**Unhandled errors in nodes**: Always handle errors in individual nodes to prevent workflow crashes.
+</Warning>
+
+```typescript
+// ❌ Wrong - No error handling in nodes
+const analyzeQuestion = async (state: GraphStateType) => {
+  const result = await chatModel.invoke([...]); // May throw
+  return { current_step: "question_analyzed" };
+};
+
+// ✅ Correct - Proper error handling
+const analyzeQuestion = async (state: GraphStateType) => {
+  try {
+    const result = await chatModel.invoke([...]);
+    return { current_step: "question_analyzed" };
+  } catch (error) {
+    console.error("Error in analyzeQuestion:", error);
+    return { 
+      current_step: "error",
+      error: error.message 
+    };
+  }
+};
+```
+
+### 5. Environment Configuration
+
+<Warning>
+**Missing environment variables**: Ensure all required environment variables are set before running your LangGraph application.
+</Warning>
+
+```typescript
+// ❌ Wrong - No environment validation
+setupObservability();
+const chatModel = new ChatOpenAI(); // May fail if OPENAI_API_KEY not set
+
+// ✅ Correct - Environment validation
+if (!process.env.OPENAI_API_KEY) {
+  console.error("OPENAI_API_KEY environment variable is required");
+  process.exit(1);
+}
+
+setupObservability();
+const chatModel = new ChatOpenAI();
+```
+
+<Info>
+### Best Practices Summary
+
+1. **Call `setupObservability()` only once per process**
+2. **Use fresh callback handlers** for each workflow execution to avoid conflicts
+3. **Avoid state mutation** - always return new state objects from nodes
+4. **Handle errors properly** in individual nodes and workflows
+5. **Validate environment variables** before starting your application
+</Info>
+
+## Example Project
+
+You can find a complete example project demonstrating LangGraph integration with LangWatch [on our GitHub](https://github.com/langwatch/langwatch/tree/main/typescript-sdk/examples/langgraph). This example includes:
+
+- **Basic Chatbot**: A simple chatbot that handles conversation flow using LangGraph
+- **State Management**: Proper state graph management and workflow patterns
+- **Conversation Management**: User input handling and conversation history management
+- **Error Handling**: Comprehensive error handling and exit commands
+- **Full LangWatch Integration**: Complete observability and tracing setup
+
+### Key Features
+
+- **Automatic Tracing**: All LangGraph node executions and workflow patterns are automatically traced
+- **State Graph Visualization**: Demonstrates proper state graph construction and execution
+- **Workflow Patterns**: Shows how to build complex multi-step AI workflows
+- **Node-Level Observability**: Detailed tracing of individual node executions
+- **Error Recovery**: Handles errors gracefully with proper cleanup

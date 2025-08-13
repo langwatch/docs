@@ -1,304 +1,256 @@
 ---
 title: OpenTelemetry Integration Guide
-sidebarTitle: OpenTelemetry (without SDK)
-description: Use OpenTelemetry to capture LLM traces and send them to LangWatch
+sidebarTitle: Guide
+description: Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
 ---
 
 import OpenInferenceMetadata from "/snippets/openinference-metadata.mdx";
 
-OpenTelemetry is a standard protocol for tracing, and LangWatch is fully compatible with OpenTelemetry, you can use any OpenTelemetry compatible library to capture your LLM traces and send them to LangWatch.
+OpenTelemetry is a vendor-neutral standard for observability that provides a unified way to capture traces, metrics, and logs. LangWatch is fully compatible with OpenTelemetry, allowing you to use any OpenTelemetry-compatible library in any programming language to capture your LLM traces and send them to LangWatch.
 
-This guide demonstrates the OpenTelemetry integration using Python, but the same principles apply to integration with OpenTelemetry instrumentation in other languages.
+This guide shows you how to set up OpenTelemetry instrumentation in any language and configure it to export traces to LangWatch's OTEL API endpoint.
 
 import LLMsTxtProtip from "/snippets/llms-txt-protip.mdx";
 
 <LLMsTxtProtip />
 
-#### Prerequisites
+## Prerequisites
 
-- Obtain your `LANGWATCH_API_KEY` from the [LangWatch dashboard](https://app.langwatch.ai/).
+- Obtain your `LANGWATCH_API_KEY` from the [LangWatch dashboard](https://app.langwatch.ai/)
+- Install the OpenTelemetry SDK for your programming language
 
-#### Installation
+## LangWatch OTEL API Endpoint
 
-```bash
-pip install opentelemetry
+LangWatch provides a standard OpenTelemetry Protocol (OTLP) endpoint for receiving traces:
+
+```
+https://app.langwatch.ai/api/otel/v1/traces
 ```
 
-#### Configuration
+This endpoint accepts OTLP over HTTP and gRPC protocols, making it compatible with all OpenTelemetry SDKs.
 
-Set up LangWatch as the OpenTelemetry exporter endpoint:
+## General Setup Pattern
 
-```python
-import os
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-from opentelemetry.sdk import trace as trace_sdk
-from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+The setup follows this general pattern across all languages:
 
-# Set up OpenTelemetry trace provider with LangWatch as the endpoint
-tracer_provider = trace_sdk.TracerProvider()
-tracer_provider.add_span_processor(
-    SimpleSpanProcessor(
-        OTLPSpanExporter(
-            endpoint="https://app.langwatch.ai/api/otel/v1/traces",
-            headers={"Authorization": "Bearer " + os.environ["LANGWATCH_API_KEY"]},
-        )
-    )
-)
-# Optionally, you can also print the spans to the console.
-tracer_provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
-```
+1. **Install OpenTelemetry SDK** for your language
+2. **Configure the OTLP exporter** to point to LangWatch's endpoint
+3. **Set up authentication** using your API key
+4. **Initialize the trace provider** with the exporter
+5. **Instrument your LLM calls** using available instrumentation libraries
 
-## Capturing LLM Traces
-
-Currently, there are different open initiatives for LLM instrumentation libraries, here we show some examples on how to capture LLM traces with a couple of them.
+## Language-Specific Examples
 
 <Tabs>
-  <Tab title="OpenInference (Python)">
-    <Tabs>
-      <Tab title="OpenAI">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-openai
+  <Tab title="Java">
+    <Steps>
+      <Step title="Install OpenTelemetry">
+        Add to your `pom.xml`:
+        ```xml
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+            <version>1.32.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>1.32.0</version>
+        </dependency>
         ```
+      </Step>
 
-        Then, instrument your OpenAI calls:
+      <Step title="Configure the exporter">
+        ```java
+        import io.opentelemetry.api.OpenTelemetry;
+        import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
+        import io.opentelemetry.context.propagation.ContextPropagators;
+        import io.opentelemetry.sdk.OpenTelemetrySdk;
+        import io.opentelemetry.sdk.trace.SdkTracerProvider;
+        import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+        import io.opentelemetry.sdk.trace.export.OtlpHttpSpanExporter;
+        import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
-        ```python
-        from openinference.instrumentation.openai import OpenAIInstrumentor
+        public class OpenTelemetryConfig {
+            public static OpenTelemetry initOpenTelemetry() {
+                OtlpHttpSpanExporter spanExporter = OtlpHttpSpanExporter.builder()
+                    .setEndpoint("https://app.langwatch.ai/api/otel/v1/traces")
+                    .addHeader("Authorization", "Bearer " + System.getenv("LANGWATCH_API_KEY"))
+                    .build();
 
-        OpenAIInstrumentor().instrument(tracer_provider=tracer_provider)
+                SdkTracerProvider sdkTracerProvider = SdkTracerProvider.builder()
+                    .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
+                    .setResource(Resource.getDefault().toBuilder()
+                        .put(ResourceAttributes.SERVICE_NAME, "my-service")
+                        .build())
+                    .build();
+
+                return OpenTelemetrySdk.builder()
+                    .setTracerProvider(sdkTracerProvider)
+                    .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+                    .buildAndRegisterGlobal();
+            }
+        }
         ```
+      </Step>
 
-        That's it! You can now see the traces for your OpenAI calls in the LangWatch dashboard:
+      <Step title="Instrument your LLM calls">
+        ```java
+        import io.opentelemetry.api.trace.Tracer;
 
-        ![OpenInference OpenAI Spans](/images/integration/opentelemetry/openinference-openai.png)
+        public class LLMService {
+            private final Tracer tracer = OpenTelemetry.getGlobalTracer("my-service");
 
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="AWS Bedrock">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-bedrock
+            public void callLLM() {
+                var span = tracer.spanBuilder("llm-call").startSpan();
+                try (var scope = span.makeCurrent()) {
+                    // Your LLM call here
+                } finally {
+                    span.end();
+                }
+            }
+        }
         ```
-
-        Then, instrument your AWS calls:
-
-        ```python
-        from openinference.instrumentation.bedrock import BedrockInstrumentor
-
-        BedrockInstrumentor().instrument()
-        ```
-
-        That's it! You can now see the traces for your AWS Bedrock calls in the LangWatch dashboard.
-
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="DSPy">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-dspy
-        ```
-
-        Then, instrument your DSPy calls:
-
-        ```python
-        from openinference.instrumentation.dspy import DSPyInstrumentor
-
-        DSPyInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your DSPy calls in the LangWatch dashboard:
-
-        ![OpenInference DSPy Spans](/images/integration/opentelemetry/openinference-dspy.png)
-
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="Haystack">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-haystack
-        ```
-
-        Then, instrument your Haystack calls:
-
-        ```python
-        from openinference.instrumentation.haystack import HaystackInstrumentor
-
-        HaystackInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your Haystack calls in the LangWatch dashboard:
-
-        ![OpenInference Haystack Spans](/images/integration/opentelemetry/openinference-haystack.png)
-
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="LangChain">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-langchain
-        ```
-
-        Then, instrument your LangChain calls:
-
-        ```python
-        from openinference.instrumentation.langchain import LangChainInstrumentor
-
-        LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your LangChain calls in the LangWatch dashboard:
-
-        ![OpenInference LangChain Spans](/images/integration/opentelemetry/openinference-langchain.png)
-
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="CrewAI">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-crewai openinference-instrumentation-langchain
-        ```
-
-        Then, instrument your LangChain calls. CrewAI uses LangChain under the hood, so we instrument both:
-
-        ```python
-        from openinference.instrumentation.crewai import CrewAIInstrumentor
-        from openinference.instrumentation.langchain import LangChainInstrumentor
-
-        CrewAIInstrumentor().instrument(tracer_provider=tracer_provider)
-        LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your CrewAI calls in the LangWatch dashboard.
-
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="Anthropic">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-anthropic
-        ```
-
-        Then, instrument your Anthropic calls:
-
-        ```python
-        from openinference.instrumentation.anthropic import AnthropicInstrumentor
-
-        AnthropicInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your Anthropic calls in the LangWatch dashboard.
-
-        <OpenInferenceMetadata />
-      </Tab>
-      <Tab title="Autogen (experimental)">
-        Installation:
-
-        ```bash
-        pip install openinference-instrumentation-autogen
-        ```
-
-        **Note:** The Autogen integration is currently experimental and may have limitations or unexpected behavior.
-
-        Then, instrument Autogen:
-
-        ```python
-        from openinference.instrumentation.autogen import AutogenInstrumentor
-
-        AutogenInstrumentor().instrument()
-        ```
-
-        That's it! You can now see the traces from inside Autogen in the LangWatch dashboard.
-
-        <OpenInferenceMetadata />
-      </Tab>
-    </Tabs>
+      </Step>
+    </Steps>
   </Tab>
 
-  <Tab title="OpenLLMetry (Python)">
-    <Tabs>
-      <Tab title="OpenAI">
-        Installation:
-
+  <Tab title="C#/.NET">
+    <Steps>
+      <Step title="Install OpenTelemetry">
         ```bash
-        pip install opentelemetry-instrumentation-openai
+        dotnet add package OpenTelemetry
+        dotnet add package OpenTelemetry.Exporter.OpenTelemetryProtocol
         ```
+      </Step>
 
-        Then, instrument your OpenAI calls:
+      <Step title="Configure the exporter">
+        ```csharp
+        using OpenTelemetry;
+        using OpenTelemetry.Resources;
+        using OpenTelemetry.Trace;
 
-        ```python
-        from opentelemetry.instrumentation.openai import OpenAIInstrumentor
-
-        OpenAIInstrumentor().instrument(tracer_provider=tracer_provider)
+        public class Program
+        {
+            public static void Main(string[] args)
+            {
+                var builder = Sdk.CreateTracerProviderBuilder()
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                        .AddService(serviceName: "my-service"))
+                    .AddOtlpExporter(opts => opts
+                        .Endpoint = new Uri("https://app.langwatch.ai/api/otel/v1/traces")
+                        .Headers = "Authorization=Bearer " + Environment.GetEnvironmentVariable("LANGWATCH_API_KEY"))
+                    .Build();
+            }
+        }
         ```
+      </Step>
 
-        That's it! You can now see the traces for your OpenAI calls in the LangWatch dashboard:
+      <Step title="Instrument your LLM calls">
+        ```csharp
+        using OpenTelemetry.Trace;
 
-        ![OpenLLMetry OpenAI Spans](/images/integration/opentelemetry/openllmetry-openai.png)
-      </Tab>
-      <Tab title="Anthropic">
-        Installation:
+        public class LLMService
+        {
+            private readonly Tracer _tracer = TracerProvider.Default.GetTracer("my-service");
 
-        ```bash
-        pip install opentelemetry-instrumentation-anthropic
+            public async Task<string> CallLLMAsync()
+            {
+                using var span = _tracer.StartActiveSpan("llm-call");
+                // Your LLM call here
+                return "response";
+            }
+        }
         ```
-
-        Then, instrument your Anthropic calls:
-
-        ```python
-        from opentelemetry.instrumentation.anthropic import AnthropicInstrumentor
-
-        AnthropicInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your Anthropic calls in the LangWatch dashboard:
-
-        ![OpenLLMetry Anthropic Spans](/images/integration/opentelemetry/openllmetry-anthropic.png)
-      </Tab>
-      <Tab title="LangChain">
-        Installation:
-
-        ```bash
-        pip install opentelemetry-instrumentation-langchain
-        ```
-
-        Then, instrument your LangChain calls:
-
-        ```python
-        from opentelemetry.instrumentation.langchain import LangchainInstrumentor
-
-        LangchainInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your LangChain calls in the LangWatch dashboard:
-
-        ![OpenLLMetry LangChain Spans](/images/integration/opentelemetry/openllmetry-langchain.png)
-      </Tab>
-      <Tab title="LlamaIndex">
-        Installation:
-
-        ```bash
-        pip install opentelemetry-instrumentation-llamaindex
-        ```
-
-        Then, instrument your LlamaIndex calls:
-
-        ```python
-        from opentelemetry.instrumentation.llamaindex import LlamaIndexInstrumentor
-
-        LlamaIndexInstrumentor().instrument(tracer_provider=tracer_provider)
-        ```
-
-        That's it! You can now see the traces for your LlamaIndex calls in the LangWatch dashboard.
-      </Tab>
-    </Tabs>
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
+## Available Instrumentation Libraries
+
+LangWatch works with any OpenTelemetry-compatible instrumentation library. Here are some popular options:
+
+### Java Libraries
+- **[Spring AI](https://docs.spring.io/spring-ai/reference/index.html)**: Spring AI provides built-in observability support for AI applications, including OpenTelemetry integration for tracing LLM calls and AI operations
+- **OpenTelemetry Java SDK**: Use OpenTelemetry Java SDK with custom spans
+
+### .NET Libraries
+- **[Azure Monitor OpenTelemetry](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=aspnetcore)**: Azure Monitor OpenTelemetry provides comprehensive OpenTelemetry support for .NET applications, including automatic instrumentation and Azure-specific features
+- **OpenTelemetry .NET SDK**: Use OpenTelemetry .NET SDK with custom instrumentation
+
+## Manual Instrumentation
+
+If no automatic instrumentation is available for your LLM provider, you can manually create spans:
+
+```java
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Context;
+
+public class LLMService {
+    private final Tracer tracer = OpenTelemetry.getGlobalTracer("my-service");
+
+    public String callLLM(String prompt) {
+        Span span = tracer.spanBuilder("llm-call").startSpan();
+        
+        try (var scope = span.makeCurrent()) {
+            // Add relevant attributes
+            span.setAttribute("llm.provider", "custom-provider");
+            span.setAttribute("llm.model", "gpt-5-mini");
+            span.setAttribute("llm.prompt", prompt);
+            
+            // Your LLM call here
+            String response = yourLLMClient.generate(prompt);
+            
+            return response;
+        } finally {
+            span.end();
+        }
+    }
+}
+```
+
+## Environment Variables
+
+Set these environment variables for authentication:
+
+```bash
+export LANGWATCH_API_KEY="your-api-key-here"
+```
+
+## Verification
+
+After setting up your instrumentation, you can verify that traces are being sent to LangWatch by:
+
+1. Making a few LLM calls in your application
+2. Checking the [LangWatch dashboard](https://app.langwatch.ai/) for incoming traces
+3. Looking for spans with your service name and LLM call details
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Traces not appearing in LangWatch">
+    - Verify your API key is correct and has proper permissions
+    - Check that the endpoint URL is correct: `https://app.langwatch.ai/api/otel/v1/traces`
+    - Ensure your application is making LLM calls after instrumentation is set up
+    - Check network connectivity to the LangWatch endpoint
+  </Accordion>
+
+  <Accordion title="Authentication errors">
+    - Verify the Authorization header format: `Bearer YOUR_API_KEY`
+    - Ensure the API key is valid and not expired
+    - Check that the API key has the necessary permissions for trace ingestion
+  </Accordion>
+
+  <Accordion title="Performance issues">
+    - Consider using batch span processors for high-volume applications
+    - Implement sampling to reduce the number of traces sent
+    - Use async span processors to avoid blocking your application
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+- Explore the [LangWatch dashboard](https://app.langwatch.ai/) to view your traces
+- Set up [custom evaluations](/evaluations) for your LLM calls

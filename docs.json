@@ -17,14 +17,23 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": ["curl", "python", "typescript"],
+      "languages": [
+        "curl",
+        "python",
+        "typescript"
+      ],
       "defaults": "required"
     },
     "mdx": {
@@ -73,7 +82,8 @@
                     "group": "Azure AI",
                     "pages": [
                       "integration/python/integrations/azure-ai",
-                      "integration/typescript/integrations/azure"
+                      "integration/typescript/integrations/azure",
+                      "integration/go/integrations/azure-openai"
                     ]
                   },
                   {
@@ -84,35 +94,52 @@
                     ]
                   },
                   {
+                    "group": "LangGraph",
+                    "pages": [
+                      "integration/python/integrations/langgraph",
+                      "integration/typescript/integrations/langgraph"
+                    ]
+                  },
+                  {
                     "group": "OpenAI",
                     "pages": [
-                                        "integration/python/integrations/open-ai",
-                  "integration/typescript/integrations/open-ai"
-                ]
-              },
+                      "integration/python/integrations/open-ai",
+                      "integration/typescript/integrations/open-ai",
+                      "integration/go/integrations/open-ai"
+                    ]
+                  },
+                  {
+                    "group": "Anthropic (Claude)",
+                    "pages": [
+                      "integration/python/integrations/anthropic",
+                      "integration/go/integrations/anthropic"
+                    ]
+                  },
+                  "integration/typescript/integrations/vercel-ai-sdk",
+                  "integration/typescript/integrations/mastra",
                   "integration/python/integrations/agno",
-                  "integration/python/integrations/anthropic",
-                  "integration/python/integrations/autogen",             
+                  "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
-                  "integration/python/integrations/google-genai", 
+                  "integration/python/integrations/google-genai",
+                  "integration/go/integrations/google-gemini",
+                  "integration/go/integrations/groq",
+                  "integration/go/integrations/openrouter",
+                  "integration/go/integrations/ollama",
                   "integration/python/integrations/haystack",
                   "integration/python/integrations/instructor",
                   "integration/langflow",
-                  "integration/python/integrations/langgraph",
                   "integration/python/integrations/llamaindex",
                   "integration/python/integrations/lite-llm",
-                  "integration/typescript/integrations/mastra",
                   "integration/python/integrations/open-ai-agents",
                   "integration/python/integrations/promptflow",
                   "integration/python/integrations/pydantic-ai",
                   "integration/python/integrations/smolagents",
                   "integration/python/integrations/strand-agents",
                   "integration/python/integrations/semantic-kernel",
-                  "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/python/integrations/vertex-ai",
                   "integration/python/integrations/other"
                 ]
@@ -148,33 +175,93 @@
               "concepts",
               "integration/quick-start",
               {
-                "group": "Language APIs & SDKs",
+                "group": "SDKs",
                 "pages": [
-                  "integration/python/guide",
-                  "integration/typescript/guide",
-                  "integration/opentelemetry/guide",
                   {
-                    "group": "API Reference",
+                    "group": "Python",
+                    "icon": "python",
                     "pages": [
+                      "integration/python/guide",
                       "integration/python/reference",
+                      {
+                        "group": "Advanced",
+                        "pages": [
+                          "integration/python/tutorials/manual-instrumentation",
+                          "integration/python/tutorials/open-telemetry"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "TypeScript",
+                    "icon": "square-js",
+                    "pages": [
+                      "integration/typescript/guide",
                       "integration/typescript/reference",
-                      "integration/rest-api"
+                      {
+                        "group": "Advanced",
+                        "pages": [
+                          "integration/typescript/tutorials/debugging",
+                          "integration/typescript/tutorials/manual-instrumentation",
+                          "integration/typescript/tutorials/semantic-convention",
+                          "integration/typescript/tutorials/opentelemetry-migration"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "group": "Go",
+                    "icon": "golang",
+                    "pages": [
+                      "integration/go/guide",
+                      "integration/go/reference"
+                    ]
+                  },
+                  {
+                    "group": "OpenTelemetry",
+                    "pages": [
+                      "integration/opentelemetry/guide"
                     ]
                   }
                 ]
               },
-
               {
                 "group": "Tutorials",
                 "pages": [
-                  "integration/python/tutorials/manual-instrumentation",
-                  "integration/python/tutorials/open-telemetry",
-                  "integration/python/tutorials/capturing-rag",
+                  {
+                    "group": "Capturing Inputs & Outputs",
+                    "icon": "arrow-right-arrow-left",
+                    "pages": [
+                      "integration/python/tutorials/capturing-mapping-input-output",
+                      "integration/typescript/tutorials/capturing-input-output"
+                    ]
+                  },
+                  {
+                    "group": "Capturing RAG",
+                    "icon": "layer-group",
+                    "pages": [
+                      "integration/python/tutorials/capturing-rag",
+                      "integration/typescript/tutorials/capturing-rag"
+                    ]
+                  },
+                  {
+                    "group": "Metadata & Attributes",
+                    "icon": "tags",
+                    "pages": [
+                      "integration/python/tutorials/capturing-metadata",
+                      "integration/typescript/tutorials/capturing-metadata"
+                    ]
+                  },
+                  {
+                    "group": "Tracking Costs",
+                    "icon": "dollar-sign",
+                    "pages": [
+                      "integration/python/tutorials/tracking-llm-costs",
+                      "integration/typescript/tutorials/tracking-llm-costs"
+                    ]
+                  },
                   "integration/rags-context-tracking",
-                  "integration/python/tutorials/capturing-evaluations-guardrails",
-                  "integration/python/tutorials/capturing-metadata",
-                  "integration/python/tutorials/capturing-mapping-input-output",
-                  "integration/python/tutorials/tracking-llm-costs"
+                  "integration/python/tutorials/capturing-evaluations-guardrails"
                 ]
               },
               {
@@ -194,7 +281,10 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": ["features/triggers", "features/embedded-analytics"]
+                "pages": [
+                  "features/triggers",
+                  "features/embedded-analytics"
+                ]
               },
               "integration/code-examples"
             ]
@@ -333,11 +423,15 @@
               },
               {
                 "group": "Datasets",
-                "pages": ["api-reference/datasets/post-dataset-entries"]
+                "pages": [
+                  "api-reference/datasets/post-dataset-entries"
+                ]
               },
               {
                 "group": "Triggers",
-                "pages": ["api-reference/triggers/create-slack-trigger"]
+                "pages": [
+                  "api-reference/triggers/create-slack-trigger"
+                ]
               },
               {
                 "group": "Scenarios",
@@ -358,7 +452,10 @@
           },
           {
             "group": "Support",
-            "pages": ["support", "status"]
+            "pages": [
+              "support",
+              "status"
+            ]
           }
         ]
       }

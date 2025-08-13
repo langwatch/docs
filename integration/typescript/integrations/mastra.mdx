@@ -1,12 +1,13 @@
 ---
 title: Mastra
-description: Learn how to integrate Mastra, a TypeScript agent framework, with LangWatch.
+description: Learn how to integrate Mastra, a TypeScript agent framework, with LangWatch for observability and tracing.
+sidebarTitle: Mastra
+keywords: mastra, langwatch, tracing, observability, typescript, agent framework, ai agents
 ---
 
-#  Observability for Mastra With LangWatch
+# Observability for Mastra With LangWatch
 
 This guide shows you how to integrate **Mastra** with **LangWatch** for observability and tracing. By following these steps, you'll be able to monitor and debug your Mastra agents in the LangWatch dashboard.
-
 
 ## Integration
 
@@ -14,92 +15,143 @@ This guide shows you how to integrate **Mastra** with **LangWatch** for observab
 <Step title="Create a Mastra project">
 Create a Mastra project using the Mastra CLI:
 
-  ```bash
-  npx create-mastra
-  ```
+```bash
+npx create-mastra
+```
 
-  Move into the project directory:
+Move into the project directory:
 
-  ```bash
-  cd your-mastra-project
-  ```
+```bash
+cd your-mastra-project
+```
+
 For more information, view Mastra installation instructions [here](https://mastra.ai/docs/getting-started/installation)
-
-
 </Step>
 
 <Step title="Set up LangWatch project">
 Create a project in [LangWatch](https://app.langwatch.ai) and get your API keys from the project settings page.
-
 </Step>
 
 <Step title="Add environment variables">
-  Create or update your `.env` file with the following variables:
+Create or update your `.env` file with the following variables:
 
-  ```bash
-  # Your LLM API key
-  OPENAI_API_KEY=your-api-key
+```bash
+# Your LLM API key
+OPENAI_API_KEY=your-api-key
 
-  # LangWatch credentials
-  LANGWATCH_API_KEY=sk-...
-
-  ```
+# LangWatch credentials
+LANGWATCH_API_KEY=sk-...
+```
 </Step>
 
+<Step title="Install required packages">
+Add the necessary packages to your project:
 
-<Step title="Install the langwatch package">
-  Add the `langwatch` package to your project:
-
-  ```bash
-  npm install langwatch
-  ```
-
+```bash
+npm install langwatch @opentelemetry/context-async-hooks @opentelemetry/sdk-node
+```
 </Step>
 
-<Step title="Add LangWatch to your Mastra instance">
-  Add LangWatch to your Mastra instance via the telemetry exporter. 
+<Step title="Set up LangWatch observability">
+Set up LangWatch observability in your main application file using `setupObservability`:
 
-  ```typescript
-import { Mastra } from "@mastra/core/mastra";
-import { PinoLogger } from "@mastra/loggers";
-import { LibSQLStore } from "@mastra/libsql";
-import { LangWatchExporter } from "langwatch";
+```typescript
+import { setupObservability } from "langwatch/observability/node";
 
-import { weatherAgent } from "./agents/weather-agent";
+setupObservability();
+```
+</Step>
+
+<Step title="Configure your Mastra instance">
+Configure your Mastra instance with telemetry enabled:
+
+```typescript
+import { Mastra } from '@mastra/core/mastra';
+import { PinoLogger } from '@mastra/loggers';
+import { LibSQLStore } from '@mastra/libsql';
+import { weatherAgent } from './agents/weather-agent.js';
 
 export const mastra = new Mastra({
   agents: { weatherAgent },
+  storage: new LibSQLStore({
+    url: ":memory:", // or "file:./mastra.db" for persistence
+  }),
+  logger: new PinoLogger({
+    name: 'Mastra',
+    level: 'info',
+  }),
   telemetry: {
-    serviceName: "ai", // this must be set to "ai" so that the LangWatchExporter thinks it's an AI SDK trace
     enabled: true,
-    export: {
-      type: "custom",
-      exporter: new LangWatchExporter({
-        apiKey: process.env.LANGWATCH_API_KEY,
-        debug: true,
-        // includeAllSpans: true,
-      }),
-    },
   },
 });
-  ```
-
+```
 </Step>
 
+<Step title="Add tracing to your agent calls">
+Use the LangWatch tracer to add detailed tracing to your agent interactions:
 
-<Step title="Run mastra dev server">
-  Start the Mastra development server:
+```typescript
+import { getLangWatchTracer } from "langwatch";
 
-  ```bash
-  npm run dev
-  ```
+const tracer = getLangWatchTracer("mastra-weather-agent-example");
 
-  Head over to the developer playground with the provided URL and start chatting with your agent.
+// In your agent interaction code
+await tracer.withActiveSpan("agent-interaction", {
+  attributes: {
+    "langwatch.thread_id": threadId,
+    "langwatch.tags": ["mastra.sdk.example"],
+  },
+}, async (span) => {
+  // Set input for tracing
+  span.setInput("chat_messages", conversationHistory);
 
+  const agent = mastra.getAgent("weatherAgent");
+  const response = await agent.generate(conversationHistory, {
+    // Optionally provide a tracer to have more control over tracing
+    telemetry: { isEnabled: true, tracer: tracer },
+  });
 
-  ### View traces in LangWatch
-  Visit your [LangWatch dashboard](https://app.langwatch.ai) to explore detailed insights into your agent interactions. Monitor and analyze every aspect of your AI conversations, from prompt engineering to response quality, helping you optimize your AI applications.
-
+  // Set output for tracing
+  span.setOutput("chat_messages", [{ role: "assistant", content: response.text }]);
+});
+```
 </Step>
 
+<Step title="Run your Mastra application">
+Start your Mastra development server:
+
+```bash
+npm run dev
+```
+
+Or run your application:
+
+```bash
+npm start
+```
+
+<Check>
+Visit your [LangWatch dashboard](https://app.langwatch.ai) to explore detailed insights into your agent interactions. Monitor and analyze every aspect of your AI conversations, from prompt engineering to response quality, helping you optimize your AI applications.
+</Check>
+</Step>
 </Steps>
+
+## Example Project
+
+You can find a complete example project demonstrating Mastra integration with LangWatch [on our GitHub](https://github.com/langwatch/langwatch/tree/main/typescript-sdk/examples/mastra). This example includes:
+
+- **Weather Agent**: An AI agent that fetches weather data and suggests activities
+- **Weather Tool**: A tool that fetches real-time weather data from Open-Meteo API
+- **CLI Chatbox Interface**: Interactive command-line interface for chatting with the weather agent
+- **Workflow Example**: Demonstrates Mastra workflows for programmatic weather data fetching
+- **Full LangWatch Integration**: Complete observability and tracing setup
+
+### Key Features
+
+- **Automatic Tracing**: All agent interactions are automatically traced and sent to LangWatch
+- **Custom Spans**: Create custom spans for detailed monitoring of specific operations
+- **Input/Output Tracking**: Track conversation history and agent responses
+- **Thread Management**: Organize conversations by thread ID for better analysis
+- **Tagging**: Add custom tags to categorize and filter your traces
+- **Tool Integration**: Demonstrates how to trace custom tools and their usage
+- **Workflow Patterns**: Shows how to build and trace complex agent workflows
