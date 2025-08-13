@@ -247,12 +247,22 @@ The Go SDK is designed to feel familiar to anyone who has used OpenTelemetry. It
 - Each message triggering your LLM pipeline as a whole is captured with a [Trace](/concepts#traces-one-task-end-to-end).
 - A [Trace](/concepts#traces-one-task-end-to-end) contains multiple [Spans](/concepts#spans-the-building-blocks), which are the steps inside your pipeline.
 - [Traces](/concepts#traces-one-task-end-to-end) can be grouped into a conversation by assigning a common `thread_id`.
+- Use [User ID](/concepts#user-id-whos-using-the-app) to track individual user interactions.
+- Apply [Labels](/concepts#labels-your-organizational-superpowers) for custom categorization and filtering.
+
+<Tip>
+For detailed API documentation of all available methods and options, see the [Go SDK API Reference](/integration/go/reference).
+</Tip>
 
 ### Creating a Trace
 
 A trace represents a single, end-to-end task, like handling a user request. You create a trace by starting a "root" span. All other spans created within its context will be nested under it.
 
 Before creating traces, ensure you have configured the SDK as shown in the [Setup Guide](/integration/go/guide#setup).
+
+<Tip>
+For complete API documentation of the `Tracer()` and `LangWatchSpan` methods, see the [Core SDK section](/integration/go/reference#core-sdk-langwatch) in the reference.
+</Tip>
 
 ```go
 import (
@@ -315,13 +325,17 @@ The context `ctx` is crucial. It carries the active span information, ensuring t
 LangWatch offers integrations with popular OpenAI, and any other OpenAI-compatible providers:
 
 See the dedicated guides for more details:
-- [Anthropic](/integration/go/integrations/anthropic)
-- [OpenAI](/integration/go/integrations/open-ai)
-- [Azure OpenAI](/integration/go/integrations/azure-openai)
-- [Groq](/integration/go/integrations/groq)
-- [Google Gemini](/integration/go/integrations/google-gemini)
-- [Ollama](/integration/go/integrations/ollama)
-- [OpenRouter](/integration/go/integrations/openrouter)
+- [Anthropic](/integration/go/integrations/anthropic) - Claude models via OpenAI-compatible API
+- [OpenAI](/integration/go/integrations/open-ai) - GPT models and OpenAI API
+- [Azure OpenAI](/integration/go/integrations/azure-openai) - Azure-hosted OpenAI models
+- [Groq](/integration/go/integrations/groq) - Fast inference with Groq API
+- [Google Gemini](/integration/go/integrations/google-gemini) - Google's Gemini models
+- [Ollama](/integration/go/integrations/ollama) - Local model inference
+- [OpenRouter](/integration/go/integrations/openrouter) - Multi-provider model access
+
+<Tip>
+For detailed configuration options and middleware settings, see the [OpenAI Instrumentation section](/integration/go/reference#openai-instrumentation) in the API reference.
+</Tip>
 
 ## Environment Variables
 
@@ -358,6 +372,10 @@ Explore real working examples to learn different patterns and use cases:
 | **Threads** | Grouping conversations | Managing multi-turn conversations |
 | **RAG** | Retrieval patterns | Document retrieval and context tracking |
 
+<Tip>
+For comprehensive code examples including RAG pipelines, error handling, and best practices, see the [Complete Example section](/integration/go/reference#complete-example) in the API reference.
+</Tip>
+
 ## Troubleshooting
 
 ### Common Issues
@@ -385,4 +403,6 @@ If you're still having issues:
 ## Next Steps
 
 - Learn about specific [OpenAI integration](/integration/go/integrations/open-ai) patterns
-- Check the [API reference](/integration/go/reference) for detailed documentation 
+- Check the [API reference](/integration/go/reference) for detailed documentation
+- Explore [span types](/integration/go/reference#langwatch-span-types) for specialized LLM operations
+- Review [collected attributes](/integration/go/reference#collected-attributes) for comprehensive tracing data 
