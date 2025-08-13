@@ -5,11 +5,6 @@ description: LangWatch Go SDK integration guide for setting up LLM observability
 keywords: LangWatch, Go, Golang, SDK, integration, guide, setup, tracing, spans, traces, OpenTelemetry, OpenAI
 ---
 
-import { Note } from '/components/Note.tsx'
-import { Steps } from '/components/Steps.tsx'
-import { Tip } from '/components/Tip.tsx'
-import { Warning } from '/components/Warning.tsx'
-import { Check } from '/components/Check.tsx'
 import LLMsTxtProtip from "/snippets/llms-txt-protip.mdx";
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
@@ -42,7 +37,7 @@ Before you begin, ensure you have:
 If you're new to OpenTelemetry, don't worry! The LangWatch SDK handles most of the complexity for you. You only need to understand the basic concepts of traces and spans.
 </Tip>
 
-<h2 id="setup">Setup</h2>
+## Setup
 
 Get started in just a few minutes by installing the SDK and instrumenting your application.
 
@@ -287,7 +282,7 @@ func handleMessage(ctx context.Context, userMessage string) {
 	// 4. (Optional) Record the final output
 	span.RecordOutputString("This was the AI's response.")
 }
-```xw
+```
 
 ### Creating Nested Spans
 
