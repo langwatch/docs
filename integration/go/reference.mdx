@@ -23,7 +23,7 @@ go get github.com/langwatch/langwatch/sdk-go/instrumentation/openai
 ```
 
 <Tip>
-For a quick start guide with step-by-step instructions, see the [Go Integration Guide](/integration/go/guide).
+For a quick start guide with step-by-step instructions, see the [Go Integration Guide](/integration/go/guide). For practical examples of creating traces and spans, see the [Core Concepts section](/integration/go/guide#core-concepts) in the guide.
 </Tip>
 
 ## Core SDK (`langwatch`)
@@ -53,6 +53,10 @@ defer shutdown(context.Background())
 <Warning>
 Always call the shutdown function to ensure traces are properly flushed when your application exits.
 </Warning>
+
+<Tip>
+For a complete setup example with environment variables and error handling, see the [Setup section](/integration/go/guide#setup) in the integration guide.
+</Tip>
 
 ### Tracer
 
@@ -251,6 +255,10 @@ The `LangWatchSpan` interface embeds the standard `trace.Span` and adds several 
 ## OpenAI Instrumentation
 
 The `github.com/langwatch/langwatch/sdk-go/instrumentation/openai` package provides middleware for the official `openai-go` client.
+
+<Tip>
+For step-by-step instructions on setting up OpenAI instrumentation, see the [OpenAI integration guide](/integration/go/integrations/open-ai).
+</Tip>
 
 ### Middleware
 
@@ -648,4 +656,8 @@ func setupLangWatch(ctx context.Context) func(context.Context) {
 For additional help:
 - [GitHub Issues](https://github.com/langwatch/langwatch/issues)
 - [Documentation](https://docs.langwatch.ai)
-- [Community Support](https://docs.langwatch.ai/support) 
+- [Community Support](https://docs.langwatch.ai/support)
+
+<Tip>
+For common setup issues and troubleshooting tips, see the [Troubleshooting section](/integration/go/guide#troubleshooting) in the integration guide.
+</Tip> 
