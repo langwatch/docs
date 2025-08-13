@@ -201,9 +201,9 @@
                       {
                         "group": "Advanced",
                         "pages": [
-                          "integration/typescript/tutorials/debugging",
+                          "integration/typescript/tutorials/debugging-typescript",
                           "integration/typescript/tutorials/manual-instrumentation",
-                          "integration/typescript/tutorials/semantic-convention",
+                          "integration/typescript/tutorials/semantic-conventions",
                           "integration/typescript/tutorials/opentelemetry-migration"
                         ]
                       }
