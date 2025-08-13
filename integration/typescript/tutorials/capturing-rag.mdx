@@ -251,3 +251,17 @@ async function robustRAGRetrieval(query: string): Promise<LangWatchSpanRAGContex
 6. **Control Data Capture**: Use data capture configuration to manage what gets captured in sensitive operations.
 
 By effectively capturing RAG spans, you gain much richer data in LangWatch, enabling more powerful analysis and evaluation of your RAG systems. Refer to the SDK examples for more detailed implementations.
+
+## Related Documentation
+
+For more advanced RAG patterns and framework-specific implementations:
+
+- **[Integration Guide](/integration/typescript/guide)** - Basic setup and core concepts
+- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Advanced span management for RAG pipelines
+- **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - RAG-specific attributes and naming conventions
+- **[LangChain Integration](/integration/typescript/integrations/langchain)** - Automatic RAG instrumentation with LangChain
+- **[Capturing Metadata](/integration/typescript/tutorials/capturing-metadata)** - Adding custom metadata to RAG contexts
+
+<Tip>
+For production RAG applications, combine manual RAG spans with [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent observability and better analytics.
+</Tip>

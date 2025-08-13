@@ -20,7 +20,7 @@ This guide covers advanced manual span management techniques for TypeScript/Java
 
 ## withActiveSpan Method
 
-The `withActiveSpan` method is the recommended approach for most manual instrumentation needs. It automatically handles context propagation, error handling, and span cleanup, making it both safer and easier to use than manual span management.
+The `withActiveSpan` method is the recommended approach for most manual instrumentation needs. It automatically handles context propagation, error handling, and span cleanup, making it both safer and easier to use than manual span management. For consistent attribute naming, combine this with [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions).
 
 ### Basic Usage
 
@@ -522,3 +522,17 @@ try {
 <Info>
 For most use cases, the `withActiveSpan` method provides the best balance of ease of use, safety, and functionality. Only use manual span management when you need specific control over span lifecycle or context propagation that `withActiveSpan` cannot provide.
 </Info>
+
+## Related Documentation
+
+For more advanced observability patterns and best practices:
+
+- **[Integration Guide](/integration/typescript/guide)** - Basic setup and core concepts
+- **[API Reference](/integration/typescript/reference)** - Complete API documentation
+- **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - Standardized attribute naming guidelines
+- **[Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript)** - Debug manual instrumentation issues
+- **[Framework Integrations](/integration/typescript/integrations)** - Framework-specific instrumentation approaches
+
+<Tip>
+Combine manual instrumentation with [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent, maintainable observability across your application.
+</Tip>

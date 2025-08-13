@@ -157,7 +157,7 @@ Below is a list of currently supported integrations. Click on each to learn more
 - [Vercel AI SDK](/integration/typescript/integrations/vercel-ai-sdk)
 
 <Note>
-For detailed integration guides, see our [integration documentation](/integration/typescript/integrations).
+For detailed integration guides, see our [integration documentation](/integration/typescript/integrations). Each integration includes framework-specific examples and best practices.
 </Note>
 
 
@@ -216,7 +216,7 @@ async function answerWithRAG(question: string) {
 ```
 
 <Note>
-For consistent attribute naming and TypeScript autocomplete support, see our [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) guide.
+For consistent attribute naming and TypeScript autocomplete support, see our [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) guide. For advanced span management techniques, check out [Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation).
 </Note>
 
 ### Scenario 3: Conversation Threading
@@ -403,6 +403,7 @@ const handle = await setupObservability({
 - Verify network connectivity to api.langwatch.ai
 - Ensure `setupObservability` is called before any tracing
 - Check browser console for errors
+- See [Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript) for detailed solutions
 </Accordion>
 
 <Accordion title="High memory usage">
@@ -428,11 +429,12 @@ const handle = await setupObservability({
 
 Now that you have basic tracing working, explore:
 
-- **[Advanced Patterns](/integration/typescript/tutorials/debugging-typescript)** - Debugging tracing in your application
-- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Getting the most out of tracing in your application
+- **[API Reference](/integration/typescript/reference)** - Complete API documentation for the LangWatch TypeScript SDK
+- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Advanced span management and fine-grained control
 - **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - Standardized naming guidelines for attributes and metadata
-- **[OpenTelemetry migration](/integration/typescript/tutorials/opentelemetry-migration)** - Migrating your existing OpenTelemetry setup with LangWatch
-- **[API Reference](/integration/typescript/reference)** - API reference for the LangWatch TypeScript SDK
+- **[Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript)** - Debug tracing issues and optimize performance
+- **[OpenTelemetry Migration](/integration/typescript/tutorials/opentelemetry-migration)** - Migrate your existing OpenTelemetry setup with LangWatch
+- **[Framework Integrations](/integration/typescript/integrations)** - Specific guides for OpenAI, LangChain, Azure, and more
 
 <Tip>
 Start simple and add complexity gradually. You can always add more detailed tracing later as your application grows!
