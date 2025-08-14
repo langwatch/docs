@@ -26,31 +26,32 @@ When you use `getPrompt()` within a trace context, LangWatch automatically links
 
 ```python
 import langwatch
-from openai import OpenAI
+from litellm import completion
 
 # Initialize LangWatch
 langwatch.setup()
 
 @langwatch.trace()
 def customer_support_generation():
+    # Autotrack LiteLLM calls
+    langwatch.get_current_trace().autotrack_litellm_calls(litellm)
+
     # Get prompt (automatically linked to trace when API key is present)
     prompt = langwatch.prompts.get("customer-support-bot")
 
-    # Format messages with variables
-    messages = prompt.format_messages(
+    # Compile prompt with variables
+    compiled_prompt = prompt.compile(
         user_name="John Doe",
         user_email="john.doe@example.com",
         input="I need help with my account"
     )
 
-    # Use with OpenAI client
-    client = OpenAI()
-    completion = client.chat.completions.create(
-        model=prompt.model.split("openai/")[1],
-        messages=messages
+    response = completion(
+        model=prompt.model,
+        messages=compiled_prompt.messages
     )
 
-    return completion.choices[0].message.content
+    return response.choices[0].message.content
 
 # Call the function
 result = customer_support_generation()
