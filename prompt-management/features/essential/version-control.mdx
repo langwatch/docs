@@ -274,6 +274,54 @@ Remove entire prompts and all their versions:
 2. **Use `messages` array only** - Define the full conversation structure
 3. **Mix both** - Use `prompt` for system message and `messages` for user/assistant messages (but no system role in messages)
 
+## Advanced Prompt Capabilities
+
+Beyond basic prompt creation, LangWatch provides powerful features for optimizing and managing your AI interactions:
+
+### Response Format Control
+- **Structured Output**: Use `responseFormat: { type: "json_schema" }` to get consistent, parseable responses
+- **Text Generation**: Default `responseFormat: { type: "text" }` for free-form responses
+- **Custom Schemas**: Define exact output structures for integration with your systems
+
+### Few-Shot Learning
+- **Demonstrations**: Provide example input/output pairs to improve response quality
+- **Pattern Recognition**: Help the model understand your expected output format
+- **Consistency**: Ensure similar inputs produce similar, reliable outputs
+
+### Advanced Prompting Techniques
+- **Chain-of-Thought**: Enable step-by-step reasoning with `promptingTechnique: "chain_of_thought"`
+- **Self-Consistency**: Generate multiple responses and select the best one
+- **Tree-of-Thoughts**: Explore multiple reasoning paths for complex problems
+
+### Input/Output Validation
+- **Type Safety**: Define expected input types (`str`, `float`, `bool`, `list[str]`, etc.)
+- **Output Constraints**: Specify exact output formats and validation rules
+- **Variable Management**: Automatically handle prompt variable substitution and validation
+
+### Model Optimization
+- **Temperature Control**: Fine-tune creativity vs. consistency (0.0-2.0)
+- **Token Limits**: Set `maxTokens` to control response length and costs
+- **Model Selection**: Choose the best model for your specific use case
+
+<Tip>
+These advanced features are particularly powerful when combined with LangWatch's optimization studio, 
+where you can A/B test different configurations and measure their impact on performance metrics.
+</Tip>
+
+### Optimization Studio Integration
+
+The optimization studio leverages these advanced prompt capabilities to help you:
+
+- **A/B Testing**: Compare different prompt versions, models, and configurations
+- **Performance Metrics**: Measure response quality, latency, and cost across variations
+- **Automated Optimization**: Let the system find the best combination of settings
+- **Version Management**: Track which configurations perform best over time
+- **Team Collaboration**: Share optimized prompts across your organization
+
+<Card title="Explore Optimization Studio" icon="chart" href="/optimization-studio/overview">
+Learn how to use advanced prompt features to improve your AI application performance.
+</Card>
+
 ### Scope Considerations
 
 - **PROJECT scope** - Safe for frequent updates, no conflict risk
