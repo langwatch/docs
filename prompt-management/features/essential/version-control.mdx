@@ -24,30 +24,30 @@ Use the LangWatch UI to manage prompt versions:
 4. Use the version selector to switch between versions
 5. Create new versions by making changes and saving
 
-
 </Tab>
 <Tab title="TypeScript SDK">
 
 LangWatch's TypeScript SDK supports retrieving prompts and specific versions:
 
 ```typescript
-import { getPrompt, getPromptVersion, setupLangWatch } from "langwatch";
+import { LangWatch } from "langwatch";
 
-// Initialize LangWatch for tracing and related features
-await setupLangWatch();
+// Initialize LangWatch client
+const langwatch = new LangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY,
+});
 
 // Get a specific prompt (latest version by default)
-const prompt = await getPrompt("customer-support-bot");
+const prompt = await langwatch.prompts.get("customer-support-bot");
 
 // The prompt object contains version information
 console.log(`Version: ${prompt.version}`);
 console.log(`Version ID: ${prompt.versionId}`);
 
 // Get a specific version of a prompt
-const specificVersion = await getPromptVersion(
-  "customer-support-bot",
-  "version_abc123"
-);
+const specificVersion = await langwatch.prompts.get("customer-support-bot", {
+  version: "version_abc123",
+});
 
 // Compile with variables
 const compiledPrompt = specificVersion.compile({
@@ -102,7 +102,6 @@ LangWatch provides a clear view of how your prompts have evolved over time:
     alt="LangWatch Prompt Versions in Studio"
   />
 </Frame>
-
 
 - **Version List**: See all versions with timestamps and commit messages
 - **Commit Messages**: Understand what was changed in each version
