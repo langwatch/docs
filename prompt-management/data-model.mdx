@@ -292,10 +292,16 @@ When retrieving a prompt via API, you get the configuration with the latest vers
 {
   "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
   "handle": "customer-support-bot",
+  "scope": "PROJECT",
+  "name": "Customer Support Bot",
+  "projectId": "proj_123",
+  "organizationId": "org_456",
   "version": 1,
   "versionId": "version_abc123",
-  "versionCreatedAt": "2024-01-15T10:30:00Z",
-  "model": "openai/gpt-5",
+  "createdAt": "2024-01-15T10:30:00Z",
+  "updatedAt": "2024-01-15T10:30:00Z",
+  "authorId": "user_789",
+  "model": "openai/gpt-4o-mini",
   "prompt": "You are a helpful customer support agent...",
   "messages": [
     {
@@ -307,23 +313,62 @@ When retrieving a prompt via API, you get the configuration with the latest vers
       "content": "{{input}}"
     }
   ],
-  "response_format": {
-    "type": "json_schema",
-    "json_schema": {
-      "name": "customer_response",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "response": {
-            "type": "string"
-          }
-        }
-      }
+  "inputs": [
+    {
+      "identifier": "input",
+      "type": "str"
     }
+  ],
+  "outputs": [
+    {
+      "identifier": "response",
+      "type": "str"
+    }
+  ],
+  "temperature": 0.7,
+  "maxTokens": 1000,
+  "responseFormat": {
+    "type": "text"
   },
-  "updatedAt": "2024-01-15T10:30:00Z"
+  "demonstrations": null,
+  "promptingTechnique": null
 }
 ```
+
+## Field Descriptions
+
+### Core Fields
+
+- **`id`** - Unique identifier for the prompt
+- **`handle`** - Human-readable identifier (can be null)
+- **`scope`** - Either "PROJECT" or "ORGANIZATION"
+- **`name`** - Display name for the prompt
+- **`projectId`** - ID of the project that owns the prompt
+- **`organizationId`** - ID of the organization
+
+### Version Fields
+
+- **`version`** - Current version number
+- **`versionId`** - Unique identifier for this version
+- **`createdAt`** - When this version was created
+- **`updatedAt`** - When the prompt was last updated
+- **`authorId`** - ID of the user who created this version
+
+### Content Fields
+
+- **`prompt`** - The main prompt text (system message)
+- **`messages`** - Array of conversation messages
+- **`inputs`** - Array of input variable definitions
+- **`outputs`** - Array of output variable definitions
+- **`model`** - The LLM model identifier
+
+### Configuration Fields
+
+- **`temperature`** - Model temperature setting (optional)
+- **`maxTokens`** - Maximum token limit (optional)
+- **`responseFormat`** - Response format configuration
+- **`demonstrations`** - Few-shot examples (optional)
+- **`promptingTechnique`** - Advanced prompting technique (optional)
 
 ## Scope and Access
 
@@ -339,9 +384,7 @@ When retrieving a prompt via API, you get the configuration with the latest vers
 - `scope: "ORGANIZATION"`
 - `organizationId: "org_456"`
 
-<Note>
-Only the original project can modify a shared prompt
-</Note>
+<Note>Only the original project can modify a shared prompt</Note>
 
 ## Version Management
 
