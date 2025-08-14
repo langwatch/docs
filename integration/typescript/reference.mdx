@@ -15,10 +15,11 @@ Initializes the LangWatch client for Node.js or browser environments, enabling d
 import { setupLangWatch } from "langwatch/node";
 
 await setupLangWatch({
-  apiKey: process.env.LANGWATCH_API_KEY, // Optional, defaults to process.env.LANGWATCH_API_KEY
-  endpoint: process.env.LANGWATCH_ENDPOINT_URL // Optional, defaults to LangWatch Cloud
+apiKey: process.env.LANGWATCH_API_KEY, // Optional, defaults to process.env.LANGWATCH_API_KEY
+endpoint: process.env.LANGWATCH_ENDPOINT_URL // Optional, defaults to LangWatch Cloud
 });
-```
+
+````
 
 ```typescript Browser Setup
 import { setupLangWatch } from "langwatch/browser";
@@ -27,7 +28,7 @@ await setupLangWatch({
   apiKey: "your-api-key",
   endpoint: "https://app.langwatch.ai"
 });
-```
+````
 
 ```typescript Advanced Setup
 import { setupLangWatch } from "langwatch/node";
@@ -54,33 +55,71 @@ await setupLangWatch({
   disableAutomaticOutputCapture: false
 });
 ```
+
 </CodeGroup>
 
-<ParamField path="apiKey" type="Optional<string>" default="process.env.LANGWATCH_API_KEY">
-  Your LangWatch API key. It's recommended to set this via an environment variable (e.g., `LANGWATCH_API_KEY`) and retrieve it using `process.env.LANGWATCH_API_KEY`.
+<ParamField
+  path="apiKey"
+  type="Optional<string>"
+  default="process.env.LANGWATCH_API_KEY"
+>
+  Your LangWatch API key. It's recommended to set this via an environment
+  variable (e.g., `LANGWATCH_API_KEY`) and retrieve it using
+  `process.env.LANGWATCH_API_KEY`.
 </ParamField>
 
-<ParamField path="endpoint" type="Optional<string>" default="https://app.langwatch.ai">
-  The URL of the LangWatch backend where traces will be sent. Defaults to the LangWatch Cloud service. For self-hosted instances, you'll need to provide this.
+<ParamField
+  path="endpoint"
+  type="Optional<string>"
+  default="https://app.langwatch.ai"
+>
+  The URL of the LangWatch backend where traces will be sent. Defaults to the
+  LangWatch Cloud service. For self-hosted instances, you'll need to provide
+  this.
 </ParamField>
 
-<ParamField path="otelSpanProcessors" type="Optional<SpanProcessor[]>" default="[]">
-  Additional OpenTelemetry span processors to add to the SDK. These will be added after the LangWatch SDK has been initialized. **Not supported in browser environments.**
+<ParamField
+  path="otelSpanProcessors"
+  type="Optional<SpanProcessor[]>"
+  default="[]"
+>
+  Additional OpenTelemetry span processors to add to the SDK. These will be
+  added after the LangWatch SDK has been initialized. **Not supported in browser
+  environments.**
 </ParamField>
 
-<ParamField path="otelSpanProcessingExcludeRules" type="Optional<SpanProcessingExcludeRule[]>" default="[]">
-  Rules to filter out specific spans from being exported to LangWatch, based on span name or attributes. See `SpanProcessingExcludeRule` for details.
+<ParamField
+  path="otelSpanProcessingExcludeRules"
+  type="Optional<SpanProcessingExcludeRule[]>"
+  default="[]"
+>
+  Rules to filter out specific spans from being exported to LangWatch, based on
+  span name or attributes. See `SpanProcessingExcludeRule` for details.
 </ParamField>
 
-<ParamField path="skipOpenTelemetryAutomaticSetup" type="Optional<boolean>" default="false">
-  If `true`, skips the automatic setup of the OpenTelemetry SDK. You will need to setup the OpenTelemetry SDK yourself, and ensure that a SpanProcessor is added that will send traces to the LangWatch API.
+<ParamField
+  path="skipOpenTelemetryAutomaticSetup"
+  type="Optional<boolean>"
+  default="false"
+>
+  If `true`, skips the automatic setup of the OpenTelemetry SDK. You will need
+  to setup the OpenTelemetry SDK yourself, and ensure that a SpanProcessor is
+  added that will send traces to the LangWatch API.
 </ParamField>
 
-<ParamField path="disableAutomaticInputCapture" type="Optional<boolean>" default="false">
+<ParamField
+  path="disableAutomaticInputCapture"
+  type="Optional<boolean>"
+  default="false"
+>
   If `true`, disables the automatic capture of input data in spans.
 </ParamField>
 
-<ParamField path="disableAutomaticOutputCapture" type="Optional<boolean>" default="false">
+<ParamField
+  path="disableAutomaticOutputCapture"
+  type="Optional<boolean>"
+  default="false"
+>
   If `true`, disables the automatic capture of output data in spans.
 </ParamField>
 
@@ -116,16 +155,31 @@ The `LangWatchTracer` extends the standard OpenTelemetry `Tracer` with additiona
 
 #### Methods
 
-<ParamField path="startSpan" type="(name: string, options?: SpanOptions, context?: Context) => LangWatchSpan">
-  Starts a new `LangWatchSpan` without setting it on context. This method does NOT modify the current Context.
+<ParamField
+  path="startSpan"
+  type="(name: string, options?: SpanOptions, context?: Context) => LangWatchSpan"
+>
+  Starts a new `LangWatchSpan` without setting it on context. This method does
+  NOT modify the current Context.
 </ParamField>
 
-<ParamField path="startActiveSpan" type="(name: string, fn: (span: LangWatchSpan) => T) => T">
-  Starts a new `LangWatchSpan` and calls the given function passing it the created span as first argument. The new span gets set in context and this context is activated for the duration of the function call.
+<ParamField
+  path="startActiveSpan"
+  type="(name: string, fn: (span: LangWatchSpan) => T) => T"
+>
+  Starts a new `LangWatchSpan` and calls the given function passing it the
+  created span as first argument. The new span gets set in context and this
+  context is activated for the duration of the function call.
 </ParamField>
 
-<ParamField path="withActiveSpan" type="(name: string, fn: (span: LangWatchSpan) => Promise<T> | T) => Promise<T>">
-  Starts a new `LangWatchSpan`, runs the provided async function, and automatically handles error recording, status setting, and span ending. This is a safer and more ergonomic alternative to manually using try/catch/finally blocks.
+<ParamField
+  path="withActiveSpan"
+  type="(name: string, fn: (span: LangWatchSpan) => Promise<T> | T) => Promise<T>"
+>
+  Starts a new `LangWatchSpan`, runs the provided async function, and
+  automatically handles error recording, status setting, and span ending. This
+  is a safer and more ergonomic alternative to manually using try/catch/finally
+  blocks.
 </ParamField>
 
 ### `LangWatchSpan`
@@ -134,46 +188,77 @@ The `LangWatchSpan` extends the standard OpenTelemetry `Span` with additional me
 
 #### GenAI Event Methods
 
-<ParamField path="addGenAISystemMessageEvent" type="(body: LangWatchSpanGenAISystemMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
-  Adds a GenAI system message event to the span. This logs a system/instruction message sent to the model.
+<ParamField
+  path="addGenAISystemMessageEvent"
+  type="(body: LangWatchSpanGenAISystemMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this"
+>
+  Adds a GenAI system message event to the span. This logs a system/instruction
+  message sent to the model.
 </ParamField>
 
-<ParamField path="addGenAIUserMessageEvent" type="(body: LangWatchSpanGenAIUserMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
-  Adds a GenAI user message event to the span. This logs a user/customer message sent to the model.
+<ParamField
+  path="addGenAIUserMessageEvent"
+  type="(body: LangWatchSpanGenAIUserMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this"
+>
+  Adds a GenAI user message event to the span. This logs a user/customer message
+  sent to the model.
 </ParamField>
 
-<ParamField path="addGenAIAssistantMessageEvent" type="(body: LangWatchSpanGenAIAssistantMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
-  Adds a GenAI assistant message event to the span. This logs an assistant/bot response, including tool calls if present.
+<ParamField
+  path="addGenAIAssistantMessageEvent"
+  type="(body: LangWatchSpanGenAIAssistantMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this"
+>
+  Adds a GenAI assistant message event to the span. This logs an assistant/bot
+  response, including tool calls if present.
 </ParamField>
 
-<ParamField path="addGenAIToolMessageEvent" type="(body: LangWatchSpanGenAIToolMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
-  Adds a GenAI tool message event to the span. This logs a message from a tool/function invoked by the assistant.
+<ParamField
+  path="addGenAIToolMessageEvent"
+  type="(body: LangWatchSpanGenAIToolMessageEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this"
+>
+  Adds a GenAI tool message event to the span. This logs a message from a
+  tool/function invoked by the assistant.
 </ParamField>
 
-<ParamField path="addGenAIChoiceEvent" type="(body: LangWatchSpanGenAIChoiceEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this">
-  Adds a GenAI choice event to the span. This logs a model output choice, including finish reason and message content.
+<ParamField
+  path="addGenAIChoiceEvent"
+  type="(body: LangWatchSpanGenAIChoiceEventBody, system?: string, attributes?: Record<string, AttributeValue>) => this"
+>
+  Adds a GenAI choice event to the span. This logs a model output choice,
+  including finish reason and message content.
 </ParamField>
 
 #### Span Configuration Methods
 
 <ParamField path="setType" type="(type: SpanType) => this">
-  Set the type of the span (e.g., 'llm', 'rag', 'tool', etc). This is used for downstream filtering and analytics.
+  Set the type of the span (e.g., 'llm', 'rag', 'tool', etc). This is used for
+  downstream filtering and analytics.
 </ParamField>
 
 <ParamField path="setRequestModel" type="(model: string) => this">
-  Set the request model name for the span. This is typically the model name sent in the API request (e.g., 'gpt-4', 'claude-3').
+  Set the request model name for the span. This is typically the model name sent
+  in the API request (e.g., 'gpt-4', 'claude-3').
 </ParamField>
 
 <ParamField path="setResponseModel" type="(model: string) => this">
-  Set the response model name for the span. This is the model name returned in the API response, if different from the request.
+  Set the response model name for the span. This is the model name returned in
+  the API response, if different from the request.
 </ParamField>
 
-<ParamField path="setRAGContexts" type="(ragContexts: LangWatchSpanRAGContext[]) => this">
-  Set multiple RAG contexts for the span. Use this to record all retrieved documents/chunks used as context for a generation.
+<ParamField
+  path="setRAGContexts"
+  type="(ragContexts: LangWatchSpanRAGContext[]) => this"
+>
+  Set multiple RAG contexts for the span. Use this to record all retrieved
+  documents/chunks used as context for a generation.
 </ParamField>
 
-<ParamField path="setRAGContext" type="(ragContext: LangWatchSpanRAGContext) => this">
-  Set a single RAG context for the span. Use this if only one context was retrieved.
+<ParamField
+  path="setRAGContext"
+  type="(ragContext: LangWatchSpanRAGContext) => this"
+>
+  Set a single RAG context for the span. Use this if only one context was
+  retrieved.
 </ParamField>
 
 <ParamField path="setMetrics" type="(metrics: LangWatchSpanMetrics) => this">
@@ -181,30 +266,41 @@ The `LangWatchSpan` extends the standard OpenTelemetry `Span` with additional me
 </ParamField>
 
 <ParamField path="setSelectedPrompt" type="(prompt: Prompt) => this">
-  Set the selected prompt for the span. This will attach this prompt to the trace. If this is set on multiple spans, the last one will be used.
+  Set the selected prompt for the span. This will attach this prompt to the
+  trace. If this is set on multiple spans, the last one will be used.
 </ParamField>
 
 <ParamField path="setInput" type="(input: unknown) => this">
-  Record the input to the span as a JSON-serializable value. The input is stringified and stored as a span attribute for later analysis.
+  Record the input to the span as a JSON-serializable value. The input is
+  stringified and stored as a span attribute for later analysis.
 </ParamField>
 
 <ParamField path="setInputString" type="(input: string) => this">
-  Record the input to the span as a plain string. Use this for raw text prompts or queries.
+  Record the input to the span as a plain string. Use this for raw text prompts
+  or queries.
 </ParamField>
 
 <ParamField path="setOutput" type="(output: unknown) => this">
-  Record the output from the span as a JSON-serializable value. The output is stringified and stored as a span attribute for later analysis.
+  Record the output from the span as a JSON-serializable value. The output is
+  stringified and stored as a span attribute for later analysis.
 </ParamField>
 
 <ParamField path="setOutputString" type="(output: string) => this">
-  Record the output from the span as a plain string. Use this for raw text completions or responses.
+  Record the output from the span as a plain string. Use this for raw text
+  completions or responses.
 </ParamField>
 
-<ParamField path="setOutputEvaluation" type="(guardrail: boolean, output: EvaluationResultModel) => this">
+<ParamField
+  path="setOutputEvaluation"
+  type="(guardrail: boolean, output: EvaluationResultModel) => this"
+>
   Set the evaluation output for the span.
 </ParamField>
 
-<ParamField path="recordEvaluation" type="(details: RecordedEvaluationDetails, attributes?: Attributes) => this">
+<ParamField
+  path="recordEvaluation"
+  type="(details: RecordedEvaluationDetails, attributes?: Attributes) => this"
+>
   Record the evaluation result for the span.
 </ParamField>
 
@@ -222,9 +318,9 @@ const result = await runEvaluation({
   slug: "sentiment-analyzer",
   data: {
     input: "I love this product!",
-    output: "Positive sentiment detected."
+    output: "Positive sentiment detected.",
   },
-  asGuardrail: false
+  asGuardrail: false,
 });
 
 // Using a LangEvals evaluator
@@ -232,16 +328,18 @@ const result = await runEvaluation({
   evaluator: "sentiment",
   data: {
     input: "I love this product!",
-    output: "Positive sentiment detected."
+    output: "Positive sentiment detected.",
   },
   settings: {
-    threshold: 0.5
-  }
+    threshold: 0.5,
+  },
 });
 ```
 
 <ParamField path="details" type="EvaluationDetails" required>
-  The evaluation details. Can be either a `SavedEvaluationDetails` (using a saved evaluator) or `LangEvalsEvaluationDetails` (using a LangEvals evaluator).
+  The evaluation details. Can be either a `SavedEvaluationDetails` (using a
+  saved evaluator) or `LangEvalsEvaluationDetails` (using a LangEvals
+  evaluator).
 </ParamField>
 
 **Returns**
@@ -266,7 +364,7 @@ recordEvaluation({
   score: 0.95,
   label: "Excellent",
   details: "All checks passed.",
-  cost: 0.001
+  cost: 0.001,
 });
 ```
 
@@ -293,7 +391,7 @@ const prompt = await getPrompt("prompt-id");
 // Get a prompt with variables (returns compiled prompt)
 const compiledPrompt = await getPrompt("prompt-id", {
   user_name: "John",
-  product_name: "LangWatch"
+  product_name: "LangWatch",
 });
 ```
 
@@ -301,8 +399,13 @@ const compiledPrompt = await getPrompt("prompt-id", {
   The ID of the prompt to retrieve.
 </ParamField>
 
-<ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
-  Template variables to compile the prompt with. If provided, returns a compiled prompt.
+<ParamField
+  path="variables"
+  type="Optional<TemplateVariables>"
+  default="undefined"
+>
+  Template variables to compile the prompt with. If provided, returns a compiled
+  prompt.
 </ParamField>
 
 **Returns**
@@ -322,10 +425,14 @@ import { getPromptVersion } from "langwatch";
 const promptVersion = await getPromptVersion("prompt-id", "version-id");
 
 // Get a prompt version with variables (returns compiled prompt)
-const compiledPromptVersion = await getPromptVersion("prompt-id", "version-id", {
-  user_name: "John",
-  product_name: "LangWatch"
-});
+const compiledPromptVersion = await getPromptVersion(
+  "prompt-id",
+  "version-id",
+  {
+    user_name: "John",
+    product_name: "LangWatch",
+  }
+);
 ```
 
 <ParamField path="id" type="string" required>
@@ -336,8 +443,13 @@ const compiledPromptVersion = await getPromptVersion("prompt-id", "version-id", 
   The ID of the specific version to retrieve.
 </ParamField>
 
-<ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
-  Template variables to compile the prompt with. If provided, returns a compiled prompt.
+<ParamField
+  path="variables"
+  type="Optional<TemplateVariables>"
+  default="undefined"
+>
+  Template variables to compile the prompt with. If provided, returns a compiled
+  prompt.
 </ParamField>
 
 **Returns**
@@ -368,8 +480,8 @@ const processor = new FilterableBatchSpanProcessor(
     {
       fieldName: "span_name",
       matchValue: "health-check",
-      matchOperation: "exact_match"
-    }
+      matchOperation: "exact_match",
+    },
   ]
 );
 ```
@@ -394,7 +506,7 @@ import { ChatOpenAI } from "@langchain/openai";
 
 const handler = new LangWatchCallbackHandler();
 const llm = new ChatOpenAI({
-  callbacks: [handler]
+  callbacks: [handler],
 });
 
 // All operations will now be automatically traced
@@ -402,6 +514,7 @@ const response = await llm.invoke("Hello, world!");
 ```
 
 The `LangWatchCallbackHandler` automatically:
+
 - Creates spans for LLM calls, chains, tools, and retrievers
 - Captures input/output data
 - Sets appropriate span types and metadata
@@ -418,7 +531,7 @@ import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 
 const messages = [
   new SystemMessage("You are a helpful assistant."),
-  new HumanMessage("Hello!")
+  new HumanMessage("Hello!"),
 ];
 
 const convertedMessages = convertFromLangChainMessages(messages);
@@ -438,18 +551,24 @@ import { LangWatchExporter } from "langwatch/observability";
 const exporter = new LangWatchExporter();
 
 // Using custom API key and endpoint
-const exporter = new LangWatchExporter('api-key', 'https://custom.langwatch.com');
+const exporter = new LangWatchExporter(
+  "api-key",
+  "https://custom.langwatch.com"
+);
 ```
 
 <ParamField path="apiKey" type="Optional<string>" default="getApiKey()">
-  Optional API key for LangWatch authentication. If not provided, will use environment variables or fallback configuration.
+  Optional API key for LangWatch authentication. If not provided, will use
+  environment variables or fallback configuration.
 </ParamField>
 
 <ParamField path="endpointURL" type="Optional<string>" default="getEndpoint()">
-  Optional custom endpoint URL for LangWatch ingestion. If not provided, will use environment variables or fallback configuration.
+  Optional custom endpoint URL for LangWatch ingestion. If not provided, will
+  use environment variables or fallback configuration.
 </ParamField>
 
 The exporter automatically configures:
+
 - Authorization headers using the provided API key or environment variables/fallback
 - SDK version and language identification headers
 - Proper endpoint configuration for LangWatch ingestion using provided URL or environment variables/fallback
@@ -464,35 +583,35 @@ The `langwatch/observability` module provides semantic convention constants for 
 import { semconv } from "langwatch/observability";
 
 // LangWatch-specific attributes
-semconv.ATTR_LANGWATCH_INPUT           // "langwatch.input"
-semconv.ATTR_LANGWATCH_OUTPUT          // "langwatch.output"
-semconv.ATTR_LANGWATCH_SPAN_TYPE       // "langwatch.span.type"
-semconv.ATTR_LANGWATCH_RAG_CONTEXTS    // "langwatch.contexts"
-semconv.ATTR_LANGWATCH_METRICS         // "langwatch.metrics"
-semconv.ATTR_LANGWATCH_SDK_VERSION     // "langwatch.sdk.version"
-semconv.ATTR_LANGWATCH_SDK_NAME        // "langwatch.sdk.name"
-semconv.ATTR_LANGWATCH_SDK_LANGUAGE    // "langwatch.sdk.language"
-semconv.ATTR_LANGWATCH_TIMESTAMPS      // "langwatch.timestamps"
-semconv.ATTR_LANGWATCH_EVALUATION_CUSTOM // "langwatch.evaluation.custom"
-semconv.ATTR_LANGWATCH_PARAMS          // "langwatch.params"
-semconv.ATTR_LANGWATCH_CUSTOMER_ID     // "langwatch.customer.id"
-semconv.ATTR_LANGWATCH_THREAD_ID       // "langwatch.thread.id"
-semconv.ATTR_LANGWATCH_STREAMING       // "langwatch.gen_ai.streaming"
-semconv.ATTR_LANGWATCH_PROMPT_ID       // "langwatch.prompt.id"
-semconv.ATTR_LANGWATCH_PROMPT_VERSION_ID // "langwatch.prompt.version.id"
-semconv.ATTR_LANGWATCH_PROMPT_VARIABLES // "langwatch.prompt.variables"
-semconv.ATTR_LANGWATCH_PROMPT_SELECTED_ID // "langwatch.prompt.selected.id"
-semconv.ATTR_LANGWATCH_PROMPT_VERSION_NUMBER // "langwatch.prompt.version.number"
+semconv.ATTR_LANGWATCH_INPUT; // "langwatch.input"
+semconv.ATTR_LANGWATCH_OUTPUT; // "langwatch.output"
+semconv.ATTR_LANGWATCH_SPAN_TYPE; // "langwatch.span.type"
+semconv.ATTR_LANGWATCH_RAG_CONTEXTS; // "langwatch.contexts"
+semconv.ATTR_LANGWATCH_METRICS; // "langwatch.metrics"
+semconv.ATTR_LANGWATCH_SDK_VERSION; // "langwatch.sdk.version"
+semconv.ATTR_LANGWATCH_SDK_NAME; // "langwatch.sdk.name"
+semconv.ATTR_LANGWATCH_SDK_LANGUAGE; // "langwatch.sdk.language"
+semconv.ATTR_LANGWATCH_TIMESTAMPS; // "langwatch.timestamps"
+semconv.ATTR_LANGWATCH_EVALUATION_CUSTOM; // "langwatch.evaluation.custom"
+semconv.ATTR_LANGWATCH_PARAMS; // "langwatch.params"
+semconv.ATTR_LANGWATCH_CUSTOMER_ID; // "langwatch.customer.id"
+semconv.ATTR_LANGWATCH_THREAD_ID; // "langwatch.thread.id"
+semconv.ATTR_LANGWATCH_STREAMING; // "langwatch.gen_ai.streaming"
+semconv.ATTR_LANGWATCH_PROMPT_ID; // "langwatch.prompt.id"
+semconv.ATTR_LANGWATCH_PROMPT_VERSION_ID; // "langwatch.prompt.version.id"
+semconv.ATTR_LANGWATCH_PROMPT_VARIABLES; // "langwatch.prompt.variables"
+semconv.ATTR_LANGWATCH_PROMPT_SELECTED_ID; // "langwatch.prompt.selected.id"
+semconv.ATTR_LANGWATCH_PROMPT_VERSION_NUMBER; // "langwatch.prompt.version.number"
 
 // LangChain-specific attributes
-semconv.ATTR_LANGWATCH_LANGCHAIN_TAGS  // "langwatch.langchain.tags"
-semconv.ATTR_LANGWATCH_LANGCHAIN_EVENT_NAME // "langwatch.langchain.event_name"
-semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_ID // "langwatch.langchain.run.id"
-semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_TAGS // "langwatch.langchain.run.tags"
-semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_TYPE // "langwatch.langchain.run.type"
-semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_METADATA // "langwatch.langchain.run.metadata"
-semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_EXTRA_PARAMS // "langwatch.langchain.run.extra_params"
-semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_PARENT_ID // "langwatch.langchain.run.parent.id"
+semconv.ATTR_LANGWATCH_LANGCHAIN_TAGS; // "langwatch.langchain.tags"
+semconv.ATTR_LANGWATCH_LANGCHAIN_EVENT_NAME; // "langwatch.langchain.event_name"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_ID; // "langwatch.langchain.run.id"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_TAGS; // "langwatch.langchain.run.tags"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_TYPE; // "langwatch.langchain.run.type"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_METADATA; // "langwatch.langchain.run.metadata"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_EXTRA_PARAMS; // "langwatch.langchain.run.extra_params"
+semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_PARENT_ID; // "langwatch.langchain.run.parent.id"
 ```
 
 ### Events
@@ -501,14 +620,14 @@ semconv.ATTR_LANGWATCH_LANGCHAIN_RUN_PARENT_ID // "langwatch.langchain.run.paren
 import { semconv } from "langwatch/observability";
 
 // GenAI event names
-semconv.LOG_EVNT_GEN_AI_SYSTEM_MESSAGE    // "gen.ai.system_message"
-semconv.LOG_EVNT_GEN_AI_USER_MESSAGE      // "gen.ai.user_message"
-semconv.LOG_EVNT_GEN_AI_ASSISTANT_MESSAGE // "gen.ai.assistant_message"
-semconv.LOG_EVNT_GEN_AI_TOOL_MESSAGE      // "gen.ai.tool_message"
-semconv.LOG_EVNT_GEN_AI_CHOICE            // "gen.ai.choice"
+semconv.LOG_EVNT_GEN_AI_SYSTEM_MESSAGE; // "gen.ai.system_message"
+semconv.LOG_EVNT_GEN_AI_USER_MESSAGE; // "gen.ai.user_message"
+semconv.LOG_EVNT_GEN_AI_ASSISTANT_MESSAGE; // "gen.ai.assistant_message"
+semconv.LOG_EVNT_GEN_AI_TOOL_MESSAGE; // "gen.ai.tool_message"
+semconv.LOG_EVNT_GEN_AI_CHOICE; // "gen.ai.choice"
 
 // LangChain event names
-semconv.EVNT_LANGWATCH_LANGCHAIN_CALLBACK // "langwatch.langchain.callback"
+semconv.EVNT_LANGWATCH_LANGCHAIN_CALLBACK; // "langwatch.langchain.callback"
 ```
 
 ### Values
@@ -517,23 +636,23 @@ semconv.EVNT_LANGWATCH_LANGCHAIN_CALLBACK // "langwatch.langchain.callback"
 import { semconv } from "langwatch/observability";
 
 // GenAI system identifiers
-semconv.VAL_GEN_AI_SYSTEM_OPENAI         // "openai"
-semconv.VAL_GEN_AI_SYSTEM_ANTHROPIC      // "anthropic"
-semconv.VAL_GEN_AI_SYSTEM_AWS_BEDROCK   // "aws.bedrock"
-semconv.VAL_GEN_AI_SYSTEM_AZURE_AI_OPENAI // "azure.ai.openai"
-semconv.VAL_GEN_AI_SYSTEM_GCP_GEMINI    // "gcp.gemini"
-semconv.VAL_GEN_AI_SYSTEM_COHERE        // "cohere"
-semconv.VAL_GEN_AI_SYSTEM_GROQ          // "groq"
-semconv.VAL_GEN_AI_SYSTEM_MISTRAL_AI    // "mistral_ai"
-semconv.VAL_GEN_AI_SYSTEM_PERPLEXITY    // "perplexity"
-semconv.VAL_GEN_AI_SYSTEM_XAI           // "xai"
+semconv.VAL_GEN_AI_SYSTEM_OPENAI; // "openai"
+semconv.VAL_GEN_AI_SYSTEM_ANTHROPIC; // "anthropic"
+semconv.VAL_GEN_AI_SYSTEM_AWS_BEDROCK; // "aws.bedrock"
+semconv.VAL_GEN_AI_SYSTEM_AZURE_AI_OPENAI; // "azure.ai.openai"
+semconv.VAL_GEN_AI_SYSTEM_GCP_GEMINI; // "gcp.gemini"
+semconv.VAL_GEN_AI_SYSTEM_COHERE; // "cohere"
+semconv.VAL_GEN_AI_SYSTEM_GROQ; // "groq"
+semconv.VAL_GEN_AI_SYSTEM_MISTRAL_AI; // "mistral_ai"
+semconv.VAL_GEN_AI_SYSTEM_PERPLEXITY; // "perplexity"
+semconv.VAL_GEN_AI_SYSTEM_XAI; // "xai"
 
 // GenAI finish reasons
-semconv.VAL_GEN_AI_FINISH_REASON_STOP           // "stop"
-semconv.VAL_GEN_AI_FINISH_REASON_LENGTH         // "length"
-semconv.VAL_GEN_AI_FINISH_REASON_CONTENT_FILTER // "content_filter"
-semconv.VAL_GEN_AI_FINISH_REASON_ERROR          // "error"
-semconv.VAL_GEN_AI_FINISH_REASON_TOOL_CALLS    // "tool_calls"
+semconv.VAL_GEN_AI_FINISH_REASON_STOP; // "stop"
+semconv.VAL_GEN_AI_FINISH_REASON_LENGTH; // "length"
+semconv.VAL_GEN_AI_FINISH_REASON_CONTENT_FILTER; // "content_filter"
+semconv.VAL_GEN_AI_FINISH_REASON_ERROR; // "error"
+semconv.VAL_GEN_AI_FINISH_REASON_TOOL_CALLS; // "tool_calls"
 ```
 
 ## Core Data Types
@@ -543,7 +662,7 @@ semconv.VAL_GEN_AI_FINISH_REASON_TOOL_CALLS    // "tool_calls"
 Supported types of spans for LangWatch observability:
 
 ```typescript
-type SpanType = 
+type SpanType =
   | "span"
   | "llm"
   | "chain"
@@ -601,14 +720,19 @@ Metrics for a LangWatch span.
 Defines a rule to filter out spans before they are exported to LangWatch.
 
 <ResponseField name="fieldName" type="'span_name'" required>
-  The field of the span to match against. Currently, only `"span_name"` is supported.
+  The field of the span to match against. Currently, only `"span_name"` is
+  supported.
 </ResponseField>
 
 <ResponseField name="matchValue" type="string" required>
   The value to match for the specified `fieldName`.
 </ResponseField>
 
-<ResponseField name="matchOperation" type="'includes' | 'exact_match' | 'starts_with' | 'ends_with'" required>
+<ResponseField
+  name="matchOperation"
+  type="'includes' | 'exact_match' | 'starts_with' | 'ends_with'"
+  required
+>
   The operation to use for matching.
 </ResponseField>
 
@@ -724,7 +848,10 @@ Details for recording an evaluation.
   Additional details about the evaluation.
 </ResponseField>
 
-<ResponseField name="cost" type="Optional<number | { currency: string; amount: number }>">
+<ResponseField
+  name="cost"
+  type="Optional<number | { currency: string; amount: number }>"
+>
   Cost of the evaluation.
 </ResponseField>
 
@@ -732,7 +859,10 @@ Details for recording an evaluation.
   Error that occurred during evaluation.
 </ResponseField>
 
-<ResponseField name="timestamps" type="Optional<{ startedAtUnixMs: number; finishedAtUnixMs: number }>">
+<ResponseField
+  name="timestamps"
+  type="Optional<{ startedAtUnixMs: number; finishedAtUnixMs: number }>"
+>
   Timestamps for the evaluation.
 </ResponseField>
 
@@ -760,7 +890,10 @@ Result model for evaluation output.
   Label for the evaluation result.
 </ResponseField>
 
-<ResponseField name="cost" type="Optional<{ currency: string; amount: number }>">
+<ResponseField
+  name="cost"
+  type="Optional<{ currency: string; amount: number }>"
+>
   Cost of the evaluation.
 </ResponseField>
 
@@ -773,7 +906,9 @@ Result model for evaluation output.
 Union type for evaluation details.
 
 ```typescript
-type EvaluationDetails = SavedEvaluationDetails | LangEvalsEvaluationDetails<EvaluatorTypes>;
+type EvaluationDetails =
+  | SavedEvaluationDetails
+  | LangEvalsEvaluationDetails<EvaluatorTypes>;
 ```
 
 ### `SavedEvaluationDetails`
@@ -784,7 +919,11 @@ Details for using a saved evaluator.
   The slug of the saved evaluator.
 </ResponseField>
 
-<ResponseField name="data" type="BasicEvaluationData | Record<string, unknown>" required>
+<ResponseField
+  name="data"
+  type="BasicEvaluationData | Record<string, unknown>"
+  required
+>
   The evaluation data.
 </ResponseField>
 
@@ -816,7 +955,11 @@ Details for using a LangEvals evaluator.
   The LangEvals evaluator type.
 </ResponseField>
 
-<ResponseField name="data" type="BasicEvaluationData | Record<string, unknown>" required>
+<ResponseField
+  name="data"
+  type="BasicEvaluationData | Record<string, unknown>"
+  required
+>
   The evaluation data.
 </ResponseField>
 
@@ -896,7 +1039,10 @@ Result of an evaluation.
   Error message if the evaluation failed.
 </ResponseField>
 
-<ResponseField name="cost" type="Optional<{ currency: string; amount: number }>">
+<ResponseField
+  name="cost"
+  type="Optional<{ currency: string; amount: number }>"
+>
   Cost of the evaluation.
 </ResponseField>
 
@@ -961,7 +1107,10 @@ A compiled prompt with variables substituted.
 Template variables for prompt compilation.
 
 ```typescript
-type TemplateVariables = Record<string, string | number | boolean | object | null>;
+type TemplateVariables = Record<
+  string,
+  string | number | boolean | object | null
+>;
 ```
 
 ### `PromptCompilationError`
@@ -991,17 +1140,17 @@ const tracer = getLangWatchTracer("my-service");
 await tracer.withActiveSpan("process-request", async (span) => {
   span.setType("llm");
   span.setRequestModel("gpt-4");
-  
+
   // Your LLM call here
   const response = await openai.chat.completions.create({
     model: "gpt-4",
-    messages: [{ role: "user", content: "Hello!" }]
+    messages: [{ role: "user", content: "Hello!" }],
   });
-  
+
   span.setOutput(response.choices[0].message.content);
   span.setMetrics({
     promptTokens: response.usage?.prompt_tokens,
-    completionTokens: response.usage?.completion_tokens
+    completionTokens: response.usage?.completion_tokens,
   });
 });
 ```
@@ -1011,17 +1160,19 @@ await tracer.withActiveSpan("process-request", async (span) => {
 ```typescript
 await tracer.withActiveSpan("rag-query", async (span) => {
   span.setType("rag");
-  
+
   // Retrieve documents
   const documents = await vectorStore.similaritySearch("query", 5);
-  
+
   // Set RAG contexts
-  span.setRAGContexts(documents.map(doc => ({
-    document_id: doc.metadata.id,
-    chunk_id: doc.metadata.chunk_id,
-    content: doc.pageContent
-  })));
-  
+  span.setRAGContexts(
+    documents.map((doc) => ({
+      document_id: doc.metadata.id,
+      chunk_id: doc.metadata.chunk_id,
+      content: doc.pageContent,
+    }))
+  );
+
   // Generate response
   const response = await llm.generate([documents, "query"]);
   span.setOutput(response);
@@ -1040,21 +1191,21 @@ await tracer.withActiveSpan("llm-call", async (span) => {
   // Use semantic convention attributes for consistency
   span.setAttribute(semconv.ATTR_LANGWATCH_SPAN_TYPE, "llm");
   span.setAttribute(semconv.ATTR_LANGWATCH_STREAMING, false);
-  
+
   // Add GenAI events with proper system identifiers
   span.addGenAISystemMessageEvent(
     { content: "You are a helpful assistant." },
     semconv.VAL_GEN_AI_SYSTEM_OPENAI
   );
-  
+
   span.addGenAIUserMessageEvent(
     { content: "Hello!" },
     semconv.VAL_GEN_AI_SYSTEM_OPENAI
   );
-  
+
   // Record events with proper event names
   span.addEvent(semconv.LOG_EVNT_GEN_AI_ASSISTANT_MESSAGE, {
-    content: "Hello! How can I help you today?"
+    content: "Hello! How can I help you today?",
   });
 });
 ```
