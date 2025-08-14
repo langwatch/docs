@@ -43,26 +43,10 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
 
     // Create a new prompt
     const prompt = await langwatch.prompts.create({
+      model: "openai/gpt-4o-mini"
       handle: "customer-support-bot",
       scope: "PROJECT",
       prompt: "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful customer support agent."
-        },
-        {
-          role: "user",
-          content: "{{input}}"
-        }
-      ],
-      inputs: [
-        { identifier: "input", type: "str" }
-      ],
-      outputs: [
-        { identifier: "response", type: "str" }
-      ],
-      model: "openai/gpt-4o-mini"
     });
 
     console.log(`Created prompt: ${prompt.name} (ID: ${prompt.id})`);
@@ -76,25 +60,10 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
 
     # Create a new prompt
     prompt = langwatch.prompts.create(
+        model="openai/gpt-4o-mini",
         handle="customer-support-bot",
         scope="PROJECT",
         prompt="You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a helpful customer support agent."
-            },
-            {
-                "role": "user",
-                "content": "{{input}}"
-            }
-        ],
-        inputs=[
-            {"identifier": "input", "type": "str"}
-        ],
-        outputs=[
-            {"identifier": "response", "type": "str"}
-        ]
     )
 
     print(f"Created prompt: {prompt.name} (ID: {prompt.id})")
