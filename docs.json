@@ -117,7 +117,10 @@
                   },
                   "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/typescript/integrations/mastra",
+                  "integration/typescript/integrations/open-ai",
                   "integration/python/integrations/agno",
+                  "integration/python/integrations/agno",
+                  "integration/python/integrations/anthropic",
                   "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
@@ -352,7 +355,8 @@
                     "pages": [
                       "prompt-management/features/advanced/link-to-traces",
                       "prompt-management/features/advanced/optimization-studio",
-                      "prompt-management/features/advanced/guaranteed-availability"
+                      "prompt-management/features/advanced/guaranteed-availability",
+                      "prompt-management/features/advanced/a-b-testing"
                     ]
                   }
                 ]
