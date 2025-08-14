@@ -34,7 +34,7 @@ langwatch.setup()
 @langwatch.trace()
 def customer_support_generation():
     # Get prompt (automatically linked to trace when API key is present)
-    prompt = langwatch.prompt.get_prompt("customer-support-bot")
+    prompt = langwatch.prompts.get("customer-support-bot")
 
     # Format messages with variables
     messages = prompt.format_messages(
