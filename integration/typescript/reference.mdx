@@ -378,18 +378,25 @@ recordEvaluation({
 
 ## Prompt Management
 
-### `getPrompt()`
+The prompt management module provides functions to create, retrieve, update, and delete prompts in the LangWatch platform. It also supports template compilation with Liquid templating syntax for dynamic prompt generation.
+
+### `langwatch.prompts.get()`
 
 Retrieves a prompt from the LangWatch platform.
 
 ```typescript
-import { getPrompt } from "langwatch/prompt";
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  endpoint: "https://app.langwatch.ai",
+});
 
 // Get a prompt without variables
-const prompt = await getPrompt("prompt-id");
+const prompt = await langwatch.prompts.get("prompt-id");
 
 // Get a prompt with variables (returns compiled prompt)
-const compiledPrompt = await getPrompt("prompt-id", {
+const compiledPrompt = await langwatch.prompts.get("prompt-id", {
   user_name: "John",
   product_name: "LangWatch",
 });
@@ -414,54 +421,110 @@ const compiledPrompt = await getPrompt("prompt-id", {
   The prompt or compiled prompt object.
 </ResponseField>
 
-### `getPromptVersion()`
+### `langwatch.prompts.create()`
 
-Retrieves a specific version of a prompt from the LangWatch platform.
+Creates a new prompt in the LangWatch platform.
 
 ```typescript
-import { getPromptVersion } from "langwatch";
+import { LangWatch } from "langwatch";
 
-// Get a prompt version without variables
-const promptVersion = await getPromptVersion("prompt-id", "version-id");
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  endpoint: "https://app.langwatch.ai",
+});
 
-// Get a prompt version with variables (returns compiled prompt)
-const compiledPromptVersion = await getPromptVersion(
-  "prompt-id",
-  "version-id",
-  {
-    user_name: "John",
-    product_name: "LangWatch",
-  }
-);
+// Create a new prompt
+const prompt = await langwatch.prompts.create({
+  handle: "customer-support-bot",
+  scope: "PROJECT", // 'ORGANIZATION' or 'PROJECT'
+  prompt:
+    "You are a helpful customer support assistant. Specialize in {{subject}}.",
+  messages: [{ role: "user", content: "{{question}}" }],
+  inputs: [{ identifier: "question", type: "str" }],
+  outputs: [
+    { identifier: "answer", type: "str", json_schema: { type: "str" } },
+  ],
+});
 ```
 
-<ParamField path="id" type="string" required>
-  The ID of the prompt to retrieve.
+<ParamField path="handle" type="string" required>
+  Unique identifier for the prompt. Must follow the pattern
+  `^[a-z0-9_-]+(?:/[a-z0-9_-]+)?$`.
 </ParamField>
 
-<ParamField path="versionId" type="string" required>
-  The ID of the specific version to retrieve.
+<ParamField path="scope" type="string" default="PROJECT">
+  Scope of the prompt. Can be either "PROJECT" or "ORGANIZATION".
 </ParamField>
 
-<ParamField
-  path="variables"
-  type="Optional<TemplateVariables>"
-  default="undefined"
->
-  Template variables to compile the prompt with. If provided, returns a compiled
-  prompt.
+<ParamField path="prompt" type="string">
+  The main prompt text content with Liquid templating support.
+</ParamField>
+
+<ParamField path="messages" type="array">
+  List of message objects with role and content.
+</ParamField>
+
+<ParamField path="inputs" type="array">
+  List of input parameter definitions with identifier and type.
+</ParamField>
+
+<ParamField path="outputs" type="array">
+  List of output parameter definitions with identifier, type, and optional JSON
+  schema.
+</ParamField>
+
+### `langwatch.prompts.update()`
+
+Updates an existing prompt in the LangWatch platform.
+
+```typescript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  endpoint: "https://app.langwatch.ai",
+});
+
+// Update a prompt
+const updatedPrompt = await langwatch.prompts.update("prompt-handle", {
+  handle: "updated-handle", // optional
+  scope: "PROJECT", // optional
+  prompt: "Updated prompt text with {{variables}}", // optional
+});
+```
+
+<ParamField path="handle" type="string" required>
+  The handle of the prompt to update.
+</ParamField>
+
+<ParamField path="updates" type="object">
+  Object containing the fields to update.
+</ParamField>
+
+### `langwatch.prompts.delete()`
+
+Deletes a prompt from the LangWatch platform.
+
+```typescript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch({
+  apiKey: "your-api-key",
+  endpoint: "https://app.langwatch.ai",
+});
+
+// Delete a prompt
+const result = await langwatch.prompts.delete("prompt-handle");
+```
+
+<ParamField path="handle" type="string" required>
+  The handle of the prompt to delete.
 </ParamField>
 
 **Returns**
 
-<ResponseField name="prompt" type="Prompt | CompiledPrompt">
-  The prompt version or compiled prompt object.
-</ResponseField>
-
-**Throws**
-
-<ResponseField name="error" type="Error">
-  Throws an error if the specified prompt version is not found.
+<ResponseField name="result" type="{ success: boolean }">
+  Object indicating if the deletion was successful.
 </ResponseField>
 
 ## Processors
@@ -1054,6 +1117,22 @@ A prompt object retrieved from the LangWatch platform.
   Unique identifier for the prompt.
 </ResponseField>
 
+<ResponseField name="projectId" type="string">
+  ID of the project this prompt belongs to.
+</ResponseField>
+
+<ResponseField name="organizationId" type="string">
+  ID of the organization this prompt belongs to.
+</ResponseField>
+
+<ResponseField name="handle" type="string | null">
+  The prompt handle identifier.
+</ResponseField>
+
+<ResponseField name="scope" type="'ORGANIZATION' | 'PROJECT'">
+  Scope of the prompt.
+</ResponseField>
+
 <ResponseField name="name" type="string">
   Name of the prompt.
 </ResponseField>
@@ -1070,10 +1149,6 @@ A prompt object retrieved from the LangWatch platform.
   Version identifier.
 </ResponseField>
 
-<ResponseField name="versionCreatedAt" type="string">
-  Version creation timestamp.
-</ResponseField>
-
 <ResponseField name="model" type="string">
   Model used for the prompt.
 </ResponseField>
@@ -1082,24 +1157,55 @@ A prompt object retrieved from the LangWatch platform.
   The prompt template.
 </ResponseField>
 
-<ResponseField name="messages" type="Array">
+<ResponseField name="messages" type="PromptResponse['messages']">
   Array of message objects.
 </ResponseField>
 
-<ResponseField name="response_format" type="Optional<object>">
+<ResponseField name="responseFormat" type="PromptResponse['responseFormat']">
   Response format configuration.
+</ResponseField>
+
+<ResponseField name="authorId" type="string | null">
+  ID of the author who created the prompt.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Creation timestamp.
+</ResponseField>
+
+<ResponseField name="inputs" type="PromptResponse['inputs']">
+  List of input parameter definitions.
+</ResponseField>
+
+<ResponseField name="outputs" type="PromptResponse['outputs']">
+  List of output parameter definitions.
+</ResponseField>
+
+<ResponseField name="raw" type="PromptResponse">
+  Get the raw prompt data from the API.
 </ResponseField>
 
 ### `CompiledPrompt`
 
 A compiled prompt with variables substituted.
 
-<ResponseField name="content" type="string">
-  The compiled prompt content with variables substituted.
-</ResponseField>
-
 <ResponseField name="original" type="Prompt">
   The original prompt object.
+</ResponseField>
+
+<ResponseField
+  name="compile"
+  type="(variables?: TemplateVariables) => CompiledPrompt"
+>
+  Compile the prompt template with provided variables (lenient - missing
+  variables become empty).
+</ResponseField>
+
+<ResponseField
+  name="compileStrict"
+  type="(variables: TemplateVariables) => CompiledPrompt"
+>
+  Compile with validation - throws error if required variables are missing.
 </ResponseField>
 
 ### `TemplateVariables`
