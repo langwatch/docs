@@ -329,23 +329,64 @@ const langwatch = new LangWatch({
 
 ### Prompt Management
 
-#### `langwatch.prompts.get()`
+#### `langwatch.prompts.create()`
 
-Retrieves a prompt from the LangWatch platform.
+Creates a new prompt in the LangWatch platform.
 
 ```typescript
-// Get a prompt without variables
-const prompt = await langwatch.prompts.get("prompt-id");
+// Create a basic prompt
+const prompt = await langwatch.prompts.create({
+  handle: "customer-support-bot",
+  scope: "PROJECT",
+  prompt: "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+  model: "openai/gpt-4o-mini"
+});
+
+// Create a prompt with advanced configuration
+const prompt = await langwatch.prompts.create({
+  handle: "sentiment-analyzer",
+  scope: "PROJECT",
+  prompt: "Analyze the sentiment of this text: {{text}}",
+  model: "openai/gpt-4o-mini",
+  temperature: 0.3,
+  maxTokens: 500,
+  inputs: [
+    { name: "text", type: "str" }
+  ],
+  outputs: [
+    { name: "sentiment", type: "str" },
+    { name: "confidence", type: "float" }
+  ]
+});
+```
+
+<ParamField path="options" type="CreatePromptOptions" required>
+  Configuration options for creating the prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The newly created prompt object.
+</ResponseField>
+
+#### `langwatch.prompts.get()`
+
+Retrieves a prompt from the LangWatch platform by handle.
+
+```typescript
+// Get a prompt by handle
+const prompt = await langwatch.prompts.get("customer-support-bot");
 
 // Get a prompt with variables (returns compiled prompt)
-const compiledPrompt = await langwatch.prompts.get("prompt-id", {
+const compiledPrompt = await langwatch.prompts.get("customer-support-bot", {
   user_name: "John",
   product_name: "LangWatch"
 });
 ```
 
-<ParamField path="id" type="string" required>
-  The ID of the prompt to retrieve.
+<ParamField path="handle" type="string" required>
+  The handle of the prompt to retrieve.
 </ParamField>
 
 <ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
@@ -364,17 +405,17 @@ Retrieves a specific version of a prompt from the LangWatch platform.
 
 ```typescript
 // Get a prompt version without variables
-const promptVersion = await langwatch.prompts.getVersion("prompt-id", "version-id");
+const promptVersion = await langwatch.prompts.getVersion("customer-support-bot", "version-id");
 
 // Get a prompt version with variables (returns compiled prompt)
-const compiledPromptVersion = await langwatch.prompts.getVersion("prompt-id", "version-id", {
+const compiledPromptVersion = await langwatch.prompts.getVersion("customer-support-bot", "version-id", {
   user_name: "John",
   product_name: "LangWatch"
 });
 ```
 
-<ParamField path="id" type="string" required>
-  The ID of the prompt to retrieve.
+<ParamField path="handle" type="string" required>
+  The handle of the prompt to retrieve.
 </ParamField>
 
 <ParamField path="versionId" type="string" required>
@@ -395,6 +436,49 @@ const compiledPromptVersion = await langwatch.prompts.getVersion("prompt-id", "v
 
 <ResponseField name="error" type="Error">
   Throws an error if the specified prompt version is not found.
+</ResponseField>
+
+#### `langwatch.prompts.update()`
+
+Updates an existing prompt in the LangWatch platform.
+
+```typescript
+const updatedPrompt = await langwatch.prompts.update("customer-support-bot", {
+  prompt: "You are an expert customer support agent...",
+  temperature: 0.5
+});
+```
+
+<ParamField path="handle" type="string" required>
+  The handle of the prompt to update.
+</ParamField>
+
+<ParamField path="updates" type="UpdatePromptOptions" required>
+  The fields to update on the prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The updated prompt object.
+</ResponseField>
+
+#### `langwatch.prompts.delete()`
+
+Deletes a prompt from the LangWatch platform.
+
+```typescript
+await langwatch.prompts.delete("customer-support-bot");
+```
+
+<ParamField path="handle" type="string" required>
+  The handle of the prompt to delete.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="void" type="void">
+  No return value.
 </ResponseField>
 
 ## Processors
@@ -611,28 +695,39 @@ const logger = new logger.NoOpLogger();
 
 ## CLI
 
-The LangWatch CLI provides command-line tools for managing prompts and interacting with the LangWatch platform.
+The LangWatch CLI provides dependency management for AI prompts as plain YAML files, enabling you to version prompts locally with Git while synchronizing with the LangWatch platform for testing, evaluation, and team collaboration.
+
+### Installation
 
 ```bash
-# Login to LangWatch
-langwatch login
+npm install -g langwatch
+```
 
+### Authentication
+
+```bash
+langwatch login
+```
+
+### Core Commands
+
+```bash
 # Initialize a new prompts project
 langwatch prompt init
 
-# Create a new prompt
+# Create a new local prompt
 langwatch prompt create my-prompt
 
-# Add a prompt from the registry
-langwatch prompt add sentiment-analyzer
+# Add a remote prompt dependency
+langwatch prompt add agent/customer-service
 
-# List installed prompts
+# List current prompt dependencies
 langwatch prompt list
 
-# Sync prompts with the registry
+# Synchronize with the platform
 langwatch prompt sync
 
-# Remove a prompt
+# Remove a prompt dependency
 langwatch prompt remove my-prompt
 ```
 
@@ -731,44 +826,84 @@ Defines a rule to filter out spans before they are exported to LangWatch.
 
 A prompt object retrieved from the LangWatch platform.
 
-<ResponseField name="id" type="string">
+<ResponseField name="id" type="string" required>
   Unique identifier for the prompt.
 </ResponseField>
 
-<ResponseField name="name" type="string">
-  Name of the prompt.
+<ResponseField name="handle" type="string" required>
+  Human-readable identifier for the prompt (primary way to reference prompts).
 </ResponseField>
 
-<ResponseField name="updatedAt" type="string">
-  Last update timestamp.
+<ResponseField name="scope" type="string" required>
+  Access scope: "PROJECT" or "ORGANIZATION".
 </ResponseField>
 
-<ResponseField name="version" type="number">
-  Version number.
+<ResponseField name="projectId" type="string" required>
+  The project that owns the prompt.
 </ResponseField>
 
-<ResponseField name="versionId" type="string">
-  Version identifier.
+<ResponseField name="organizationId" type="string | null">
+  The organization that owns the prompt.
 </ResponseField>
 
-<ResponseField name="versionCreatedAt" type="string">
-  Version creation timestamp.
+<ResponseField name="version" type="number" required>
+  Current version number.
 </ResponseField>
 
-<ResponseField name="model" type="string">
-  Model used for the prompt.
+<ResponseField name="versionId" type="string" required>
+  Unique identifier for this version.
 </ResponseField>
 
-<ResponseField name="prompt" type="string">
-  The prompt template.
+<ResponseField name="createdAt" type="string" required>
+  When this version was created.
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string" required>
+  When the prompt was last updated.
+</ResponseField>
+
+<ResponseField name="authorId" type="string" required>
+  The user who created this version.
+</ResponseField>
+
+<ResponseField name="deletedAt" type="string | null">
+  Soft delete timestamp (null if not deleted).
+</ResponseField>
+
+<ResponseField name="model" type="string" required>
+  The LLM model to use (e.g., "openai/gpt-4o-mini").
+</ResponseField>
+
+<ResponseField name="temperature" type="number" required>
+  Fine-tune creativity vs. consistency (0.0 = deterministic, 2.0 = very creative).
+</ResponseField>
+
+<ResponseField name="maxTokens" type="number" required>
+  Control response length and costs.
+</ResponseField>
+
+<ResponseField name="prompt" type="string" required>
+  The main prompt text (system message).
 </ResponseField>
 
 <ResponseField name="messages" type="Array">
-  Array of message objects.
+  Array of chat messages with roles and content (alternative to prompt field).
 </ResponseField>
 
-<ResponseField name="response_format" type="Optional<object>">
-  Response format configuration.
+<ResponseField name="inputs" type="Array">
+  Array of input variable definitions with identifiers and types.
+</ResponseField>
+
+<ResponseField name="outputs" type="Array">
+  Array of output variable definitions with identifiers and types.
+</ResponseField>
+
+<ResponseField name="demonstrations" type="object">
+  Few-shot examples with columns and rows structure.
+</ResponseField>
+
+<ResponseField name="promptingTechnique" type="string">
+  The prompting strategy: "few_shot", "in_context", or "chain_of_thought".
 </ResponseField>
 
 ### `CompiledPrompt`
@@ -785,10 +920,27 @@ A compiled prompt with variables substituted.
 
 ### `TemplateVariables`
 
-Template variables for prompt compilation.
+Template variables for prompt compilation. Prompts use `{{ variable_name }}` syntax for dynamic content.
 
 ```typescript
 type TemplateVariables = Record<string, string | number | boolean | object | null>;
+```
+
+**Variable Examples:**
+
+```typescript
+// String variables
+const variables = {
+  user_name: "John Doe",
+  product_name: "LangWatch",
+  count: 5,
+  is_premium: true,
+  items: ["item1", "item2"],
+  user_data: { age: 30, role: "admin" }
+};
+
+// Usage in prompt template
+const prompt = "Hello {{user_name}}! You have {{count}} items. Premium status: {{is_premium}}";
 ```
 
 ### `PromptCompilationError`
@@ -801,6 +953,94 @@ Error thrown when prompt compilation fails.
 
 <ResponseField name="originalError" type="Optional<any>">
   The original compilation error.
+</ResponseField>
+
+### `CreatePromptOptions`
+
+Configuration options for creating a new prompt.
+
+<ResponseField name="handle" type="string" required>
+  Human-readable identifier for the prompt.
+</ResponseField>
+
+<ResponseField name="scope" type="string" required>
+  Access scope: "PROJECT" or "ORGANIZATION".
+</ResponseField>
+
+<ResponseField name="prompt" type="string" required>
+  The main prompt text (system message).
+</ResponseField>
+
+<ResponseField name="model" type="string" required>
+  The LLM model to use (e.g., "openai/gpt-4o-mini").
+</ResponseField>
+
+<ResponseField name="temperature" type="Optional<number>">
+  Fine-tune creativity vs. consistency (0.0 = deterministic, 2.0 = very creative).
+</ResponseField>
+
+<ResponseField name="maxTokens" type="Optional<number>">
+  Control response length and costs.
+</ResponseField>
+
+<ResponseField name="messages" type="Optional<Array>">
+  Array of chat messages with roles and content (alternative to prompt field).
+</ResponseField>
+
+<ResponseField name="inputs" type="Optional<Array>">
+  Array of input variable definitions with identifiers and types.
+</ResponseField>
+
+<ResponseField name="outputs" type="Optional<Array>">
+  Array of output variable definitions with identifiers and types.
+</ResponseField>
+
+<ResponseField name="demonstrations" type="Optional<object>">
+  Few-shot examples with columns and rows structure.
+</ResponseField>
+
+<ResponseField name="promptingTechnique" type="Optional<string>">
+  The prompting strategy: "few_shot", "in_context", or "chain_of_thought".
+</ResponseField>
+
+### `UpdatePromptOptions`
+
+Configuration options for updating an existing prompt.
+
+<ResponseField name="prompt" type="Optional<string>">
+  The main prompt text (system message).
+</ResponseField>
+
+<ResponseField name="model" type="Optional<string>">
+  The LLM model to use.
+</ResponseField>
+
+<ResponseField name="temperature" type="Optional<number>">
+  Fine-tune creativity vs. consistency.
+</ResponseField>
+
+<ResponseField name="maxTokens" type="Optional<number>">
+  Control response length and costs.
+</ResponseField>
+
+<ResponseField name="messages" type="Optional<Array>">
+  Array of chat messages with roles and content.
+</ResponseField>
+
+<ResponseField name="inputs" type="Optional<Array>">
+  Array of input variable definitions.
+</ResponseField>
+
+<ResponseField name="outputs" type="Optional<Array>">
+  Array of output variable definitions.
+</ResponseField>
+
+<ResponseField name="demonstrations" type="Optional<object>">
+  Few-shot examples structure.
+</ResponseField>
+
+<ResponseField name="promptingTechnique" type="Optional<string>">
+  The prompting strategy.
 </ResponseField>
 
 ### `LangWatchConstructorOptions`
@@ -909,14 +1149,33 @@ const langwatch = new LangWatch({
   apiKey: process.env.LANGWATCH_API_KEY
 });
 
+// Create a new prompt
+const prompt = await langwatch.prompts.create({
+  handle: "customer-support-bot",
+  scope: "PROJECT",
+  prompt: "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+  model: "openai/gpt-4o-mini",
+  temperature: 0.7,
+  maxTokens: 1000
+});
+
 // Get a prompt with variables
-const compiledPrompt = await langwatch.prompts.get("customer-support", {
+const compiledPrompt = await langwatch.prompts.get("customer-support-bot", {
   customer_name: "John Doe",
   product_name: "LangWatch"
 });
 
 console.log(compiledPrompt.content);
 // Output: "Hello John Doe! How can I help you with LangWatch today?"
+
+// Update the prompt
+const updatedPrompt = await langwatch.prompts.update("customer-support-bot", {
+  temperature: 0.5,
+  prompt: "You are an expert customer support agent..."
+});
+
+// Delete the prompt
+await langwatch.prompts.delete("customer-support-bot");
 ```
 
 ### LangChain Integration
