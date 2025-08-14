@@ -32,6 +32,76 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
 
   </Tab>
 
+  <Tab title="TypeScript SDK">
+    ```typescript create_prompt.ts
+    import { LangWatch } from "langwatch";
+
+    // Initialize LangWatch client
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
+
+    // Create a new prompt
+    const prompt = await langwatch.prompts.create({
+      handle: "customer-support-bot",
+      scope: "PROJECT",
+      prompt: "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful customer support agent."
+        },
+        {
+          role: "user",
+          content: "{{input}}"
+        }
+      ],
+      inputs: [
+        { identifier: "input", type: "str" }
+      ],
+      outputs: [
+        { identifier: "response", type: "str" }
+      ],
+      model: "openai/gpt-4o-mini"
+    });
+
+    console.log(`Created prompt: ${prompt.name} (ID: ${prompt.id})`);
+    ```
+
+  </Tab>
+
+  <Tab title="Python SDK">
+    ```python create_prompt.py
+    import langwatch
+
+    # Create a new prompt
+    prompt = langwatch.prompts.create(
+        handle="customer-support-bot",
+        scope="PROJECT",
+        prompt="You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a helpful customer support agent."
+            },
+            {
+                "role": "user",
+                "content": "{{input}}"
+            }
+        ],
+        inputs=[
+            {"identifier": "input", "type": "str"}
+        ],
+        outputs=[
+            {"identifier": "response", "type": "str"}
+        ]
+    )
+
+    print(f"Created prompt: {prompt.name} (ID: {prompt.id})")
+    ```
+
+  </Tab>
+
   <Tab title="REST API">
     Use the REST API to create a new prompt:
 
@@ -42,11 +112,27 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
       -H "X-Auth-Token: your-api-key" \
       -d '{
         "handle": "customer-support-bot",
-        "scope": "PROJECT"
+        "scope": "PROJECT",
+        "prompt": "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful customer support agent."
+          },
+          {
+            "role": "user",
+            "content": "{{input}}"
+          }
+        ],
+        "inputs": [
+          {"identifier": "input", "type": "str"}
+        ],
+        "outputs": [
+          {"identifier": "response", "type": "str"}
+        ],
+        "model": "openai/gpt-4o-mini"
       }'
     ```
-
-    **Note**: To create versions with custom prompt content, you'll need to use the API directly. See the [API Reference](/api-reference/prompts/overview) for version management endpoints.
 
   </Tab>
 </Tabs>
@@ -62,12 +148,12 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
     from openai import OpenAI
 
     # Get the latest prompt (can use handle or ID)
-    prompt = langwatch.prompt.get_prompt("customer-support-bot")  # by handle
+    prompt = langwatch.prompts.get("customer-support-bot")  # by handle
     # or
-    # prompt = langwatch.prompt.get_prompt("prompt_TrYXZLsiTJkn9N6PiZiae")  # by ID
+    # prompt = langwatch.prompts.get("prompt_TrYXZLsiTJkn9N6PiZiae")  # by ID
 
-    # Format messages with variables
-    messages = prompt.format_messages(
+    # Compile prompt with variables
+    compiled_prompt = prompt.compile(
         user_name="John Doe",
         user_email="john.doe@example.com",
         input="How do I reset my password?"
@@ -77,7 +163,7 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
     client = OpenAI()
     completion = client.chat.completions.create(
         model=prompt.model.split("openai/")[1],  # Remove "openai/" prefix
-        messages=messages
+        messages=compiled_prompt.messages
     )
 
     print(completion.choices[0].message.content)
@@ -87,16 +173,19 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
 
   <Tab title="TypeScript SDK">
     ```typescript use_prompt.ts
-    import { getPrompt, setupLangWatch } from "langwatch";
-    import OpenAI from "openai";
+    import { LangWatch } from "langwatch";
+    import { openai } from "@ai-sdk/openai";
+    import { generateText } from "ai";
 
-    // Initialize LangWatch
-    await setupLangWatch();
+    // Initialize LangWatch client
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
 
     // Get the latest prompt (can use handle or ID)
-    const prompt = await getPrompt("customer-support-bot"); // by handle
+    const prompt = await langwatch.prompts.get("customer-support-bot"); // by handle
     // or
-    // const prompt = await getPrompt("prompt_TrYXZLsiTJkn9N6PiZiae"); // by ID
+    // const prompt = await langwatch.prompts.get("prompt_TrYXZLsiTJkn9N6PiZiae"); // by ID
 
     // Compile prompt with variables
     const compiledPrompt = prompt.compile({
@@ -105,14 +194,14 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
       input: "How do I reset my password?"
     });
 
-    // Use with OpenAI client
-    const openai = new OpenAI();
-    const completion = await openai.chat.completions.create({
-      model: prompt.model.replace("openai/", ""), // Remove "openai/" prefix
-      messages: compiledPrompt.messages
+    // Use with AI SDK
+    const result = await generateText({
+      model: openai(prompt.model.replace("openai/", "")),
+      messages: compiledPrompt.messages,
+      experimental_telemetry: { isEnabled: true },
     });
 
-    console.log(completion.choices[0].message.content);
+    console.log(result.text);
     ```
 
   </Tab>
@@ -147,10 +236,10 @@ You can link your prompt to LLM generation traces to track performance and see w
     @langwatch.trace()
     def customer_support_generation():
         # Get prompt (automatically linked to trace when API key is present)
-        prompt = langwatch.prompt.get_prompt("customer-support-bot")
+        prompt = langwatch.prompts.get("customer-support-bot")
 
-        # Format messages with variables
-        messages = prompt.format_messages(
+        # Compile prompt with variables
+        compiled_prompt = prompt.compile(
             user_name="John Doe",
             user_email="john.doe@example.com",
             input="I need help with my account"
@@ -160,7 +249,7 @@ You can link your prompt to LLM generation traces to track performance and see w
         client = OpenAI()
         completion = client.chat.completions.create(
             model=prompt.model.split("openai/")[1],
-            messages=messages
+            messages=compiled_prompt.messages
         )
 
         return completion.choices[0].message.content
@@ -173,19 +262,21 @@ You can link your prompt to LLM generation traces to track performance and see w
 
   <Tab title="TypeScript SDK">
     ```typescript tracing.ts
-    import { getPrompt, setupLangWatch, getLangWatchTracer } from "langwatch";
+    import { LangWatch, getLangWatchTracer } from "langwatch";
     import { openai } from "@ai-sdk/openai";
     import { generateText } from "ai";
 
-    // Initialize LangWatch
-    await setupLangWatch();
+    // Initialize LangWatch client
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
 
     const tracer = getLangWatchTracer("customer-support");
 
     async function customerSupportGeneration() {
       return tracer.withActiveSpan("customer-support-generation", async () => {
         // Get prompt (automatically linked to trace when API key is present)
-        const prompt = await getPrompt("customer-support-bot");
+        const prompt = await langwatch.prompts.get("customer-support-bot");
 
         // Compile prompt with variables
         const compiledPrompt = prompt.compile({
@@ -194,14 +285,13 @@ You can link your prompt to LLM generation traces to track performance and see w
           input: "I need help with my account",
         });
 
-        // Use with AI SDK (native instrumentation support)
-        const result = await generateText({
+        // Use with AI SDK
+        const { text } = await generateText({
           model: openai(prompt.model.replace("openai/", "")),
-          messages: compiledPrompt.messages,
-          experimental_telemetry: { isEnabled: true },
+          messages: compiledPrompt.messages
         });
 
-        return result.text;
+        return text;
       });
     }
 
