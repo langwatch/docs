@@ -17,23 +17,14 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "api": {
     "playground": {
       "display": "interactive"
     },
     "examples": {
-      "languages": [
-        "curl",
-        "python",
-        "typescript"
-      ],
+      "languages": ["curl", "python", "typescript"],
       "defaults": "required"
     },
     "mdx": {
@@ -117,10 +108,7 @@
                   },
                   "integration/typescript/integrations/vercel-ai-sdk",
                   "integration/typescript/integrations/mastra",
-                  "integration/typescript/integrations/open-ai",
                   "integration/python/integrations/agno",
-                  "integration/python/integrations/agno",
-                  "integration/python/integrations/anthropic",
                   "integration/python/integrations/autogen",
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
@@ -222,9 +210,7 @@
                   },
                   {
                     "group": "OpenTelemetry",
-                    "pages": [
-                      "integration/opentelemetry/guide"
-                    ]
+                    "pages": ["integration/opentelemetry/guide"]
                   }
                 ]
               },
@@ -284,10 +270,7 @@
               },
               {
                 "group": "Monitoring & Alerts",
-                "pages": [
-                  "features/triggers",
-                  "features/embedded-analytics"
-                ]
+                "pages": ["features/triggers", "features/embedded-analytics"]
               },
               "integration/code-examples"
             ]
@@ -428,15 +411,11 @@
               },
               {
                 "group": "Datasets",
-                "pages": [
-                  "api-reference/datasets/post-dataset-entries"
-                ]
+                "pages": ["api-reference/datasets/post-dataset-entries"]
               },
               {
                 "group": "Triggers",
-                "pages": [
-                  "api-reference/triggers/create-slack-trigger"
-                ]
+                "pages": ["api-reference/triggers/create-slack-trigger"]
               },
               {
                 "group": "Scenarios",
@@ -457,10 +436,7 @@
           },
           {
             "group": "Support",
-            "pages": [
-              "support",
-              "status"
-            ]
+            "pages": ["support", "status"]
           }
         ]
       }
