@@ -49,7 +49,7 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
       prompt: "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
     });
 
-    console.log(`Created prompt: ${prompt.name} (ID: ${prompt.id})`);
+    console.log(`Created prompt with handle: ${prompt.handle}`);
     ```
 
   </Tab>
@@ -66,7 +66,7 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
         prompt="You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
     )
 
-    print(f"Created prompt: {prompt.name} (ID: {prompt.id})")
+    print(f"Created prompt with handle: {prompt.handle}")
     ```
 
   </Tab>
@@ -108,7 +108,7 @@ Learn how to create your first prompt in LangWatch and use it in your applicatio
 
 ## Use prompt
 
-At runtime, you can fetch the latest version of your prompt from LangWatch using either the prompt handle or ID.
+At runtime, you can fetch the latest version of your prompt from LangWatch using the prompt handle.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -116,10 +116,8 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
     import langwatch
     from litellm import completion
 
-    # Get the latest prompt (can use handle or ID)
-    prompt = langwatch.prompts.get("customer-support-bot")  # by handle
-    # or
-    # prompt = langwatch.prompts.get("prompt_TrYXZLsiTJkn9N6PiZiae")  # by ID
+    # Get the latest prompt by handle
+    prompt = langwatch.prompts.get("customer-support-bot")
 
     # Compile prompt with variables
     compiled_prompt = prompt.compile(
@@ -150,10 +148,8 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
       apiKey: process.env.LANGWATCH_API_KEY
     });
 
-    // Get the latest prompt (can use handle or ID)
-    const prompt = await langwatch.prompts.get("customer-support-bot"); // by handle
-    // or
-    // const prompt = await langwatch.prompts.get("prompt_TrYXZLsiTJkn9N6PiZiae"); // by ID
+    // Get the latest prompt by handle
+    const prompt = await langwatch.prompts.get("customer-support-bot");
 
     // Compile prompt with variables
     const compiledPrompt = prompt.compile({
@@ -176,12 +172,8 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
 
   <Tab title="REST API">
     ```bash use_prompt.sh
-    # Get by handle
+    # Get prompt by handle
     curl -X GET "https://app.langwatch.ai/api/prompts/customer-support-bot" \
-      -H "X-Auth-Token: your-api-key"
-    
-    # Or get by ID
-    curl -X GET "https://app.langwatch.ai/api/prompts/prompt_TrYXZLsiTJkn9N6PiZiae" \
       -H "X-Auth-Token: your-api-key"
     ```
   </Tab>

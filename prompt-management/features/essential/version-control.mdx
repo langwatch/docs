@@ -80,17 +80,17 @@ Use the REST API to manage prompt versions:
 ```bash
 # Get all versions of a prompt
 curl --request GET \
-  --url "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}/versions" \
   --header "X-Auth-Token: your-api-key"
 
 # Get a specific prompt (latest version)
 curl --request GET \
-  --url "https://app.langwatch.ai/api/prompts/{prompt_id}" \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}" \
   --header "X-Auth-Token: your-api-key"
 
 # Create a new version
 curl --request POST \
-  --url "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}/versions" \
   --header "X-Auth-Token: your-api-key" \
   --header "Content-Type: application/json" \
   --data '{
@@ -107,7 +107,7 @@ curl --request POST \
 
 # Get a specific version
 curl --request GET \
-  --url "https://app.langwatch.ai/api/prompts/{prompt_id}?version=2" \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}?version=2" \
   --header "X-Auth-Token: your-api-key"
 ```
 
@@ -156,7 +156,7 @@ Create new prompts with templates and variables:
       model: "openai/gpt-4o-mini"
     });
 
-    console.log(`Created prompt: ${prompt.name} (ID: ${prompt.id})`);
+         console.log(`Created prompt with handle: ${prompt.handle}`);
     ```
 
   </Tab>
@@ -187,7 +187,7 @@ Create new prompts with templates and variables:
         ]
     )
 
-    print(f"Created prompt: {prompt.name} (ID: {prompt.id})")
+         print(f"Created prompt with handle: {prompt.handle}")
     ```
 
   </Tab>
@@ -221,7 +221,7 @@ Modify existing prompts while maintaining version history:
       // ]
     });
 
-    console.log(`Updated prompt: ${updatedPrompt.name}, New version: ${updatedPrompt.version}`);
+         console.log(`Updated prompt: ${updatedPrompt.handle}, New version: ${updatedPrompt.version}`);
     ```
 
   </Tab>
@@ -246,7 +246,7 @@ Modify existing prompts while maintaining version history:
         # ]
     )
 
-    print(f"Updated prompt: {updated_prompt.name}, New version: {updated_prompt.version}")
+         print(f"Updated prompt: {updated_prompt.handle}, New version: {updated_prompt.version}")
     ```
 
   </Tab>
@@ -267,9 +267,6 @@ Remove entire prompts and all their versions:
     // Delete by handle (removes all versions)
     const result = await langwatch.prompts.delete("customer-support-bot");
 
-    // Delete by ID (removes all versions)
-    const resultById = await langwatch.prompts.delete("prompt_TrYXZLsiTJkn9N6PiZiae");
-
     console.log(`Deletion result: ${result.success}`);
     ```
 
@@ -279,9 +276,6 @@ Remove entire prompts and all their versions:
     ```python delete_prompt.py
     # Delete by handle (removes all versions)
     result = langwatch.prompts.delete("customer-support-bot")
-
-    # Delete by ID (removes all versions)
-    result_by_id = langwatch.prompts.delete("prompt_TrYXZLsiTJkn9N6PiZiae")
 
     print(f"Deletion result: {result}")
     ```

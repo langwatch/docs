@@ -42,146 +42,6 @@ Each prompt has a configuration that contains metadata and references to its ver
 - **`updatedAt`**: When the prompt was last updated
 - **`deletedAt`**: Soft delete timestamp (null if not deleted)
 
-## Prompt Versions
-
-Each prompt can have multiple versions, with the latest version being used by default.
-
-```json
-{
-  "id": "version_abc123",
-  "version": 1,
-  "configId": "prompt_TrYXZLsiTJkn9N6PiZiae",
-  "projectId": "proj_123",
-  "configData": {
-    "version": 1,
-    "prompt": "You are a helpful customer support agent. The user is {{user_name}} and their email is {{user_email}}",
-    "messages": [
-      {
-        "role": "system",
-        "content": "You are a helpful customer support agent"
-      },
-      {
-        "role": "user",
-        "content": "{{input}}"
-      }
-    ],
-    "inputs": [
-      {
-        "identifier": "user_name",
-        "type": "str"
-      },
-      {
-        "identifier": "user_email",
-        "type": "str"
-      },
-      {
-        "identifier": "input",
-        "type": "str"
-      }
-    ],
-    "outputs": [
-      {
-        "identifier": "response",
-        "type": "str"
-      }
-    ],
-    "model": "openai/gpt-5",
-    "temperature": 0.7,
-    "max_tokens": 1000,
-    "demonstrations": {
-      "columns": [
-        {
-          "id": "input",
-          "name": "User Input",
-          "type": "string"
-        },
-        {
-          "id": "output",
-          "name": "Expected Output",
-          "type": "string"
-        }
-      ],
-      "rows": []
-    }
-  },
-  "schemaVersion": "1.0",
-  "commitMessage": "Initial customer support prompt",
-  "authorId": "user_123",
-  "createdAt": "2024-01-15T10:30:00Z"
-}
-```
-
-### Version Fields
-
-- **`id`**: Unique identifier for this version
-- **`version`**: Version number (incremental)
-- **`configId`**: Reference to the parent prompt configuration
-- **`projectId`**: The project this version belongs to
-- **`configData`**: The actual prompt configuration (see Config Data Structure below)
-- **`schemaVersion`**: Version of the config schema (currently "1.0")
-- **`commitMessage`**: Optional description of changes
-- **`authorId`**: User who created this version (nullable)
-- **`createdAt`**: When this version was created
-
-## Config Data Structure
-
-The `configData` contains the actual prompt configuration with comprehensive metadata:
-
-```json
-{
-  "version": 1,
-  "prompt": "You are a helpful customer support agent. The user is {{user_name}} and their email is {{user_email}}",
-  "messages": [
-    {
-      "role": "system",
-      "content": "You are a helpful customer support agent"
-    },
-    {
-      "role": "user",
-      "content": "{{input}}"
-    }
-  ],
-  "inputs": [
-    {
-      "identifier": "user_name",
-      "type": "str"
-    },
-    {
-      "identifier": "user_email",
-      "type": "str"
-    },
-    {
-      "identifier": "input",
-      "type": "str"
-    }
-  ],
-  "outputs": [
-    {
-      "identifier": "response",
-      "type": "str"
-    }
-  ],
-  "model": "openai/gpt-5",
-  "temperature": 0.7,
-  "max_tokens": 1000,
-  "demonstrations": {
-    "columns": [
-      {
-        "id": "input",
-        "name": "User Input",
-        "type": "string"
-      },
-      {
-        "id": "output",
-        "name": "Expected Output",
-        "type": "string"
-      }
-    ],
-    "rows": []
-  }
-}
-```
-
 ### Config Data Fields
 
 - **`version`**: Version number within the config data
@@ -286,14 +146,13 @@ The `inputs` and `outputs` arrays define the expected variable types:
 
 ## API Response Format
 
-When retrieving a prompt via API, you get the configuration with the latest version:
+When retrieving a prompt via API, you get the latest version of the prompt configuration:
 
 ```json
 {
   "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
   "handle": "customer-support-bot",
   "scope": "PROJECT",
-  "name": "Customer Support Bot",
   "projectId": "proj_123",
   "organizationId": "org_456",
   "version": 1,
@@ -342,7 +201,6 @@ When retrieving a prompt via API, you get the configuration with the latest vers
 - **`id`** - Unique identifier for the prompt
 - **`handle`** - Human-readable identifier (can be null)
 - **`scope`** - Either "PROJECT" or "ORGANIZATION"
-- **`name`** - Display name for the prompt
 - **`projectId`** - ID of the project that owns the prompt
 - **`organizationId`** - ID of the organization
 
@@ -391,7 +249,7 @@ When retrieving a prompt via API, you get the configuration with the latest vers
 - Each prompt starts with version 1
 - New versions increment the version number
 - The latest version is automatically used
-- You can retrieve specific versions by version ID
+- You can retrieve specific versions by version number
 - Version history is preserved for rollback
 
 ---
