@@ -11,6 +11,21 @@ LangWatch provides a robust version control system for managing your prompts. Ea
 
 Every prompt in LangWatch automatically maintains a version history. When you create a new prompt, it starts with version 1, and each subsequent change creates a new version with an incremented number.
 
+**Important**: You cannot delete individual versions - only entire prompts can be deleted. Each update operation creates a new version automatically.
+
+## Scope and Conflicts
+
+Prompts have two scope levels that affect version management and conflict resolution:
+
+- **PROJECT scope** - Prompts are accessible only within the project. Changes are isolated to your project.
+- **ORGANIZATION scope** - Prompts are shared across all projects in the organization. Changes can affect other projects and may require conflict resolution.
+
+<Warning>
+  **Scope Conflicts**: When updating an organization-scoped prompt, conflicts
+  may arise if other projects have made changes. The system will provide
+  conflict information to help resolve differences.
+</Warning>
+
 ## Managing Versions
 
 <Tabs>
@@ -64,18 +79,21 @@ Use the REST API to manage prompt versions:
 
 ```bash
 # Get all versions of a prompt
-curl -X GET "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
-  -H "Authorization: Bearer your-api-key"
+curl --request GET \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
+  --header "X-Auth-Token: your-api-key"
 
 # Get a specific prompt (latest version)
-curl -X GET "https://app.langwatch.ai/api/prompts/{prompt_id}" \
-  -H "Authorization: Bearer your-api-key"
+curl --request GET \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_id}" \
+  --header "X-Auth-Token: your-api-key"
 
 # Create a new version
-curl -X POST "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
-  -H "Authorization: Bearer your-api-key" \
-  -H "Content-Type: application/json" \
-  -d '{
+curl --request POST \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
+  --header "X-Auth-Token: your-api-key" \
+  --header "Content-Type: application/json" \
+  --data '{
     "configData": {
       "version": 2,
       "prompt": "Updated prompt text...",
@@ -86,61 +104,232 @@ curl -X POST "https://app.langwatch.ai/api/prompts/{prompt_id}/versions" \
     },
     "commitMessage": "Improved customer support prompt"
   }'
+
+# Get a specific version
+curl --request GET \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_id}?version=2" \
+  --header "X-Auth-Token: your-api-key"
 ```
 
 </Tab>
 </Tabs>
 
-## Version History
+## CRUD Operations
 
-LangWatch provides a clear view of how your prompts have evolved over time:
+The SDK provides comprehensive CRUD operations for managing prompts programmatically:
+
+### Create Prompts
+
+Create new prompts with templates and variables:
+
+<Warning>
+  **System Message Conflict**: You cannot set both a `prompt` (system message)
+  and `messages` array with a system role in the same operation. Choose one
+  approach to avoid errors.
+</Warning>
+
+<Tabs>
+  <Tab title="TypeScript SDK">
+    ```typescript create_prompt.ts
+    // Create a new prompt
+    const prompt = await langwatch.prompts.create({
+      handle: "customer-support-bot",
+      scope: "PROJECT", // Use PROJECT for team-specific prompts
+      prompt: "You are a helpful customer support agent. Help with: {{input}}",
+      // OR use messages array (but not both prompt and system message)
+      // messages: [
+      //   {
+      //     role: "system",
+      //     content: "You are a helpful customer support agent."
+      //   },
+      //   {
+      //     role: "user",
+      //     content: "{{input}}"
+      //   }
+      // ],
+      inputs: [
+        { identifier: "input", type: "str" }
+      ],
+      outputs: [
+        { identifier: "response", type: "str" }
+      ],
+      model: "openai/gpt-4o-mini"
+    });
+
+    console.log(`Created prompt: ${prompt.name} (ID: ${prompt.id})`);
+    ```
+
+  </Tab>
+
+  <Tab title="Python SDK">
+    ```python create_prompt.py
+    # Create a new prompt
+    prompt = langwatch.prompts.create(
+        handle="customer-support-bot",
+        scope="PROJECT",  # Use PROJECT for team-specific prompts
+        prompt="You are a helpful customer support agent. Help with: {{input}}",
+        # OR use messages array (but not both prompt and system message)
+        # messages=[
+        #     {
+        #         "role": "system",
+        #         "content": "You are a helpful customer support agent."
+        #     },
+        #     {
+        #         "role": "user",
+        #         "content": "{{input}}"
+        #     }
+        # ],
+        inputs=[
+            {"identifier": "input", "type": "str"}
+        ],
+        outputs=[
+            {"identifier": "response", "type": "str"}
+        ]
+    )
+
+    print(f"Created prompt: {prompt.name} (ID: {prompt.id})")
+    ```
+
+  </Tab>
+</Tabs>
+
+### Update Prompts (Creates New Versions)
+
+Modify existing prompts while maintaining version history:
+
+<Warning>
+  **System Message Conflict**: Same rule applies - you cannot set both a
+  `prompt` and `messages` array with a system role in the same operation.
+</Warning>
+
+<Tabs>
+  <Tab title="TypeScript SDK">
+    ```typescript update_prompt.ts
+    // Update prompt content (creates new version automatically)
+    const updatedPrompt = await langwatch.prompts.update("customer-support-bot", {
+      prompt: "You are an expert customer support agent. Help with: {{input}}",
+      // OR use messages array (but not both)
+      // messages: [
+      //   {
+      //     role: "system",
+      //     content: "You are an expert customer support agent."
+      //   },
+      //   {
+      //     role: "user",
+      //     content: "{{input}}"
+      //   }
+      // ]
+    });
+
+    console.log(`Updated prompt: ${updatedPrompt.name}, New version: ${updatedPrompt.version}`);
+    ```
+
+  </Tab>
+
+  <Tab title="Python SDK">
+    ```python update_prompt.py
+    # Update prompt content (creates new version automatically)
+    updated_prompt = langwatch.prompts.update(
+        "customer-support-bot",
+        scope="PROJECT",
+        prompt="You are an expert customer support agent. Help with: {{input}}",
+        # OR use messages array (but not both)
+        # messages=[
+        #     {
+        #         "role": "system",
+        #         "content": "You are an expert customer support agent."
+        #     },
+        #     {
+        #         "role": "user",
+        #         "content": "{{input}}"
+        #     }
+        # ]
+    )
+
+    print(f"Updated prompt: {updated_prompt.name}, New version: {updated_prompt.version}")
+    ```
+
+  </Tab>
+</Tabs>
+
+### Delete Prompts
+
+Remove entire prompts and all their versions:
+
+<Warning>
+  **Permanent Deletion**: Deleting a prompt removes ALL versions permanently.
+  This action cannot be undone.
+</Warning>
+
+<Tabs>
+  <Tab title="TypeScript SDK">
+    ```typescript delete_prompt.ts
+    // Delete by handle (removes all versions)
+    const result = await langwatch.prompts.delete("customer-support-bot");
+
+    // Delete by ID (removes all versions)
+    const resultById = await langwatch.prompts.delete("prompt_TrYXZLsiTJkn9N6PiZiae");
+
+    console.log(`Deletion result: ${result.success}`);
+    ```
+
+  </Tab>
+
+  <Tab title="Python SDK">
+    ```python delete_prompt.py
+    # Delete by handle (removes all versions)
+    result = langwatch.prompts.delete("customer-support-bot")
+
+    # Delete by ID (removes all versions)
+    result_by_id = langwatch.prompts.delete("prompt_TrYXZLsiTJkn9N6PiZiae")
+
+    print(f"Deletion result: {result}")
+    ```
+
+  </Tab>
+</Tabs>
+
+## Important Caveats
+
+### System Message Conflicts
+
+<Warning>
+  **Critical**: You cannot set both a `prompt` field and a `messages` array
+  containing a system role in the same operation. This will throw an error.
+</Warning>
+
+**Valid approaches:**
+
+1. **Use `prompt` field only** - Sets the system message directly
+2. **Use `messages` array only** - Define the full conversation structure
+3. **Mix both** - Use `prompt` for system message and `messages` for user/assistant messages (but no system role in messages)
+
+### Scope Considerations
+
+- **PROJECT scope** - Safe for frequent updates, no conflict risk
+- **ORGANIZATION scope** - Use with caution, may require conflict resolution
+- **Scope changes** - Changing scope can affect access patterns and conflict resolution
+
+### Version Limitations
+
+- **No version deletion** - Individual versions cannot be deleted
+- **Automatic versioning** - Every update creates a new version
+- **Version history** - All versions are preserved for rollback
+
+## Version History
 
 <Frame>
   <img
     className="block"
-    src="/images/prompts/view-versioning.png"
-    alt="LangWatch Prompt Versions in Studio"
+    src="/images/prompts/view-version-history.png"
+    alt="Prompt version history showing multiple versions with timestamps"
   />
 </Frame>
 
 - **Version List**: See all versions with timestamps and commit messages
-- **Commit Messages**: Understand what was changed in each version
-- **Author Information**: See who made each change
-- **Version Selection**: Switch between different versions to view their content
-
-## Version Information
-
-Each prompt version includes metadata such as version number, commit message, author, and creation timestamp. For detailed information about the version structure and data model, see the [Data Model](/prompt-management/data-model) page.
-
-## Rollbacks
-
-You can easily rollback to previous versions:
-
-1. Navigate to the prompt's version history
-2. Select the version you want to restore
-3. Create a new version based on the selected version
-4. The new version will include the restored content
-
-## Team Collaboration
-
-All prompt versions are shared across your project team. For organization-scoped prompts, versions are also shared across all projects in the organization.
-
-<Frame>
-  <img
-    className="block"
-    src="/images/prompts/view-set-prompt-scope.png"
-    alt="LangWatch Prompt Manager"
-  />
-</Frame>
-
-### Collaboration Features
-
-- **Shared Access**: All team members can view all versions
-- **Author Tracking**: See who created each version
-- **Cross-Project Sharing**: Organization-scoped prompts are shared across projects
-- **Version Comments**: Add commit messages to explain changes
-
-For more information about prompt scoping and sharing, see the [Data Model](/prompt-management/data-model#prompt-versions) page.
+- **Diff View**: Compare changes between versions
+- **Rollback**: Easily revert to previous versions
+- **Branching**: Create experimental versions without affecting production
 
 ---
 
