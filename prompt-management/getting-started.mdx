@@ -145,7 +145,7 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
   <Tab title="Python SDK">
     ```python use_prompt.py
     import langwatch
-    from openai import OpenAI
+    from litellm import completion
 
     # Get the latest prompt (can use handle or ID)
     prompt = langwatch.prompts.get("customer-support-bot")  # by handle
@@ -159,14 +159,13 @@ At runtime, you can fetch the latest version of your prompt from LangWatch using
         input="How do I reset my password?"
     )
 
-    # Use with OpenAI client
-    client = OpenAI()
-    completion = client.chat.completions.create(
-        model=prompt.model.split("openai/")[1],  # Remove "openai/" prefix
+    # Use with LiteLLM (unified interface to multiple providers)
+    response = completion(
+        model=prompt.model,  # LiteLLM handles provider prefixes automatically
         messages=compiled_prompt.messages
     )
 
-    print(completion.choices[0].message.content)
+    print(response.choices[0].message.content)
     ```
 
   </Tab>
@@ -227,7 +226,7 @@ You can link your prompt to LLM generation traces to track performance and see w
   <Tab title="Python SDK">
     ```python tracing.py
     import langwatch
-    from openai import OpenAI
+    from litellm import completion
 
     # Initialize LangWatch
     langwatch.setup()
@@ -245,14 +244,13 @@ You can link your prompt to LLM generation traces to track performance and see w
             input="I need help with my account"
         )
 
-        # Use with OpenAI client
-        client = OpenAI()
-        completion = client.chat.completions.create(
-            model=prompt.model.split("openai/")[1],
+        # Use with LiteLLM (unified interface to multiple providers)
+        response = completion(
+            model=prompt.model,  # LiteLLM handles provider prefixes automatically
             messages=compiled_prompt.messages
         )
 
-        return completion.choices[0].message.content
+        return response.choices[0].message.content
 
     # Call the function
     result = customer_support_generation()
