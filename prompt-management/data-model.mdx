@@ -54,27 +54,7 @@ When you retrieve a prompt, you get all the configuration in a single response:
       { "id": "example_1", "input": "I need help with my account", "output": "I'd be happy to help you with your account. What specific issue are you experiencing?" }
     ]
   },
-  "promptingTechnique": "chain_of_thought",
-  "responseFormat": {
-    "type": "json_schema",
-    "json_schema": {
-      "name": "customer_support_response",
-      "schema": {
-        "type": "object",
-        "properties": {
-          "response": {
-            "type": "string",
-            "description": "The customer support response"
-          },
-          "category": {
-            "type": "string",
-            "enum": ["account", "billing", "technical", "general"]
-          }
-        },
-        "required": ["response", "category"]
-      }
-    }
-  }
+  "promptingTechnique": "chain_of_thought"
 }
 ```
 
@@ -215,9 +195,14 @@ Array of output variable definitions with identifiers and types
 </AccordionGroup>
 
 ### Advanced Features
+<ResponseField name="promptingTechnique" type="object">
+Configuration for advanced prompting strategies
 
-<ResponseField name="promptingTechnique" type="string">
-Advanced prompting technique (e.g., chain_of_thought)
+The prompting strategy to use.
+  - `"few_shot"` - Few-shot learning with examples
+  - `"in_context"` - In-context learning approach  
+  - `"chain_of_thought"` - Chain-of-thought reasoning
+
 </ResponseField>
 
 <ResponseField name="demonstrations" type="object">
@@ -243,7 +228,3 @@ Few-shot examples with columns and rows structure
   }
 }
 ```
-
-<ResponseField name="responseFormat" type="object" required>
-Response format for the prompt
-</ResponseField>
