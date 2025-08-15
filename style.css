@@ -28,7 +28,7 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
 
 /* Sidebar navigation styling */
 #sidebar-content .lg\:text-sm {
-  font-size: 0.850rem !important;
+  font-size: 0.85rem !important;
 }
 
 #sidebar-content .lg\:leading-6 {
@@ -57,7 +57,7 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
 }
 
 #sidebar-content h5 {
-  font-size: 0.900rem !important;
+  font-size: 0.9rem !important;
 }
 
 #sidebar-content svg {
@@ -89,7 +89,7 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
 
 /* Override the inline transform style for rotation */
 #sidebar-content .duration-75 {
-  transform: none !important; 
+  transform: none !important;
 }
 
 /* Handle the rotation separately with a pseudo-element */
@@ -113,4 +113,10 @@ a[href="https://github.com/langwatch/langwatch"] .text-sm
 
 .line-highlight:after {
   background: rgb(85 215 153 / 0.2) !important;
+}
+
+/* Fixes code block overflow */
+code {
+  max-width: 100%;
+  overflow-x: auto;
 }
