@@ -118,7 +118,7 @@ This involves creating a custom `TracingProcessor` that intercepts trace data fr
 
 1.  **Initialize LangWatch**: Ensure `langwatch.setup()` is called in your application. This sets up LangWatch to receive OpenTelemetry data.
 2.  **Implement Your Custom `TracingProcessor`**: 
-    -   Following the `openai-agents` SDK documentation, create a class that implements their `TracingProcessor` interface (see their docs on [Custom Tracing Processors](https://openai.github.io/openai-agents-python/tracing/#custom-tracing-processors) and the API reference for [`TracingProcessor`](https://openai.github.io/openai-agents-python/api_reference/tracing/processor_interface/)).
+    -   Following the `openai-agents` SDK documentation, create a class that implements their `TracingProcessor` interface (see their docs on [Custom Tracing Processors](https://openai.github.io/openai-agents-python/tracing/#custom-tracing-processors) and the API reference for [`TracingProcessor`](https://openai.github.io/openai-agents-python/ref/tracing/#agents.tracing.TracingProcessor)).
     -   In your processor's methods (e.g., `on_span_start`, `on_span_end`), you will receive `Trace` and `Span` objects from the `openai-agents` SDK.
     -   You will then use the `opentelemetry-api` and `opentelemetry-sdk` (e.g., `opentelemetry.trace.get_tracer(__name__).start_span()`) to translate this information into OpenTelemetry spans, including their names, attributes, timings, and status. Consult the `openai-agents` documentation on [Traces and spans](https://openai.github.io/openai-agents-python/tracing/#traces-and-spans) for details on their data structures.
 3.  **Register Your Custom Processor**: Use `openai_agents.tracing.add_trace_processor(your_custom_processor)` or `openai_agents.tracing.set_trace_processors([your_custom_processor])` as per the `openai-agents` SDK documentation.
@@ -129,7 +129,7 @@ LangWatch does not provide a pre-built custom `TracingProcessor` for this purpos
 
 -   Key `openai-agents` documentation:
     -   [OpenAI Agents Tracing Documentation](https://openai.github.io/openai-agents-python/tracing/)
-    -   [API Reference for Tracing](https://openai.github.io/openai-agents-python/api_reference/tracing/)
+    -   [API Reference for Tracing](https://openai.github.io/openai-agents-python/ref/tracing/)
 
 <Warning>
 Implementing a custom `TracingProcessor` is an advanced task that requires:
