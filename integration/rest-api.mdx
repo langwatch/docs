@@ -92,7 +92,7 @@ EOF
 
 Replace the placeholders with your actual data. The `@-` tells `curl` to read the JSON data from the standard input, which we provide via the `EOF`-delimited here-document.
 
-For the type reference of how a `span` should look like, check out our [types definitions](https://github.com/langwatch/langwatch/blob/main/python-sdk/langwatch/types.py#L118).
+For the type reference of how a `span` should look like, check out our [types definitions](https://github.com/langwatch/langwatch/blob/main/python-sdk/src/langwatch/types.py).
 
 It's optional but highly recommended to pass the `user_id` on the metadata if you want to leverage user-specific analytics and the `thread_id` to group related traces together. To connect it to an event later on. Read more about those and other concepts [here](../concepts).
 
