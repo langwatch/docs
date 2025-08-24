@@ -327,9 +327,9 @@ const langwatch = new LangWatch({
   Access to trace management functionality.
 </ResponseField>
 
-### Prompt Management
+## Prompt Management
 
-#### `langwatch.prompts.get()`
+### `langwatch.prompts.get()`
 
 Retrieves a prompt from the LangWatch platform.
 
@@ -352,7 +352,7 @@ const prompt = await langwatch.prompts.get("prompt-id");
   Throws an error if the specified prompt version is not found.
 </ResponseField>
 
-#### `langwatch.prompts.create()`
+### `langwatch.prompts.create()`
 
 Creates a new prompt in the LangWatch platform.
 
@@ -376,7 +376,7 @@ const prompt = await langwatch.prompts.create({
   The newly created prompt object.
 </ResponseField>
 
-#### `langwatch.prompts.update()`
+### `langwatch.prompts.update()`
 
 Updates an existing prompt, creating a new version automatically.
 
@@ -406,7 +406,7 @@ const updatedPrompt = await langwatch.prompts.update("customer-support-bot", {
 Each update operation creates a new version of the prompt. Previous versions are preserved for version control and rollback purposes.
 </Warning>
 
-#### `langwatch.prompts.delete()`
+### `langwatch.prompts.delete()`
 
 Deletes a prompt and all its versions from the LangWatch platform.
 
@@ -675,9 +675,9 @@ A console-based logger with configurable log levels and prefixes.
 ```typescript
 import { logger } from "langwatch";
 
-const logger = new logger.ConsoleLogger({ 
-  level: "info", 
-  prefix: "MyApp" 
+const logger = new logger.ConsoleLogger({
+  level: "info",
+  prefix: "MyApp"
 });
 
 logger.info("Application started");
@@ -1104,7 +1104,7 @@ setupObservability({
   },
   dataCapture: (context) => {
     // Don't capture sensitive data in production
-    if (context.environment === "production" && 
+    if (context.environment === "production" &&
         context.operationName.includes("password")) {
       return "none";
     }

@@ -1,6 +1,6 @@
 ---
 title: Python SDK API Reference
-sidebarTitle: Reference 
+sidebarTitle: Reference
 description: LangWatch Python SDK API reference
 icon: terminal
 ---
@@ -595,10 +595,82 @@ with langwatch.span(name="MyDetailedSpan") as current_span:
     current_span.set_attributes({"otel_attribute": "value"})
 ```
 
+### Context Accessors
 
-### Prompt Management
+These functions allow you to access the currently active LangWatch trace or span from anywhere in your code, provided that a trace/span has been started (e.g., via `@langwatch.trace` or `@langwatch.span`).
 
-#### `langwatch.prompts.create()`
+#### `langwatch.get_current_trace()`
+
+Retrieves the currently active `LangWatchTrace` object.
+
+This is useful if you need to interact with the trace object directly, for example, to add trace-level metadata or evaluations from a helper function called within an active trace.
+
+```python
+import langwatch
+
+langwatch.setup()
+
+def some_utility_function(detail: str):
+    current_trace = langwatch.get_current_trace()
+    if current_trace:
+        current_trace.update(metadata={"utility_info": detail})
+
+@langwatch.trace(name="MainOperation")
+def main_operation():
+    # ... some work ...
+    some_utility_function("Processed step A")
+    # ... more work ...
+
+main_operation()
+```
+
+<ParamField path="suppress_warning" type="bool" default="False">
+  If `True`, suppresses the warning that is normally emitted if this function is called when no LangWatch trace is currently in context.
+</ParamField>
+
+<ResponseField name="trace" type="LangWatchTrace">
+  The current `LangWatchTrace` object. If no trace is active and `suppress_warning` is `False`, a warning is issued and a new (detached) `LangWatchTrace` instance might be returned.
+</ResponseField>
+
+#### `langwatch.get_current_span()`
+
+Retrieves the currently active `LangWatchSpan` object.
+
+This allows you to get a reference to the current span to update its attributes, add events, or record information specific to that span from nested function calls.
+If no LangWatch-specific span is in context, it will attempt to wrap the current OpenTelemetry span.
+
+```python
+import langwatch
+
+langwatch.setup()
+
+def enrich_span_data(key: str, value: any):
+    current_span = langwatch.get_current_span()
+    if current_span:
+        current_span.update(**{key: value})
+        # Or using the older set_attributes for OpenTelemetry compatible attributes
+        # current_span.set_attributes({key: value})
+
+@langwatch.trace(name="UserFlow")
+def user_flow():
+    with langwatch.span(name="Step1") as span1:
+        # ... step 1 logic ...
+        enrich_span_data("step1_result", "success")
+
+    with langwatch.span(name="Step2") as span2:
+        # ... step 2 logic ...
+        enrich_span_data("step2_details", {"info": "more data"})
+
+user_flow()
+```
+
+<ResponseField name="span" type="LangWatchSpan">
+  The current `LangWatchSpan` object. This could be a span initiated by `@langwatch.span`, the root span of a `@langwatch.trace`, or a `LangWatchSpan` wrapping an existing OpenTelemetry span if no LangWatch span is directly in context.
+</ResponseField>
+
+## Prompt Management
+
+### `langwatch.prompts.create()`
 
 Creates a new prompt in the LangWatch platform.
 
@@ -648,7 +720,7 @@ prompt = langwatch.prompts.create(
   The newly created prompt object.
 </ResponseField>
 
-#### `langwatch.prompts.get()`
+### `langwatch.prompts.get()`
 
 Retrieves a prompt from the LangWatch platform using its handle.
 
@@ -671,7 +743,7 @@ prompt = langwatch.prompts.get("customer-support-bot")
   Throws an error if the specified prompt is not found.
 </ResponseField>
 
-#### `langwatch.prompts.update()`
+### `langwatch.prompts.update()`
 
 Updates an existing prompt, creating a new version automatically.
 
@@ -718,7 +790,7 @@ updated_prompt = langwatch.prompts.update(
 Each update operation creates a new version of the prompt. Previous versions are preserved for version control and rollback purposes.
 </Warning>
 
-#### `langwatch.prompts.delete()`
+### `langwatch.prompts.delete()`
 
 Deletes a prompt and all its versions from the LangWatch platform.
 
@@ -769,7 +841,7 @@ compiled_prompt = prompt.compile(
 Lenient compilation will not throw errors for missing variables, making it suitable for dynamic content where some variables may be optional.
 </Info>
 
-#### `prompt.compile_strict()`
+##### `prompt.compile_strict()`
 
 Compiles a prompt template with strict variable validation, throwing an error if any required variables are missing.
 
@@ -798,79 +870,6 @@ compiled_prompt = prompt.compile_strict(
 <Warning>
 Strict compilation will throw a `PromptCompilationError` if any template variables are missing, ensuring all required data is provided.
 </Warning>
-
-## Context Accessors
-
-These functions allow you to access the currently active LangWatch trace or span from anywhere in your code, provided that a trace/span has been started (e.g., via `@langwatch.trace` or `@langwatch.span`).
-
-### `langwatch.get_current_trace()`
-
-Retrieves the currently active `LangWatchTrace` object.
-
-This is useful if you need to interact with the trace object directly, for example, to add trace-level metadata or evaluations from a helper function called within an active trace.
-
-```python
-import langwatch
-
-langwatch.setup()
-
-def some_utility_function(detail: str):
-    current_trace = langwatch.get_current_trace()
-    if current_trace:
-        current_trace.update(metadata={"utility_info": detail})
-
-@langwatch.trace(name="MainOperation")
-def main_operation():
-    # ... some work ...
-    some_utility_function("Processed step A")
-    # ... more work ...
-
-main_operation()
-```
-
-<ParamField path="suppress_warning" type="bool" default="False">
-  If `True`, suppresses the warning that is normally emitted if this function is called when no LangWatch trace is currently in context.
-</ParamField>
-
-<ResponseField name="trace" type="LangWatchTrace">
-  The current `LangWatchTrace` object. If no trace is active and `suppress_warning` is `False`, a warning is issued and a new (detached) `LangWatchTrace` instance might be returned.
-</ResponseField>
-
-### `langwatch.get_current_span()`
-
-Retrieves the currently active `LangWatchSpan` object.
-
-This allows you to get a reference to the current span to update its attributes, add events, or record information specific to that span from nested function calls.
-If no LangWatch-specific span is in context, it will attempt to wrap the current OpenTelemetry span.
-
-```python
-import langwatch
-
-langwatch.setup()
-
-def enrich_span_data(key: str, value: any):
-    current_span = langwatch.get_current_span()
-    if current_span:
-        current_span.update(**{key: value})
-        # Or using the older set_attributes for OpenTelemetry compatible attributes
-        # current_span.set_attributes({key: value})
-
-@langwatch.trace(name="UserFlow")
-def user_flow():
-    with langwatch.span(name="Step1") as span1:
-        # ... step 1 logic ...
-        enrich_span_data("step1_result", "success")
-
-    with langwatch.span(name="Step2") as span2:
-        # ... step 2 logic ...
-        enrich_span_data("step2_details", {"info": "more data"})
-
-user_flow()
-```
-
-<ResponseField name="span" type="LangWatchSpan">
-  The current `LangWatchSpan` object. This could be a span initiated by `@langwatch.span`, the root span of a `@langwatch.trace`, or a `LangWatchSpan` wrapping an existing OpenTelemetry span if no LangWatch span is directly in context.
-</ResponseField>
 
 ## Core Data Types
 
@@ -1136,7 +1135,7 @@ Represents a prompt configuration that can be used with OpenAI's API. Handles fo
 
 <ParamField path="compile" type="Callable">
   Compiles the prompt template with provided variables using lenient compilation.
-  
+
   ```python
   compiled = prompt.compile(variables={"name": "Alice"})
   # or
@@ -1146,7 +1145,7 @@ Represents a prompt configuration that can be used with OpenAI's API. Handles fo
 
 <ParamField path="compile_strict" type="Callable">
   Compiles with strict validation, throwing error if required variables are missing.
-  
+
   ```python
   compiled = prompt.compile_strict(variables={"name": "Alice", "topic": "weather"})
   ```

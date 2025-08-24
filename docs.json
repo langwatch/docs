@@ -326,23 +326,13 @@
               {
                 "group": "Features",
                 "pages": [
-                  {
-                    "group": "Essential",
-                    "pages": [
-                      "prompt-management/features/essential/version-control",
-                      "prompt-management/features/essential/analytics",
-                      "prompt-management/features/essential/github-integration"
-                    ]
-                  },
-                  {
-                    "group": "Advanced",
-                    "pages": [
-                      "prompt-management/features/advanced/link-to-traces",
-                      "prompt-management/features/advanced/optimization-studio",
-                      "prompt-management/features/advanced/guaranteed-availability",
-                      "prompt-management/features/advanced/a-b-testing"
-                    ]
-                  }
+                  "prompt-management/features/essential/version-control",
+                  "prompt-management/features/essential/analytics",
+                  "prompt-management/features/essential/github-integration",
+                  "prompt-management/features/advanced/link-to-traces",
+                  "prompt-management/features/advanced/optimization-studio",
+                  "prompt-management/features/advanced/guaranteed-availability",
+                  "prompt-management/features/advanced/a-b-testing"
                 ]
               }
             ]
