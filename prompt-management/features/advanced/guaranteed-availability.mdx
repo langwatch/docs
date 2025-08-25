@@ -208,7 +208,7 @@ Include these files in your deployment package:
 ### 3. Deploy to Air-Gapped Environment
 
 The application will run entirely offline, using only materialized prompts. No LangWatch API access required.
-
+{/*
 ## Advanced Fetch Policies (Future Feature)
 
 <Note>
@@ -286,13 +286,13 @@ The application will run entirely offline, using only materialized prompts. No L
 | `MATERIALIZED_FIRST` | Use local file if available, otherwise fetch from API | Default behavior, best for most applications     |
 | `ALWAYS_FETCH`       | Always try API first, fall back to materialized       | Live updates with offline fallback               |
 | `CACHE_TTL`          | Fetch every X minutes, use materialized between       | Hot deployments with controlled update frequency |
-| `MATERIALIZED_ONLY`  | Never fetch, use materialized files only              | Air-gapped or strict offline environments        |
+| `MATERIALIZED_ONLY`  | Never fetch, use materialized files only              | Air-gapped or strict offline environments        | */}
 
 ## CI/CD Integration
 
 Integrate prompt materialization into your deployment pipeline:
 
-````yaml .github/workflows/deploy.yml
+```yaml .github/workflows/deploy.yml
 name: Deploy with Prompts
 
 jobs:
@@ -321,5 +321,4 @@ jobs:
         run: |
           # Deploy application including prompts/.materialized/
           # Your deployment commands here
-``` */}
-````
+```

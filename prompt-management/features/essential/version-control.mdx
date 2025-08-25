@@ -97,7 +97,7 @@ curl --request POST \
     "prompt": "Updated prompt text...",
     "model": "openai/gpt-5",
     "commitMessage": "Improved customer support prompt",
-    
+
     "temperature": 0.7,
     "maxTokens": 1000,
     "responseFormat": {"type": "text"},
@@ -143,7 +143,7 @@ Create new prompts with templates and variables:
        scope: "PROJECT",                                  // Required
        prompt: "You are a helpful customer support agent. Help with: {{input}}", // Required
        model: "openai/gpt-4o-mini",                      // Required
-       
+
        // Optional fields:
        temperature: 0.7,                                  // Optional: Model temperature (0.0-2.0)
        maxTokens: 1000,                                   // Optional: Maximum tokens to generate
@@ -163,7 +163,7 @@ Create new prompts with templates and variables:
          scope="PROJECT",                                  # Required
          prompt="You are a helpful customer support agent. Help with: {{input}}", # Required
          model="openai/gpt-4o-mini",                      # Required
-         
+
          # Optional fields:
          temperature=0.7,                                  # Optional: Model temperature (0.0-2.0)
          max_tokens=1000,                                  # Optional: Maximum tokens to generate
@@ -284,14 +284,7 @@ Beyond basic prompt creation, LangWatch provides powerful features for optimizin
 - **Custom Schemas**: Define exact output structures for integration with your systems
 
 ### Few-Shot Learning
-- **Demonstrations**: Provide example input/output pairs to improve response quality
-- **Pattern Recognition**: Help the model understand your expected output format
-- **Consistency**: Ensure similar inputs produce similar, reliable outputs
-
-### Advanced Prompting Techniques
-- **Chain-of-Thought**: Enable step-by-step reasoning with `promptingTechnique: "chain_of_thought"`
-- **Self-Consistency**: Generate multiple responses and select the best one
-- **Tree-of-Thoughts**: Explore multiple reasoning paths for complex problems
+- **Demonstrations**: Use the `demonstrations` field to provide example input/output pairs to improve response quality
 
 ### Input/Output Validation
 - **Type Safety**: Define expected input types (`str`, `float`, `bool`, `list[str]`, etc.)
@@ -304,7 +297,7 @@ Beyond basic prompt creation, LangWatch provides powerful features for optimizin
 - **Model Selection**: Choose the best model for your specific use case
 
 <Tip>
-These advanced features are particularly powerful when combined with LangWatch's optimization studio, 
+These advanced features are particularly powerful when combined with LangWatch's optimization studio,
 where you can A/B test different configurations and measure their impact on performance metrics.
 </Tip>
 
@@ -318,36 +311,24 @@ The optimization studio leverages these advanced prompt capabilities to help you
 - **Version Management**: Track which configurations perform best over time
 - **Team Collaboration**: Share optimized prompts across your organization
 
-<Card title="Explore Optimization Studio" icon="chart" href="/optimization-studio/overview">
+<Card title="Explore Optimization Studio" icon="rocket" href="/optimization-studio/overview">
 Learn how to use advanced prompt features to improve your AI application performance.
 </Card>
-
-### Scope Considerations
-
-- **PROJECT scope** - Safe for frequent updates, no conflict risk
-- **ORGANIZATION scope** - Use with caution, may require conflict resolution
-- **Scope changes** - Changing scope can affect access patterns and conflict resolution
-
-### Version Limitations
-
-- **No version deletion** - Individual versions cannot be deleted
-- **Automatic versioning** - Every update creates a new version
-- **Version history** - All versions are preserved for rollback
 
 ## Version History
 
 <Frame>
   <img
     className="block"
-    src="/images/prompts/view-version-history.png"
+    src="/images/prompts/version-history.png"
     alt="Prompt version history showing multiple versions with timestamps"
   />
 </Frame>
 
 - **Version List**: See all versions with timestamps and commit messages
-- **Diff View**: Compare changes between versions
 - **Rollback**: Easily revert to previous versions
-- **Branching**: Create experimental versions without affecting production
+{/* TODO: - **Diff View**: Compare changes between versions */}
+{/* TODO: - **Branching**: Create experimental versions without affecting production */}
 
 ---
 
