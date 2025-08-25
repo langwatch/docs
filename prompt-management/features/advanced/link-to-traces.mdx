@@ -19,38 +19,39 @@ For more information about traces and spans, see the [Concepts](/concepts) guide
 
 ## How to Link Prompts to Traces
 
-When you use `getPrompt()` within a trace context, LangWatch automatically links the prompt to the trace:
+When you use `langwatch.prompts.get()` within a trace context, LangWatch automatically links the prompt to the trace:
 
 <Tabs>
 <Tab title="Python SDK">
 
 ```python
 import langwatch
-from openai import OpenAI
+from litellm import completion
 
 # Initialize LangWatch
 langwatch.setup()
 
 @langwatch.trace()
 def customer_support_generation():
-    # Get prompt (automatically linked to trace when API key is present)
-    prompt = langwatch.prompt.get_prompt("customer-support-bot")
+    # Autotrack LiteLLM calls
+    langwatch.get_current_trace().autotrack_litellm_calls(litellm)
 
-    # Format messages with variables
-    messages = prompt.format_messages(
+    # Get prompt (automatically linked to trace when API key is present)
+    prompt = langwatch.prompts.get("customer-support-bot")
+
+    # Compile prompt with variables
+    compiled_prompt = prompt.compile(
         user_name="John Doe",
         user_email="john.doe@example.com",
         input="I need help with my account"
     )
 
-    # Use with OpenAI client
-    client = OpenAI()
-    completion = client.chat.completions.create(
-        model=prompt.model.split("openai/")[1],
-        messages=messages
+    response = completion(
+        model=prompt.model,
+        messages=compiled_prompt.messages
     )
 
-    return completion.choices[0].message.content
+    return response.choices[0].message.content
 
 # Call the function
 result = customer_support_generation()
@@ -60,32 +61,38 @@ result = customer_support_generation()
 <Tab title="TypeScript SDK">
 
 ```typescript
-import { getPrompt, setupLangWatch } from "langwatch";
+import { LangWatch, getLangWatchTracer } from "langwatch";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
-// Initialize LangWatch for tracing and instrumentation
-await setupLangWatch();
+// Initialize LangWatch client
+const langwatch = new LangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY,
+});
+
+const tracer = getLangWatchTracer("customer-support");
 
 async function customerSupportGeneration() {
-  // Get prompt (automatically linked to trace when API key is present)
-  const prompt = await getPrompt("customer-support-bot");
+  return tracer.withActiveSpan("customer-support-generation", async () => {
+    // Get prompt (automatically linked to trace when API key is present)
+    const prompt = await langwatch.prompts.get("customer-support-bot");
 
-  // Compile prompt with variables - you can pass variables as the second argument
-  const compiledPrompt = prompt.compile({
-    user_name: "John Doe",
-    user_email: "john.doe@example.com",
-    input: "I need help with my account",
+    // Compile prompt with variables
+    const compiledPrompt = prompt.compile({
+      user_name: "John Doe",
+      user_email: "john.doe@example.com",
+      input: "I need help with my account",
+    });
+
+    // Use with AI SDK (native instrumentation support)
+    const result = await generateText({
+      model: openai(prompt.model.replace("openai/", "")),
+      messages: compiledPrompt.messages,
+      experimental_telemetry: { isEnabled: true },
+    });
+
+    return result.text;
   });
-
-  // Use with AI SDK (native instrumentation support)
-  const result = await generateText({
-    model: openai(prompt.model.replace("openai/", "")),
-    messages: compiledPrompt.messages,
-    experimental_telemetry: { isEnabled: true },
-  });
-
-  return result.text;
 }
 
 // Call the function

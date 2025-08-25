@@ -1,6 +1,6 @@
 ---
 title: Python SDK API Reference
-sidebarTitle: Reference 
+sidebarTitle: Reference
 description: LangWatch Python SDK API reference
 icon: terminal
 ---
@@ -595,11 +595,11 @@ with langwatch.span(name="MyDetailedSpan") as current_span:
     current_span.set_attributes({"otel_attribute": "value"})
 ```
 
-## Context Accessors
+### Context Accessors
 
 These functions allow you to access the currently active LangWatch trace or span from anywhere in your code, provided that a trace/span has been started (e.g., via `@langwatch.trace` or `@langwatch.span`).
 
-### `langwatch.get_current_trace()`
+#### `langwatch.get_current_trace()`
 
 Retrieves the currently active `LangWatchTrace` object.
 
@@ -632,7 +632,7 @@ main_operation()
   The current `LangWatchTrace` object. If no trace is active and `suppress_warning` is `False`, a warning is issued and a new (detached) `LangWatchTrace` instance might be returned.
 </ResponseField>
 
-### `langwatch.get_current_span()`
+#### `langwatch.get_current_span()`
 
 Retrieves the currently active `LangWatchSpan` object.
 
@@ -667,6 +667,209 @@ user_flow()
 <ResponseField name="span" type="LangWatchSpan">
   The current `LangWatchSpan` object. This could be a span initiated by `@langwatch.span`, the root span of a `@langwatch.trace`, or a `LangWatchSpan` wrapping an existing OpenTelemetry span if no LangWatch span is directly in context.
 </ResponseField>
+
+## Prompt Management
+
+### `langwatch.prompts.create()`
+
+Creates a new prompt in the LangWatch platform.
+
+```python
+# Create a basic prompt
+prompt = langwatch.prompts.create(
+    handle="customer-support-bot",
+    scope="PROJECT",
+    prompt="You are a helpful customer support assistant.",
+    messages=[{"role": "user", "content": "{{question}}"}],
+    inputs=[{"identifier": "question", "type": "str"}],
+    outputs=[{"identifier": "answer", "type": "str", "json_schema": {"type": "str"}}]
+)
+```
+
+<ParamField path="handle" type="str" required>
+  The unique identifier (handle) for the prompt.
+</ParamField>
+
+<ParamField path="scope" type="str" required>
+  The scope of the prompt. Must be either `"ORGANIZATION"` or `"PROJECT"`.
+</ParamField>
+
+<ParamField path="prompt" type="Optional[str]">
+  The prompt text template. Cannot be used simultaneously with `messages`.
+</ParamField>
+
+<ParamField path="messages" type="Optional[List[Dict[str, str]]]">
+  A list of message objects defining the conversation structure. Cannot be used simultaneously with `prompt`.
+</ParamField>
+
+<ParamField path="inputs" type="Optional[List[Dict[str, Any]]]">
+  List of input definitions with identifier, type, and optional JSON schema.
+</ParamField>
+
+<ParamField path="outputs" type="Optional[List[Dict[str, Any]]]">
+  List of output definitions with identifier, type, and optional JSON schema.
+</ParamField>
+
+<ParamField path="author_id" type="Optional[str]">
+  The ID of the author creating the prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The newly created prompt object.
+</ResponseField>
+
+### `langwatch.prompts.get()`
+
+Retrieves a prompt from the LangWatch platform using its handle.
+
+```python
+# Get a prompt by handle
+prompt = langwatch.prompts.get("customer-support-bot")
+```
+
+<ParamField path="handle" type="str" required>
+  The handle (identifier) of the prompt to retrieve.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The prompt object.
+</ResponseField>
+
+<ResponseField name="error" type="Error">
+  Throws an error if the specified prompt is not found.
+</ResponseField>
+
+### `langwatch.prompts.update()`
+
+Updates an existing prompt, creating a new version automatically.
+
+```python
+# Update prompt content
+updated_prompt = langwatch.prompts.update(
+    "customer-support-bot",
+    prompt="You are a helpful and friendly customer support assistant.",
+    scope="PROJECT"
+)
+```
+
+<ParamField path="handle" type="str" required>
+  The handle (identifier) of the prompt to update.
+</ParamField>
+
+<ParamField path="scope" type="Optional[str]">
+  The new scope for the prompt. Must be either `"ORGANIZATION"` or `"PROJECT"`.
+</ParamField>
+
+<ParamField path="prompt" type="Optional[str]">
+  The updated prompt text template.
+</ParamField>
+
+<ParamField path="messages" type="Optional[List[Dict[str, str]]]">
+  Updated list of message objects.
+</ParamField>
+
+<ParamField path="inputs" type="Optional[List[Dict[str, Any]]]">
+  Updated list of input definitions.
+</ParamField>
+
+<ParamField path="outputs" type="Optional[List[Dict[str, Any]]]">
+  Updated list of output definitions.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The updated prompt object (new version).
+</ResponseField>
+
+<Warning>
+Each update operation creates a new version of the prompt. Previous versions are preserved for version control and rollback purposes.
+</Warning>
+
+### `langwatch.prompts.delete()`
+
+Deletes a prompt and all its versions from the LangWatch platform.
+
+```python
+# Delete a prompt
+result = langwatch.prompts.delete("customer-support-bot")
+```
+
+<ParamField path="handle" type="str" required>
+  The handle (identifier) of the prompt to delete.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="result" type="DeletePromptResult">
+  Confirmation of the deletion operation.
+</ResponseField>
+
+<Warning>
+This action is irreversible and will permanently remove the prompt and all its versions.
+</Warning>
+
+### Prompt Compilation
+
+#### `prompt.compile()`
+
+Compiles a prompt template with provided variables, using lenient compilation that handles missing variables gracefully.
+
+```python
+# Compile a prompt with variables
+compiled_prompt = prompt.compile(
+    question="What is the capital of France?",
+    subject="geography"
+)
+```
+
+<ParamField path="variables" type="Dict[str, Any]" required>
+  Variables to substitute into the prompt template.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="compiled_prompt" type="CompiledPrompt">
+  The compiled prompt with resolved variables and messages.
+</ResponseField>
+
+<Info>
+Lenient compilation will not throw errors for missing variables, making it suitable for dynamic content where some variables may be optional.
+</Info>
+
+##### `prompt.compile_strict()`
+
+Compiles a prompt template with strict variable validation, throwing an error if any required variables are missing.
+
+```python
+# Strict compilation with all required variables
+compiled_prompt = prompt.compile_strict(
+    subject="quantum computing",
+    question="How does it work in 10 words or less?"
+)
+```
+
+<ParamField path="variables" type="Dict[str, Any]" required>
+  Variables to substitute into the prompt template. All template variables must be provided.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="compiled_prompt" type="CompiledPrompt">
+  The compiled prompt with resolved variables and messages.
+</ResponseField>
+
+<ResponseField name="error" type="PromptCompilationError">
+  Throws an error if any template variables are missing or invalid.
+</ResponseField>
+
+<Warning>
+Strict compilation will throw a `PromptCompilationError` if any template variables are missing, ensuring all required data is provided.
+</Warning>
 
 ## Core Data Types
 
@@ -876,6 +1079,148 @@ Examples include:
   A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse.
 </ResponseField>
 
-### `TraceMetadata`
+### `Prompt`
 
-A dictionary (`
+Represents a prompt configuration that can be used with OpenAI's API. Handles formatting messages with variables using Liquid templating.
+
+<ResponseField name="id" type="str">
+  Unique identifier for the prompt.
+</ResponseField>
+
+<ResponseField name="handle" type="str">
+  The handle (identifier) of the prompt.
+</ResponseField>
+
+<ResponseField name="version" type="str">
+  Version string of the prompt.
+</ResponseField>
+
+<ResponseField name="version_id" type="str">
+  Unique identifier for this specific version.
+</ResponseField>
+
+<ResponseField name="prompt" type="Optional[str]">
+  The prompt text template.
+</ResponseField>
+
+<ResponseField name="messages" type="Optional[List[MessageDict]]">
+  List of message objects defining the conversation structure.
+</ResponseField>
+
+<ResponseField name="inputs" type="Optional[List[Dict[str, Any]]]">
+  List of input definitions with identifier, type, and optional JSON schema.
+</ResponseField>
+
+<ResponseField name="outputs" type="Optional[List[Dict[str, Any]]]">
+  List of output definitions with identifier, type, and optional JSON schema.
+</ResponseField>
+
+<ResponseField name="scope" type="str">
+  The scope of the prompt (`"ORGANIZATION"` or `"PROJECT"`).
+</ResponseField>
+
+<ResponseField name="author_id" type="Optional[str]">
+  The ID of the author who created the prompt.
+</ResponseField>
+
+<ResponseField name="raw" type="Any">
+  Get the raw prompt data from the API.
+</ResponseField>
+
+<ResponseField name="version_number" type="int">
+  Returns the version number of the prompt as an integer.
+</ResponseField>
+
+#### Methods
+
+<ParamField path="compile" type="Callable">
+  Compiles the prompt template with provided variables using lenient compilation.
+
+  ```python
+  compiled = prompt.compile(variables={"name": "Alice"})
+  # or
+  compiled = prompt.compile(name="Alice")
+  ```
+</ParamField>
+
+<ParamField path="compile_strict" type="Callable">
+  Compiles with strict validation, throwing error if required variables are missing.
+
+  ```python
+  compiled = prompt.compile_strict(variables={"name": "Alice", "topic": "weather"})
+  ```
+</ParamField>
+
+### `CompiledPrompt`
+
+Represents a compiled prompt with resolved variables and compiled content.
+
+<ResponseField name="original" type="Prompt">
+  Reference to the original prompt object.
+</ResponseField>
+
+<ResponseField name="prompt" type="str">
+  The compiled prompt text with variables resolved.
+</ResponseField>
+
+<ResponseField name="variables" type="TemplateVariables">
+  The original compilation variables used.
+</ResponseField>
+
+<ResponseField name="messages" type="List[ChatCompletionMessageParam]">
+  Compiled messages as a list of ChatCompletionMessageParam objects, ready for OpenAI API.
+</ResponseField>
+
+<ResponseField name="id" type="str">
+  Inherited from original prompt - unique identifier.
+</ResponseField>
+
+<ResponseField name="version" type="str">
+  Inherited from original prompt - version string.
+</ResponseField>
+
+<ResponseField name="version_id" type="str">
+  Inherited from original prompt - version identifier.
+</ResponseField>
+
+### `TemplateVariables`
+
+Type alias for template variables supporting common data types.
+
+```python
+TemplateVariables = Dict[
+    str, Union[str, int, float, bool, Dict[str, Any], List[Any], None]
+]
+```
+
+### `MessageDict`
+
+Represents a single message in the conversation structure.
+
+<ResponseField name="role" type="str">
+  The role of the message sender (e.g., "user", "assistant", "system").
+</ResponseField>
+
+<ResponseField name="content" type="str">
+  The textual content of the message.
+</ResponseField>
+
+### `PromptCompilationError`
+
+Exception raised when prompt template compilation fails.
+
+<ResponseField name="message" type="str">
+  Human-readable error message describing the compilation failure.
+</ResponseField>
+
+<ResponseField name="template" type="str">
+  The template string that failed to compile.
+</ResponseField>
+
+<ResponseField name="original_error" type="Optional[Exception]">
+  The underlying exception that caused the compilation failure.
+</ResponseField>
+
+<ResponseField name="name" type="str">
+  Always set to "PromptCompilationError".
+</ResponseField>

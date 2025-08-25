@@ -327,75 +327,166 @@ const langwatch = new LangWatch({
   Access to trace management functionality.
 </ResponseField>
 
-### Prompt Management
+## Prompt Management
 
-#### `langwatch.prompts.get()`
+### `langwatch.prompts.get()`
 
 Retrieves a prompt from the LangWatch platform.
 
 ```typescript
 // Get a prompt without variables
 const prompt = await langwatch.prompts.get("prompt-id");
-
-// Get a prompt with variables (returns compiled prompt)
-const compiledPrompt = await langwatch.prompts.get("prompt-id", {
-  user_name: "John",
-  product_name: "LangWatch"
-});
 ```
 
 <ParamField path="id" type="string" required>
   The ID of the prompt to retrieve.
 </ParamField>
 
-<ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
-  Template variables to compile the prompt with. If provided, returns a compiled prompt.
-</ParamField>
-
 **Returns**
 
-<ResponseField name="prompt" type="Prompt | CompiledPrompt">
+<ResponseField name="prompt" type="Prompt">
   The prompt or compiled prompt object.
 </ResponseField>
-
-#### `langwatch.prompts.getVersion()`
-
-Retrieves a specific version of a prompt from the LangWatch platform.
-
-```typescript
-// Get a prompt version without variables
-const promptVersion = await langwatch.prompts.getVersion("prompt-id", "version-id");
-
-// Get a prompt version with variables (returns compiled prompt)
-const compiledPromptVersion = await langwatch.prompts.getVersion("prompt-id", "version-id", {
-  user_name: "John",
-  product_name: "LangWatch"
-});
-```
-
-<ParamField path="id" type="string" required>
-  The ID of the prompt to retrieve.
-</ParamField>
-
-<ParamField path="versionId" type="string" required>
-  The ID of the specific version to retrieve.
-</ParamField>
-
-<ParamField path="variables" type="Optional<TemplateVariables>" default="undefined">
-  Template variables to compile the prompt with. If provided, returns a compiled prompt.
-</ParamField>
-
-**Returns**
-
-<ResponseField name="prompt" type="Prompt | CompiledPrompt">
-  The prompt version or compiled prompt object.
-</ResponseField>
-
-**Throws**
 
 <ResponseField name="error" type="Error">
   Throws an error if the specified prompt version is not found.
 </ResponseField>
+
+### `langwatch.prompts.create()`
+
+Creates a new prompt in the LangWatch platform.
+
+```typescript
+// Create a basic prompt
+const prompt = await langwatch.prompts.create({
+  handle: "customer-support-bot",
+  name: "Customer Support Bot",
+  prompt: "You are a helpful customer support assistant.",
+  // ... any other prompt properties
+});
+```
+
+<ParamField path="options" type="CreatePromptOptions" required>
+  Configuration options for creating the prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The newly created prompt object.
+</ResponseField>
+
+### `langwatch.prompts.update()`
+
+Updates an existing prompt, creating a new version automatically.
+
+```typescript
+// Update prompt content
+const updatedPrompt = await langwatch.prompts.update("customer-support-bot", {
+  prompt: "You are a helpful and friendly customer support assistant.",
+  // ... any other prompt properties
+});
+```
+
+<ParamField path="handle" type="string" required>
+  The handle (identifier) of the prompt to update.
+</ParamField>
+
+<ParamField path="options" type="UpdatePromptOptions" required>
+  Configuration options for updating the prompt.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="prompt" type="Prompt">
+  The updated prompt object (new version).
+</ResponseField>
+
+<Warning>
+Each update operation creates a new version of the prompt. Previous versions are preserved for version control and rollback purposes.
+</Warning>
+
+### `langwatch.prompts.delete()`
+
+Deletes a prompt and all its versions from the LangWatch platform.
+
+```typescript
+// Delete a prompt
+const result = await langwatch.prompts.delete("customer-support-bot");
+```
+
+<ParamField path="handle" type="string" required>
+  The handle (identifier) of the prompt to delete.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="result" type="DeletePromptResult">
+  Confirmation of the deletion operation.
+</ResponseField>
+
+<Warning>
+This action is irreversible and will permanently remove the prompt and all its versions.
+</Warning>
+
+### Prompt Compilation
+
+#### `prompt.compile()`
+
+Compiles a prompt template with provided variables, using lenient compilation that handles missing variables gracefully.
+
+```typescript
+// Compile a prompt with variables
+const compiledPrompt = prompt.compile({
+  name: "Alice",
+  topic: "weather"
+});
+
+```
+
+<ParamField path="variables" type="Record<string, any>" required>
+  Variables to substitute into the prompt template.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="compiledPrompt" type="CompiledPrompt">
+  The compiled prompt with resolved variables and messages.
+</ResponseField>
+
+<Info>
+Lenient compilation will not throw errors for missing variables, making it suitable for dynamic content where some variables may be optional.
+</Info>
+
+#### `prompt.compileStrict()`
+
+Compiles a prompt template with strict variable validation, throwing an error if any required variables are missing.
+
+```typescript
+// Strict compilation with all required variables
+const compiledPrompt = prompt.compileStrict({
+  name: "Alice",
+  topic: "weather"
+});
+```
+
+<ParamField path="variables" type="Record<string, any>" required>
+  Variables to substitute into the prompt template. All template variables must be provided.
+</ParamField>
+
+**Returns**
+
+<ResponseField name="compiledPrompt" type="CompiledPrompt">
+  The compiled prompt with resolved variables and messages.
+</ResponseField>
+
+<ResponseField name="error" type="PromptCompilationError">
+  Throws an error if any template variables are missing or invalid.
+</ResponseField>
+
+<Warning>
+Strict compilation will throw a `PromptCompilationError` if any template variables are missing, ensuring all required data is provided.
+</Warning>
 
 ## Processors
 
@@ -584,9 +675,9 @@ A console-based logger with configurable log levels and prefixes.
 ```typescript
 import { logger } from "langwatch";
 
-const logger = new logger.ConsoleLogger({ 
-  level: "info", 
-  prefix: "MyApp" 
+const logger = new logger.ConsoleLogger({
+  level: "info",
+  prefix: "MyApp"
 });
 
 logger.info("Application started");
@@ -727,12 +818,38 @@ Defines a rule to filter out spans before they are exported to LangWatch.
   The operation to use for matching.
 </ResponseField>
 
+### `PromptResponse`
+
+The raw prompt response type extracted from the OpenAPI schema.
+
+```typescript
+type PromptResponse = NonNullable<
+  paths["/api/prompts/{id}"]["get"]["responses"]["200"]["content"]["application/json"]
+>;
+```
+
 ### `Prompt`
 
-A prompt object retrieved from the LangWatch platform.
+A prompt object retrieved from the LangWatch platform with compilation capabilities.
 
 <ResponseField name="id" type="string">
   Unique identifier for the prompt.
+</ResponseField>
+
+<ResponseField name="projectId" type="string">
+  Project identifier the prompt belongs to.
+</ResponseField>
+
+<ResponseField name="organizationId" type="string">
+  Organization identifier the prompt belongs to.
+</ResponseField>
+
+<ResponseField name="handle" type="string | null">
+  Optional handle/slug for the prompt.
+</ResponseField>
+
+<ResponseField name="scope" type="'ORGANIZATION' | 'PROJECT'">
+  Scope of the prompt - either organization-wide or project-specific.
 </ResponseField>
 
 <ResponseField name="name" type="string">
@@ -751,10 +868,6 @@ A prompt object retrieved from the LangWatch platform.
   Version identifier.
 </ResponseField>
 
-<ResponseField name="versionCreatedAt" type="string">
-  Version creation timestamp.
-</ResponseField>
-
 <ResponseField name="model" type="string">
   Model used for the prompt.
 </ResponseField>
@@ -767,20 +880,32 @@ A prompt object retrieved from the LangWatch platform.
   Array of message objects.
 </ResponseField>
 
-<ResponseField name="response_format" type="Optional<object>">
+<ResponseField name="responseFormat" type="object">
   Response format configuration.
+</ResponseField>
+
+<ResponseField name="authorId" type="string | null">
+  ID of the prompt author.
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Creation timestamp.
+</ResponseField>
+
+<ResponseField name="inputs" type="Array">
+  Input definitions for the prompt.
+</ResponseField>
+
+<ResponseField name="outputs" type="Array">
+  Output definitions for the prompt.
 </ResponseField>
 
 ### `CompiledPrompt`
 
-A compiled prompt with variables substituted.
-
-<ResponseField name="content" type="string">
-  The compiled prompt content with variables substituted.
-</ResponseField>
+A compiled prompt that extends Prompt with reference to the original template.
 
 <ResponseField name="original" type="Prompt">
-  The original prompt object.
+  The original prompt object before compilation.
 </ResponseField>
 
 ### `TemplateVariables`
@@ -799,7 +924,7 @@ Error thrown when prompt compilation fails.
   The template that failed to compile.
 </ResponseField>
 
-<ResponseField name="originalError" type="Optional<any>">
+<ResponseField name="originalError" type="any">
   The original compilation error.
 </ResponseField>
 
@@ -909,10 +1034,11 @@ const langwatch = new LangWatch({
   apiKey: process.env.LANGWATCH_API_KEY
 });
 
-// Get a prompt with variables
-const compiledPrompt = await langwatch.prompts.get("customer-support", {
-  customer_name: "John Doe",
-  product_name: "LangWatch"
+const prompt = await langwatch.prompts.get("customer-support");
+
+const compiledPrompt = prompt.compile({
+  name: "John Doe",
+  product: "LangWatch"
 });
 
 console.log(compiledPrompt.content);
@@ -978,7 +1104,7 @@ setupObservability({
   },
   dataCapture: (context) => {
     // Don't capture sensitive data in production
-    if (context.environment === "production" && 
+    if (context.environment === "production" &&
         context.operationName.includes("password")) {
       return "none";
     }
