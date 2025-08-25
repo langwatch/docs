@@ -14222,6 +14222,2345 @@ EOF
 
 ---
 
+# FILE: ./prompt-management/cli.mdx
+
+---
+title: "Prompts CLI"
+description: "Manage AI prompts as code with version control and dependency management"
+---
+
+The `langwatch prompt` command provides dependency management for AI prompts as plain YAML files, enabling you to version prompts locally with Git while synchronizing with the LangWatch platform for testing, evaluation, and team collaboration.
+
+## Installation
+
+Install the CLI globally:
+
+```bash
+npm install -g langwatch
+```
+
+Authenticate:
+
+```bash
+langwatch login
+```
+
+## Quick Start
+
+### 1. Initialize Your Project
+
+Create a new prompts project:
+
+```bash
+langwatch prompt init
+```
+
+This will create the following structure to manage your prompts:
+
+```bash
+├── prompts # directory to create your prompts
+│   └── .materialized # where remote fetched prompts will be stored
+├── prompts.json # prompt dependencies
+└── prompts-lock.json # lock file
+```
+
+### 2. Add Your First Prompt
+
+Create a local prompt:
+
+```bash
+langwatch prompt create my-summarizer
+```
+
+Or add an existing remote prompt dependency:
+
+```bash
+langwatch prompt add agent/customer-service
+```
+
+### 3. Synchronize
+
+Sync all prompts (fetch remote, push local changes):
+
+```bash
+langwatch prompt sync
+```
+
+Go to [app.langwatch.ai](https://app.langwatch.ai) to see your new synced prompts.
+
+## Core Concepts
+
+### Dependency Management
+
+The CLI uses two configuration files:
+
+**`prompts.json`** - Declares your prompt dependencies:
+
+```json
+{
+  "prompts": {
+    "agent/customer-service": "latest",
+    "shared/guidelines": "5",
+    "my-local-prompt": "file:./prompts/my-local-prompt.prompt.yaml"
+  }
+}
+```
+
+**`prompts-lock.json`** - Tracks resolved versions and materialized file paths:
+
+```json
+{
+  "lockfileVersion": 1,
+  "prompts": {
+    "agent/customer-service": {
+      "version": 12,
+      "versionId": "prompt_version_scRQwSRMIyJvoSxTqP2nR",
+      "materialized": "prompts/.materialized/agent/customer-service.prompt.yaml"
+    }
+  }
+}
+```
+
+### Local vs Remote Prompts
+
+**Remote Prompts** (`agent/customer-service@latest`)
+
+- Pulled from LangWatch platform
+- Fetched and materialized locally in `./prompts/.materialized/`
+- Read-only locally
+
+**Local Prompts** (`file:./prompts/my-prompt.prompt.yaml`)
+
+- Stored as local YAML files
+- Version controlled with Git
+- Pushed to platform during sync for sharing and evaluation
+
+### YAML Format
+
+Prompts files end with `.prompt.yaml` extension and follow this format:
+
+```yaml
+model: openai/gpt-5
+modelParameters:
+  temperature: 0.7
+  max_tokens: 1000
+messages:
+  - role: system
+    content: You are a helpful assistant specializing in customer service.
+  - role: user
+    content: |
+      Please help the customer with their inquiry:
+
+      {{customer_message}}
+```
+
+This is the same structure as [GitHub Prompts](https://docs.github.com/en/github-models/use-github-models/storing-prompts-in-github-repositories).
+
+## Commands Reference
+
+### `langwatch prompt init`
+
+Initialize a new prompts project in the current directory.
+
+```bash
+langwatch prompt init
+```
+
+### `langwatch prompt add <spec> [localFile]`
+
+Add a new prompt dependency and immediately fetch/materialize it.
+
+```bash
+# Add remote prompt
+langwatch prompt add shared/guidelines@latest
+
+# Add specific version
+langwatch prompt add agent/support@5
+
+# Add local file as dependency
+langwatch prompt add my-prompt ./prompts/my-prompt.prompt.yaml
+```
+
+**Arguments:**
+
+- `<spec>` - Prompt specification (name@version or name for latest)
+- `[localFile]` - Optional path to local YAML file to add
+
+**Behavior:**
+
+- Updates `prompts.json` with new dependency
+- Fetches prompt from server and materializes locally
+- Updates `prompts-lock.json` with resolved version
+
+### `langwatch prompt remove <name>`
+
+Remove a prompt dependency and clean up associated files.
+
+```bash
+langwatch prompt remove agent/support
+```
+
+**Behavior:**
+
+- Removes entry from `prompts.json`
+- Removes entry from `prompts-lock.json`
+- Deletes materialized file
+- For local prompts: deletes source file and warns about server state
+
+### `langwatch prompt create <name>`
+
+Create a new local prompt file with default content.
+
+```bash
+langwatch prompt create my-new-prompt
+```
+
+**Behavior:**
+
+- Creates `./prompts/<name>.prompt.yaml` with template content
+- Automatically adds to `prompts.json` as `file:` dependency
+- Updates `prompts-lock.json`
+
+### `langwatch prompt sync`
+
+Synchronize all prompts between local files and the server.
+
+```bash
+langwatch prompt sync
+```
+
+**Behavior:**
+
+- Fetches remote prompts if new versions available
+- Pushes local prompt changes to server
+- Handles conflict resolution interactively
+- Cleans up orphaned materialized files
+- Reports what was synced
+
+**Conflict Resolution:**
+When local and remote versions have both changed:
+
+```
+Conflict detected for my-prompt:
+Local changes: Updated system message
+Remote changes: Added temperature parameter
+
+Choose resolution:
+  l) Use local version (will create new version on server)
+  r) Use remote version (will overwrite local file)
+  a) Abort sync for this prompt
+```
+
+### `langwatch prompt list`
+
+Display current prompt dependencies and their status.
+
+```bash
+langwatch prompt list
+```
+
+## CI/CD Integration
+
+Integrate prompt materialization into your deployment pipeline:
+
+```yaml .github/workflows/deploy.yml
+name: Deploy with Prompts
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install LangWatch CLI
+        run: npm install -g langwatch
+
+      - name: Materialize prompts
+        env:
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+        run: langwatch prompt sync
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy with materialized prompts
+        run: |
+          # Deploy application including prompts/.materialized/
+          # Your deployment commands here
+```
+
+## Workflows
+
+### Team Collaboration
+
+**Setup:**
+
+1. One team member initializes project with `langwatch prompt init`
+2. Commit `prompts.json` and `prompts-lock.json` to Git
+3. Add `prompts/.materialized` to `.gitignore`
+4. Team members run `langwatch prompt sync` after pulling
+
+**Adding Shared Prompts:**
+
+```bash
+# Add organization prompts
+langwatch prompt add company/brand-guidelines@latest
+langwatch prompt add legal/privacy-policy@^2
+
+# Sync to materialize
+langwatch prompt sync
+```
+
+**Creating Local Prompts:**
+
+```bash
+# Create and develop locally
+langwatch prompt create feature/user-onboarding
+
+# Edit the file
+vim prompts/feature/user-onboarding.prompt.yaml
+
+# Push to platform for evaluation
+langwatch prompt sync
+```
+
+### Version Management
+
+**Pinning Versions:**
+
+```json
+{
+  "prompts": {
+    "critical/system-prompt": "5", // Exact version
+    "experimental/new-feature": "latest" // Auto-update
+  }
+}
+```
+
+**Upgrading Dependencies:**
+
+```bash
+# Edit prompts.json to change versions
+# Then sync to fetch new versions
+langwatch prompt sync
+```
+
+**Rolling Back:**
+
+```bash
+# Restore from Git
+git checkout prompts.json prompts-lock.json
+
+# Re-sync to match committed state
+langwatch prompt sync
+```
+
+**Development Workflow:**
+
+```bash
+# Create new feature prompt
+langwatch prompt create features/new-capability
+
+# Edit and test locally
+# When ready, sync to platform
+langwatch prompt sync
+
+# Platform team can now evaluate and provide feedback
+```
+
+## Coding Assistant Integration
+
+Since prompts are just YAML files, you refer to them directly from other tools or coding assistants.
+
+### Cursor Integration
+
+Reference prompts in a `.cursor/rules/*.mdc` file:
+
+```yaml
+---
+description:
+globs:
+alwaysApply: true
+---
+
+@/prompts/.materialized/company/java-code-guidelines.prompt.yaml
+```
+
+### Cloud Code Integration
+
+Include prompt content in cloud development environments by referencing the YAML files in the `prompts/.materialized` directory.
+
+---
+
+# FILE: ./prompt-management/scope.mdx
+
+---
+title: "Scope"
+description: "Understand how prompt scope affects access, sharing, and collaboration across projects and organizations"
+---
+
+Scope determines where your prompts are accessible and how they can be shared across your LangWatch projects and organization. Understanding scope is crucial for effective prompt management and team collaboration.
+
+## Overview
+
+Every prompt in LangWatch has a **scope** that defines its visibility and accessibility:
+
+- **PROJECT scope** - Prompts accessible only within a single project
+- **ORGANIZATION scope** - Prompts shared across all projects in your organization
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/view-set-prompt-scope.png"
+    alt="Prompt scope selector in LangWatch UI"
+  />
+</Frame>
+
+## Project Scope (Default)
+
+**Project scope** is the default setting for all new prompts. Prompts with project scope **are**:
+
+- **Isolated** to a single project
+- **Private** to project members only
+- **Independent** from other projects
+- **Fully controlled** by the project team
+
+### Example: Project-Scoped Prompt
+
+```json
+{
+  "id": "prompt_abc123",
+  "handle": "internal-chatbot",
+  "scope": "PROJECT",
+  "projectId": "proj_456",
+  "organizationId": null
+}
+```
+
+This prompt is only accessible within `proj_456` and cannot be seen or used by other projects.
+
+## Organization Scope
+
+**Organization scope** makes prompts available across all projects in your organization. Organization-scoped prompts are:
+
+- **Shared** across all organization projects
+- **Collaborative** for cross-project teams
+
+### When to Use Organization Scope
+
+- **Brand guidelines** and company voice
+- **Legal compliance** prompts (privacy policies, terms of service)
+- **Common workflows** used across multiple projects
+- **Shared knowledge** and best practices
+- **Standard operating procedures**
+
+### Example: Organization-Scoped Prompt
+
+```json
+{
+  "id": "prompt_def789",
+  "handle": "company-brand-voice",
+  "scope": "ORGANIZATION",
+  "projectId": "proj_456",
+  "organizationId": "org_123"
+}
+```
+
+This prompt is accessible to all projects within `org_123` but can only be modified by the original project (`proj_456`).
+
+## Scope Management
+
+### Creating Scoped Prompts
+
+
+### UI
+
+1. Navigate to **Prompt Management**
+2. Click **"Create New Prompt"**
+3. Fill in prompt details
+4. Select **Scope** from the dropdown:
+   - **Project** - Only visible in current project
+   - **Organization** - Visible across all organization projects
+5. Save your prompt
+
+
+### TypeScript SDK
+
+```typescript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch({
+apiKey: process.env.LANGWATCH_API_KEY
+});
+
+// Create project-scoped prompt (default)
+const projectPrompt = await langwatch.prompts.create({
+handle: "project-specific-bot",
+scope: "PROJECT", // Default, can be omitted
+prompt: "You are a project-specific assistant...",
+// ... other fields
+});
+
+// Create organization-scoped prompt
+const orgPrompt = await langwatch.prompts.create({
+handle: "company-guidelines",
+scope: "ORGANIZATION",
+prompt: "You represent our company brand...",
+// ... other fields
+});
+
+````
+
+
+### Python SDK
+
+```python
+import langwatch
+
+# Create project-scoped prompt (default)
+project_prompt = langwatch.prompts.create(
+    handle="project-specific-bot",
+    scope="PROJECT",  # Default, can be omitted
+    prompt="You are a project-specific assistant...",
+    # ... other fields
+)
+
+# Create organization-scoped prompt
+org_prompt = langwatch.prompts.create(
+    handle="company-guidelines",
+    scope="ORGANIZATION",
+    prompt="You represent our company brand...",
+    # ... other fields
+)
+````
+
+### REST API
+
+```bash
+# Create project-scoped prompt
+curl -X POST "https://app.langwatch.ai/api/prompts" \
+  -H "Content-Type: application/json" \
+  -H "X-Auth-Token: your-api-key" \
+  -d '{
+    "handle": "project-specific-bot",
+    "scope": "PROJECT",
+    "prompt": "You are a project-specific assistant...",
+    "messages": [...],
+    "inputs": [...],
+    "outputs": [...]
+  }'
+
+# Create organization-scoped prompt
+
+curl -X POST "https://app.langwatch.ai/api/prompts" \
+ -H "Content-Type: application/json" \
+ -H "X-Auth-Token: your-api-key" \
+ -d '{
+"handle": "company-guidelines",
+"scope": "ORGANIZATION",
+"prompt": "You represent our company brand...",
+"messages": [...],
+"inputs": [...],
+"outputs": [...]
+}'
+
+```
+
+### Changing Prompt Scope
+
+<Warning>
+A prompt handle that is unique within a project might not be unique across projects in an organization.
+When you change the scope of a prompt, you might need to change the handle to avoid conflicts.
+</Warning>
+
+To change prompt scope:
+
+1. **Navigate** to the prompt in Prompt Management
+2. **Click** the scope dropdown
+3. **Select** the new scope
+4. **Confirm** the change
+5. **Save** the prompt
+
+<Note>
+Only prompt owners can change scope.
+</Note>
+```
+
+---
+
+# FILE: ./prompt-management/overview.mdx
+
+---
+title: "Overview"
+description: "Organize, version, and optimize your AI prompts with LangWatch's comprehensive prompt management system"
+---
+
+LangWatch's prompt management system helps you organize, version, and optimize your AI prompts across your entire application. Whether you're building a simple chatbot or a complex AI workflow, our tools help you maintain consistency, track changes, and collaborate effectively with your team.
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/view-prompt-management-dashboard.png"
+    alt="LangWatch Prompt Management Dashboard"
+  />
+</Frame>
+
+## What You Can Do
+
+- **Organize prompts** in a centralized library accessible to your entire team
+- **Track changes** with full version history and easy rollback capabilities
+- **Test and iterate** using our Optimization Studio for prompt refinement
+- **Collaborate effectively** with team members on prompt development
+- **Integrate seamlessly** with your existing workflows via API
+- **Monitor performance** by linking prompts to execution traces
+
+## Getting Started
+
+Ready to take control of your prompts? Start with our [quick start guide](/prompt-management/getting-started) to create your first managed prompt.
+
+## Explore Further
+
+- [Quick Start Guide](/prompt-management/getting-started) - Set up your first prompt
+- [Understanding Prompts](/prompt-management/data-model) - Learn about prompt structure
+- [Analytics](/prompt-management/features/essential/analytics) - Monitor prompt performance
+- [Version Control](/prompt-management/features/essential/version-control) - Manage prompt versions
+- [Link to Traces](/prompt-management/features/advanced/link-to-traces) - Connect prompts to execution traces
+- [API Reference](/api-reference/prompts/overview) - Programmatic access to prompts
+
+---
+
+# FILE: ./prompt-management/features/advanced/guaranteed-availability.mdx
+
+---
+title: "Guaranteed Availability"
+description: "Ensure your prompts are always available, even in offline or air-gapped environments"
+---
+
+Guaranteed availability ensures your application can continue operating with prompts even when disconnected from the LangWatch platform. This is achieved through local prompt materialization using the [Prompts CLI](/prompt-management/cli).
+
+## How It Works
+
+When you use the Prompts CLI to manage dependencies, prompts are **materialized locally** as standard YAML files. The LangWatch SDKs automatically detect and use these materialized prompts when available, providing seamless fallback behavior.
+
+**Benefits:**
+
+- **Offline operation** - Your application works without internet connectivity
+- **Air-gapped deployments** - Deploy in secure environments with no external access
+- **Reduced latency** - No network calls for prompt retrieval
+- **Guaranteed consistency** - Prompts are locked to specific versions in your deployment
+
+## Setting Up Local Materialization
+
+### 1. Initialize Prompt Dependencies
+
+```bash
+# Install CLI and authenticate
+npm install -g langwatch
+langwatch login
+
+# Initialize in your project
+langwatch prompt init
+```
+
+### 2. Add Prompt Dependencies
+
+Add the prompts your application needs:
+
+```bash
+# Add specific prompts your app uses
+langwatch prompt add customer-support-bot@5
+langwatch prompt add data-analyzer@latest
+langwatch prompt add error-handler@3
+```
+
+This creates a `prompts.json` file:
+
+```json
+{
+  "prompts": {
+    "customer-support-bot": "5",
+    "data-analyzer": "latest",
+    "error-handler": "3"
+  }
+}
+```
+
+### 3. Materialize Prompts Locally
+
+```bash
+# Fetch and materialize all prompts locally
+langwatch prompt sync
+```
+
+This creates materialized YAML files:
+
+```
+prompts/
+└── .materialized/
+    ├── customer-support-bot.prompt.yaml
+    ├── data-analyzer.prompt.yaml
+    └── error-handler.prompt.yaml
+```
+
+### 4. Deploy with Materialized Prompts
+
+Include the materialized prompts in your deployment package. Your application can now run completely offline.
+
+## Using Materialized Prompts in Code
+
+The SDKs automatically detect and use materialized prompts when available, falling back to API calls only when necessary.
+
+
+  ### Python SDK
+
+    ```python offline_app.py
+    import langwatch
+    from litellm import completion
+
+    # Initialize LangWatch
+    langwatch.setup()
+
+    # The SDK will automatically use materialized prompts if available
+    # No network call needed if prompt is materialized locally
+    prompt = langwatch.prompts.get("customer-support-bot")
+
+    # Compile prompt with variables
+    compiled_prompt = prompt.compile(
+        user_name="John Doe",
+        user_email="john.doe@example.com",
+        input="How do I reset my password?"
+    )
+
+    # Use with LiteLLM (no need to strip provider prefixes)
+    response = completion(
+        model=compiled_prompt.model,
+        messages=compiled_prompt.messages
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+    **Behavior:**
+    1. SDK checks for `./prompts/.materialized/customer-support-bot.prompt.yaml`
+    2. If found, loads prompt from local file (no network call)
+    3. If not found, attempts to fetch from LangWatch API
+    4. Throws error if both local file and API are unavailable
+
+
+
+  ### TypeScript SDK
+
+    ```typescript offline_app.ts
+    import { getPrompt, setupLangWatch } from "langwatch";
+
+
+    // Initialize LangWatch
+    await setupLangWatch();
+
+    # Example 1: Basic usage
+    prompt = langwatch.prompts.get("customer-support-bot")
+    compiled_prompt = prompt.compile(
+        user_name="John Doe",
+        input="Help me with my account"
+    )
+
+    response = completion(
+        model=compiled_prompt.model,
+        messages=compiled_prompt.messages
+    )
+
+    # Example 2: With tracing
+    @langwatch.trace()
+    def generate_response():
+        prompt = langwatch.prompts.get("customer-support-bot")
+        compiled_prompt = prompt.compile(
+            user_name="John Doe",
+            input="Help me with my account"
+        )
+
+        response = completion(
+            model=compiled_prompt.model,
+            messages=compiled_prompt.messages
+        )
+        return response.choices[0].message.content
+
+    # Example 3: Offline usage
+    prompt = langwatch.prompts.get("customer-support-bot")
+    compiled_prompt = prompt.compile(
+        user_name="John Doe",
+        input="Help me with my account"
+    )
+
+    response = completion(
+        model=compiled_prompt.model,
+        messages=compiled_prompt.messages
+    )
+
+    # Example 4: Final example
+    prompt = langwatch.prompts.get("customer-support-bot")
+    compiled_prompt = prompt.compile(
+        user_name="John Doe",
+        input="Help me with my account"
+    )
+
+    response = completion(
+        model=compiled_prompt.model,
+        messages=compiled_prompt.messages
+    )
+    ```
+
+    **Behavior:**
+    1. SDK checks for `./prompts/.materialized/customer-support-bot.prompt.yaml`
+    2. If found, loads prompt from local file (no network call)
+    3. If not found, attempts to fetch from LangWatch API
+    4. Throws error if both local file and API are unavailable
+
+
+
+
+## Air-Gapped Deployment
+
+For completely air-gapped environments:
+
+### 1. Prepare on Connected Environment
+
+```bash
+# On development machine with internet access
+langwatch prompt sync
+
+# Verify all prompts are materialized
+ls prompts/.materialized/
+```
+
+### 2. Package for Deployment
+
+Include these files in your deployment package:
+
+- `prompts/.materialized/` directory (all YAML files)
+- Your application code
+- Dependencies
+
+### 3. Deploy to Air-Gapped Environment
+
+The application will run entirely offline, using only materialized prompts. No LangWatch API access required.
+{/*
+## Advanced Fetch Policies (Future Feature)
+
+<Note>
+  **Coming Soon**: Advanced fetch policies will provide fine-grained control
+  over when prompts are fetched vs. using materialized versions.
+</Note>
+
+
+  ### Python SDK (Future)
+
+    ```python fetch_policies.py
+    import langwatch
+    from langwatch.prompt import FetchPolicy
+
+    # Always fetch from API, use materialized as fallback
+    prompt = langwatch.prompt.get_prompt(
+        "customer-support-bot",
+        fetch_policy=FetchPolicy.ALWAYS_FETCH
+    )
+
+    # Fetch every 5 minutes, use materialized between fetches
+    prompt = langwatch.prompt.get_prompt(
+        "customer-support-bot",
+        fetch_policy=FetchPolicy.CACHE_TTL,
+        cache_ttl_minutes=5
+    )
+
+    # Never fetch, use materialized only (air-gapped mode)
+    prompt = langwatch.prompt.get_prompt(
+        "customer-support-bot",
+        fetch_policy=FetchPolicy.MATERIALIZED_ONLY
+    )
+
+    # Default behavior: use materialized if available, otherwise fetch
+    prompt = langwatch.prompt.get_prompt(
+        "customer-support-bot",
+        fetch_policy=FetchPolicy.MATERIALIZED_FIRST  # default
+    )
+    ```
+
+
+
+  ### TypeScript SDK (Future)
+
+    ```typescript fetch_policies.ts
+    import { getPrompt, FetchPolicy } from "langwatch";
+
+    // Always fetch from API, use materialized as fallback
+    const prompt = await getPrompt("customer-support-bot", {
+      fetchPolicy: FetchPolicy.ALWAYS_FETCH
+    });
+
+    // Fetch every 5 minutes, use materialized between fetches
+    const prompt = await getPrompt("customer-support-bot", {
+      fetchPolicy: FetchPolicy.CACHE_TTL,
+      cacheTtlMinutes: 5
+    });
+
+    // Never fetch, use materialized only (air-gapped mode)
+    const prompt = await getPrompt("customer-support-bot", {
+      fetchPolicy: FetchPolicy.MATERIALIZED_ONLY
+    });
+
+    // Default behavior: use materialized if available, otherwise fetch
+    const prompt = await getPrompt("customer-support-bot", {
+      fetchPolicy: FetchPolicy.MATERIALIZED_FIRST // default
+    });
+    ```
+
+
+
+
+### Fetch Policy Options
+
+| Policy               | Behavior                                              | Use Case                                         |
+| -------------------- | ----------------------------------------------------- | ------------------------------------------------ |
+| `MATERIALIZED_FIRST` | Use local file if available, otherwise fetch from API | Default behavior, best for most applications     |
+| `ALWAYS_FETCH`       | Always try API first, fall back to materialized       | Live updates with offline fallback               |
+| `CACHE_TTL`          | Fetch every X minutes, use materialized between       | Hot deployments with controlled update frequency |
+| `MATERIALIZED_ONLY`  | Never fetch, use materialized files only              | Air-gapped or strict offline environments        | */}
+
+## CI/CD Integration
+
+Integrate prompt materialization into your deployment pipeline:
+
+```yaml .github/workflows/deploy.yml
+name: Deploy with Prompts
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install LangWatch CLI
+        run: npm install -g langwatch
+
+      - name: Materialize prompts
+        env:
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+        run: langwatch prompt sync
+
+      - name: Build application
+        run: npm run build
+
+      - name: Deploy with materialized prompts
+        run: |
+          # Deploy application including prompts/.materialized/
+          # Your deployment commands here
+```
+
+---
+
+# FILE: ./prompt-management/features/advanced/optimization-studio.mdx
+
+---
+title: "Using Prompts in the Optimization Studio"
+description: "Use prompts in the Optimization Studio to test and optimize your prompts"
+---
+
+### Watch: Prompt Management Tutorial
+
+Get a quick visual overview of how to use the prompt management features in LangWatch:
+
+<Frame>
+  <iframe
+    width="100%"
+    height="400"
+    src="https://www.youtube.com/embed/F64y61v72CA"
+    title="Prompt Management on LangWatch Optimization Studio"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  ></iframe>
+</Frame>
+
+### Using Prompts in the Optimization Studio
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/prompt-versions-in-studio.png"
+    alt="LangWatch Prompt Versions in Studio"
+  />
+</Frame>
+
+To get started with prompt versioning in the Optimization Studio:
+
+1. Create a new workflow or open an existing one
+2. Drag a signature node onto the workspace
+3. Click on the node to access configuration options in the right side panel
+4. Make your desired changes to the prompt configuration
+5. Save your changes as a new version
+
+---
+
+# FILE: ./prompt-management/features/advanced/a-b-testing.mdx
+
+---
+title: "A/B Testing"
+description: "Implement A/B testing for your prompts using LangWatch's version control and analytics"
+---
+
+LangWatch enables A/B testing by allowing you to create different versions of your prompts and randomly alternate between them. Your application can test different prompt variants while LangWatch tracks performance metrics for each version.
+
+## How It Works
+
+1. **Create variants** as different versions of the same prompt
+2. **Switch between versions** at runtime with an A/B testing strategy
+3. **Track performance** using LangWatch's built-in analytics
+4. **Compare results** to see which version performs better
+
+## Implementation
+
+### Create Prompt Variants
+
+Create different versions of your prompt for testing:
+
+
+  ### TypeScript SDK
+
+    ```typescript
+    import { LangWatch } from "langwatch";
+
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
+
+    // Create base prompt
+    const basePrompt = await langwatch.prompts.create({
+      handle: "customer-support-bot",
+      scope: "PROJECT",
+      prompt: "You are a helpful customer support agent. Help with: {{input}}",
+      inputs: [{ identifier: "input", type: "str" }],
+      outputs: [{ identifier: "response", type: "str" }],
+      model: "openai/gpt-4o-mini"
+    });
+
+    // Create variant A (friendly tone) - captures version number
+    const variantA = await langwatch.prompts.update("customer-support-bot", {
+      prompt: "You are a friendly and empathetic customer support agent. Use a warm, helpful tone. Help with: {{input}}"
+    });
+
+    // Create variant B (professional tone) - captures version number
+    const variantB = await langwatch.prompts.update("customer-support-bot", {
+      prompt: "You are a professional and efficient customer support agent. Be concise and solution-focused. Help with: {{input}}"
+    });
+
+    // Store version numbers for A/B testing
+    const versions = {
+      base: basePrompt.version,
+      friendly: variantA.version,
+      professional: variantB.version
+    };
+
+    console.log("Version numbers:", versions);
+    ```
+
+
+
+  ### Python SDK
+
+    ```python
+    import langwatch
+
+    # Create base prompt
+    base_prompt = langwatch.prompts.create(
+        handle="customer-support-bot",
+        scope="PROJECT",
+        prompt="You are a helpful customer support agent. Help with: {{input}}",
+        inputs=[{"identifier": "input", "type": "str"}],
+        outputs=[{"identifier": "response", "type": "str"}]
+    )
+
+    # Create variant A (friendly tone) - captures version number
+    variant_a = langwatch.prompts.update(
+        "customer-support-bot",
+        scope="PROJECT",
+        prompt="You are a friendly and empathetic customer support agent. Use a warm, helpful tone. Help with: {{input}}"
+    )
+
+    # Create variant B (professional tone) - captures version number
+    variant_b = langwatch.prompts.update(
+        "customer-support-bot",
+        scope="PROJECT",
+        prompt="You are a professional and efficient customer support agent. Be concise and solution-focused. Help with: {{input}}"
+    )
+
+    # Store version numbers for A/B testing
+    versions = {
+        "base": base_prompt.version,
+        "friendly": variant_a.version,
+        "professional": variant_b.version
+    }
+
+    print("Version numbers:", versions)
+    ```
+
+
+
+
+### Run A/B Tests
+
+Use the captured version numbers to switch between prompt versions at runtime (random sampling):
+
+
+  ### TypeScript SDK
+
+    ```typescript
+    async function generateResponse(userInput: string) {
+      // Use the captured version numbers
+      const versions = {
+        base: 1,
+        friendly: 2,
+        professional: 3
+      };
+
+      // Randomly select a variant
+      const variants = [
+        { version: versions.base, description: "Base version" },
+        { version: versions.friendly, description: "Friendly tone" },
+        { version: versions.professional, description: "Professional tone" }
+      ];
+
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+
+      // Fetch the selected prompt version
+      const prompt = await langwatch.prompts.get("customer-support-bot", {
+        version: randomVariant.version
+      });
+
+      // Compile and use the prompt
+      const compiledPrompt = prompt.compile({ input: userInput });
+
+      // Use with your LLM client
+      const result = await generateText({
+        model: openai(prompt.model.replace("openai/", "")),
+        messages: compiledPrompt.messages
+      });
+
+      return {
+        response: result.text,
+        version: randomVariant.version,
+        description: randomVariant.description
+      };
+    }
+    ```
+
+
+  ### Python SDK
+
+    ```python
+    import random
+
+    def generate_response(user_input):
+        # Use the captured version numbers
+        versions = {
+            "base": 1,
+            "friendly": 2,
+            "professional": 3
+        }
+
+        # Randomly select a variant
+        variants = [
+            {"version": versions["base"], "description": "Base version"},
+            {"version": versions["friendly"], "description": "Friendly tone"},
+            {"version": versions["professional"], "description": "Professional tone"}
+        ]
+
+        random_variant = random.choice(variants)
+
+        # Fetch the selected prompt version
+        prompt = langwatch.prompts.get("customer-support-bot", version=random_variant["version"])
+
+        # Compile and use the prompt
+        compiled_prompt = prompt.compile(input=user_input)
+
+        # Use with your LLM client
+        response = completion(
+            model=prompt.model,
+            messages=compiled_prompt.messages
+        )
+
+        return {
+            "response": response.choices[0].message.content,
+            "version": random_variant["version"],
+            "description": random_variant["description"]
+        }
+    ```
+
+
+
+
+## Track Performance
+
+LangWatch automatically tracks performance metrics for each prompt version:
+
+- **Response latency** - Which version is faster?
+- **Token usage** - Which version is more efficient?
+- **Cost per request** - Which version is more cost-effective?
+- **Quality scores** - Which version produces better responses?
+
+## Analyze Results
+
+Compare metrics between versions in the LangWatch UI to see which variant performs better. Use this data to make informed decisions about which prompt version to use in production.
+
+---
+
+# FILE: ./prompt-management/features/advanced/link-to-traces.mdx
+
+---
+title: "Link to Traces"
+description: "Connect prompts to execution traces for performance monitoring and analysis"
+---
+
+Linking prompts to traces enables tracking of metrics and evaluations per prompt version. It's the foundation of improving prompt quality over time.
+
+After linking prompts and traces, you will see information about the prompt in the trace's metadata.
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/view-prompt-trace-span.png"
+    alt="Prompt information in trace span details"
+  />
+</Frame>
+
+For more information about traces and spans, see the [Concepts](/concepts) guide.
+
+## How to Link Prompts to Traces
+
+When you use `langwatch.prompts.get()` within a trace context, LangWatch automatically links the prompt to the trace:
+
+
+### Python SDK
+
+
+```python
+import langwatch
+from litellm import completion
+
+# Initialize LangWatch
+langwatch.setup()
+
+@langwatch.trace()
+def customer_support_generation():
+    # Autotrack LiteLLM calls
+    langwatch.get_current_trace().autotrack_litellm_calls(litellm)
+
+    # Get prompt (automatically linked to trace when API key is present)
+    prompt = langwatch.prompts.get("customer-support-bot")
+
+    # Compile prompt with variables
+    compiled_prompt = prompt.compile(
+        user_name="John Doe",
+        user_email="john.doe@example.com",
+        input="I need help with my account"
+    )
+
+    response = completion(
+        model=prompt.model,
+        messages=compiled_prompt.messages
+    )
+
+    return response.choices[0].message.content
+
+# Call the function
+result = customer_support_generation()
+```
+
+
+### TypeScript SDK
+
+
+```typescript
+import { LangWatch, getLangWatchTracer } from "langwatch";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+
+// Initialize LangWatch client
+const langwatch = new LangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY,
+});
+
+const tracer = getLangWatchTracer("customer-support");
+
+async function customerSupportGeneration() {
+  return tracer.withActiveSpan("customer-support-generation", async () => {
+    // Get prompt (automatically linked to trace when API key is present)
+    const prompt = await langwatch.prompts.get("customer-support-bot");
+
+    // Compile prompt with variables
+    const compiledPrompt = prompt.compile({
+      user_name: "John Doe",
+      user_email: "john.doe@example.com",
+      input: "I need help with my account",
+    });
+
+    // Use with AI SDK (native instrumentation support)
+    const result = await generateText({
+      model: openai(prompt.model.replace("openai/", "")),
+      messages: compiledPrompt.messages,
+      experimental_telemetry: { isEnabled: true },
+    });
+
+    return result.text;
+  });
+}
+
+// Call the function
+const result = await customerSupportGeneration();
+```
+
+For more detailed information about setting up tracing in your application, see the [Python Integration Guide](/integration/python/guide) or [TypeScript Integration Guide](/integration/typescript/guide).
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)
+
+---
+
+# FILE: ./prompt-management/features/essential/version-control.mdx
+
+---
+title: "Version Control"
+description: "Manage prompt versions and track changes over time"
+---
+
+# Prompt Version Control
+
+LangWatch provides a robust version control system for managing your prompts. Each prompt can have multiple versions, allowing you to track changes, experiment with different approaches, and rollback when needed.
+
+## Version Management
+
+Every prompt in LangWatch automatically maintains a version history. When you create a new prompt, it starts with version 1, and each subsequent change creates a new version with an incremented number.
+
+**Important**: You cannot delete individual versions - only entire prompts can be deleted. Each update operation creates a new version automatically.
+
+## Scope and Conflicts
+
+Prompts have two scope levels that affect version management and conflict resolution:
+
+- **PROJECT scope** - Prompts are accessible only within the project. Changes are isolated to your project.
+- **ORGANIZATION scope** - Prompts are shared across all projects in the organization. Changes can affect other projects and may require conflict resolution.
+
+<Warning>
+  **Scope Conflicts**: When updating an organization-scoped prompt, conflicts
+  may arise if other projects have made changes. The system will provide
+  conflict information to help resolve differences.
+</Warning>
+
+## Managing Versions
+
+
+### UI
+
+
+Use the LangWatch UI to manage prompt versions:
+
+1. Navigate to the **Prompt Management** section
+2. Select a prompt
+3. Click on the version history icon at the bottom of the prompt editor
+4. Use the version selector to switch between versions
+5. Create new versions by making changes and saving
+
+
+### TypeScript SDK
+
+
+LangWatch's TypeScript SDK supports retrieving prompts and specific versions:
+
+```typescript
+import { LangWatch } from "langwatch";
+
+// Initialize LangWatch client
+const langwatch = new LangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY,
+});
+
+// Get a specific prompt (latest version by default)
+const prompt = await langwatch.prompts.get("customer-support-bot");
+
+// The prompt object contains version information
+console.log(`Version: ${prompt.version}`);
+console.log(`Version ID: ${prompt.versionId}`);
+
+// Get a specific version of a prompt
+const specificVersion = await langwatch.prompts.get("customer-support-bot", {
+  version: "version_abc123",
+});
+
+// Compile with variables
+const compiledPrompt = specificVersion.compile({
+  user_name: "John Doe",
+  user_email: "john.doe@example.com",
+  input: "I need help with my account",
+});
+```
+
+
+### REST API
+
+
+Use the REST API to manage prompt versions:
+
+```bash
+# Get all versions of a prompt
+curl --request GET \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}/versions" \
+  --header "X-Auth-Token: your-api-key"
+
+# Get a specific prompt (latest version)
+curl --request GET \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}" \
+  --header "X-Auth-Token: your-api-key"
+
+# Create a new version
+curl --request POST \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}/versions" \
+  --header "X-Auth-Token: your-api-key" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "prompt": "Updated prompt text...",
+    "model": "openai/gpt-5",
+    "commitMessage": "Improved customer support prompt",
+
+    "temperature": 0.7,
+    "maxTokens": 1000,
+    "responseFormat": {"type": "text"},
+    "inputs": [{"identifier": "input", "type": "str"}],
+    "outputs": [{"identifier": "response", "type": "str"}],
+    "demonstrations": null,
+    "promptingTechnique": null
+  }'
+
+# Get a specific version
+curl --request GET \
+  --url "https://app.langwatch.ai/api/prompts/{prompt_handle}?version=2" \
+  --header "X-Auth-Token: your-api-key"
+```
+
+## CRUD Operations
+
+The SDK provides comprehensive CRUD operations for managing prompts programmatically:
+
+<Note>
+**Field Structure**: All examples show the essential fields. Additional optional fields like `temperature`, `maxTokens`, `responseFormat`, `inputs`, `outputs`, `demonstrations`, and `promptingTechnique` can also be set. See the [Data Model](/prompt-management/data-model) page for complete field documentation.
+</Note>
+
+### Create Prompts
+
+Create new prompts with templates and variables:
+
+<Warning>
+  **System Message Conflict**: You cannot set both a `prompt` (system message)
+  and `messages` array with a system role in the same operation. Choose one
+  approach to avoid errors.
+</Warning>
+
+
+  ### TypeScript SDK
+
+    ```typescript create_prompt.ts
+         // Create a new prompt with a system prompt
+     const prompt = await langwatch.prompts.create({
+       handle: "customer-support-bot",                    // Required
+       scope: "PROJECT",                                  // Required
+       prompt: "You are a helpful customer support agent. Help with: {{input}}", // Required
+       model: "openai/gpt-4o-mini",                      // Required
+
+       // Optional fields:
+       temperature: 0.7,                                  // Optional: Model temperature (0.0-2.0)
+       maxTokens: 1000,                                   // Optional: Maximum tokens to generate
+       // messages: [...],                                // Optional: Messages array in OpenAI format { role: "system" | "user" | "assistant", content: "..." }
+     });
+
+    console.log(`Created prompt with handle: ${prompt.handle}`);
+    ```
+
+
+
+  ### Python SDK
+
+    ```python create_prompt.py
+         # Create a new prompt
+     prompt = langwatch.prompts.create(
+         handle="customer-support-bot",                    # Required
+         scope="PROJECT",                                  # Required
+         prompt="You are a helpful customer support agent. Help with: {{input}}", # Required
+         model="openai/gpt-4o-mini",                      # Required
+
+         # Optional fields:
+         temperature=0.7,                                  # Optional: Model temperature (0.0-2.0)
+         max_tokens=1000,                                  # Optional: Maximum tokens to generate
+         # messages=[...],                                 # Optional: Messages array in OpenAI format { role: "system" | "user" | "assistant", content: "..." }
+     )
+
+         print(f"Created prompt with handle: {prompt.handle}")
+    ```
+
+
+
+
+### Update Prompts (Creates New Versions)
+
+Modify existing prompts while maintaining version history:
+
+<Warning>
+  **System Message Conflict**: Same rule applies - you cannot set both a
+  `prompt` and `messages` array with a system role in the same operation.
+</Warning>
+
+<Note>
+You must include at least one field to update the prompt.
+</Note>
+
+
+  ### TypeScript SDK
+
+    ```typescript update_prompt.ts
+         // Update prompt content (creates new version automatically)
+     const updatedPrompt = await langwatch.prompts.update("customer-support-bot", {
+       // All fields are optional for updates - only specify what you want to change
+       prompt: "You are an expert customer support agent. Help with: {{input}}",
+
+       // Optional fields:
+       model: "openai/gpt-4o",                            // Optional: Change the model
+       temperature: 0.5,                                  // Optional: Adjust temperature
+       maxTokens: 2000,                                  // Optional: Change max tokens
+       // messages: [...],                                 // Optional: Messages array in OpenAI format { role: "system" | "user" | "assistant", content: "..." }
+     });
+
+         console.log(`Updated prompt: ${updatedPrompt.handle}, New version: ${updatedPrompt.version}`);
+    ```
+
+
+
+  ### Python SDK
+
+    ```python update_prompt.py
+         # Update prompt content (creates new version automatically)
+     updated_prompt = langwatch.prompts.update(
+         "customer-support-bot",
+         # All fields are optional for updates - only specify what you want to change
+         prompt="You are an expert customer support agent. Help with: {{input}}",
+         model="openai/gpt-4o",                            # Optional: Change the model
+         temperature=0.5,                                  # Optional: Adjust temperature
+         max_tokens=2000,                                  # Optional: Change max tokens
+         # messages=[...],                                 # Optional: Messages array in OpenAI format { role: "system" | "user" | "assistant", content: "..." }
+     )
+
+         print(f"Updated prompt: {updated_prompt.handle}, New version: {updated_prompt.version}")
+    ```
+
+
+
+
+### Delete Prompts
+
+Remove entire prompts and all their versions:
+
+<Warning>
+  **Permanent Deletion**: Deleting a prompt removes ALL versions permanently.
+  This action cannot be undone.
+</Warning>
+
+
+  ### TypeScript SDK
+
+    ```typescript delete_prompt.ts
+    // Delete by handle (removes all versions)
+    const result = await langwatch.prompts.delete("customer-support-bot");
+
+    console.log(`Deletion result: ${result.success}`);
+    ```
+
+
+
+  ### Python SDK
+
+    ```python delete_prompt.py
+    # Delete by handle (removes all versions)
+    result = langwatch.prompts.delete("customer-support-bot")
+
+    print(f"Deletion result: {result}")
+    ```
+
+
+
+
+## Important Caveats
+
+### System Message Conflicts
+
+<Warning>
+  **Critical**: You cannot set both a `prompt` field and a `messages` array
+  containing a system role in the same operation. This will throw an error.
+</Warning>
+
+**Valid approaches:**
+
+1. **Use `prompt` field only** - Sets the system message directly
+2. **Use `messages` array only** - Define the full conversation structure
+3. **Mix both** - Use `prompt` for system message and `messages` for user/assistant messages (but no system role in messages)
+
+## Advanced Prompt Capabilities
+
+Beyond basic prompt creation, LangWatch provides powerful features for optimizing and managing your AI interactions:
+
+### Response Format Control
+- **Structured Output**: Use `responseFormat: { type: "json_schema" }` to get consistent, parseable responses
+- **Text Generation**: Default `responseFormat: { type: "text" }` for free-form responses
+- **Custom Schemas**: Define exact output structures for integration with your systems
+
+### Few-Shot Learning
+- **Demonstrations**: Use the `demonstrations` field to provide example input/output pairs to improve response quality
+
+### Input/Output Validation
+- **Type Safety**: Define expected input types (`str`, `float`, `bool`, `list[str]`, etc.)
+- **Output Constraints**: Specify exact output formats and validation rules
+- **Variable Management**: Automatically handle prompt variable substitution and validation
+
+### Model Optimization
+- **Temperature Control**: Fine-tune creativity vs. consistency (0.0-2.0)
+- **Token Limits**: Set `maxTokens` to control response length and costs
+- **Model Selection**: Choose the best model for your specific use case
+
+<Tip>
+These advanced features are particularly powerful when combined with LangWatch's optimization studio,
+where you can A/B test different configurations and measure their impact on performance metrics.
+</Tip>
+
+### Optimization Studio Integration
+
+The optimization studio leverages these advanced prompt capabilities to help you:
+
+- **A/B Testing**: Compare different prompt versions, models, and configurations
+- **Performance Metrics**: Measure response quality, latency, and cost across variations
+- **Automated Optimization**: Let the system find the best combination of settings
+- **Version Management**: Track which configurations perform best over time
+- **Team Collaboration**: Share optimized prompts across your organization
+
+<Card title="Explore Optimization Studio" icon="rocket" href="/optimization-studio/overview">
+Learn how to use advanced prompt features to improve your AI application performance.
+</Card>
+
+## Version History
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/version-history.png"
+    alt="Prompt version history showing multiple versions with timestamps"
+  />
+</Frame>
+
+- **Version List**: See all versions with timestamps and commit messages
+- **Rollback**: Easily revert to previous versions
+{/* TODO: - **Diff View**: Compare changes between versions */}
+{/* TODO: - **Branching**: Create experimental versions without affecting production */}
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)
+
+---
+
+# FILE: ./prompt-management/features/essential/github-integration.mdx
+
+---
+title: "GitHub Integration"
+description: "Version your prompts in GitHub repositories and automatically sync with LangWatch"
+---
+
+LangWatch's prompt management integrates seamlessly with GitHub through the [Prompts CLI](/prompt-management/cli), enabling you to version control your prompts alongside your code and automatically sync changes with the LangWatch platform.
+
+## How It Works
+
+The CLI creates standard YAML files that work perfectly with Git workflows:
+- **Local prompts** are stored as `.prompt.yaml` files in your repository
+- **Remote prompts** are materialized locally but gitignored (fetched fresh on each sync)
+- **Dependencies** are declared in `prompts.json` and locked in `prompts-lock.json`
+
+## Setup for GitHub
+
+### 1. Initialize Prompts in Your Repository
+
+```bash
+# Install the CLI
+npm install -g langwatch
+
+# Authenticate
+langwatch login
+
+# Initialize prompts in your repo
+langwatch prompt init
+```
+
+This creates the essential files:
+```
+your-repo/
+├── prompts/
+│   └── .materialized/      # Add to .gitignore
+├── prompts.json            # Commit to Git
+└── prompts-lock.json       # Commit to Git
+```
+
+### 2. Configure .gitignore
+
+Add the materialized directory to your `.gitignore`:
+
+```gitignore
+# LangWatch prompts
+prompts/.materialized/
+```
+
+This ensures remote prompts are fetched fresh and not committed to your repository.
+
+### 3. Create and Version Your Prompts
+
+Create local prompts that will be versioned with your code:
+
+```bash
+# Create a prompt for your feature
+langwatch prompt create features/user-onboarding
+
+# Edit the prompt file
+vim prompts/features/user-onboarding.prompt.yaml
+
+# Sync to LangWatch platform
+langwatch prompt sync
+```
+
+Commit your prompt files:
+```bash
+git add prompts/features/user-onboarding.prompt.yaml prompts.json prompts-lock.json
+git commit -m "Add user onboarding prompt"
+```
+
+## GitHub Actions Integration
+
+Automatically sync prompts on every push or pull request using GitHub Actions.
+
+Create `.github/workflows/langwatch-sync.yml`:
+
+```yaml
+name: LangWatch Prompt Sync
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['prompts/**', 'prompts.json']
+  pull_request:
+    branches: [main]
+    paths: ['prompts/**', 'prompts.json']
+
+jobs:
+  sync-prompts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install LangWatch CLI
+        run: npm install -g langwatch
+
+      - name: Sync prompts
+        env:
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+        run: langwatch prompt sync
+
+      - name: Verify sync
+        run: |
+          echo "✅ Prompts synced successfully"
+          echo "View your prompts at https://app.langwatch.ai"
+```
+
+### Setting Up the API Key
+
+1. Go to your [LangWatch project settings](https://app.langwatch.ai/settings)
+2. Create new API credentials
+3. In your GitHub repository, go to **Settings** → **Secrets and variables** → **Actions**
+4. Add a new secret named `LANGWATCH_API_KEY` with your API key value
+
+## Learn More
+
+For complete documentation on all CLI commands, advanced workflows, conflict resolution, and detailed usage examples, see the [Prompts CLI documentation](/prompt-management/cli).
+
+---
+
+# FILE: ./prompt-management/features/essential/analytics.mdx
+
+---
+title: "Analytics"
+description: "Monitor prompt performance and usage with comprehensive analytics"
+---
+
+LangWatch provides analytics to help you understand how your prompts are performing in production.
+
+<Frame>
+  <img
+    className="block"
+    src="/images/prompts/view-prompt-analytics.png"
+    alt="Prompt Analytics Dashboard"
+  />
+</Frame>
+
+## Overview Metrics
+
+Track key usage statistics:
+
+- **Traces**: Total number of prompt executions
+- **Threads**: Number of conversation threads
+- **Users**: Number of unique users
+
+## LLM Metrics
+
+Monitor your AI model usage:
+
+- **LLM Calls**: Number of API calls made
+- **Total Cost**: Cost of all API calls
+- **Tokens**: Total tokens consumed
+
+## Version Tracking
+
+- Track prompt behavior by version, compare different versions
+- Filter messages, plot usage, cost, conversion on different prompts
+
+## Evaluations Metrics
+
+- Run real-time evaluations on the traces to measure prompt performance
+- Use real-time evaluators for classification of prompt outputs
+
+## Custom Graphs
+
+- Create custom bar, line, pie, scatter, and more charts with any captured metrics
+- Compare different prompts and versions
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)
+
+---
+
+# FILE: ./prompt-management/getting-started.mdx
+
+---
+title: "Get Started"
+description: "Create your first prompt and use it in your application"
+---
+
+Learn how to create your first prompt in LangWatch and use it in your application with dynamic variables. This enables your team to update AI interactions without code changes.
+
+## Get API keys
+
+1. Create a LangWatch [account](https://app.langwatch.ai) or set up [self-hosted LangWatch](https://github.com/langwatch/langwatch?tab=readme-ov-file#self-hosted-%EF%B8%8F)
+2. Create new API credentials in your [project settings](https://app.langwatch.ai/settings)
+3. Note your API key for use in the steps below
+
+## Create a prompt
+
+
+  ### LangWatch UI
+
+    Use the LangWatch UI to create a new prompt or update an existing one.
+
+    1. Navigate to your project dashboard
+    2. Go to **Prompt Management** in the sidebar
+    3. Click **"Create New Prompt"**
+    4. Fill in the prompt details and save
+
+    <Frame>
+      <img
+        className="block"
+        src="/images/prompts/view-editing-the-prompt.png"
+        alt="Editing a prompt in LangWatch UI"
+      />
+    </Frame>
+
+
+
+  ### TypeScript SDK
+
+    ```typescript create_prompt.ts
+    import { LangWatch } from "langwatch";
+
+    // Initialize LangWatch client
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
+
+    // Create a new prompt
+    const prompt = await langwatch.prompts.create({
+      handle: "customer-support-bot",
+      scope: "PROJECT",
+      prompt: "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+      model: "openai/gpt-4o-mini"
+    });
+
+    console.log(`Created prompt with handle: ${prompt.handle}`);
+    ```
+
+
+
+  ### Python SDK
+
+    ```python create_prompt.py
+    import langwatch
+
+    # Create a new prompt
+    prompt = langwatch.prompts.create(
+        handle="customer-support-bot",
+        scope="PROJECT",
+        prompt="You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+        model="openai/gpt-4o-mini"
+    )
+
+    print(f"Created prompt with handle: {prompt.handle}")
+    ```
+
+
+
+  ### REST API
+
+    Use the REST API to create a new prompt:
+
+    ```bash create_prompt.sh
+    # Create a new prompt (this creates the prompt with an initial version)
+    curl -X POST "https://app.langwatch.ai/api/prompts" \
+      -H "Content-Type: application/json" \
+      -H "X-Auth-Token: your-api-key" \
+      -d '{
+        "handle": "customer-support-bot",
+        "scope": "PROJECT",
+        "prompt": "You are a helpful customer support agent. Help the customer with their inquiry: {{input}}",
+        "model": "openai/gpt-4o-mini"
+      }'
+    ```
+
+
+
+
+## Use prompt
+
+At runtime, you can fetch the latest version of your prompt from LangWatch using the prompt handle.
+
+
+  ### Python SDK
+
+    ```python use_prompt.py
+    import langwatch
+    from litellm import completion
+
+    # Get the latest prompt by handle
+    prompt = langwatch.prompts.get("customer-support-bot")
+
+    # Compile prompt with variables
+    compiled_prompt = prompt.compile(
+        user_name="John Doe",
+        user_email="john.doe@example.com",
+        input="How do I reset my password?"
+    )
+
+    # Use with LiteLLM (unified interface to multiple providers)
+    response = completion(
+        model=prompt.model,  # LiteLLM handles provider prefixes automatically
+        messages=compiled_prompt.messages
+    )
+
+    print(response.choices[0].message.content)
+    ```
+
+
+
+  ### TypeScript SDK
+
+    ```typescript use_prompt.ts
+    import { LangWatch } from "langwatch";
+    import { openai } from "@ai-sdk/openai";
+    import { generateText } from "ai";
+
+    // Initialize LangWatch client
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
+
+    // Get the latest prompt by handle
+    const prompt = await langwatch.prompts.get("customer-support-bot");
+
+    // Compile prompt with variables
+    const compiledPrompt = prompt.compile({
+      user_name: "John Doe",
+      user_email: "john.doe@example.com",
+      input: "How do I reset my password?"
+    });
+
+    // Use with AI SDK
+    const result = await generateText({
+      model: openai(prompt.model.replace("openai/", "")),
+      messages: compiledPrompt.messages,
+      experimental_telemetry: { isEnabled: true },
+    });
+
+    console.log(result.text);
+    ```
+
+
+
+  ### REST API
+
+    ```bash use_prompt.sh
+    # Get prompt by handle
+    curl -X GET "https://app.langwatch.ai/api/prompts/customer-support-bot" \
+      -H "X-Auth-Token: your-api-key"
+    ```
+
+
+
+## Link with LangWatch Tracing
+
+You can link your prompt to LLM generation traces to track performance and see which prompt versions work best. For detailed information about linking prompts to traces, see the [Link to Traces](/prompt-management/features/advanced/link-to-traces) page.
+
+
+  ### Python SDK
+
+    ```python tracing.py
+    import langwatch
+    from litellm import completion
+
+    # Initialize LangWatch
+    langwatch.setup()
+
+    # Create a trace function
+    @langwatch.trace()
+    def customer_support_generation():
+        # Get prompt (automatically linked to trace when API key is present)
+        prompt = langwatch.prompts.get("customer-support-bot")
+
+        # Compile prompt with variables
+        compiled_prompt = prompt.compile(
+            user_name="John Doe",
+            user_email="john.doe@example.com",
+            input="I need help with my account"
+        )
+
+        # Use with LiteLLM (unified interface to multiple providers)
+        response = completion(
+            model=prompt.model,  # LiteLLM handles provider prefixes automatically
+            messages=compiled_prompt.messages
+        )
+
+        return response.choices[0].message.content
+
+    # Call the function
+    result = customer_support_generation()
+    ```
+
+
+
+  ### TypeScript SDK
+
+    ```typescript tracing.ts
+    import { LangWatch, getLangWatchTracer } from "langwatch";
+    import { openai } from "@ai-sdk/openai";
+    import { generateText } from "ai";
+
+    // Initialize LangWatch client
+    const langwatch = new LangWatch({
+      apiKey: process.env.LANGWATCH_API_KEY
+    });
+
+    const tracer = getLangWatchTracer("customer-support");
+
+    async function customerSupportGeneration() {
+      return tracer.withActiveSpan("customer-support-generation", async () => {
+        // Get prompt (automatically linked to trace when API key is present)
+        const prompt = await langwatch.prompts.get("customer-support-bot");
+
+        // Compile prompt with variables
+        const compiledPrompt = prompt.compile({
+          user_name: "John Doe",
+          user_email: "john.doe@example.com",
+          input: "I need help with my account",
+        });
+
+        // Use with AI SDK
+        const { text } = await generateText({
+          model: openai(prompt.model.replace("openai/", "")),
+          messages: compiledPrompt.messages
+        });
+
+        return text;
+      });
+    }
+
+    // Call the function
+    const result = await customerSupportGeneration();
+    ```
+
+
+
+---
+
+[← Back to Prompt Management Overview](/prompt-management/overview)
+
+---
+
+# FILE: ./prompt-management/data-model.mdx
+
+---
+title: "Data Model"
+description: "Understand the structure of prompts in LangWatch"
+---
+
+# Prompt Data Model
+
+This page explains the structure of prompts in LangWatch and how they're organized.
+
+## Overview
+
+Prompts in LangWatch contain all the information needed to generate AI responses, including the prompt text, model configuration, and optimization settings.
+
+## Complete Prompt Structure
+
+When you retrieve a prompt, you get all the configuration in a single response:
+
+```json
+{
+  "id": "prompt_TrYXZLsiTJkn9N6PiZiae",
+  "handle": "customer-support-bot",
+  "scope": "PROJECT",
+  "projectId": "proj_123",
+  "organizationId": null,
+  "version": 1,
+  "versionId": "version_abc123",
+  "createdAt": "2024-01-15T10:30:00Z",
+  "updatedAt": "2024-01-15T10:30:00Z",
+  "authorId": "user_789",
+  "deletedAt": null,
+
+  "prompt": "You are a helpful customer support agent...",
+  "model": "openai/gpt-4o-mini",
+  "temperature": 0.7,
+  "maxTokens": 1000,
+  "messages": [
+    { "role": "system", "content": "You are a helpful customer support agent..." },
+    { "role": "user", "content": "I need help with my account" }
+  ],
+  "inputs": [
+    { "name": "user_name", "type": "string" },
+    { "name": "user_email", "type": "string" }
+  ],
+  "outputs": [
+    { "name": "user_name", "type": "string" },
+    { "name": "user_email", "type": "string" }
+  ],
+  "demonstrations": {
+    "columns": [
+      { "id": "input", "name": "User Input", "type": "string" },
+      { "id": "output", "name": "Expected Output", "type": "string" }
+    ],
+    "rows": [
+      { "id": "example_1", "input": "I need help with my account", "output": "I'd be happy to help you with your account. What specific issue are you experiencing?" }
+    ]
+  },
+  "promptingTechnique": "chain_of_thought"
+}
+```
+
+## Field Descriptions
+
+### Core Fields
+
+<ResponseField name="id" type="string" required>
+Unique identifier for the prompt
+</ResponseField>
+
+<ResponseField name="handle" type="string" required>
+Human-readable identifier for the prompt (primary way to reference prompts)
+</ResponseField>
+
+<ResponseField name="projectId" type="string" required>
+The project that owns the prompt
+</ResponseField>
+
+<ResponseField name="organizationId" type="string | null">
+The organization that owns the prompt
+</ResponseField>
+
+<ResponseField name="version" type="integer" required>
+Current version number
+</ResponseField>
+
+<ResponseField name="versionId" type="string" required>
+Unique identifier for this version
+</ResponseField>
+
+<ResponseField name="createdAt" type="timestamp" required>
+When this version was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="timestamp" required>
+When the prompt was last updated
+</ResponseField>
+
+<ResponseField name="authorId" type="string" required>
+The user who created this version
+</ResponseField>
+
+<ResponseField name="deletedAt" type="timestamp | null">
+Soft delete timestamp (null if not deleted)
+</ResponseField>
+
+### Scope and Access
+
+<ResponseField name="scope" type="string" required default="PROJECT">
+- `PROJECT` - Prompts are only accessible within the project
+- `ORGANIZATION` - Prompts are shared across all projects in the organization
+</ResponseField>
+
+
+### Model Configuration
+
+<ResponseField name="model" type="string" required>
+The LLM model to use (e.g., "openai/gpt-4o-mini"). Model names follow the litellm structure ("provider/model")
+</ResponseField>
+
+<ResponseField name="temperature" type="float" required>
+Fine-tune creativity vs. consistency (0.0 = deterministic, 2.0 = very creative)
+</ResponseField>
+
+<ResponseField name="maxTokens" type="integer" required>
+Control response length and costs
+</ResponseField>
+
+### Content Fields
+
+<ResponseField name="prompt" type="string" required>
+The main prompt text (system message)
+</ResponseField>
+
+<ResponseField name="messages" type="array">
+Array of chat messages with roles and content (alternative to prompt field)
+</ResponseField>
+
+## Variable System
+
+### Variable Formatting
+
+Prompts use `{{ variable_name }}` syntax for dynamic content:
+
+```text
+You are a helpful customer support agent. The user is {{user_name}} and their email is {{user_email}}.
+
+Please help them with: {{input}}
+```
+
+### Supported Variable Types
+
+- **Strings**: `{{user_name}}`
+- **Numbers**: `{{count}}`
+- **Booleans**: `{{is_premium}}`
+- **Lists**: `{{items}}`
+- **Objects**: `{{user_data}}` (will be converted to string)
+
+## Optimization Features
+
+<Note>
+**Studio Only**: These advanced optimization features require the optimization studio interface for proper experimentation,
+performance measurement, and A/B testing. They cannot be configured via the API.
+</Note>
+
+### Input/Output Definitions
+
+<ResponseField name="inputs" type="array">
+Array of input variable definitions with identifiers and types
+</ResponseField>
+
+<ResponseField name="outputs" type="array">
+Array of output variable definitions with identifiers and types
+</ResponseField>
+
+### Type System
+
+<AccordionGroup>
+<Accordion title="Input Types">
+- `"str"` - String values
+- `"float"` - Floating point numbers
+- `"bool"` - Boolean values
+- `"image"` - Image data
+- `"list[str]"` - List of strings
+- `"list[float]"` - List of floats
+- `"list[int]"` - List of integers
+- `"list[bool]"` - List of booleans
+- `"dict"` - Dictionary/object
+</Accordion>
+
+<Accordion title="Output Types">
+- `"str"` - String responses
+- `"float"` - Numeric responses
+- `"bool"` - Boolean responses
+- `"json_schema"` - Structured JSON responses
+</Accordion>
+</AccordionGroup>
+
+### Advanced Features
+<ResponseField name="promptingTechnique" type="object">
+Configuration for advanced prompting strategies
+
+The prompting strategy to use.
+  - `"few_shot"` - Few-shot learning with examples
+  - `"in_context"` - In-context learning approach
+  - `"chain_of_thought"` - Chain-of-thought reasoning
+
+</ResponseField>
+
+<ResponseField name="demonstrations" type="object">
+Few-shot examples with columns and rows structure
+</ResponseField>
+
+### Demonstrations Structure
+
+```json
+{
+  "demonstrations": {
+    "columns": [
+      { "id": "input", "name": "User Input", "type": "string" },
+      { "id": "output", "name": "Expected Output", "type": "string" }
+    ],
+    "rows": [
+      {
+        "id": "example_1",
+        "input": "I need help with my account",
+        "output": "I'd be happy to help you with your account. What specific issue are you experiencing?"
+      }
+    ]
+  }
+}
+```
+---
+
 # FILE: ./features/batch-evaluations.mdx
 
 ---

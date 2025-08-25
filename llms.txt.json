@@ -8,6 +8,7 @@
     "integration/rest-api.mdx",
     "integration/opentelemetry/*.mdx",
     "integration/rags-context-tracking.mdx",
+    "prompt-management/*.mdx",
     "features/*.mdx",
     "evaluations/*.mdx",
     "guardrails/*.mdx"
