@@ -565,6 +565,10 @@
     {
       "source": "/simulations/introduction",
       "destination": "/agent-simulations/introduction"
+    },
+    {
+      "source": "/features/prompt-versioning",
+      "destination": "/prompt-management/overview"
     }
   ]
 }
