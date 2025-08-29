@@ -192,7 +192,7 @@ async function answerWithRAG(question: string) {
     const docs = await tracer.withActiveSpan("retrieve-docs", async (retrieveSpan) => {
       retrieveSpan.setType("rag");
       const documents = await searchDocuments(question);
-      
+
       // Record what documents were retrieved
       retrieveSpan.setRAGContexts(
         documents.map(doc => ({
@@ -201,13 +201,13 @@ async function answerWithRAG(question: string) {
           content: doc.content
         }))
       );
-      
+
       return documents;
     });
-    
+
     // 2. Generate answer
     const answer = await generateAnswer(question, docs);
-    
+
     span.setOutput(answer);
 
     return answer;
@@ -231,7 +231,7 @@ async function handleConversation(userId: string, threadId: string, message: str
   }, async (span) => {
     // Your conversation logic here
     const response = await processMessage(message);
-    
+
     span.setOutput(response);
 
     return response;
@@ -249,12 +249,12 @@ import { setupObservability } from "langwatch/observability/setup/node";
 const handle = await setupObservability({
   // Required: Your service name
   serviceName: "my-ai-service",
-  
+
   // Optional: Custom API key (defaults to LANGWATCH_API_KEY env var)
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
   },
-  
+
   // Optional: Global attributes for all traces
   attributes: {
     "service.version": "1.0.0",
@@ -400,7 +400,7 @@ const handle = await setupObservability({
 <AccordionGroup>
 <Accordion title="No traces appearing in dashboard">
 - Check your API key is correct
-- Verify network connectivity to api.langwatch.ai
+- Verify network connectivity to app.langwatch.ai
 - Ensure `setupObservability` is called before any tracing
 - Check browser console for errors
 - See [Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript) for detailed solutions

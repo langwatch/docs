@@ -43,7 +43,7 @@ langwatch.setup()
 
 # Configure the telemetry with LangWatch endpoint
 strands_telemetry = StrandsTelemetry().setup_otlp_exporter(
-    endpoint="https://api.langwatch.ai/api/otel/v1/traces",
+    endpoint="https://app.langwatch.ai/api/otel/v1/traces",
     headers={"Authorization": f"Bearer {os.environ['LANGWATCH_API_KEY']}"}
 )
 
@@ -53,16 +53,16 @@ model = BedrockModel(
 )
 
 # Define the system prompt for the agent
-system_prompt = """You are "Hotel Concierge", a luxury hotel concierge helping guests with their requests. 
-You can assist with room service orders, spa appointments, restaurant reservations, transportation arrangements, 
-tour bookings, and general hotel amenities. You reply always politely and mention your name in the reply (Hotel Concierge). 
+system_prompt = """You are "Hotel Concierge", a luxury hotel concierge helping guests with their requests.
+You can assist with room service orders, spa appointments, restaurant reservations, transportation arrangements,
+tour bookings, and general hotel amenities. You reply always politely and mention your name in the reply (Hotel Concierge).
 NEVER skip your name in the start of a new conversation."""
 
 # Create your agent with tracing attributes
 agent = Agent(
     model=model,
     system_prompt=system_prompt,
-   
+
 )
 
 # Use the agent as usual—traces will be sent to LangWatch automatically
@@ -106,7 +106,7 @@ def run_agent_interaction(user_message: str):
                 "model": "claude-3-7-sonnet"
             },
         )
-    
+
     response = agent(user_message)
     return response
 ```
@@ -154,7 +154,7 @@ from strands.models.bedrock import BedrockModel
 def my_custom_strands_agents_app(input_message: str):
     # Your Strands Agents code here
     model = BedrockModel(model_id="us.anthropic.claude-3-7-sonnet-20250219-v1:0")
-    
+
     agent = Agent(
         model=model,
         system_prompt="You are a luxury hotel concierge. Help guests with their requests professionally.",
@@ -164,9 +164,9 @@ def my_custom_strands_agents_app(input_message: str):
             "service": "hotel_concierge",
             "environment": "production",
     },
-        
+
     )
-    
+
     # Update the current trace with additional metadata
     current_trace = langwatch.get_current_trace()
     if current_trace:
@@ -178,10 +178,10 @@ def my_custom_strands_agents_app(input_message: str):
                 "model": "claude-3-7-sonnet"
             }
         )
-    
+
     # Run your agent
     response = agent(input_message)
-    
+
     return response
 ```
 
@@ -203,4 +203,4 @@ For more detailed information, refer to the official documentation and other exa
 
 - [Strands Agents Documentation](https://strandsagents.com)
 - [Strands Agents GitHub Cookbook](https://github.com/strands-agents/samples/blob/main/01-tutorials/01-fundamentals/08-observability-and-evaluation/Observability-and-Evaluation-sample.ipynb)
-- [LangWatch Python Integration Guide](/integration/python/guide) 
+- [LangWatch Python Integration Guide](/integration/python/guide)

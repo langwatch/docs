@@ -118,7 +118,7 @@ Configuration for LangWatch integration.
   LangWatch API key for authentication.
 </ResponseField>
 
-<ResponseField name="endpoint" type="Optional<string>" default="https://api.langwatch.ai">
+<ResponseField name="endpoint" type="Optional<string>" default="https://app.langwatch.ai">
   LangWatch endpoint URL for sending traces and logs.
 </ResponseField>
 
@@ -583,7 +583,7 @@ const exporter = new LangWatchExporter({
   Optional API key for LangWatch authentication. If not provided, will use environment variables or fallback configuration.
 </ParamField>
 
-<ParamField path="endpointURL" type="Optional<string>" default="process.env.LANGWATCH_ENDPOINT_URL or https://api.langwatch.com">
+<ParamField path="endpointURL" type="Optional<string>" default="process.env.LANGWATCH_ENDPOINT_URL or https://app.langwatch.com">
   Optional custom endpoint URL for LangWatch ingestion. If not provided, will use environment variables or fallback configuration.
 </ParamField>
 

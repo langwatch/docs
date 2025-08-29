@@ -4334,7 +4334,7 @@ langwatch.setup()
 
 # Configure the telemetry with LangWatch endpoint
 strands_telemetry = StrandsTelemetry().setup_otlp_exporter(
-    endpoint="https://api.langwatch.ai/api/otel/v1/traces",
+    endpoint="https://app.langwatch.ai/api/otel/v1/traces",
     headers={"Authorization": f"Bearer {os.environ['LANGWATCH_API_KEY']}"}
 )
 
@@ -7956,7 +7956,7 @@ Configuration for LangWatch integration.
   LangWatch API key for authentication.
 </ResponseField>
 
-<ResponseField name="endpoint" type="Optional<string>" default="https://api.langwatch.ai">
+<ResponseField name="endpoint" type="Optional<string>" default="https://app.langwatch.ai">
   LangWatch endpoint URL for sending traces and logs.
 </ResponseField>
 
@@ -8421,7 +8421,7 @@ const exporter = new LangWatchExporter({
   Optional API key for LangWatch authentication. If not provided, will use environment variables or fallback configuration.
 </ParamField>
 
-<ParamField path="endpointURL" type="Optional<string>" default="process.env.LANGWATCH_ENDPOINT_URL or https://api.langwatch.com">
+<ParamField path="endpointURL" type="Optional<string>" default="process.env.LANGWATCH_ENDPOINT_URL or https://app.langwatch.com">
   Optional custom endpoint URL for LangWatch ingestion. If not provided, will use environment variables or fallback configuration.
 </ParamField>
 
@@ -9391,7 +9391,7 @@ const handle = await setupObservability({
 <AccordionGroup>
 <Accordion title="No traces appearing in dashboard">
 - Check your API key is correct
-- Verify network connectivity to api.langwatch.ai
+- Verify network connectivity to app.langwatch.ai
 - Ensure `setupObservability` is called before any tracing
 - Check browser console for errors
 - See [Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript) for detailed solutions
