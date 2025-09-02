@@ -54,7 +54,7 @@ helm install langwatch langwatch/langwatch-helm \
   --set app.env.API_TOKEN_JWT_SECRET=$API_TOKEN_JWT_SECRET \
   --set app.env.BASE_HOST=$BASE_HOST \
   --set app.env.NEXTAUTH_URL=$NEXTAUTH_URL \
-  --set app.env.CRON_API_KEY=$CRON_API_KEY
+  --set app.env.CRON_API_KEY=$CRON_API_KEY \
   --set app.env.METRICS_API_KEY=$METRICS_API_KEY \
   --set global.monitoring.enabled=true \
   --set prometheus.enabled=true
