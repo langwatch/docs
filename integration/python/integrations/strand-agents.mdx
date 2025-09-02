@@ -254,8 +254,7 @@ LANGWATCH_ENDPOINT=https://app.langwatch.ai  # Optional, defaults to this value
 
 - Make sure your `LANGWATCH_API_KEY` is set in the environment.
 - If you see no traces in LangWatch, check that the telemetry is properly configured and that your agent code is being executed.
-- Ensure you have the correct API keys set for your chosen LLM provider.
-- For AWS Bedrock, make sure your AWS credentials are properly configured.
+- If you aren't using the LangWatch SDK's automatic OpenTelemetry setup and traces are not showing, double check the url and path given to OpenTelemetry.
 
 ## Next Steps
 
