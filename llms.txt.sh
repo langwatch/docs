@@ -9,11 +9,131 @@ const config = JSON.parse(fs.readFileSync('llms.txt.json', 'utf8'));
 const includePaths = config.includePaths;
 const excludePaths = config.excludePaths || [];
 
-// Output file
+// Read docs.json for navigation structure
+const docsConfig = JSON.parse(fs.readFileSync('docs.json', 'utf8'));
+
+// Output files
 const outputFile = 'llms-full.txt';
+const rootOutputFile = 'llms.txt';
 
 // Clear the output file if it exists
 fs.writeFileSync(outputFile, "# LangWatch\n\n");
+
+// Function to extract frontmatter from MDX files
+function extractFrontmatter(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) {
+      console.warn(`Warning: File not found: ${filePath}`);
+      return { title: null, description: null };
+    }
+
+    const content = fs.readFileSync(filePath, 'utf8');
+    const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
+
+    if (!frontmatterMatch) {
+      return { title: null, description: null };
+    }
+
+    const frontmatter = frontmatterMatch[1];
+    const titleMatch = frontmatter.match(/^title:\s*(.*)$/m);
+    const descriptionMatch = frontmatter.match(/^description:\s*(.*)$/m);
+
+    return {
+      title: titleMatch ? titleMatch[1].replace(/^["']|["']$/g, '') : null,
+      description: descriptionMatch ? descriptionMatch[1].replace(/^["']|["']$/g, '') : null
+    };
+  } catch (err) {
+    console.error(`Error reading frontmatter from ${filePath}: ${err.message}`);
+    return { title: null, description: null };
+  }
+}
+
+// Function to generate title from filename
+function generateTitleFromFilename(filename) {
+  return filename
+    .replace(/\.mdx?$/, '')
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+// Function to process navigation pages recursively
+function processNavigationPages(pages, level = 0, output = []) {
+  const prefix = '#'.repeat(Math.min(3 + level, 6)); // Start at ### and go up to ######
+
+  pages.forEach((page, index) => {
+    const isLastItem = index === pages.length - 1;
+    const nextItem = pages[index + 1];
+    const isNextItemGroup = nextItem && typeof nextItem === 'object' && nextItem.group;
+
+    if (typeof page === 'string') {
+      // It's a direct page reference
+      const cleanPage = page.startsWith('/') ? page.substring(1) : page;
+      const filePath = `${cleanPage}.mdx`;
+      const { title, description } = extractFrontmatter(filePath);
+      const displayTitle = title || generateTitleFromFilename(path.basename(cleanPage));
+      const url = `https://docs.langwatch.ai/${cleanPage}.md`;
+
+      if (description) {
+        output.push(`- [${displayTitle}](${url}): ${description}`);
+      } else {
+        output.push(`- [${displayTitle}](${url})`);
+      }
+
+      // Add spacing after page if next item is a group
+      if (isNextItemGroup) {
+        output.push('');
+      }
+    } else if (page.group && page.pages) {
+      // It's a group with nested pages
+      output.push(`${prefix} ${page.group}`);
+      output.push(''); // Add empty line after group title
+      processNavigationPages(page.pages, level + 1, output);
+
+      // Add spacing after group if not the last item
+      if (!isLastItem) {
+        output.push('');
+      }
+    }
+  });
+
+  return output;
+}
+
+// Function to generate root llms.txt
+function generateRootLlmsTxt() {
+  const docAnchor = docsConfig.navigation.anchors.find(anchor => anchor.anchor === 'Documentation');
+
+  if (!docAnchor) {
+    console.error('Documentation anchor not found in docs.json');
+    return;
+  }
+
+  let content = `# LangWatch
+
+This is the full list of LangWatch documentation, navigate through the files using the markdown navigation links below to understand how to implement LangWatch and use specific features.
+Always navigate to docs links using the .md extension for better readability.
+
+`;
+
+  docAnchor.groups.forEach((group, index) => {
+    content += `## ${group.group}\n\n`;
+    const lines = processNavigationPages(group.pages);
+    content += lines.join('\n');
+    // Add spacing between sections, but not after the last one
+    if (index < docAnchor.groups.length - 1) {
+      content += '\n\n';
+    } else {
+      content += '\n';
+    }
+  });
+
+  // Remove trailing newlines and add single newline at end
+  content = content.replace(/\n\n+$/, '\n');
+
+  fs.writeFileSync(rootOutputFile, content);
+  console.log(`Root llms.txt file generated: ${rootOutputFile}`);
+}
 
 // Function to process imports in an MDX file
 function processImports(content, filePath) {
@@ -130,3 +250,6 @@ if (finalContent.endsWith('\n\n')) {
 }
 
 console.log(`Done! All matching files have been merged into ${outputFile}`);
+
+// Generate the root llms.txt file
+generateRootLlmsTxt();
