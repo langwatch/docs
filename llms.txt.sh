@@ -10,7 +10,7 @@ const includePaths = config.includePaths;
 const excludePaths = config.excludePaths || [];
 
 // Output file
-const outputFile = 'llms.full.txt';
+const outputFile = 'llms-full.txt';
 
 // Clear the output file if it exists
 fs.writeFileSync(outputFile, "# LangWatch\n\n");
