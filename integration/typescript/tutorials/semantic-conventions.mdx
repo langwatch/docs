@@ -118,7 +118,7 @@ await tracer.withActiveSpan("llm-operation", async (span) => {
 ### Autocomplete in Configuration
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { attributes } from "langwatch";
 
 const handle = await setupObservability({

@@ -34,7 +34,7 @@ For consistent attribute naming and semantic conventions, see our [Semantic Conv
 LangWatch supports all OpenTelemetry NodeSDK configuration options:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
@@ -103,7 +103,7 @@ const handle = await setupObservability({
 
 <Step title="After: Using LangWatch with Same Configuration">
   ```typescript
-  import { setupObservability } from "langwatch/observability/setup/node";
+  import { setupObservability } from "langwatch/observability/node";
   import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
   import { JaegerExporter } from "@opentelemetry/exporter-jaeger";
 

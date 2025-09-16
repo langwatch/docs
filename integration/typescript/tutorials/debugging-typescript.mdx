@@ -13,7 +13,7 @@ This guide covers debugging techniques and troubleshooting common issues when in
 Enable console output and detailed logging for development and troubleshooting.
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   langwatch: {
@@ -36,7 +36,7 @@ const handle = await setupObservability({
 Create a custom logger for better integration with your existing logging system:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 // Create a custom logger
 const customLogger = {
@@ -64,7 +64,7 @@ const handle = await setupObservability({
 Configure error handling behavior for different environments:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   langwatch: {
