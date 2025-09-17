@@ -9129,7 +9129,7 @@ export OPENAI_API_KEY=your_openai_api_key_here
 Create a new file `app.ts`:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { getLangWatchTracer } from "langwatch";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
@@ -9304,7 +9304,7 @@ async function handleConversation(userId: string, threadId: string, message: str
 ### Basic Configuration
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   // Required: Your service name
@@ -9854,7 +9854,7 @@ Once you have set up OpenTelemetry, you can use `setupObservability` from the La
 SDK to automatically instrument your application and send your traces to LangWatch:
 
 ```typescript
-import { setupObservability } from 'langwatch/observability/setup/node';
+import { setupObservability } from 'langwatch/observability/node';
 
 const handle = await setupObservability({
   langwatch: {
@@ -11686,7 +11686,7 @@ await tracer.withActiveSpan("llm-operation", async (span) => {
 ### Autocomplete in Configuration
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { attributes } from "langwatch";
 
 const handle = await setupObservability({
@@ -11900,7 +11900,7 @@ For consistent attribute naming and semantic conventions, see our [Semantic Conv
 LangWatch supports all OpenTelemetry NodeSDK configuration options:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
@@ -11969,7 +11969,7 @@ const handle = await setupObservability({
 
 <Step title="After: Using LangWatch with Same Configuration">
   ```typescript
-  import { setupObservability } from "langwatch/observability/setup/node";
+  import { setupObservability } from "langwatch/observability/node";
   import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
   import { JaegerExporter } from "@opentelemetry/exporter-jaeger";
 
@@ -12632,7 +12632,7 @@ Create custom span processors for specialized processing needs, filtering, and m
 Configure custom exporters alongside LangWatch:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 
@@ -12879,7 +12879,7 @@ This guide covers debugging techniques and troubleshooting common issues when in
 Enable console output and detailed logging for development and troubleshooting.
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   langwatch: {
@@ -12902,7 +12902,7 @@ const handle = await setupObservability({
 Create a custom logger for better integration with your existing logging system:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 // Create a custom logger
 const customLogger = {
@@ -12930,7 +12930,7 @@ const handle = await setupObservability({
 Configure error handling behavior for different environments:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   langwatch: {

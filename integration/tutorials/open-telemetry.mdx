@@ -85,7 +85,7 @@ langwatch.setup(
 <CodeGroup>
 
 ```typescript Basic TypeScript Setup
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   langwatch: {
@@ -102,7 +102,7 @@ process.on('SIGTERM', async () => {
 ```
 
 ```typescript TypeScript with Custom Configuration
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { ConsoleSpanExporter } from "@opentelemetry/sdk-trace-base";
 
@@ -335,7 +335,7 @@ langwatch.setup(
 <CodeGroup>
 
 ```typescript TypeScript with Multiple Exporters
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { JaegerExporter } from "@opentelemetry/exporter-jaeger";
 import { LangWatchExporter } from "langwatch";
@@ -357,7 +357,7 @@ const handle = await setupObservability({
 ```
 
 ```typescript TypeScript with Auto-Instrumentation
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
 import { MongoDBInstrumentation } from "@opentelemetry/instrumentation-mongodb";
@@ -434,7 +434,7 @@ langwatch.setup(
 <CodeGroup>
 
 ```typescript TypeScript Sampling Configuration
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { TraceIdRatioBasedSampler, ParentBasedSampler } from "@opentelemetry/sdk-trace-base";
 
 const handle = await setupObservability({
@@ -447,7 +447,7 @@ const handle = await setupObservability({
 ```
 
 ```typescript TypeScript Performance Tuning
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
 
 const handle = await setupObservability({
@@ -579,7 +579,7 @@ if __name__ == "__main__":
 <CodeGroup>
 
 ```typescript TypeScript Complete Example
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { getLangWatchTracer } from "langwatch";
 import { SpanStatusCode } from "@opentelemetry/api";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
@@ -788,7 +788,7 @@ with langwatch.span(name="MyInitialSpanName") as span:
 <CodeGroup>
 
 ```typescript TypeScript Console Exporter for Debugging
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { ConsoleSpanExporter } from "@opentelemetry/sdk-trace-base";
 
 const handle = await setupObservability({

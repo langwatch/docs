@@ -69,7 +69,7 @@ export OPENAI_API_KEY=your_openai_api_key_here
 Create a new file `app.ts`:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 import { getLangWatchTracer } from "langwatch";
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
@@ -244,7 +244,7 @@ async function handleConversation(userId: string, threadId: string, message: str
 ### Basic Configuration
 
 ```typescript
-import { setupObservability } from "langwatch/observability/setup/node";
+import { setupObservability } from "langwatch/observability/node";
 
 const handle = await setupObservability({
   // Required: Your service name
