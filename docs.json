@@ -60,7 +60,7 @@
                   "self-hosting/overview",
                   "self-hosting/docker-compose",
                   "self-hosting/docker-images",
-                  "self-hosting/helm",
+                  "self-hosting/kubernetes-helm",
                   "self-hosting/grafana",
                   "self-hosting/onprem",
                   {
@@ -569,6 +569,10 @@
     {
       "source": "/features/prompt-versioning",
       "destination": "/prompt-management/overview"
+    },
+    {
+      "source": "/self-hosting/helm",
+      "destination": "/self-hosting/kubernetes-helm"
     }
   ]
 }
