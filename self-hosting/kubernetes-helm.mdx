@@ -401,3 +401,33 @@ kubectl delete namespace langwatch
 <Info>
 For context on structure and workflow, see the Langfuse Helm deployment guide as a reference: https://langfuse.com/self-hosting/deployment/kubernetes-helm
 </Info>
+
+## FAQ
+
+<AccordionGroup>
+<Accordion title="Istio/service mesh: wait-for-opensearch job fails">
+If your cluster uses Istio sidecar injection, the pre-install job `wait-for-opensearch` can fail because the job may start before the Istio proxy is ready and cannot reach OpenSearch.
+
+<Warning>
+Workarounds:
+</Warning>
+
+- Disable sidecar injection for the job/pod:
+
+```yaml
+metadata:
+  annotations:
+    sidecar.istio.io/inject: "false"
+```
+
+- Or allow egress to OpenSearch by excluding port 9200 from Envoy interception:
+
+```yaml
+metadata:
+  annotations:
+    traffic.sidecar.istio.io/excludeOutboundPorts: "9200"
+```
+
+Alternatively, configure an Istio `ServiceEntry`/egress policy for your OpenSearch endpoint.
+</Accordion>
+</AccordionGroup>
