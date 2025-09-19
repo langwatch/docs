@@ -323,7 +323,8 @@
                 "pages": [
                   "datasets/overview",
                   "datasets/ai-dataset-generation",
-                  "datasets/automatically-from-traces"
+                  "datasets/automatically-from-traces",
+                  "datasets/dataset-images"
                 ]
               },
               "features/annotations"
