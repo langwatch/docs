@@ -464,9 +464,9 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Visit LangWatch",
+          "anchor": "Sign In to LangWatch",
           "href": "https://app.langwatch.ai",
-          "icon": "link"
+          "icon": "house"
         },
         {
           "anchor": "Visit GitHub",

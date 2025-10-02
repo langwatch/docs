@@ -1,11 +1,13 @@
 ---
-title: n8n Integration
+title: LangWatch +n8n Integration
 sidebarTitle: n8n
 description: Complete LangWatch integration for n8n workflows with observability, evaluation, and prompt management
 keywords: LangWatch, n8n, integration, observability, evaluation, prompts, datasets, workflows, automation
 ---
 
-# LangWatch + n8n Integration
+<Frame>
+  <img src="/images/integration/n8n/cover.webp" alt="LangWatch + n8n Integration" />
+</Frame>
 
 Integrate LangWatch with your n8n workflows to get comprehensive LLM observability, evaluation capabilities, and prompt management. This integration provides both automatic workflow instrumentation and powerful LangWatch nodes for building intelligent automation workflows.
 
@@ -26,16 +28,27 @@ Integrate LangWatch with your n8n workflows to get comprehensive LLM observabili
   </Step>
   
   <Step title="Install LangWatch Nodes">
-    For installing with a local n8n instance:
-    ```bash
-    cd ~/.n8n/nodes
+    <Tabs>
+      <Tab title="Local n8n instance">
+        For installing with a local n8n instance:
+        ```bash
+        cd ~/.n8n/nodes
 
-    npm i @langwatch/n8n-observability @langwatch/n8n-nodes-langwatch
+        npm i @langwatch/n8n-observability @langwatch/n8n-nodes-langwatch
 
-    export EXTERNAL_HOOK_FILES=$(node -e "console.log(require.resolve('@langwatch/n8n-observability/hooks'))")
-    export N8N_OTEL_SERVICE_NAME=my-n8n-instance-name
-    export LANGWATCH_API_KEY=sk-lw-...
-    ```
+        export EXTERNAL_HOOK_FILES=$(node -e "console.log(require.resolve('@langwatch/n8n-observability/hooks'))")
+        export N8N_OTEL_SERVICE_NAME=my-n8n-instance-name
+        export LANGWATCH_API_KEY=sk-lw-...
+        ```
+      </Tab>
+      <Tab title="Docker">
+        For installing with Docker, please refer to the [n8n documentation](https://docs.n8n.io/integrations/community-nodes/installation/manual-install/).
+      </Tab>
+      <Tab title="n8n Cloud">
+        To install the LangWatch nodes in n8n Cloud, you will need to wait until they are
+        verified by n8n and available as community nodes.
+      </Tab>
+    </Tabs>
   </Step>
   
   <Step title="Set up Credentials">
@@ -94,9 +107,8 @@ Process your datasets row by row with full experiment context for batch evaluati
 
 **Configuration Options:**
 - **Dataset**: Slug or ID of your LangWatch dataset
-- **Experiment**: Enable experiment context with ID/name
+- **Experiment**: Enable experiment tracking with ID/name
 - **Row Processing**: Configure start row, end row, step size, and limits
-- **Emit Interval**: Control processing speed (milliseconds)
 
 **Output Fields:**
 - `entry` - Your dataset row payload
@@ -152,7 +164,7 @@ Run evaluators and record results with multiple operation modes for comprehensiv
   </Tab>
   
   <Tab title="Set Outputs (Dataset)">
-    Write evaluation results back to a dataset for further analysis.
+    Write llm input and output back to a dataset for future use.
   </Tab>
 </Tabs>
 
@@ -269,10 +281,14 @@ Workflow observability is only available for self-hosted n8n instances, not n8n 
     Install globally and configure environment variables.
     
     ```bash
-    npm install -g @langwatch/n8n-observability
+    mkdir -p ~/.n8n/nodes
+    cd ~/.n8n/nodes
+    npm i @langwatch/n8n-observability
+
     export LANGWATCH_API_KEY=your_api_key
     export N8N_OTEL_SERVICE_NAME=my-n8n
     export EXTERNAL_HOOK_FILES=$(node -e "console.log(require.resolve('@langwatch/n8n-observability/hooks'))")
+
     n8n start
     ```
   </Tab>
