@@ -12,8 +12,8 @@
     "strict": false
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/dark.svg",
+    "dark": "/logo/light.svg"
   },
   "favicon": "/favicon.svg",
   "contextual": {
@@ -488,11 +488,7 @@
         "href": "https://docs.langwatch.ai/llms.txt"
       },
       {
-        "label": "Support",
-        "href": "https://docs.langwatch.ai/support#email-support"
-      },
-      {
-        "label": "Dashboard",
+        "label": "Sign In",
         "href": "https://app.langwatch.ai"
       }
     ],
