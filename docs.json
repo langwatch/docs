@@ -122,6 +122,7 @@
                   "integration/python/integrations/aws-bedrock",
                   "integration/python/integrations/crew-ai",
                   "integration/python/integrations/dspy",
+                  "integration/n8n",
                   "integration/flowise",
                   "integration/python/integrations/google-ai",
                   "integration/python/integrations/google-genai",
