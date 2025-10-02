@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "LangWatch",
   "colors": {
-    "primary": "#ed8926",
-    "light": "#f2a65a",
-    "dark": "#ed8926"
+    "primary": "#e17100",
+    "light": "#fe9a00",
+    "dark": "#e17100"
   },
   "appearance": {
     "default": "system",
