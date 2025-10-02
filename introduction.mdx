@@ -1,30 +1,223 @@
 ---
-title: Introduction
-description: Welcome to LangWatch, the all-in-one [open-source](https://github.com/langwatch/langwatch) LLMOps platform.
+title: "LangWatch: The Complete LLMOps Platform"
+description: "Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform trusted by 2.5k+ developers."
+sidebarTitle: Introduction
+keywords: langwatch, llm, ai, observability, evaluation, prompt optimization, llmops, open-source, github
 ---
 
-LangWatch allows you to track, monitor, guardrail and evaluate your LLMs apps for measuring quality and alert on issues.
+<Frame>
+  <img
+    className="block"
+    src="/images/langwatch-quick-preview.gif"
+    alt="LangWatch Quick Preview"
+  />
+</Frame>
 
-For domain experts, it allows you to easily sift through conversations, see topics being discussed and annotate and score messages
-for improvement in a collaborative manner with the development team.
+## What is LangWatch?
 
-For developers, it allows you to debug, build datasets, prompt engineer on the playground and
-run batch evaluations or [DSPy experiments](./dspy-visualization/quickstart) to continuously improve the product.
+LangWatch is the **open-source** LLMOps platform that helps teams collaboratively debug, analyze, and iterate on their LLM applications. All platform features are natively integrated to accelerate the development workflow.
 
-Finally, for the business, it allows you to track conversation metrics and give full user and quality analytics, cost tracking, build
-custom dashboards and even integrate it back on your own platform for reporting to your customers.
+Building AI applications is hard. Developers spend weeks debugging issues, optimizing prompts, and ensuring quality. Without proper observability, you're flying blind - you don't know why your AI behaves the way it does, where it fails, or how to improve it.
 
-You can [sign up](https://app.langwatch.ai/) and already start the integration on our free tier by following the guides bellow:
+LangWatch provides the missing observability layer for AI applications. Every LLM call, tool usage, and user interaction is automatically tracked with detailed traces, spans, and metadata. See the full conversation flow, identify bottlenecks, and understand exactly how your AI applications behave in production.
+
+<Info>
+**Real Impact**: Teams using LangWatch report shipping AI features 8x faster with 90% fewer production issues.
+</Info>
+
+## Core Features
+
+LangWatch provides everything you need to build, monitor, and optimize LLM applications through four core capabilities:
 
 <CardGroup cols={2}>
-  <Card title="Python Integration Guide" icon="link" href="./integration/python/guide" />
-  <Card title="TypeScript Integration Guide" icon="link" href="./integration/typescript/guide" />
-  <Card title="REST API" icon="link" href="./integration/rest-api" />
+  <Card
+    title="Real-time Observability"
+    description="Track every LLM call, tool usage, and user interaction with detailed traces, spans, and metadata."
+    icon="chart-network"
+    href="/observability/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Comprehensive Evaluation"
+    description="Measure output quality with built-in evaluators, custom metrics, and human feedback integration."
+    icon="square-check"
+    href="/llm-evaluation/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Prompt Management"
+    description="Version control, test, and optimize prompts with collaborative tools and A/B testing."
+    icon="code"
+    href="/prompt-management/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Cost & Performance Tracking"
+    description="Monitor token usage, costs, and performance metrics across all models and providers."
+    icon="chart-line"
+    href="/features/cost-tracking"
+    arrow
+    horizontal
+  />
 </CardGroup>
 
-You can also [open the demo project](https://app.langwatch.ai/demo) check out a [video](https://www.loom.com/share/17f827b1f5a648298779b36e2dc959e6) on our platform.
+## For Every Role
 
-## Get in touch
+LangWatch serves different needs across your organization, providing value to every team member working with AI applications.
 
-Feel free to reach out to us directly at [support@langwatch.ai](mailto:support@langwatch.ai). You can also open a [GitHub issue](https://github.com/langwatch/langwatch/issues)
-to report bugs and request features, or join our [Discord](https://discord.gg/kT4PhDS2gH) channel and ask questions directly for the community and the core team.
+### For Developers
+
+Debug faster with detailed traces that show exactly what happened in each LLM call. Build datasets from production data, run batch evaluations, and continuously improve your AI applications with comprehensive debugging tools and performance insights.
+
+### For Domain Experts
+
+Easily sift through conversations, see topics being discussed, and annotate messages for improvement in a collaborative manner with the development team. Provide feedback on AI outputs and help guide quality improvements through intuitive interfaces.
+
+### For Business Teams
+
+Track conversation metrics, user analytics, and cost tracking with custom dashboards and reporting. Monitor AI application performance, understand user behavior, and make data-driven decisions about your AI investments.
+
+## Where to Start?
+
+Setting up the full process of online tracing, prompt management, production evaluations, and offline evaluations requires some time. This guide helps you figure out what's most important for your use case.
+
+<CardGroup cols={2}>
+  <Card
+    title="Just Getting Started?"
+    description="Start with basic tracing to understand what's happening in your LLM applications."
+    icon="rocket"
+    href="/integration/quick-start"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Already Instrumented?"
+    description="Add prompt management and evaluation to optimize your existing setup."
+    icon="wrench"
+    href="/prompt-management/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Production Ready?"
+    description="Set up comprehensive monitoring, alerts, and cost tracking for production."
+    icon="chart-line"
+    href="/observability/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Research & Development?"
+    description="Use datasets, experiments, and evaluation tools for systematic testing."
+    icon="flask"
+    href="/llm-evaluation/overview"
+    arrow
+    horizontal
+  />
+</CardGroup>
+
+## Quick Start
+
+Ready to add observability to your LLM application? LangWatch integrates with your existing codebase in just a few lines of code, regardless of your tech stack.
+
+<CardGroup cols={2}>
+  <Card
+    title="Python SDK"
+    description="Integrate with Python applications using our comprehensive SDK with auto-instrumentation."
+    icon="python"
+    href="/integration/python/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="TypeScript SDK"
+    description="Add observability to Node.js and TypeScript applications with minimal code changes."
+    icon="square-js"
+    href="/integration/typescript/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="Go SDK"
+    description="Add observability to Go applications with minimal code changes."
+    icon="golang"
+    href="/integration/go/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="View All Integrations"
+    description="View all integrations with our comprehensive SDKs."
+    icon="plug"
+    href="/integration/overview"
+    horizontal
+    arrow
+  />
+</CardGroup>
+
+<Steps>
+  <Step title="Sign up for free">
+    Create your account at [app.langwatch.ai](https://app.langwatch.ai) to get started with our free tier.
+  </Step>
+  <Step title="Install the SDK">
+    Install the SDK to your project.
+
+    <CodeGroup>
+      ```bash Python
+      pip install langwatch
+      ```
+      ```bash TypeScript
+      npm install langwatch
+      ```
+      ```bash Go
+      go get github.com/langwatch/langwatch/sdk-go
+      ```
+    </CodeGroup>
+  </Step>
+  <Step title="Setup the SDK">
+    Configure the SDK to your project. Choose your preferred language:
+
+    <Tabs>
+      <Tab title="Python">
+        **Quick Setup:**
+        ```python
+        import langwatch
+        langwatch.setup()
+        ```
+
+        <Card title="View Python Guide" arrow horizontal icon="link" href="/integration/python/guide" />
+      </Tab>
+
+      <Tab title="TypeScript">
+        **Quick Setup:**
+        ```typescript
+        import { setupObservability } from "langwatch/observability/node";
+        await setupObservability({ serviceName: "my-app" });
+        ```
+
+        <Card title="View TypeScript Guide" arrow horizontal icon="link" href="/integration/typescript/guide" />
+      </Tab>
+
+      <Tab title="Go">
+        **Quick Setup:**
+        ```go
+        import "github.com/langwatch/langwatch/sdk-go"
+        
+        tracer := langwatch.Tracer("my-app")
+        ctx, span := tracer.Start(ctx, "MyOperation")
+        defer span.End()
+        ```
+
+        <Card title="View Go Guide" arrow horizontal icon="link" href="/integration/go/guide" />
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Start tracking">
+    Your LLM calls are automatically tracked and visible in the LangWatch dashboard.
+  </Step>
+</Steps>
+
+Ready to get started? [Sign up for free](https://app.langwatch.ai) and begin building better AI applications today.
