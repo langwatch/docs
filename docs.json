@@ -25,7 +25,7 @@
     ]
   },
   "banner": {
-    "content": "🚀 Introducing LangWatch for [n8n](/integration/n8n): observability, prompts, and more →",
+    "content": "🚀 Introducing [LangWatch for n8n](/integration/n8n): observability, prompts, and more",
     "dismissible": true
   },
   "api": {
