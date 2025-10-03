@@ -354,8 +354,8 @@
             "group": "No-Code Platforms",
             "pages": [
               "integration/n8n",
-              "integration/flowise",
-              "integration/langflow"
+              "integration/langflow",
+              "integration/flowise"
             ]
           },
           {
