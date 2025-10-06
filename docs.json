@@ -279,6 +279,8 @@
           {
             "group": "Frameworks",
             "pages": [
+              "integration/typescript/integrations/mastra",
+              "integration/python/integrations/vertex-ai",
               {
                 "group": "LangChain",
                 "pages": [
@@ -344,7 +346,6 @@
               },
               "integration/python/integrations/google-genai",
               "integration/python/integrations/aws-bedrock",
-              "integration/python/integrations/vertex-ai",
               "integration/go/integrations/groq",
               "integration/go/integrations/openrouter",
               "integration/go/integrations/ollama"
@@ -359,7 +360,7 @@
             ]
           },
           {
-            "group": "Analytics & Data",
+            "group": "Direct Integrations",
             "pages": [
               "integration/opentelemetry/guide",
               "integration/rest-api",
