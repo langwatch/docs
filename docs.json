@@ -107,7 +107,8 @@
                 "group": "Real-Time Evaluation",
                 "pages": [
                   "llm-evaluation/realtime/setup",
-                  "evaluations/custom-evaluator-integration"
+                  "evaluations/custom-evaluator-integration",
+                  "evaluations/evaluation-by-thread"
                 ]
               },
               {
@@ -126,7 +127,9 @@
                   "datasets/overview",
                   "datasets/ai-dataset-generation",
                   "datasets/automatically-from-traces",
+                  "datasets/dataset-threads",
                   "datasets/dataset-images"
+                 
                 ]
               },
               "features/annotations"
