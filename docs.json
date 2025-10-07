@@ -302,11 +302,13 @@
               "integration/python/integrations/autogen",
               "integration/python/integrations/crew-ai",
               "integration/python/integrations/dspy",
+              "integration/python/integrations/google-ai",
               "integration/python/integrations/haystack",
               "integration/python/integrations/instructor",
               "integration/python/integrations/llamaindex",
               "integration/python/integrations/lite-llm",
               "integration/python/integrations/open-ai-agents",
+              "integration/go/integrations/openrouter",
               "integration/python/integrations/promptflow",
               "integration/python/integrations/pydantic-ai",
               "integration/python/integrations/smolagents",
@@ -340,17 +342,10 @@
                   "integration/go/integrations/azure-openai"
                 ]
               },
-              {
-                "group": "Google AI",
-                "pages": [
-                  "integration/python/integrations/google-ai",
-                  "integration/go/integrations/google-gemini"
-                ]
-              },
+              "integration/go/integrations/google-gemini",
               "integration/python/integrations/google-genai",
               "integration/python/integrations/aws-bedrock",
               "integration/go/integrations/groq",
-              "integration/go/integrations/openrouter",
               "integration/go/integrations/ollama"
             ]
           },
