@@ -303,6 +303,7 @@
               "integration/python/integrations/crew-ai",
               "integration/python/integrations/dspy",
               "integration/python/integrations/google-ai",
+              "integration/java/integrations/spring-ai",
               "integration/python/integrations/haystack",
               "integration/python/integrations/instructor",
               "integration/python/integrations/llamaindex",
