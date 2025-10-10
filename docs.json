@@ -34,9 +34,9 @@
     },
     "examples": {
       "languages": [
-        "curl",
         "python",
-        "typescript"
+        "typescript",
+        "curl"
       ],
       "defaults": "required"
     },
@@ -129,7 +129,7 @@
                   "datasets/automatically-from-traces",
                   "datasets/dataset-threads",
                   "datasets/dataset-images"
-                 
+
                 ]
               },
               "features/annotations"
