@@ -13,6 +13,107 @@ keywords: langwatch, llm, ai, observability, evaluation, prompt optimization, ll
   />
 </Frame>
 
+## Quick Start
+
+Ready to add observability to your LLM application? LangWatch integrates with your existing codebase in just a few lines of code, regardless of your tech stack.
+
+<CardGroup cols={2}>
+  <Card
+    title="Python SDK"
+    description="Integrate with Python applications using our comprehensive SDK with auto-instrumentation."
+    icon="python"
+    href="/integration/python/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="TypeScript SDK"
+    description="Add observability to Node.js and TypeScript applications with minimal code changes."
+    icon="square-js"
+    href="/integration/typescript/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="Go SDK"
+    description="Add observability to Go applications with minimal code changes."
+    icon="golang"
+    href="/integration/go/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="View All Integrations"
+    description="View all integrations with our comprehensive SDKs."
+    icon="plug"
+    href="/integration/overview"
+    horizontal
+    arrow
+  />
+</CardGroup>
+
+<Steps>
+  <Step title="Sign up for free">
+    Create your account at [app.langwatch.ai](https://app.langwatch.ai) to get started with our free tier.
+  </Step>
+  <Step title="Install the SDK">
+    Install the SDK to your project.
+
+    <CodeGroup>
+      ```bash Python
+      pip install langwatch
+      ```
+      ```bash TypeScript
+      npm install langwatch
+      ```
+      ```bash Go
+      go get github.com/langwatch/langwatch/sdk-go
+      ```
+    </CodeGroup>
+  </Step>
+  <Step title="Setup the SDK">
+    Configure the SDK to your project. Choose your preferred language:
+
+    <Tabs>
+      <Tab title="Python">
+        **Quick Setup:**
+        ```python
+        import langwatch
+        langwatch.setup()
+        ```
+
+        <Card title="View Python Guide" arrow horizontal icon="link" href="/integration/python/guide" />
+      </Tab>
+
+      <Tab title="TypeScript">
+        **Quick Setup:**
+        ```typescript
+        import { setupObservability } from "langwatch/observability/node";
+        await setupObservability({ serviceName: "my-app" });
+        ```
+
+        <Card title="View TypeScript Guide" arrow horizontal icon="link" href="/integration/typescript/guide" />
+      </Tab>
+
+      <Tab title="Go">
+        **Quick Setup:**
+        ```go
+        import "github.com/langwatch/langwatch/sdk-go"
+        
+        tracer := langwatch.Tracer("my-app")
+        ctx, span := tracer.Start(ctx, "MyOperation")
+        defer span.End()
+        ```
+
+        <Card title="View Go Guide" arrow horizontal icon="link" href="/integration/go/guide" />
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Start tracking">
+    Your LLM calls are automatically tracked and visible in the LangWatch dashboard.
+  </Step>
+</Steps>
+
 ## What is LangWatch?
 
 LangWatch is the **open-source** LLMOps platform that helps teams collaboratively debug, analyze, and iterate on their LLM applications. All platform features are natively integrated to accelerate the development workflow.
@@ -130,106 +231,5 @@ Setting up the full process of online tracing, prompt management, production eva
     horizontal
   />
 </CardGroup>
-
-## Quick Start
-
-Ready to add observability to your LLM application? LangWatch integrates with your existing codebase in just a few lines of code, regardless of your tech stack.
-
-<CardGroup cols={2}>
-  <Card
-    title="Python SDK"
-    description="Integrate with Python applications using our comprehensive SDK with auto-instrumentation."
-    icon="python"
-    href="/integration/python/guide"
-    horizontal
-    arrow
-  />
-  <Card
-    title="TypeScript SDK"
-    description="Add observability to Node.js and TypeScript applications with minimal code changes."
-    icon="square-js"
-    href="/integration/typescript/guide"
-    horizontal
-    arrow
-  />
-  <Card
-    title="Go SDK"
-    description="Add observability to Go applications with minimal code changes."
-    icon="golang"
-    href="/integration/go/guide"
-    horizontal
-    arrow
-  />
-  <Card
-    title="View All Integrations"
-    description="View all integrations with our comprehensive SDKs."
-    icon="plug"
-    href="/integration/overview"
-    horizontal
-    arrow
-  />
-</CardGroup>
-
-<Steps>
-  <Step title="Sign up for free">
-    Create your account at [app.langwatch.ai](https://app.langwatch.ai) to get started with our free tier.
-  </Step>
-  <Step title="Install the SDK">
-    Install the SDK to your project.
-
-    <CodeGroup>
-      ```bash Python
-      pip install langwatch
-      ```
-      ```bash TypeScript
-      npm install langwatch
-      ```
-      ```bash Go
-      go get github.com/langwatch/langwatch/sdk-go
-      ```
-    </CodeGroup>
-  </Step>
-  <Step title="Setup the SDK">
-    Configure the SDK to your project. Choose your preferred language:
-
-    <Tabs>
-      <Tab title="Python">
-        **Quick Setup:**
-        ```python
-        import langwatch
-        langwatch.setup()
-        ```
-
-        <Card title="View Python Guide" arrow horizontal icon="link" href="/integration/python/guide" />
-      </Tab>
-
-      <Tab title="TypeScript">
-        **Quick Setup:**
-        ```typescript
-        import { setupObservability } from "langwatch/observability/node";
-        await setupObservability({ serviceName: "my-app" });
-        ```
-
-        <Card title="View TypeScript Guide" arrow horizontal icon="link" href="/integration/typescript/guide" />
-      </Tab>
-
-      <Tab title="Go">
-        **Quick Setup:**
-        ```go
-        import "github.com/langwatch/langwatch/sdk-go"
-        
-        tracer := langwatch.Tracer("my-app")
-        ctx, span := tracer.Start(ctx, "MyOperation")
-        defer span.End()
-        ```
-
-        <Card title="View Go Guide" arrow horizontal icon="link" href="/integration/go/guide" />
-      </Tab>
-    </Tabs>
-  </Step>
-  <Step title="Start tracking">
-    Your LLM calls are automatically tracked and visible in the LangWatch dashboard.
-  </Step>
-</Steps>
 
 Ready to get started? [Sign up for free](https://app.langwatch.ai) and begin building better AI applications today.
