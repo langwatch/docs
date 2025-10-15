@@ -347,7 +347,7 @@ prometheus:
 kubectl create namespace langwatch
 
 # Install using your chosen values file
-helm install langwatch langwatch/langwatch \
+helm install langwatch langwatch/langwatch-helm \
   -n langwatch \
   -f values.prod.yaml # or values.dev.yaml, values.half-managed.yaml, values.minimal.yaml
 ```
@@ -368,7 +368,7 @@ Open `http://localhost:5560`.
 
 ```bash
 helm repo update
-helm upgrade langwatch langwatch/langwatch \
+helm upgrade langwatch langwatch/langwatch-helm \
   -n langwatch \
   -f values.prod.yaml # or your chosen values file
 ```
