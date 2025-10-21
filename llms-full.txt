@@ -3,35 +3,244 @@
 # FILE: ./introduction.mdx
 
 ---
-title: Introduction
-description: Welcome to LangWatch, the all-in-one [open-source](https://github.com/langwatch/langwatch) LLMOps platform.
+title: "LangWatch: The Complete LLMOps Platform"
+description: "Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub."
+sidebarTitle: Introduction
+keywords: langwatch, llm, ai, observability, evaluation, prompt optimization, llmops, open-source, github
 ---
 
-LangWatch allows you to track, monitor, guardrail and evaluate your LLMs apps for measuring quality and alert on issues.
+<Frame>
+  <img
+    className="block"
+    src="/images/langwatch-quick-preview.gif"
+    alt="LangWatch Quick Preview"
+  />
+</Frame>
 
-For domain experts, it allows you to easily sift through conversations, see topics being discussed and annotate and score messages
-for improvement in a collaborative manner with the development team.
+## Quick Start
 
-For developers, it allows you to debug, build datasets, prompt engineer on the playground and
-run batch evaluations or [DSPy experiments](./dspy-visualization/quickstart) to continuously improve the product.
-
-Finally, for the business, it allows you to track conversation metrics and give full user and quality analytics, cost tracking, build
-custom dashboards and even integrate it back on your own platform for reporting to your customers.
-
-You can [sign up](https://app.langwatch.ai/) and already start the integration on our free tier by following the guides bellow:
+Ready to add observability to your LLM application? LangWatch integrates with your existing codebase in just a few lines of code, regardless of your tech stack.
 
 <CardGroup cols={2}>
-  <Card title="Python Integration Guide" icon="link" href="./integration/python/guide" />
-  <Card title="TypeScript Integration Guide" icon="link" href="./integration/typescript/guide" />
-  <Card title="REST API" icon="link" href="./integration/rest-api" />
+  <Card
+    title="Python SDK"
+    description="Integrate with Python applications using our comprehensive SDK with auto-instrumentation."
+    icon="python"
+    href="/integration/python/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="TypeScript SDK"
+    description="Add observability to Node.js and TypeScript applications with minimal code changes."
+    icon="square-js"
+    href="/integration/typescript/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="Go SDK"
+    description="Add observability to Go applications with minimal code changes."
+    icon="golang"
+    href="/integration/go/guide"
+    horizontal
+    arrow
+  />
+  <Card
+    title="View All Integrations"
+    description="View all integrations with our comprehensive SDKs."
+    icon="plug"
+    href="/integration/overview"
+    horizontal
+    arrow
+  />
 </CardGroup>
 
-You can also [open the demo project](https://app.langwatch.ai/demo) check out a [video](https://www.loom.com/share/17f827b1f5a648298779b36e2dc959e6) on our platform.
+<Steps>
+  <Step title="Sign up for free">
+    Create your account at [app.langwatch.ai](https://app.langwatch.ai) to get started with our free tier.
+  </Step>
+  <Step title="Install the SDK">
+    Install the SDK to your project.
 
-## Get in touch
+    <CodeGroup>
+      ```bash Python
+      pip install langwatch
+      ```
+      ```bash TypeScript
+      npm install langwatch
+      ```
+      ```bash Go
+      go get github.com/langwatch/langwatch/sdk-go
+      ```
+    </CodeGroup>
+  </Step>
+  <Step title="Setup the SDK">
+    Configure the SDK to your project. Choose your preferred language:
 
-Feel free to reach out to us directly at [support@langwatch.ai](mailto:support@langwatch.ai). You can also open a [GitHub issue](https://github.com/langwatch/langwatch/issues)
-to report bugs and request features, or join our [Discord](https://discord.gg/kT4PhDS2gH) channel and ask questions directly for the community and the core team.
+
+      ### Python
+
+        **Quick Setup:**
+        ```python
+        import langwatch
+        langwatch.setup()
+        ```
+
+        <Card title="View Python Guide" arrow horizontal icon="link" href="/integration/python/guide" />
+
+
+      ### TypeScript
+
+        **Quick Setup:**
+        ```typescript
+        import { setupObservability } from "langwatch/observability/node";
+        await setupObservability({ serviceName: "my-app" });
+        ```
+
+        <Card title="View TypeScript Guide" arrow horizontal icon="link" href="/integration/typescript/guide" />
+
+
+      ### Go
+
+        **Quick Setup:**
+        ```go
+        import "github.com/langwatch/langwatch/sdk-go"
+
+        tracer := langwatch.Tracer("my-app")
+        ctx, span := tracer.Start(ctx, "MyOperation")
+        defer span.End()
+        ```
+
+        <Card title="View Go Guide" arrow horizontal icon="link" href="/integration/go/guide" />
+
+
+  </Step>
+  <Step title="Start tracking">
+    Your LLM calls are automatically tracked and visible in the LangWatch dashboard.
+  </Step>
+</Steps>
+
+## What is LangWatch?
+
+LangWatch is the **open-source** LLMOps platform that helps teams collaboratively debug, analyze, and iterate on their LLM applications. All platform features are natively integrated to accelerate the development workflow.
+
+Building AI applications is hard. Developers spend weeks debugging issues, optimizing prompts, and ensuring quality. Without proper observability, you're flying blind - you don't know why your AI behaves the way it does, where it fails, or how to improve it.
+
+LangWatch provides the missing operations platform for AI applications. Observe every LLM call, tool usage, and user interaction is automatically tracked with detailed traces, spans, and metadata. See the full conversation flow, identify bottlenecks, and understand exactly how your AI applications behave in production.
+
+## Core Features
+
+LangWatch provides everything you need to build, monitor, and optimize LLM applications through four core capabilities:
+
+<CardGroup cols={2}>
+  <Card
+    title="Real-time Observability"
+    description="Track every LLM call, tool usage, and user interaction with detailed traces, spans, and metadata."
+    icon="chart-network"
+    href="/observability/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Agent Simulation Testing"
+    description="Test and optimize agents with collaborative tools and A/B testing."
+    icon="masks-theater"
+    href="/agent-simulations/introduction"
+    arrow
+    horizontal
+  />
+  <Card
+    title="LLM Evaluation"
+    description="Measure output quality with built-in evaluators, custom metrics, and human feedback integration."
+    icon="square-check"
+    href="/llm-evaluation/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Prompt Management"
+    description="Version control, test, and optimize prompts with collaborative tools and A/B testing."
+    icon="code"
+    href="/prompt-management/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Cost & Performance Tracking"
+    description="Monitor token usage, costs, and performance metrics across all models and providers."
+    icon="chart-line"
+    href="/integration/python/tutorials/tracking-llm-costs"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Alerts & Triggersfeatures/triggers"
+    description="Set up alerts and triggers for your LLM applications."
+    icon="bell"
+    href="/features/triggers"
+    arrow
+    horizontal
+  />
+</CardGroup>
+
+## For Every Role
+
+LangWatch serves different needs across your organization, providing value to every team member working with AI applications.
+
+### For Developers
+
+Debug faster with detailed traces that show exactly what happened in each LLM call. Build datasets from production data, run batch evaluations, and continuously improve your AI applications with comprehensive debugging tools and performance insights.
+
+### For Domain Experts
+
+Easily sift through conversations, see topics being discussed, and annotate messages for improvement in a collaborative manner with the development team. Provide feedback on AI outputs and help guide quality improvements through intuitive interfaces.
+
+### For Business Teams
+
+Track conversation metrics, user analytics, and cost tracking with custom dashboards and reporting. Monitor AI application performance, understand user behavior, and make data-driven decisions about your AI investments.
+
+## Where to Start?
+
+Setting up the full process of online tracing, prompt management, production evaluations, and offline evaluations requires some time. This guide helps you figure out what's most important for your use case.
+
+<CardGroup cols={2}>
+  <Card
+    title="Just Getting Started?"
+    description="Start with basic tracing to understand what's happening in your LLM applications."
+    icon="rocket"
+    href="/integration/quick-start"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Already Instrumented?"
+    description="Add prompt management and evaluation to optimize your existing setup."
+    icon="wrench"
+    href="/prompt-management/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Production Ready?"
+    description="Set up comprehensive monitoring, alerts, and cost tracking for production."
+    icon="chart-line"
+    href="/observability/overview"
+    arrow
+    horizontal
+  />
+  <Card
+    title="Research & Development?"
+    description="Use datasets, experiments, and evaluation tools for systematic testing."
+    icon="flask"
+    href="/llm-evaluation/overview"
+    arrow
+    horizontal
+  />
+</CardGroup>
+
+Ready to get started? [Sign up for free](https://app.langwatch.ai) and begin building better AI applications today.
+
 ---
 
 # FILE: ./concepts.mdx
@@ -105,17 +314,108 @@ Labels make it easy to zoom in on specific features or A/B test different approa
 # FILE: ./integration/overview.mdx
 
 ---
-title: Overview
-description: Easily integrate LangWatch with your Python, TypeScript, or REST API projects.
+title: "Getting Started"
+description: "LangWatch integrates with all major LLM providers, frameworks, and tools. See our complete list of integrations below."
 ---
 
-Integrating LangWatch into your projects is designed to be a straightforward process. Regardless of the language or LLM model you are using, you can set up LangWatch with minimal configuration and start gathering valuable insights into your LLM's performance and user interactions.
+# LangWatch, anywhere you go
+
+<Tip>
+**Pro Tip**: Start with our [Quick Start Guide](/integration/quick-start) to get up and running in minutes, then explore specific integrations based on your tech stack.
+</Tip>
+
+LangWatch is designed to be the most open and flexible platform for LLM observability that integrates with all the major LLM providers, frameworks, and tools. See a full list of integrations below.
+
+LangWatch is based on OpenTelemetry. Use our Python SDK, TypeScript SDK, or Go SDK to log traces to LangWatch. Alternatively, you can also directly use our OpenTelemetry Endpoint from any language.
+
+### SDK's
+
+LangWatch provides SDKs for all several programming languages.
 
 <CardGroup cols={2}>
-  <Card title="Python Integration Guide" icon="link" href="./python/guide" />
-  <Card title="TypeScript Integration Guide" icon="link" href="./typescript/guide" />
-  <Card title="REST API" icon="link" href="./rest-api" />
+<Card title="Python SDK" icon="python" href="/integration/python/guide" arrow>
+  Complete Python SDK with automatic instrumentation for popular frameworks
+</Card>
+
+<Card title="TypeScript SDK" icon="square-js" href="/integration/typescript/guide" arrow>
+  Full-featured TypeScript/JavaScript SDK with type safety
+</Card>
+
+<Card title="Go SDK" icon="golang" href="/integration/go/guide" arrow>
+  High-performance Go SDK for server-side applications
+</Card>
+
+<Card title="OpenTelemetry" icon="telescope" href="/integration/opentelemetry/guide" arrow>
+  Native OpenTelemetry integration for any language
+</Card>
 </CardGroup>
+
+### Frameworks
+
+Use LangWatch to effortlessly integrate with popular AI frameworks
+
+<CardGroup cols={3}>
+<Card title="LangChain" icon="/images/logos/langchain.svg" href="/integration/python/integrations/langchain" horizontal arrow />
+<Card title="LangGraph" icon="/images/logos/langchain.svg" href="/integration/python/integrations/langgraph" horizontal arrow />
+<Card title="Agno" icon="/images/logos/agno.png" href="/integration/python/integrations/agno" horizontal arrow />
+<Card title="DSPy" icon="/images/logos/dspy.webp" href="/integration/python/integrations/dspy" horizontal arrow />
+<Card title="LlamaIndex" icon="/images/logos/llamaindex.png" href="/integration/python/integrations/llamaindex" horizontal arrow />
+<Card title="Haystack" icon="/images/logos/haystack.png" href="/integration/python/integrations/haystack" horizontal arrow />
+<Card title="CrewAI" icon="/images/logos/crewai.svg" href="/integration/python/integrations/crew-ai" horizontal arrow />
+<Card title="AutoGen" icon="/images/logos/ag.svg" href="/integration/python/integrations/autogen" horizontal arrow />
+<Card title="Semantic Kernel" icon="/images/logos/semantic-kernel.png" href="/integration/python/integrations/semantic-kernel" horizontal arrow />
+<Card title="Pydantic AI" icon="/images/logos/pydanticai.svg" href="/integration/python/integrations/pydantic-ai" horizontal arrow />
+<Card title="Spring AI" icon="/images/logos/spring-boot.svg" href="/integration/java/integrations/spring-ai" horizontal arrow />
+<Card title="Strand Agents" icon="/images/logos/strand-agents.svg" href="/integration/python/integrations/strand-agents" horizontal arrow />
+<Card title="Lite LLM" icon="/images/logos/litellm.avif" href="/integration/python/integrations/lite-llm" horizontal arrow />
+<Card title="OpenAI Agents" icon="/images/logos/openai.svg" href="/integration/python/integrations/open-ai-agents" horizontal arrow />
+<Card title="PromptFlow" icon="/images/logos/promptflow.svg" href="/integration/python/integrations/promptflow" horizontal arrow />
+<Card title="Google ADK" icon="/images/logos/google.svg" href="/integration/python/integrations/google-ai" horizontal arrow />
+</CardGroup>
+
+### Model Providers
+
+Use LangWatch to effortlessly integrate with popular AI model providers
+
+<CardGroup cols={3}>
+<Card title="OpenAI" icon="/images/logos/openai.svg" href="/integration/python/integrations/open-ai" horizontal arrow />
+<Card title="Anthropic Claude" icon="/images/logos/anthropic.svg" href="/integration/python/integrations/anthropic" horizontal arrow />
+<Card title="Gemini" icon="/images/logos/google.svg" href="/integration/go/integrations/google-gemini" horizontal arrow />
+<Card title="Azure AI" icon="/images/logos/azure.svg" href="/integration/python/integrations/azure-ai" horizontal arrow />
+<Card title="AWS Bedrock" icon="/images/logos/aws.svg" href="/integration/python/integrations/aws-bedrock" horizontal arrow />
+<Card title="Groq" icon="/images/logos/groq.svg" href="/integration/go/integrations/groq" horizontal arrow />
+<Card title="Ollama" icon="/images/logos/ollama.png" href="/integration/go/integrations/ollama" horizontal arrow />
+<Card title="OpenRouter" icon="/images/logos/openrouter.svg" href="/integration/go/integrations/openrouter" horizontal arrow />
+<Card title="Vertex AI" icon="/images/logos/google.svg" href="/integration/python/integrations/vertex-ai" horizontal arrow />
+</CardGroup>
+
+### No-Code Platforms
+
+No-code agent builders and tools
+
+<CardGroup cols={3}>
+<Card title="n8n" icon="/images/logos/n8n.svg" href="/integration/n8n" horizontal arrow />
+<Card title="Flowise" icon="/images/logos/flowise.svg" href="/integration/flowise" horizontal arrow />
+<Card title="Langflow" icon="/images/logos/langflow.svg" href="/integration/langflow" horizontal arrow />
+</CardGroup>
+
+### Other Official LangWatch Integrations
+
+LangWatch provides several official integrations with other tools and services.
+
+<CardGroup cols={2}>
+<Card title="REST API" icon="globe" href="/integration/rest-api" horizontal arrow>
+  Direct API integration for custom applications
+</Card>
+
+<Card title="MCP" icon="brain-circuit" href="/integration/mcp" horizontal arrow>
+  Model Context Protocol integration
+</Card>
+</CardGroup>
+
+## Request a new integration
+
+We use [GitHub Discussions](https://github.com/orgs/langwatch/discussions/new?category=integration-request) to track interest in new integrations. Please upvote/add to the list below if you'd like to see a new integration.
 
 ---
 
@@ -1874,6 +2174,7 @@ This approach allows you to combine the automatic tracing capabilities of Prompt
 title: LangChain Instrumentation
 sidebarTitle: Python
 description: Learn how to instrument Langchain applications with the LangWatch Python SDK.
+icon: python
 keywords: langchain, instrumentation, callback, opentelemetry, langwatch, python, tracing, openinference, openllmetry
 ---
 
@@ -2234,7 +2535,7 @@ agent.print_response("What is the current price of Tesla?")
 - Make sure your `LANGWATCH_API_KEY` is set in the environment.
 - If you see no traces in LangWatch, check that the instrumentor is included in `langwatch.setup()` and that your agent code is being executed.
 
-For more details, see the [LangWatch Python SDK reference](/integration/python/reference) and the [Agno documentation](https://docs.agno.com/observability/langfuse).
+For more details, see the [LangWatch Python SDK reference](/integration/python/reference) and the [Agno documentation](https://docs.agno.com/integrations/observability/introduction#opentelemetry).
 
 ---
 
@@ -4830,6 +5131,7 @@ By following these steps, you can effectively monitor your PydanticAI applicatio
 title: Anthropic Instrumentation
 sidebarTitle: Python
 description: Learn how to instrument Anthropic API calls with the LangWatch Python SDK
+icon: python
 keywords: anthropic, claude, instrumentation, autotrack, openinference, openllmetry, LangWatch, Python
 ---
 
@@ -5014,6 +5316,7 @@ Choose the method that best fits your existing setup and instrumentation needs. 
 title: LangGraph Instrumentation
 sidebarTitle: LangGraph
 description: Learn how to instrument LangGraph applications with the LangWatch Python SDK.
+icon: python
 keywords: langgraph, instrumentation, callback, opentelemetry, langwatch, python, tracing, openinference, openllmetry
 ---
 
@@ -5038,12 +5341,12 @@ import langwatch
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
-from openinference.instrumentation.langchain import LangchainInstrumentor
+from openinference.instrumentation.langchain import LangChainInstrumentor
 import os
 import asyncio
 
 langwatch.setup(
-    instrumentors=[LangchainInstrumentor()] # Add OpenInference LangchainInstrumentor
+    instrumentors=[LangChainInstrumentor()] # Add OpenInference LangChainInstrumentor
 )
 
 model = ChatOpenAI()
@@ -5073,12 +5376,12 @@ import langwatch
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
-from opentelemetry.instrumentation.langchain import LangchainInstrumentor # Corrected import
+from opentelemetry.instrumentation.langchain import LangChainInstrumentor
 import os
 import asyncio
 
 langwatch.setup(
-    instrumentors=[LangchainInstrumentor()] # Add OpenLLMetry LangchainInstrumentor
+    instrumentors=[LangChainInstrumentor()] # Add OpenLLMetry LangChainInstrumentor
 )
 
 model = ChatOpenAI()
@@ -5113,12 +5416,12 @@ import langwatch
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
-from openinference.instrumentation.langchain import LangchainInstrumentor
+from openinference.instrumentation.langchain import LangChainInstrumentor
 import os
 import asyncio
 
 langwatch.setup()
-LangchainInstrumentor().instrument() # Instrument Langchain directly
+LangChainInstrumentor().instrument() # Instrument Langchain directly
 
 model = ChatOpenAI()
 prompt = ChatPromptTemplate.from_messages([
@@ -5147,12 +5450,12 @@ import langwatch
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
-from opentelemetry.instrumentation.langchain import LangchainInstrumentor # Corrected import
+from opentelemetry.instrumentation.langchain import LangChainInstrumentor
 import os
 import asyncio
 
 langwatch.setup()
-LangchainInstrumentor().instrument() # Instrument Langchain directly
+LangChainInstrumentor().instrument() # Instrument Langchain directly
 
 model = ChatOpenAI()
 prompt = ChatPromptTemplate.from_messages([
@@ -5618,6 +5921,7 @@ By leveraging the `BaseInstrumentor` interface, LangWatch remains flexible and e
 title: Azure AI Inference SDK Instrumentation
 sidebarTitle: Python
 description: Learn how to instrument the Azure AI Inference Python SDK with LangWatch.
+icon: python
 keywords: azure ai inference, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -6066,6 +6370,7 @@ This approach allows you to combine the automatic tracing capabilities of AutoGe
 title: OpenAI Instrumentation
 sidebarTitle: Python
 description: Learn how to instrument OpenAI API calls with the LangWatch Python SDK
+icon: python
 keywords: openai, instrumentation, autotrack, openinference, openllmetry, LangWatch, Python
 ---
 
@@ -6223,6 +6528,7 @@ Choose the method that best fits your existing setup and instrumentation needs. 
 title: Capturing Metadata and Attributes
 sidebarTitle: Python
 description: Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch Python SDK.
+icon: python
 keywords: langwatch, python, metadata, attributes, tracing, spans, traces
 ---
 
@@ -6672,6 +6978,7 @@ By combining these methods, you can build a robust evaluation and guardrailing s
 title: Capturing RAG
 sidebarTitle: Capturing RAG
 description: Learn how to capture Retrieval Augmented Generation (RAG) data with LangWatch.
+icon: python
 keywords: RAG, Retrieval Augmented Generation, LangChain, LangWatch, LangChain RAG, RAG Span, RAG Chunk, RAG Tool
 ---
 
@@ -6905,7 +7212,9 @@ By effectively capturing RAG spans, you gain much richer data in LangWatch, enab
 ---
 title: Capturing and Mapping Inputs & Outputs
 sidebarTitle: Python
+icon: python
 description: Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch Python SDK.
+keywords: langwatch, python, input, output, capture, mapping, data, tracing, spans, observability
 ---
 
 Effectively capturing the inputs and outputs of your LLM application's operations is crucial for observability. LangWatch provides flexible ways to manage this data, whether you prefer automatic capture or explicit control to map complex objects, format data, or redact sensitive information.
@@ -7684,6 +7993,7 @@ langwatch.setup(
 title: Tracking LLM Costs and Tokens
 sidebarTitle: Python
 description: Troubleshooting & adjusting cost tracking in LangWatch
+icon: python
 keywords: LangWatch, cost tracking, token counting, debugging, troubleshooting, model costs, metrics, LLM spans
 ---
 
@@ -9506,8 +9816,9 @@ Start simple and add complexity gradually. You can always add more detailed trac
 
 ---
 title: LangChain Instrumentation
-sidebarTitle: TypeScript
+sidebarTitle: TypeScript/JS
 description: Learn how to instrument Langchain applications with the LangWatch TypeScript SDK.
+icon: square-js
 keywords: langchain, instrumentation, callback, opentelemetry, langwatch, typescript, tracing, openllmetry
 ---
 
@@ -9892,8 +10203,10 @@ For production Vercel AI SDK applications, combine manual instrumentation with [
 
 ---
 title: Azure OpenAI
-sidebarTitle: TS/JS
+sidebarTitle: TypeScript/JS
+icon: square-js
 description: LangWatch Azure OpenAI integration guide
+keywords: azure openai, langwatch, typescript, javascript, sdk, instrumentation, opentelemetry
 ---
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
@@ -10099,8 +10412,9 @@ For production Azure AI applications, combine manual instrumentation with [Seman
 
 ---
 title: LangGraph Instrumentation
-sidebarTitle: TypeScript
+sidebarTitle: TypeScript/JS
 description: Learn how to instrument LangGraph applications with the LangWatch TypeScript SDK.
+icon: square-js
 keywords: langgraph, instrumentation, callback, opentelemetry, langwatch, typescript, tracing, openllmetry, state graph, workflow
 ---
 
@@ -10730,8 +11044,10 @@ For production Mastra applications, combine manual instrumentation with [Semanti
 
 ---
 title: OpenAI
-sidebarTitle: TS/JS
+sidebarTitle: TypeScript/JS
 description: LangWatch OpenAI TypeScript integration guide
+icon: square-js
+keywords: openai, langwatch, typescript, javascript, sdk, instrumentation, opentelemetry
 ---
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
@@ -10930,6 +11246,8 @@ For production OpenAI applications, combine manual instrumentation with [Semanti
 title: Capturing Metadata and Attributes
 sidebarTitle: TypeScript/JS
 description: Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch TypeScript SDK.
+icon: square-js
+keywords: langwatch, typescript, javascript, metadata, attributes, tracing, spans, traces
 ---
 
 Metadata and attributes are key-value pairs that allow you to add custom contextual information to your traces and spans. This enrichment is invaluable for debugging, analysis, filtering, and gaining deeper insights into your LLM application's behavior.
@@ -11298,6 +11616,7 @@ Remember to instrument your code thoughtfully, adding data that provides meaning
 title: Capturing RAG
 sidebarTitle: TypeScript/JS
 description: Learn how to capture Retrieval Augmented Generation (RAG) data with LangWatch.
+icon: square-js
 keywords: RAG, Retrieval Augmented Generation, LangChain, LangWatch, LangChain RAG, RAG Span, RAG Chunk, RAG Tool
 ---
 
@@ -13032,8 +13351,9 @@ For complex debugging scenarios, combine console tracing with [Manual Instrument
 ---
 title: Capturing and Mapping Inputs & Outputs
 sidebarTitle: TypeScript/JS
+icon: square-js
 description: Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch TypeScript SDK.
-
+keywords: langwatch, typescript, javascript, input, output, capture, mapping, data, tracing, spans, observability
 ---
 
 Effectively capturing the inputs and outputs of your LLM application's operations is crucial for observability. LangWatch provides flexible ways to manage this data, whether you prefer automatic capture or explicit control to map complex objects, format data, or redact sensitive information.
@@ -13421,6 +13741,7 @@ Controlling how inputs and outputs are captured in LangWatch allows you to tailo
 title: Tracking LLM Costs and Tokens
 sidebarTitle: TypeScript/JS
 description: Troubleshooting & adjusting cost tracking in LangWatch
+icon: square-js
 keywords: LangWatch, cost tracking, token counting, debugging, troubleshooting, model costs, metrics, LLM spans
 ---
 
@@ -13664,7 +13985,10 @@ Cost and token tracking should work reliably once the model information and metr
 
 ---
 title: REST API
+sidebarTitle: HTTP API
+icon: globe
 description: Integrate LangWatch with any language by using the REST API
+keywords: LangWatch, REST API, HTTP API, curl, integration, observability, evaluation, prompts, datasets, workflows, automation
 ---
 
 If your preferred programming language or platform is not directly supported by the existing LangWatch libraries, you can use the REST API with `curl` to send trace data. This guide will walk you through how to integrate LangWatch with any system that allows HTTP requests.
@@ -13770,8 +14094,10 @@ After following the above guide, your interactions with LLMs should now be captu
 
 ---
 title: OpenTelemetry Integration Guide
-sidebarTitle: Guide
+sidebarTitle: OpenTelemetry
 description: Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
+icon: telescope
+keywords: langwatch, opentelemetry, integration, guide, java, c#, .net, python, typescript, javascript, go, sdk, open telemetry, open telemetry integration, open telemetry guide, open telemetry integration guide, open telemetry integration guide java, open telemetry integration guide c#, open telemetry integration guide .net, open telemetry integration guide python, open telemetry integration guide typescript, open telemetry integration guide javascript, open telemetry integration guide go
 ---
 
 OpenTelemetry is a vendor-neutral standard for observability that provides a unified way to capture traces, metrics, and logs. LangWatch is fully compatible with OpenTelemetry, allowing you to use any OpenTelemetry-compatible library in any programming language to capture your LLM traces and send them to LangWatch.
@@ -17013,4 +17339,24 @@ The evaluation `name` is required and must be a string. The other fields are opt
 ```
 
 
+---
+
+# FILE: ./evaluations/evaluation-by-thread.mdx
+
+---
+title: Evaluation by Thread
+description: Evaluate your LLM applications by thread
+---
+
+With LangWatch, you can evaluate your LLM applications by thread. This approach is useful for analyzing the performance of your LLM applications across entire conversation threads, helping you identify which threads are performing well or poorly.
+
+To set up evaluation by thread, toggle the thread-based mapping option when creating an evaluation.
+
+<Frame>
+<img className="block" src="/images/dataset-thread-evaluation.png" alt="LangWatch Evaluation by Thread" />
+</Frame>
+
+This enables thread-based evaluation where each time a trace is evaluated, the full thread context is retrieved and passed to the evaluation function. This approach builds upon the complete conversation thread rather than individual traces.
+
+By default, we include the trace INPUT and OUTPUT fields in the evaluation. You can add additional fields to the evaluation by including them in your dataset.
 ---
