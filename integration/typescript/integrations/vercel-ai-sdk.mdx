@@ -87,7 +87,7 @@ SDK to automatically instrument your application and send your traces to LangWat
 ```typescript
 import { setupObservability } from 'langwatch/observability/node';
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY, // optional, defaults to LANGWATCH_API_KEY env var
   },

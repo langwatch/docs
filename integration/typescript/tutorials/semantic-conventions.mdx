@@ -121,7 +121,7 @@ await tracer.withActiveSpan("llm-operation", async (span) => {
 import { setupObservability } from "langwatch/observability/node";
 import { attributes } from "langwatch";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   serviceName: "my-service",
   attributes: {
     // Autocomplete shows all available LangWatch attributes

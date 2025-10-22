@@ -15,7 +15,7 @@ Enable console output and detailed logging for development and troubleshooting.
 ```typescript
 import { setupObservability } from "langwatch/observability/node";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'simple' // Use 'simple' for immediate export during debugging
@@ -46,7 +46,7 @@ const customLogger = {
   error: (message: string) => console.error(`[ERROR] ${message}`),
 };
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -66,7 +66,7 @@ Configure error handling behavior for different environments:
 ```typescript
 import { setupObservability } from "langwatch/observability/node";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -105,7 +105,7 @@ const handle = await setupObservability({
 ### Development Environment
 
 ```typescript
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'simple' // Immediate export for debugging
@@ -122,7 +122,7 @@ const handle = await setupObservability({
 ### Production Environment
 
 ```typescript
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'batch' // Efficient batching for production

@@ -87,7 +87,7 @@ langwatch.setup(
 ```typescript Basic TypeScript Setup
 import { setupObservability } from "langwatch/observability/node";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -106,7 +106,7 @@ import { setupObservability } from "langwatch/observability/node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { ConsoleSpanExporter } from "@opentelemetry/sdk-trace-base";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'batch'
@@ -340,7 +340,7 @@ import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { JaegerExporter } from "@opentelemetry/exporter-jaeger";
 import { LangWatchExporter } from "langwatch";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: 'disabled', // Disable default LangWatch integration
   serviceName: "my-service",
   spanProcessors: [
@@ -362,7 +362,7 @@ import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
 import { MongoDBInstrumentation } from "@opentelemetry/instrumentation-mongodb";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -437,7 +437,7 @@ langwatch.setup(
 import { setupObservability } from "langwatch/observability/node";
 import { TraceIdRatioBasedSampler, ParentBasedSampler } from "@opentelemetry/sdk-trace-base";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -450,7 +450,7 @@ const handle = await setupObservability({
 import { setupObservability } from "langwatch/observability/node";
 import { TraceIdRatioBasedSampler } from "@opentelemetry/sdk-trace-base";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'batch'
@@ -587,7 +587,7 @@ import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
 import OpenAI from "openai";
 
 // 1. Setup Observability
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -791,7 +791,7 @@ with langwatch.span(name="MyInitialSpanName") as span:
 import { setupObservability } from "langwatch/observability/node";
 import { ConsoleSpanExporter } from "@opentelemetry/sdk-trace-base";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -948,7 +948,7 @@ provider.add_span_processor(SimpleSpanProcessor(ConsoleSpanExporter()))
 
 ```typescript TypeScript Debugging Migration
 // Enable detailed logging during migration
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },

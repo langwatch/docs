@@ -40,7 +40,7 @@ import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { envDetector, processDetector, hostDetector } from "@opentelemetry/resources";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'batch'
@@ -107,7 +107,7 @@ const handle = await setupObservability({
   import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
   import { JaegerExporter } from "@opentelemetry/exporter-jaeger";
 
-  const handle = await setupObservability({
+  const handle = setupObservability({
     langwatch: {
       apiKey: process.env.LANGWATCH_API_KEY
     },
@@ -148,7 +148,7 @@ const parentBasedSampler = new ParentBasedSampler({
   localParentNotSampled: new AlwaysOffSampler(),
 });
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -173,7 +173,7 @@ const customResource = new Resource({
   "custom.datacenter": "us-west-2"
 });
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -195,7 +195,7 @@ import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
 import { MongoDBInstrumentation } from "@opentelemetry/instrumentation-mongodb";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -226,7 +226,7 @@ const compositePropagator = new CompositePropagator({
   ]
 });
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
@@ -295,7 +295,7 @@ const getObservabilityConfig = (environment: string) => {
   }
 };
 
-const handle = await setupObservability(
+const handle = setupObservability(
   getObservabilityConfig(process.env.NODE_ENV)
 );
 ```
@@ -305,7 +305,7 @@ const handle = await setupObservability(
 Optimize performance for high-volume applications:
 
 ```typescript
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY,
     processorType: 'batch'
@@ -410,7 +410,7 @@ Enable detailed logging during migration to identify issues:
 
 ```typescript
 // Enable detailed logging during migration
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: {
     apiKey: process.env.LANGWATCH_API_KEY
   },
