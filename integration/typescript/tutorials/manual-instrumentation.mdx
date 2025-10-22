@@ -314,7 +314,7 @@ import { setupObservability } from "langwatch/observability/node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 
-const handle = await setupObservability({  
+const handle = setupObservability({  
   // Use custom span processors
   spanProcessors: [
     new BatchSpanProcessor(new OTLPTraceExporter({
@@ -347,7 +347,7 @@ const processor = new FilterableBatchSpanProcessor(
   ]
 );
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: 'disabled',
   spanProcessors: [processor]
 });
@@ -362,7 +362,7 @@ import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { JaegerExporter } from "@opentelemetry/exporter-jaeger";
 import { LangWatchExporter } from "langwatch";
 
-const handle = await setupObservability({
+const handle = setupObservability({
   serviceName: "my-service",
   spanProcessors: [
     // Send to Jaeger for debugging
@@ -397,7 +397,7 @@ const batchProcessor = new BatchSpanProcessor(
   }
 );
 
-const handle = await setupObservability({
+const handle = setupObservability({
   langwatch: 'disabled', // Disabled we report to LangWatch via the `batchProcessor`
   spanProcessors: [batchProcessor]
 });
