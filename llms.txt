@@ -24,6 +24,127 @@ Always navigate to docs links using the .md extension for better readability.
 - [Alerts and Triggers](https://docs.langwatch.ai/features/triggers.md): Be alerted when something goes wrong and trigger actions automatically
 - [Exporting Analytics](https://docs.langwatch.ai/features/embedded-analytics.md): Build and integrate LangWatch graphs on your own systems and applications
 
+# Integrations
+
+## Overview
+
+- [Getting Started](https://docs.langwatch.ai/integration/overview.md): LangWatch integrates with all major LLM providers, frameworks, and tools. See our complete list of integrations below.
+
+## SDKs
+
+### Python
+
+- [Python Integration Guide](https://docs.langwatch.ai/integration/python/guide.md): LangWatch Python SDK integration guide
+- [Python SDK API Reference](https://docs.langwatch.ai/integration/python/reference.md): LangWatch Python SDK API reference
+- [Manual Instrumentation](https://docs.langwatch.ai/integration/python/tutorials/manual-instrumentation.md): Learn how to manually instrument your code with the LangWatch Python SDK
+- [OpenTelemetry Migration](https://docs.langwatch.ai/integration/python/tutorials/open-telemetry.md): Learn how to integrate the LangWatch Python SDK with your existing OpenTelemetry setup.
+
+### TypeScript
+
+- [TypeScript Integration Guide](https://docs.langwatch.ai/integration/typescript/guide.md): Get started with LangWatch TypeScript SDK in 5 minutes
+- [TypeScript SDK API Reference](https://docs.langwatch.ai/integration/typescript/reference.md): LangWatch TypeScript SDK API reference
+- [Manual Instrumentation](https://docs.langwatch.ai/integration/typescript/tutorials/manual-instrumentation.md): Learn advanced manual span management techniques for fine-grained observability control
+- [OpenTelemetry Migration](https://docs.langwatch.ai/integration/typescript/tutorials/opentelemetry-migration.md): Migrate from OpenTelemetry to LangWatch while preserving all your custom configurations
+
+### Go
+
+- [Go Integration Guide](https://docs.langwatch.ai/integration/go/guide.md): LangWatch Go SDK integration guide for setting up LLM observability and tracing.
+- [Go SDK API Reference](https://docs.langwatch.ai/integration/go/reference.md): Complete API reference for the LangWatch Go SDK, including core functions, OpenAI instrumentation, and span types.
+
+- [OpenTelemetry Integration Guide](https://docs.langwatch.ai/integration/opentelemetry/guide.md): Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
+
+### Tutorials
+
+#### Capturing Input/Output
+
+- [Capturing and Mapping Inputs & Outputs](https://docs.langwatch.ai/integration/python/tutorials/capturing-mapping-input-output.md): Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch Python SDK.
+- [Capturing and Mapping Inputs & Outputs](https://docs.langwatch.ai/integration/typescript/tutorials/capturing-input-output.md): Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch TypeScript SDK.
+
+#### Capturing RAG
+
+- [Capturing RAG](https://docs.langwatch.ai/integration/python/tutorials/capturing-rag.md): Learn how to capture Retrieval Augmented Generation (RAG) data with LangWatch.
+- [Capturing RAG](https://docs.langwatch.ai/integration/typescript/tutorials/capturing-rag.md): Learn how to capture Retrieval Augmented Generation (RAG) data with LangWatch.
+
+#### Capturing Metadata
+
+- [Capturing Metadata and Attributes](https://docs.langwatch.ai/integration/python/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch Python SDK.
+- [Capturing Metadata and Attributes](https://docs.langwatch.ai/integration/typescript/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch TypeScript SDK.
+
+#### Tracking LLM Costs
+
+- [Tracking LLM Costs and Tokens](https://docs.langwatch.ai/integration/python/tutorials/tracking-llm-costs.md): Troubleshooting & adjusting cost tracking in LangWatch
+- [Tracking LLM Costs and Tokens](https://docs.langwatch.ai/integration/typescript/tutorials/tracking-llm-costs.md): Troubleshooting & adjusting cost tracking in LangWatch
+
+## Frameworks
+
+- [Mastra](https://docs.langwatch.ai/integration/typescript/integrations/mastra.md): Learn how to integrate Mastra, a TypeScript agent framework, with LangWatch for observability and tracing.
+- [Google Vertex AI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/vertex-ai.md): Learn how to instrument Google Vertex AI API calls with the LangWatch Python SDK using OpenInference
+
+### LangChain
+
+- [LangChain Instrumentation](https://docs.langwatch.ai/integration/python/integrations/langchain.md): Learn how to instrument Langchain applications with the LangWatch Python SDK.
+- [LangChain Instrumentation](https://docs.langwatch.ai/integration/typescript/integrations/langchain.md): Learn how to instrument Langchain applications with the LangWatch TypeScript SDK.
+
+### LangGraph
+
+- [LangGraph Instrumentation](https://docs.langwatch.ai/integration/python/integrations/langgraph.md): Learn how to instrument LangGraph applications with the LangWatch Python SDK.
+- [LangGraph Instrumentation](https://docs.langwatch.ai/integration/typescript/integrations/langgraph.md): Learn how to instrument LangGraph applications with the LangWatch TypeScript SDK.
+
+- [Agno Instrumentation](https://docs.langwatch.ai/integration/python/integrations/agno.md): Learn how to instrument Agno agents and send traces to LangWatch using the Python SDK.
+- [AutoGen Instrumentation](https://docs.langwatch.ai/integration/python/integrations/autogen.md): Learn how to instrument AutoGen applications with LangWatch.
+- [CrewAI](https://docs.langwatch.ai/integration/python/integrations/crew-ai.md): Learn how to instrument the CrewAI Python SDK with LangWatch.
+- [DSPy Instrumentation](https://docs.langwatch.ai/integration/python/integrations/dspy.md): Learn how to instrument DSPy programs with the LangWatch Python SDK
+- [Google Agent Development Kit (ADK) Instrumentation](https://docs.langwatch.ai/integration/python/integrations/google-ai.md): Learn how to instrument Google Agent Development Kit (ADK) applications with LangWatch.
+- [Spring AI (Java) Integration](https://docs.langwatch.ai/integration/java/integrations/spring-ai.md): Configure OpenTelemetry in your Spring AI app to send traces to LangWatch.
+- [Haystack Instrumentation](https://docs.langwatch.ai/integration/python/integrations/haystack.md): Learn how to instrument Haystack pipelines with LangWatch using community OpenTelemetry instrumentors.
+- [Instructor AI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/instructor.md): Learn how to instrument Instructor AI applications with LangWatch using OpenInference.
+- [LlamaIndex Instrumentation](https://docs.langwatch.ai/integration/python/integrations/llamaindex.md): Learn how to instrument LlamaIndex applications with LangWatch.
+- [LiteLLM Instrumentation](https://docs.langwatch.ai/integration/python/integrations/lite-llm.md): Learn how to instrument LiteLLM calls with the LangWatch Python SDK.
+- [OpenAI Agents SDK Instrumentation](https://docs.langwatch.ai/integration/python/integrations/open-ai-agents.md): Learn how to instrument OpenAI Agents with the LangWatch Python SDK
+- [OpenRouter Integration](https://docs.langwatch.ai/integration/go/integrations/openrouter.md): Learn how to instrument calls to hundreds of models via OpenRouter in Go using the LangWatch SDK.
+- [PromptFlow Instrumentation](https://docs.langwatch.ai/integration/python/integrations/promptflow.md): Learn how to instrument PromptFlow applications with LangWatch.
+- [PydanticAI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/pydantic-ai.md): Learn how to instrument PydanticAI applications with the LangWatch Python SDK.
+- [SmolAgents Instrumentation](https://docs.langwatch.ai/integration/python/integrations/smolagents.md): Learn how to instrument SmolAgents applications with LangWatch.
+- [Strands Agents Instrumentation](https://docs.langwatch.ai/integration/python/integrations/strand-agents.md): Learn how to instrument Strands Agents applications with LangWatch.
+- [Semantic Kernel Instrumentation](https://docs.langwatch.ai/integration/python/integrations/semantic-kernel.md): Learn how to instrument Semantic Kernel applications with LangWatch.
+
+## Model Providers
+
+### OpenAI
+
+- [OpenAI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/open-ai.md): Learn how to instrument OpenAI API calls with the LangWatch Python SDK
+- [OpenAI](https://docs.langwatch.ai/integration/typescript/integrations/open-ai.md): LangWatch OpenAI TypeScript integration guide
+- [OpenAI Instrumentation](https://docs.langwatch.ai/integration/go/integrations/open-ai.md): Learn how to instrument OpenAI API calls with the LangWatch Go SDK using middleware.
+
+### Anthropic (Claude)
+
+- [Anthropic Instrumentation](https://docs.langwatch.ai/integration/python/integrations/anthropic.md): Learn how to instrument Anthropic API calls with the LangWatch Python SDK
+- [Anthropic (Claude) Integration](https://docs.langwatch.ai/integration/go/integrations/anthropic.md): Learn how to instrument Anthropic Claude API calls in Go using LangWatch.
+
+### Azure AI
+
+- [Azure AI Inference SDK Instrumentation](https://docs.langwatch.ai/integration/python/integrations/azure-ai.md): Learn how to instrument the Azure AI Inference Python SDK with LangWatch.
+- [Azure OpenAI](https://docs.langwatch.ai/integration/typescript/integrations/azure.md): LangWatch Azure OpenAI integration guide
+- [Azure OpenAI Integration](https://docs.langwatch.ai/integration/go/integrations/azure-openai.md): Learn how to instrument Azure OpenAI API calls in Go using the LangWatch SDK.
+
+- [Google Gemini Integration](https://docs.langwatch.ai/integration/go/integrations/google-gemini.md): Learn how to instrument Google Gemini API calls in Go using the LangWatch SDK via a Vertex AI endpoint.
+- [Google GenAI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/google-genai.md): Learn how to instrument Google GenAI API calls with the LangWatch Python SDK
+- [AWS Bedrock Instrumentation](https://docs.langwatch.ai/integration/python/integrations/aws-bedrock.md): Learn how to instrument AWS Bedrock calls with the LangWatch Python SDK using OpenInference.
+- [Groq Integration](https://docs.langwatch.ai/integration/go/integrations/groq.md): Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
+- [Ollama (Local Models) Integration](https://docs.langwatch.ai/integration/go/integrations/ollama.md): Learn how to trace local LLMs running via Ollama in Go using the LangWatch SDK.
+
+## No-Code Platforms
+
+- [LangWatch + n8n Integration](https://docs.langwatch.ai/integration/n8n.md): Complete LangWatch integration for n8n workflows with observability, evaluation, and prompt management
+- [Langflow Integration](https://docs.langwatch.ai/integration/langflow.md): LangWatch is the best observability integration for Langflow
+- [Flowise Integration](https://docs.langwatch.ai/integration/flowise.md): Capture LLM traces and send them to LangWatch from Flowise
+
+## Direct Integrations
+
+- [OpenTelemetry Integration Guide](https://docs.langwatch.ai/integration/opentelemetry/guide.md): Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
+- [REST API](https://docs.langwatch.ai/integration/rest-api.md): Integrate LangWatch with any language by using the REST API
+- [LangWatch MCP Server](https://docs.langwatch.ai/integration/mcp.md): Use an agent to debug your LLM applications and fix the issues for you
+
 ## Agent Simulations
 
 - [Introduction to Agent Testing](https://docs.langwatch.ai/agent-simulations/introduction.md)
@@ -114,3 +235,70 @@ Always navigate to docs links using the .md extension for better readability.
 - [Evaluating Structured Data Extraction](https://docs.langwatch.ai/use-cases/structured-outputs.md): A developer guide for evaluating structured data extraction using LangWatch
 
 - [Code Examples](https://docs.langwatch.ai/integration/code-examples.md): Examples of LangWatch integrated applications
+
+# Self Hosting
+
+## Deployment
+
+- [Overview](https://docs.langwatch.ai/self-hosting/overview.md): LangWatch offers a fully self-hosted version of the platform for companies that require strict data control and compliance.
+- [Docker Compose](https://docs.langwatch.ai/self-hosting/docker-compose.md): LangWatch is available as a Docker Compose setup for easy deployment on your local machine
+- [Docker Images](https://docs.langwatch.ai/self-hosting/docker-images.md): Overview of LangWatch Docker images and their endpoints
+- [Kubernetes (Helm Chart)](https://docs.langwatch.ai/self-hosting/kubernetes-helm.md): LangWatch is available as a Kubernetes Helm chart for easy deployment on Kubernetes
+- [OnPrem](https://docs.langwatch.ai/self-hosting/onprem.md): LangWatch on-premises solution.
+
+## Configuration
+
+- [Environment Variables](https://docs.langwatch.ai/self-hosting/env-variables.md): Complete list of environment variables for LangWatch self-hosting
+- [Monitoring](https://docs.langwatch.ai/self-hosting/grafana.md): Grafana/Prometheus setup for LangWatch
+
+## Hybrid Setup
+
+- [Overview](https://docs.langwatch.ai/hybrid-setup/overview.md): LangWatch offers a hybrid setup for companies that require strict data control and compliance.
+- [Elasticsearch](https://docs.langwatch.ai/hybrid-setup/elasticsearch.md): Elasticsearch Setup for LangWatch Hybrid Deployment
+- [S3 Storage](https://docs.langwatch.ai/hybrid-setup/s3-storage.md): S3 Storage Setup for LangWatch Hybrid Deployment
+- [SSO](https://docs.langwatch.ai/hybrid-setup/sso-setup-langwatch.md): SSO Setup for LangWatch
+
+# API Reference
+
+## Traces
+
+- [Overview](https://docs.langwatch.ai/api-reference/traces/overview.md): A Trace is a collection of runs that are related to a single operation
+- [Get trace details](https://docs.langwatch.ai/api-reference/traces/get-trace-details.md)
+- [Get thread details](https://docs.langwatch.ai/api-reference/traces/get-thread-details.md)
+- [Search traces](https://docs.langwatch.ai/api-reference/traces/search-traces.md)
+- [Create public path for single trace](https://docs.langwatch.ai/api-reference/traces/create-public-trace-path.md)
+- [Delete an existing public path for a trace](https://docs.langwatch.ai/api-reference/traces/delete-public-trace-path.md)
+
+## Prompts
+
+- [Overview](https://docs.langwatch.ai/api-reference/prompts/overview.md): Prompts are used to manage and version your prompts
+- [Get prompts](https://docs.langwatch.ai/api-reference/prompts/get-prompts.md)
+- [Create prompt](https://docs.langwatch.ai/api-reference/prompts/create-prompt.md)
+- [Get prompt](https://docs.langwatch.ai/api-reference/prompts/get-prompt.md)
+- [Update prompt](https://docs.langwatch.ai/api-reference/prompts/update-prompt.md)
+- [Delete prompt](https://docs.langwatch.ai/api-reference/prompts/delete-prompt.md)
+- [Get prompt versions](https://docs.langwatch.ai/api-reference/prompts/get-prompt-versions.md)
+- [Create prompt version](https://docs.langwatch.ai/api-reference/prompts/create-prompt-version.md)
+
+## Annotations
+
+- [Overview](https://docs.langwatch.ai/api-reference/annotations/overview.md): Annotations are used to annotate traces with additional information
+- [Get annotations](https://docs.langwatch.ai/api-reference/annotations/get-annotation.md)
+- [Get single annotation](https://docs.langwatch.ai/api-reference/annotations/get-single-annotation.md)
+- [Delete single annotation](https://docs.langwatch.ai/api-reference/annotations/delete-annotation.md)
+- [Patch single annotation](https://docs.langwatch.ai/api-reference/annotations/patch-annotation.md)
+- [Get annotationa for single trace](https://docs.langwatch.ai/api-reference/annotations/get-all-annotations-trace.md)
+- [Create annotation for single trace](https://docs.langwatch.ai/api-reference/annotations/create-annotation-trace.md)
+
+## Datasets
+
+- [Add entries to a dataset](https://docs.langwatch.ai/api-reference/datasets/post-dataset-entries.md)
+
+## Triggers
+
+- [Create Slack trigger](https://docs.langwatch.ai/api-reference/triggers/create-slack-trigger.md)
+
+## Scenarios
+
+- [Overview](https://docs.langwatch.ai/api-reference/scenarios/overview.md)
+- [Create Event](https://docs.langwatch.ai/api-reference/scenarios/create-event.md)

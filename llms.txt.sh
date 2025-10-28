@@ -102,10 +102,11 @@ function processNavigationPages(pages, level = 0, output = []) {
 
 // Function to generate root llms.txt
 function generateRootLlmsTxt() {
-  const docAnchor = docsConfig.navigation.anchors.find(anchor => anchor.anchor === 'Documentation');
+  // Get all anchors that have groups
+  const anchors = docsConfig.navigation.anchors.filter(anchor => anchor.groups);
 
-  if (!docAnchor) {
-    console.error('Documentation anchor not found in docs.json');
+  if (anchors.length === 0) {
+    console.error('No anchors with groups found in docs.json');
     return;
   }
 
@@ -116,16 +117,66 @@ Always navigate to docs links using the .md extension for better readability.
 
 `;
 
-  docAnchor.groups.forEach((group, index) => {
-    content += `## ${group.group}\n\n`;
-    const lines = processNavigationPages(group.pages);
-    content += lines.join('\n');
-    // Add spacing between sections, but not after the last one
-    if (index < docAnchor.groups.length - 1) {
-      content += '\n\n';
-    } else {
-      content += '\n';
+  // Custom ordering: Documentation first, but split to insert Integrations after Observability
+  const docAnchor = anchors.find(a => a.anchor === 'Documentation');
+  const integrationsAnchor = anchors.find(a => a.anchor === 'Integrations');
+  const selfHostingAnchor = anchors.find(a => a.anchor === 'Self Hosting');
+  const apiRefAnchor = anchors.find(a => a.anchor === 'API Reference');
+
+  // Process Documentation anchor groups, but insert Integrations after Observability
+  if (docAnchor) {
+    docAnchor.groups.forEach((group, groupIndex) => {
+      content += `## ${group.group}\n\n`;
+      const lines = processNavigationPages(group.pages);
+      content += lines.join('\n');
+
+      // After Observability group, insert the entire Integrations section
+      if (group.group === 'Observability' && integrationsAnchor) {
+        content += '\n\n# Integrations\n\n';
+        integrationsAnchor.groups.forEach((intGroup, intGroupIndex) => {
+          content += `## ${intGroup.group}\n\n`;
+          const intLines = processNavigationPages(intGroup.pages);
+          content += intLines.join('\n');
+
+          if (intGroupIndex < integrationsAnchor.groups.length - 1) {
+            content += '\n\n';
+          }
+        });
+      }
+
+      // Add spacing between groups
+      if (groupIndex < docAnchor.groups.length - 1) {
+        content += '\n\n';
+      }
+    });
+  }
+
+  // Add remaining anchors (Self Hosting, API Reference)
+  const remainingAnchors = [selfHostingAnchor, apiRefAnchor].filter(Boolean);
+
+  if (remainingAnchors.length > 0) {
+    content += '\n\n';
+  }
+
+  remainingAnchors.forEach((anchor, anchorIndex) => {
+    if (anchor.anchor) {
+      content += `# ${anchor.anchor}\n\n`;
     }
+
+    anchor.groups.forEach((group, groupIndex) => {
+      content += `## ${group.group}\n\n`;
+      const lines = processNavigationPages(group.pages);
+      content += lines.join('\n');
+
+      const isLastGroup = groupIndex === anchor.groups.length - 1;
+      const isLastAnchor = anchorIndex === remainingAnchors.length - 1;
+
+      if (!isLastGroup || !isLastAnchor) {
+        content += '\n\n';
+      } else {
+        content += '\n';
+      }
+    });
   });
 
   // Remove trailing newlines and add single newline at end
