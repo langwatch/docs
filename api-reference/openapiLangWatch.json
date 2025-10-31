@@ -419,7 +419,9 @@
                       "items": {
                         "type": "string"
                       },
-                      "example": ["cccd21e0b70c706034dfd9f7772816a3"]
+                      "example": [
+                        "cccd21e0b70c706034dfd9f7772816a3"
+                      ]
                     },
                     "spans": {
                       "type": "array",
@@ -511,7 +513,7 @@
                           },
                           "model": {
                             "type": "string",
-                            "example": "openai/gpt-5"
+                            "example": "openai/gpt-4o"
                           },
                           "metrics": {
                             "type": "object",
@@ -649,7 +651,9 @@
                                 "items": {
                                   "type": "string"
                                 },
-                                "example": ["TypeError: fetch failed"]
+                                "example": [
+                                  "TypeError: fetch failed"
+                                ]
                               },
                               "message": {
                                 "type": "string",
@@ -682,405 +686,13 @@
         }
       }
     },
-    "/api/thread/{id}": {
-      "get": {
-        "operationId": "getApiThreadById",
-        "description": "Returns array of traces for a thread based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of thread to fetch",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Array of traces for a thread",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "trace_id": {
-                        "type": "string",
-                        "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
-                      },
-                      "project_id": {
-                        "type": "string",
-                        "example": "KAXYxPR8MUgTcP8CF193y"
-                      },
-                      "metadata": {
-                        "type": "object",
-                        "properties": {
-                          "sdk_version": {
-                            "type": "string",
-                            "example": "0.1.11"
-                          },
-                          "sdk_language": {
-                            "type": "string",
-                            "example": "python"
-                          }
-                        }
-                      },
-                      "timestamps": {
-                        "type": "object",
-                        "properties": {
-                          "started_at": {
-                            "type": "integer",
-                            "example": 1721382486868
-                          },
-                          "inserted_at": {
-                            "type": "integer",
-                            "example": 1721382492894
-                          },
-                          "updated_at": {
-                            "type": "integer",
-                            "example": 1721382492894
-                          }
-                        }
-                      },
-                      "input": {
-                        "type": "object",
-                        "properties": {
-                          "value": {
-                            "type": "string",
-                            "example": "hi"
-                          }
-                        }
-                      },
-                      "output": {
-                        "type": "object",
-                        "properties": {
-                          "value": {
-                            "type": "string",
-                            "example": "Hey there! 👋😊"
-                          }
-                        }
-                      },
-                      "metrics": {
-                        "type": "object",
-                        "properties": {
-                          "first_token_ms": {
-                            "type": "integer",
-                            "example": 1449
-                          },
-                          "total_time_ms": {
-                            "type": "integer",
-                            "example": 1543
-                          },
-                          "prompt_tokens": {
-                            "type": "integer",
-                            "example": 20
-                          },
-                          "completion_tokens": {
-                            "type": "integer",
-                            "example": 7
-                          },
-                          "tokens_estimated": {
-                            "type": "boolean",
-                            "example": true
-                          }
-                        }
-                      },
-                      "error": {
-                        "type": "object",
-                        "nullable": true,
-                        "properties": {
-                          "stacktrace": {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          },
-                          "message": {
-                            "type": "string"
-                          },
-                          "has_error": {
-                            "type": "boolean"
-                          }
-                        },
-                        "example": null
-                      },
-                      "indexing_md5s": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        },
-                        "example": ["cccd21e0b70c706034dfd9f7772816a3"]
-                      },
-                      "spans": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "trace_id": {
-                              "type": "string",
-                              "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
-                            },
-                            "span_id": {
-                              "type": "string",
-                              "example": "span_h1xUkcUJilhudDrLeQbR_"
-                            },
-                            "timestamps": {
-                              "type": "object",
-                              "properties": {
-                                "finished_at": {
-                                  "type": "integer",
-                                  "example": 1721382488392
-                                },
-                                "updated_at": {
-                                  "type": "integer",
-                                  "example": 1721382492027
-                                },
-                                "started_at": {
-                                  "type": "integer",
-                                  "example": 1721382486895
-                                },
-                                "first_token_at": {
-                                  "type": "integer",
-                                  "example": 1721382488317
-                                },
-                                "inserted_at": {
-                                  "type": "integer",
-                                  "example": 1721382492027
-                                }
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "example": "llm"
-                            },
-                            "error": {
-                              "type": "object",
-                              "nullable": true,
-                              "properties": {
-                                "stacktrace": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                },
-                                "message": {
-                                  "type": "string"
-                                },
-                                "has_error": {
-                                  "type": "boolean"
-                                }
-                              },
-                              "example": null
-                            },
-                            "params": {
-                              "type": "object",
-                              "properties": {
-                                "stream": {
-                                  "type": "boolean",
-                                  "example": true
-                                },
-                                "temperature": {
-                                  "type": "number",
-                                  "example": 1
-                                }
-                              }
-                            },
-                            "project_id": {
-                              "type": "string",
-                              "example": "KAXYxPR8MUgTcP8CF193y"
-                            },
-                            "parent_id": {
-                              "type": "string",
-                              "nullable": true,
-                              "example": "span_ijZNjUMTz3ys0Z0YKwF_T"
-                            },
-                            "name": {
-                              "type": "string",
-                              "nullable": true,
-                              "example": null
-                            },
-                            "model": {
-                              "type": "string",
-                              "example": "openai/gpt-5"
-                            },
-                            "metrics": {
-                              "type": "object",
-                              "properties": {
-                                "tokens_estimated": {
-                                  "type": "boolean",
-                                  "example": true
-                                },
-                                "completion_tokens": {
-                                  "type": "integer",
-                                  "example": 7
-                                },
-                                "prompt_tokens": {
-                                  "type": "integer",
-                                  "example": 20
-                                }
-                              }
-                            },
-                            "input": {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "type": "string",
-                                  "example": "chat_messages"
-                                },
-                                "value": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "role": {
-                                        "type": "string",
-                                        "example": "system"
-                                      },
-                                      "content": {
-                                        "type": "string",
-                                        "example": "You are a helpful assistant that only reply in short tweet-like responses, using lots of emojis."
-                                      }
-                                    }
-                                  },
-                                  "example": [
-                                    {
-                                      "role": "system",
-                                      "content": "You are a helpful assistant that only reply in short tweet-like responses, using lots of emojis."
-                                    },
-                                    {
-                                      "role": "user",
-                                      "content": "hi"
-                                    }
-                                  ]
-                                }
-                              }
-                            },
-                            "output": {
-                              "type": "object",
-                              "properties": {
-                                "type": {
-                                  "type": "string",
-                                  "example": "chat_messages"
-                                },
-                                "value": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "role": {
-                                        "type": "string",
-                                        "example": "assistant"
-                                      },
-                                      "content": {
-                                        "type": "string",
-                                        "example": "Hey there! 👋😊"
-                                      }
-                                    }
-                                  },
-                                  "example": [
-                                    {
-                                      "role": "assistant",
-                                      "content": "Hey there! 👋😊"
-                                    }
-                                  ]
-                                }
-                              }
-                            }
-                          }
-                        }
-                      },
-                      "evaluations": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "evaluation_id": {
-                              "type": "string",
-                              "example": "check_VCagriZHNWICSOM09dXjM"
-                            },
-                            "name": {
-                              "type": "string",
-                              "example": "Ragas Answer Relevancy"
-                            },
-                            "type": {
-                              "type": "string",
-                              "example": "ragas/answer_relevancy"
-                            },
-                            "trace_id": {
-                              "type": "string",
-                              "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
-                            },
-                            "project_id": {
-                              "type": "string",
-                              "example": "KAXYxPR8MUgTcP8CF193y"
-                            },
-                            "status": {
-                              "type": "string",
-                              "example": "error"
-                            },
-                            "timestamps": {
-                              "type": "object",
-                              "properties": {
-                                "updated_at": {
-                                  "type": "integer",
-                                  "example": 1721383657788
-                                },
-                                "inserted_at": {
-                                  "type": "integer",
-                                  "example": 1721382493358
-                                }
-                              }
-                            },
-                            "error": {
-                              "type": "object",
-                              "properties": {
-                                "stacktrace": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  },
-                                  "example": ["TypeError: fetch failed"]
-                                },
-                                "message": {
-                                  "type": "string",
-                                  "example": "fetch failed"
-                                },
-                                "has_error": {
-                                  "type": "boolean",
-                                  "example": true
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/trace/search": {
       "post": {
         "summary": "Search traces",
         "description": "Search for traces based on given criteria",
-        "tags": ["Traces"],
+        "tags": [
+          "Traces"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1205,11 +817,17 @@
                       "type": "string"
                     },
                     "handle": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "scope": {
                       "type": "string",
-                      "enum": ["ORGANIZATION", "PROJECT"]
+                      "enum": [
+                        "ORGANIZATION",
+                        "PROJECT"
+                      ]
                     },
                     "name": {
                       "type": "string"
@@ -1227,7 +845,10 @@
                       "type": "string"
                     },
                     "authorId": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "version": {
                       "type": "number"
@@ -1236,7 +857,10 @@
                       "type": "string"
                     },
                     "commitMessage": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "prompt": {
                       "type": "string"
@@ -1248,13 +872,20 @@
                         "properties": {
                           "role": {
                             "type": "string",
-                            "enum": ["user", "assistant", "system"]
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system"
+                            ]
                           },
                           "content": {
                             "type": "string"
                           }
                         },
-                        "required": ["role", "content"]
+                        "required": [
+                          "role",
+                          "content"
+                        ]
                       },
                       "default": []
                     },
@@ -1282,7 +913,10 @@
                             ]
                           }
                         },
-                        "required": ["identifier", "type"]
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
                       },
                       "minItems": 1
                     },
@@ -1297,7 +931,12 @@
                           },
                           "type": {
                             "type": "string",
-                            "enum": ["str", "float", "bool", "json_schema"]
+                            "enum": [
+                              "str",
+                              "float",
+                              "bool",
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
                             "type": "object",
@@ -1307,11 +946,16 @@
                                 "minLength": 1
                               }
                             },
-                            "required": ["type"],
+                            "required": [
+                              "type"
+                            ],
                             "additionalProperties": true
                           }
                         },
-                        "required": ["identifier", "type"]
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
                       },
                       "minItems": 1
                     },
@@ -1351,6 +995,9 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
                                   "name": {
                                     "type": "string"
                                   },
@@ -1399,15 +1046,25 @@
                                       {
                                         "type": "string",
                                         "const": "evaluations"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "const": "image"
                                       }
                                     ]
                                   }
                                 },
-                                "required": ["name", "type"]
+                                "required": [
+                                  "name",
+                                  "type"
+                                ]
                               }
                             }
                           },
-                          "required": ["records", "columnTypes"]
+                          "required": [
+                            "records",
+                            "columnTypes"
+                          ]
                         }
                       }
                     },
@@ -1416,7 +1073,11 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["few_shot", "in_context", "chain_of_thought"]
+                          "enum": [
+                            "few_shot",
+                            "in_context",
+                            "chain_of_thought"
+                          ]
                         },
                         "demonstrations": {
                           "type": "object",
@@ -1444,6 +1105,9 @@
                                   "items": {
                                     "type": "object",
                                     "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
                                       "name": {
                                         "type": "string"
                                       },
@@ -1492,30 +1156,47 @@
                                           {
                                             "type": "string",
                                             "const": "evaluations"
+                                          },
+                                          {
+                                            "type": "string",
+                                            "const": "image"
                                           }
                                         ]
                                       }
                                     },
-                                    "required": ["name", "type"]
+                                    "required": [
+                                      "name",
+                                      "type"
+                                    ]
                                   }
                                 }
                               },
-                              "required": ["records", "columnTypes"]
+                              "required": [
+                                "records",
+                                "columnTypes"
+                              ]
                             }
                           }
                         }
                       },
-                      "required": ["type"]
+                      "required": [
+                        "type"
+                      ]
                     },
                     "responseFormat": {
                       "type": "object",
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["json_schema"]
+                          "enum": [
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
-                          "type": ["object", "null"],
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "properties": {
                             "name": {
                               "type": "string"
@@ -1524,10 +1205,16 @@
                               "type": "object"
                             }
                           },
-                          "required": ["name", "schema"]
+                          "required": [
+                            "name",
+                            "schema"
+                          ]
                         }
                       },
-                      "required": ["type", "json_schema"]
+                      "required": [
+                        "type",
+                        "json_schema"
+                      ]
                     }
                   },
                   "required": [
@@ -1565,7 +1252,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1584,7 +1273,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1603,7 +1294,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1622,7 +1336,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -1664,11 +1380,17 @@
                       "type": "string"
                     },
                     "handle": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "scope": {
                       "type": "string",
-                      "enum": ["ORGANIZATION", "PROJECT"]
+                      "enum": [
+                        "ORGANIZATION",
+                        "PROJECT"
+                      ]
                     },
                     "name": {
                       "type": "string"
@@ -1686,7 +1408,10 @@
                       "type": "string"
                     },
                     "authorId": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "version": {
                       "type": "number"
@@ -1695,7 +1420,10 @@
                       "type": "string"
                     },
                     "commitMessage": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "prompt": {
                       "type": "string"
@@ -1707,13 +1435,20 @@
                         "properties": {
                           "role": {
                             "type": "string",
-                            "enum": ["user", "assistant", "system"]
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system"
+                            ]
                           },
                           "content": {
                             "type": "string"
                           }
                         },
-                        "required": ["role", "content"]
+                        "required": [
+                          "role",
+                          "content"
+                        ]
                       },
                       "default": []
                     },
@@ -1741,7 +1476,10 @@
                             ]
                           }
                         },
-                        "required": ["identifier", "type"]
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
                       },
                       "minItems": 1
                     },
@@ -1756,7 +1494,12 @@
                           },
                           "type": {
                             "type": "string",
-                            "enum": ["str", "float", "bool", "json_schema"]
+                            "enum": [
+                              "str",
+                              "float",
+                              "bool",
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
                             "type": "object",
@@ -1766,11 +1509,16 @@
                                 "minLength": 1
                               }
                             },
-                            "required": ["type"],
+                            "required": [
+                              "type"
+                            ],
                             "additionalProperties": true
                           }
                         },
-                        "required": ["identifier", "type"]
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
                       },
                       "minItems": 1
                     },
@@ -1810,6 +1558,9 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
                                   "name": {
                                     "type": "string"
                                   },
@@ -1858,15 +1609,25 @@
                                       {
                                         "type": "string",
                                         "const": "evaluations"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "const": "image"
                                       }
                                     ]
                                   }
                                 },
-                                "required": ["name", "type"]
+                                "required": [
+                                  "name",
+                                  "type"
+                                ]
                               }
                             }
                           },
-                          "required": ["records", "columnTypes"]
+                          "required": [
+                            "records",
+                            "columnTypes"
+                          ]
                         }
                       }
                     },
@@ -1875,7 +1636,11 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["few_shot", "in_context", "chain_of_thought"]
+                          "enum": [
+                            "few_shot",
+                            "in_context",
+                            "chain_of_thought"
+                          ]
                         },
                         "demonstrations": {
                           "type": "object",
@@ -1903,6 +1668,9 @@
                                   "items": {
                                     "type": "object",
                                     "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
                                       "name": {
                                         "type": "string"
                                       },
@@ -1951,30 +1719,47 @@
                                           {
                                             "type": "string",
                                             "const": "evaluations"
+                                          },
+                                          {
+                                            "type": "string",
+                                            "const": "image"
                                           }
                                         ]
                                       }
                                     },
-                                    "required": ["name", "type"]
+                                    "required": [
+                                      "name",
+                                      "type"
+                                    ]
                                   }
                                 }
                               },
-                              "required": ["records", "columnTypes"]
+                              "required": [
+                                "records",
+                                "columnTypes"
+                              ]
                             }
                           }
                         }
                       },
-                      "required": ["type"]
+                      "required": [
+                        "type"
+                      ]
                     },
                     "responseFormat": {
                       "type": "object",
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["json_schema"]
+                          "enum": [
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
-                          "type": ["object", "null"],
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "properties": {
                             "name": {
                               "type": "string"
@@ -1983,10 +1768,16 @@
                               "type": "object"
                             }
                           },
-                          "required": ["name", "schema"]
+                          "required": [
+                            "name",
+                            "schema"
+                          ]
                         }
                       },
-                      "required": ["type", "json_schema"]
+                      "required": [
+                        "type",
+                        "json_schema"
+                      ]
                     }
                   },
                   "required": [
@@ -2024,7 +1815,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2043,7 +1836,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2062,7 +1857,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2081,7 +1878,10 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error", "message"]
+                  "required": [
+                    "error",
+                    "message"
+                  ]
                 }
               }
             }
@@ -2100,7 +1900,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2119,7 +1921,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2143,10 +1947,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "handle": {
-                    "type": "string",
-                    "pattern": "^[a-z0-9_-]+(?:\\/[a-z0-9_-]+)?$"
-                  },
                   "model": {
                     "type": "string"
                   },
@@ -2172,13 +1972,20 @@
                       "properties": {
                         "role": {
                           "type": "string",
-                          "enum": ["user", "assistant", "system"]
+                          "enum": [
+                            "user",
+                            "assistant",
+                            "system"
+                          ]
                         },
                         "content": {
                           "type": "string"
                         }
                       },
-                      "required": ["role", "content"]
+                      "required": [
+                        "role",
+                        "content"
+                      ]
                     }
                   },
                   "inputs": {
@@ -2205,7 +2012,10 @@
                           ]
                         }
                       },
-                      "required": ["identifier", "type"]
+                      "required": [
+                        "identifier",
+                        "type"
+                      ]
                     }
                   },
                   "outputs": {
@@ -2219,7 +2029,12 @@
                         },
                         "type": {
                           "type": "string",
-                          "enum": ["str", "float", "bool", "json_schema"]
+                          "enum": [
+                            "str",
+                            "float",
+                            "bool",
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
                           "type": "object",
@@ -2229,22 +2044,40 @@
                               "minLength": 1
                             }
                           },
-                          "required": ["type"],
+                          "required": [
+                            "type"
+                          ],
                           "additionalProperties": true
                         }
                       },
-                      "required": ["identifier", "type"]
+                      "required": [
+                        "identifier",
+                        "type"
+                      ]
                     }
                   },
                   "schemaVersion": {
                     "type": "string",
-                    "enum": ["1.0"]
+                    "enum": [
+                      "1.0"
+                    ]
                   },
                   "scope": {
                     "type": "string",
-                    "enum": ["ORGANIZATION", "PROJECT"]
+                    "enum": [
+                      "ORGANIZATION",
+                      "PROJECT"
+                    ]
+                  },
+                  "handle": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9_-]+(?:\\/[a-z0-9_-]+)?$"
                   }
-                }
+                },
+                "required": [
+                  "commitMessage"
+                ],
+                "additionalProperties": false
               }
             }
           }
@@ -2263,7 +2096,9 @@
                       "type": "boolean"
                     }
                   },
-                  "required": ["success"]
+                  "required": [
+                    "success"
+                  ]
                 }
               }
             }
@@ -2282,7 +2117,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2301,7 +2138,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2320,7 +2159,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2339,7 +2201,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2375,11 +2239,17 @@
                         "type": "string"
                       },
                       "handle": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "scope": {
                         "type": "string",
-                        "enum": ["ORGANIZATION", "PROJECT"]
+                        "enum": [
+                          "ORGANIZATION",
+                          "PROJECT"
+                        ]
                       },
                       "name": {
                         "type": "string"
@@ -2397,7 +2267,10 @@
                         "type": "string"
                       },
                       "authorId": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "version": {
                         "type": "number"
@@ -2406,7 +2279,10 @@
                         "type": "string"
                       },
                       "commitMessage": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "prompt": {
                         "type": "string"
@@ -2418,13 +2294,20 @@
                           "properties": {
                             "role": {
                               "type": "string",
-                              "enum": ["user", "assistant", "system"]
+                              "enum": [
+                                "user",
+                                "assistant",
+                                "system"
+                              ]
                             },
                             "content": {
                               "type": "string"
                             }
                           },
-                          "required": ["role", "content"]
+                          "required": [
+                            "role",
+                            "content"
+                          ]
                         },
                         "default": []
                       },
@@ -2452,7 +2335,10 @@
                               ]
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -2467,7 +2353,12 @@
                             },
                             "type": {
                               "type": "string",
-                              "enum": ["str", "float", "bool", "json_schema"]
+                              "enum": [
+                                "str",
+                                "float",
+                                "bool",
+                                "json_schema"
+                              ]
                             },
                             "json_schema": {
                               "type": "object",
@@ -2477,11 +2368,16 @@
                                   "minLength": 1
                                 }
                               },
-                              "required": ["type"],
+                              "required": [
+                                "type"
+                              ],
                               "additionalProperties": true
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -2521,6 +2417,9 @@
                                 "items": {
                                   "type": "object",
                                   "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
                                     "name": {
                                       "type": "string"
                                     },
@@ -2569,15 +2468,25 @@
                                         {
                                           "type": "string",
                                           "const": "evaluations"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "image"
                                         }
                                       ]
                                     }
                                   },
-                                  "required": ["name", "type"]
+                                  "required": [
+                                    "name",
+                                    "type"
+                                  ]
                                 }
                               }
                             },
-                            "required": ["records", "columnTypes"]
+                            "required": [
+                              "records",
+                              "columnTypes"
+                            ]
                           }
                         }
                       },
@@ -2618,6 +2527,9 @@
                                     "items": {
                                       "type": "object",
                                       "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
                                         "name": {
                                           "type": "string"
                                         },
@@ -2666,30 +2578,47 @@
                                             {
                                               "type": "string",
                                               "const": "evaluations"
+                                            },
+                                            {
+                                              "type": "string",
+                                              "const": "image"
                                             }
                                           ]
                                         }
                                       },
-                                      "required": ["name", "type"]
+                                      "required": [
+                                        "name",
+                                        "type"
+                                      ]
                                     }
                                   }
                                 },
-                                "required": ["records", "columnTypes"]
+                                "required": [
+                                  "records",
+                                  "columnTypes"
+                                ]
                               }
                             }
                           }
                         },
-                        "required": ["type"]
+                        "required": [
+                          "type"
+                        ]
                       },
                       "responseFormat": {
                         "type": "object",
                         "properties": {
                           "type": {
                             "type": "string",
-                            "enum": ["json_schema"]
+                            "enum": [
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
-                            "type": ["object", "null"],
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "properties": {
                               "name": {
                                 "type": "string"
@@ -2698,10 +2627,16 @@
                                 "type": "object"
                               }
                             },
-                            "required": ["name", "schema"]
+                            "required": [
+                              "name",
+                              "schema"
+                            ]
                           }
                         },
-                        "required": ["type", "json_schema"]
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ]
                       }
                     },
                     "required": [
@@ -2740,7 +2675,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2759,7 +2696,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2778,7 +2717,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2797,7 +2759,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -2829,7 +2793,12 @@
                   "properties": {
                     "action": {
                       "type": "string",
-                      "enum": ["created", "updated", "conflict", "up_to_date"]
+                      "enum": [
+                        "created",
+                        "updated",
+                        "conflict",
+                        "up_to_date"
+                      ]
                     },
                     "prompt": {
                       "type": "object",
@@ -2838,11 +2807,17 @@
                           "type": "string"
                         },
                         "handle": {
-                          "type": ["string", "null"]
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "scope": {
                           "type": "string",
-                          "enum": ["ORGANIZATION", "PROJECT"]
+                          "enum": [
+                            "ORGANIZATION",
+                            "PROJECT"
+                          ]
                         },
                         "name": {
                           "type": "string"
@@ -2860,7 +2835,10 @@
                           "type": "string"
                         },
                         "authorId": {
-                          "type": ["string", "null"]
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "version": {
                           "type": "number"
@@ -2869,7 +2847,10 @@
                           "type": "string"
                         },
                         "commitMessage": {
-                          "type": ["string", "null"]
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "prompt": {
                           "type": "string"
@@ -2881,13 +2862,20 @@
                             "properties": {
                               "role": {
                                 "type": "string",
-                                "enum": ["user", "assistant", "system"]
+                                "enum": [
+                                  "user",
+                                  "assistant",
+                                  "system"
+                                ]
                               },
                               "content": {
                                 "type": "string"
                               }
                             },
-                            "required": ["role", "content"]
+                            "required": [
+                              "role",
+                              "content"
+                            ]
                           },
                           "default": []
                         },
@@ -2915,7 +2903,10 @@
                                 ]
                               }
                             },
-                            "required": ["identifier", "type"]
+                            "required": [
+                              "identifier",
+                              "type"
+                            ]
                           },
                           "minItems": 1
                         },
@@ -2930,7 +2921,12 @@
                               },
                               "type": {
                                 "type": "string",
-                                "enum": ["str", "float", "bool", "json_schema"]
+                                "enum": [
+                                  "str",
+                                  "float",
+                                  "bool",
+                                  "json_schema"
+                                ]
                               },
                               "json_schema": {
                                 "type": "object",
@@ -2940,11 +2936,16 @@
                                     "minLength": 1
                                   }
                                 },
-                                "required": ["type"],
+                                "required": [
+                                  "type"
+                                ],
                                 "additionalProperties": true
                               }
                             },
-                            "required": ["identifier", "type"]
+                            "required": [
+                              "identifier",
+                              "type"
+                            ]
                           },
                           "minItems": 1
                         },
@@ -2984,6 +2985,9 @@
                                   "items": {
                                     "type": "object",
                                     "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
                                       "name": {
                                         "type": "string"
                                       },
@@ -3032,15 +3036,25 @@
                                           {
                                             "type": "string",
                                             "const": "evaluations"
+                                          },
+                                          {
+                                            "type": "string",
+                                            "const": "image"
                                           }
                                         ]
                                       }
                                     },
-                                    "required": ["name", "type"]
+                                    "required": [
+                                      "name",
+                                      "type"
+                                    ]
                                   }
                                 }
                               },
-                              "required": ["records", "columnTypes"]
+                              "required": [
+                                "records",
+                                "columnTypes"
+                              ]
                             }
                           }
                         },
@@ -3081,6 +3095,9 @@
                                       "items": {
                                         "type": "object",
                                         "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
                                           "name": {
                                             "type": "string"
                                           },
@@ -3129,30 +3146,47 @@
                                               {
                                                 "type": "string",
                                                 "const": "evaluations"
+                                              },
+                                              {
+                                                "type": "string",
+                                                "const": "image"
                                               }
                                             ]
                                           }
                                         },
-                                        "required": ["name", "type"]
+                                        "required": [
+                                          "name",
+                                          "type"
+                                        ]
                                       }
                                     }
                                   },
-                                  "required": ["records", "columnTypes"]
+                                  "required": [
+                                    "records",
+                                    "columnTypes"
+                                  ]
                                 }
                               }
                             }
                           },
-                          "required": ["type"]
+                          "required": [
+                            "type"
+                          ]
                         },
                         "responseFormat": {
                           "type": "object",
                           "properties": {
                             "type": {
                               "type": "string",
-                              "enum": ["json_schema"]
+                              "enum": [
+                                "json_schema"
+                              ]
                             },
                             "json_schema": {
-                              "type": ["object", "null"],
+                              "type": [
+                                "object",
+                                "null"
+                              ],
                               "properties": {
                                 "name": {
                                   "type": "string"
@@ -3161,10 +3195,16 @@
                                   "type": "object"
                                 }
                               },
-                              "required": ["name", "schema"]
+                              "required": [
+                                "name",
+                                "schema"
+                              ]
                             }
                           },
-                          "required": ["type", "json_schema"]
+                          "required": [
+                            "type",
+                            "json_schema"
+                          ]
                         }
                       },
                       "required": [
@@ -3213,13 +3253,20 @@
                                 "properties": {
                                   "role": {
                                     "type": "string",
-                                    "enum": ["user", "assistant", "system"]
+                                    "enum": [
+                                      "user",
+                                      "assistant",
+                                      "system"
+                                    ]
                                   },
                                   "content": {
                                     "type": "string"
                                   }
                                 },
-                                "required": ["role", "content"]
+                                "required": [
+                                  "role",
+                                  "content"
+                                ]
                               },
                               "default": []
                             },
@@ -3247,7 +3294,10 @@
                                     ]
                                   }
                                 },
-                                "required": ["identifier", "type"]
+                                "required": [
+                                  "identifier",
+                                  "type"
+                                ]
                               },
                               "minItems": 1
                             },
@@ -3277,11 +3327,16 @@
                                         "minLength": 1
                                       }
                                     },
-                                    "required": ["type"],
+                                    "required": [
+                                      "type"
+                                    ],
                                     "additionalProperties": true
                                   }
                                 },
-                                "required": ["identifier", "type"]
+                                "required": [
+                                  "identifier",
+                                  "type"
+                                ]
                               },
                               "minItems": 1
                             },
@@ -3321,6 +3376,9 @@
                                       "items": {
                                         "type": "object",
                                         "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
                                           "name": {
                                             "type": "string"
                                           },
@@ -3369,15 +3427,25 @@
                                               {
                                                 "type": "string",
                                                 "const": "evaluations"
+                                              },
+                                              {
+                                                "type": "string",
+                                                "const": "image"
                                               }
                                             ]
                                           }
                                         },
-                                        "required": ["name", "type"]
+                                        "required": [
+                                          "name",
+                                          "type"
+                                        ]
                                       }
                                     }
                                   },
-                                  "required": ["records", "columnTypes"]
+                                  "required": [
+                                    "records",
+                                    "columnTypes"
+                                  ]
                                 }
                               }
                             },
@@ -3418,6 +3486,9 @@
                                           "items": {
                                             "type": "object",
                                             "properties": {
+                                              "id": {
+                                                "type": "string"
+                                              },
                                               "name": {
                                                 "type": "string"
                                               },
@@ -3466,30 +3537,47 @@
                                                   {
                                                     "type": "string",
                                                     "const": "evaluations"
+                                                  },
+                                                  {
+                                                    "type": "string",
+                                                    "const": "image"
                                                   }
                                                 ]
                                               }
                                             },
-                                            "required": ["name", "type"]
+                                            "required": [
+                                              "name",
+                                              "type"
+                                            ]
                                           }
                                         }
                                       },
-                                      "required": ["records", "columnTypes"]
+                                      "required": [
+                                        "records",
+                                        "columnTypes"
+                                      ]
                                     }
                                   }
                                 }
                               },
-                              "required": ["type"]
+                              "required": [
+                                "type"
+                              ]
                             },
                             "response_format": {
                               "type": "object",
                               "properties": {
                                 "type": {
                                   "type": "string",
-                                  "enum": ["json_schema"]
+                                  "enum": [
+                                    "json_schema"
+                                  ]
                                 },
                                 "json_schema": {
-                                  "type": ["object", "null"],
+                                  "type": [
+                                    "object",
+                                    "null"
+                                  ],
                                   "properties": {
                                     "name": {
                                       "type": "string"
@@ -3498,10 +3586,16 @@
                                       "type": "object"
                                     }
                                   },
-                                  "required": ["name", "schema"]
+                                  "required": [
+                                    "name",
+                                    "schema"
+                                  ]
                                 }
                               },
-                              "required": ["type", "json_schema"]
+                              "required": [
+                                "type",
+                                "json_schema"
+                              ]
                             }
                           },
                           "required": [
@@ -3521,7 +3615,9 @@
                       ]
                     }
                   },
-                  "required": ["action"]
+                  "required": [
+                    "action"
+                  ]
                 }
               }
             }
@@ -3540,7 +3636,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -3559,7 +3657,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -3578,7 +3699,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -3615,13 +3738,20 @@
                           "properties": {
                             "role": {
                               "type": "string",
-                              "enum": ["user", "assistant", "system"]
+                              "enum": [
+                                "user",
+                                "assistant",
+                                "system"
+                              ]
                             },
                             "content": {
                               "type": "string"
                             }
                           },
-                          "required": ["role", "content"]
+                          "required": [
+                            "role",
+                            "content"
+                          ]
                         },
                         "default": []
                       },
@@ -3649,7 +3779,10 @@
                               ]
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -3664,7 +3797,12 @@
                             },
                             "type": {
                               "type": "string",
-                              "enum": ["str", "float", "bool", "json_schema"]
+                              "enum": [
+                                "str",
+                                "float",
+                                "bool",
+                                "json_schema"
+                              ]
                             },
                             "json_schema": {
                               "type": "object",
@@ -3674,11 +3812,16 @@
                                   "minLength": 1
                                 }
                               },
-                              "required": ["type"],
+                              "required": [
+                                "type"
+                              ],
                               "additionalProperties": true
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -3718,6 +3861,9 @@
                                 "items": {
                                   "type": "object",
                                   "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
                                     "name": {
                                       "type": "string"
                                     },
@@ -3766,15 +3912,25 @@
                                         {
                                           "type": "string",
                                           "const": "evaluations"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "image"
                                         }
                                       ]
                                     }
                                   },
-                                  "required": ["name", "type"]
+                                  "required": [
+                                    "name",
+                                    "type"
+                                  ]
                                 }
                               }
                             },
-                            "required": ["records", "columnTypes"]
+                            "required": [
+                              "records",
+                              "columnTypes"
+                            ]
                           }
                         }
                       },
@@ -3815,6 +3971,9 @@
                                     "items": {
                                       "type": "object",
                                       "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
                                         "name": {
                                           "type": "string"
                                         },
@@ -3863,30 +4022,47 @@
                                             {
                                               "type": "string",
                                               "const": "evaluations"
+                                            },
+                                            {
+                                              "type": "string",
+                                              "const": "image"
                                             }
                                           ]
                                         }
                                       },
-                                      "required": ["name", "type"]
+                                      "required": [
+                                        "name",
+                                        "type"
+                                      ]
                                     }
                                   }
                                 },
-                                "required": ["records", "columnTypes"]
+                                "required": [
+                                  "records",
+                                  "columnTypes"
+                                ]
                               }
                             }
                           }
                         },
-                        "required": ["type"]
+                        "required": [
+                          "type"
+                        ]
                       },
                       "response_format": {
                         "type": "object",
                         "properties": {
                           "type": {
                             "type": "string",
-                            "enum": ["json_schema"]
+                            "enum": [
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
-                            "type": ["object", "null"],
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "properties": {
                               "name": {
                                 "type": "string"
@@ -3895,13 +4071,24 @@
                                 "type": "object"
                               }
                             },
-                            "required": ["name", "schema"]
+                            "required": [
+                              "name",
+                              "schema"
+                            ]
                           }
                         },
-                        "required": ["type", "json_schema"]
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ]
                       }
                     },
-                    "required": ["prompt", "inputs", "outputs", "model"]
+                    "required": [
+                      "prompt",
+                      "inputs",
+                      "outputs",
+                      "model"
+                    ]
                   },
                   "localVersion": {
                     "type": "number",
@@ -3911,7 +4098,9 @@
                     "type": "string"
                   }
                 },
-                "required": ["configData"]
+                "required": [
+                  "configData"
+                ]
               }
             }
           }
@@ -3990,7 +4179,9 @@
                       }
                     }
                   },
-                  "required": ["data"]
+                  "required": [
+                    "data"
+                  ]
                 }
               }
             }
@@ -4002,15 +4193,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "string",
-                      "default": "error"
+                    "error": {
+                      "type": "string"
                     },
                     "message": {
                       "type": "string"
                     }
                   },
-                  "required": ["status", "message"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4022,15 +4214,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "string",
-                      "default": "error"
+                    "error": {
+                      "type": "string"
                     },
                     "message": {
                       "type": "string"
                     }
                   },
-                  "required": ["status", "message"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4042,15 +4235,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "string",
-                      "default": "error"
+                    "error": {
+                      "type": "string"
                     },
                     "message": {
                       "type": "string"
                     }
                   },
-                  "required": ["status", "message"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4062,15 +4256,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "string",
-                      "default": "error"
+                    "error": {
+                      "type": "string"
                     },
                     "message": {
                       "type": "string"
                     }
                   },
-                  "required": ["status", "message"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4082,15 +4277,16 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status": {
-                      "type": "string",
-                      "default": "error"
+                    "error": {
+                      "type": "string"
                     },
                     "message": {
                       "type": "string"
                     }
                   },
-                  "required": ["status", "message"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4126,11 +4322,17 @@
                         "type": "string"
                       },
                       "handle": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "scope": {
                         "type": "string",
-                        "enum": ["ORGANIZATION", "PROJECT"]
+                        "enum": [
+                          "ORGANIZATION",
+                          "PROJECT"
+                        ]
                       },
                       "name": {
                         "type": "string"
@@ -4148,7 +4350,10 @@
                         "type": "string"
                       },
                       "authorId": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "version": {
                         "type": "number"
@@ -4157,7 +4362,10 @@
                         "type": "string"
                       },
                       "commitMessage": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "prompt": {
                         "type": "string"
@@ -4169,13 +4377,20 @@
                           "properties": {
                             "role": {
                               "type": "string",
-                              "enum": ["user", "assistant", "system"]
+                              "enum": [
+                                "user",
+                                "assistant",
+                                "system"
+                              ]
                             },
                             "content": {
                               "type": "string"
                             }
                           },
-                          "required": ["role", "content"]
+                          "required": [
+                            "role",
+                            "content"
+                          ]
                         },
                         "default": []
                       },
@@ -4203,7 +4418,10 @@
                               ]
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -4218,7 +4436,12 @@
                             },
                             "type": {
                               "type": "string",
-                              "enum": ["str", "float", "bool", "json_schema"]
+                              "enum": [
+                                "str",
+                                "float",
+                                "bool",
+                                "json_schema"
+                              ]
                             },
                             "json_schema": {
                               "type": "object",
@@ -4228,11 +4451,16 @@
                                   "minLength": 1
                                 }
                               },
-                              "required": ["type"],
+                              "required": [
+                                "type"
+                              ],
                               "additionalProperties": true
                             }
                           },
-                          "required": ["identifier", "type"]
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
                         },
                         "minItems": 1
                       },
@@ -4272,6 +4500,9 @@
                                 "items": {
                                   "type": "object",
                                   "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
                                     "name": {
                                       "type": "string"
                                     },
@@ -4320,15 +4551,25 @@
                                         {
                                           "type": "string",
                                           "const": "evaluations"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "image"
                                         }
                                       ]
                                     }
                                   },
-                                  "required": ["name", "type"]
+                                  "required": [
+                                    "name",
+                                    "type"
+                                  ]
                                 }
                               }
                             },
-                            "required": ["records", "columnTypes"]
+                            "required": [
+                              "records",
+                              "columnTypes"
+                            ]
                           }
                         }
                       },
@@ -4369,6 +4610,9 @@
                                     "items": {
                                       "type": "object",
                                       "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
                                         "name": {
                                           "type": "string"
                                         },
@@ -4417,30 +4661,47 @@
                                             {
                                               "type": "string",
                                               "const": "evaluations"
+                                            },
+                                            {
+                                              "type": "string",
+                                              "const": "image"
                                             }
                                           ]
                                         }
                                       },
-                                      "required": ["name", "type"]
+                                      "required": [
+                                        "name",
+                                        "type"
+                                      ]
                                     }
                                   }
                                 },
-                                "required": ["records", "columnTypes"]
+                                "required": [
+                                  "records",
+                                  "columnTypes"
+                                ]
                               }
                             }
                           }
                         },
-                        "required": ["type"]
+                        "required": [
+                          "type"
+                        ]
                       },
                       "responseFormat": {
                         "type": "object",
                         "properties": {
                           "type": {
                             "type": "string",
-                            "enum": ["json_schema"]
+                            "enum": [
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
-                            "type": ["object", "null"],
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "properties": {
                               "name": {
                                 "type": "string"
@@ -4449,10 +4710,16 @@
                                 "type": "object"
                               }
                             },
-                            "required": ["name", "schema"]
+                            "required": [
+                              "name",
+                              "schema"
+                            ]
                           }
                         },
-                        "required": ["type", "json_schema"]
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ]
                       }
                     },
                     "required": [
@@ -4491,7 +4758,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4510,7 +4779,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4529,7 +4821,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4552,11 +4846,17 @@
                       "type": "string"
                     },
                     "handle": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "scope": {
                       "type": "string",
-                      "enum": ["ORGANIZATION", "PROJECT"]
+                      "enum": [
+                        "ORGANIZATION",
+                        "PROJECT"
+                      ]
                     },
                     "name": {
                       "type": "string"
@@ -4574,7 +4874,10 @@
                       "type": "string"
                     },
                     "authorId": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "version": {
                       "type": "number"
@@ -4583,7 +4886,10 @@
                       "type": "string"
                     },
                     "commitMessage": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "prompt": {
                       "type": "string"
@@ -4595,13 +4901,20 @@
                         "properties": {
                           "role": {
                             "type": "string",
-                            "enum": ["user", "assistant", "system"]
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system"
+                            ]
                           },
                           "content": {
                             "type": "string"
                           }
                         },
-                        "required": ["role", "content"]
+                        "required": [
+                          "role",
+                          "content"
+                        ]
                       },
                       "default": []
                     },
@@ -4629,7 +4942,10 @@
                             ]
                           }
                         },
-                        "required": ["identifier", "type"]
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
                       },
                       "minItems": 1
                     },
@@ -4644,7 +4960,12 @@
                           },
                           "type": {
                             "type": "string",
-                            "enum": ["str", "float", "bool", "json_schema"]
+                            "enum": [
+                              "str",
+                              "float",
+                              "bool",
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
                             "type": "object",
@@ -4654,11 +4975,16 @@
                                 "minLength": 1
                               }
                             },
-                            "required": ["type"],
+                            "required": [
+                              "type"
+                            ],
                             "additionalProperties": true
                           }
                         },
-                        "required": ["identifier", "type"]
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
                       },
                       "minItems": 1
                     },
@@ -4698,6 +5024,9 @@
                               "items": {
                                 "type": "object",
                                 "properties": {
+                                  "id": {
+                                    "type": "string"
+                                  },
                                   "name": {
                                     "type": "string"
                                   },
@@ -4746,15 +5075,25 @@
                                       {
                                         "type": "string",
                                         "const": "evaluations"
+                                      },
+                                      {
+                                        "type": "string",
+                                        "const": "image"
                                       }
                                     ]
                                   }
                                 },
-                                "required": ["name", "type"]
+                                "required": [
+                                  "name",
+                                  "type"
+                                ]
                               }
                             }
                           },
-                          "required": ["records", "columnTypes"]
+                          "required": [
+                            "records",
+                            "columnTypes"
+                          ]
                         }
                       }
                     },
@@ -4763,7 +5102,11 @@
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["few_shot", "in_context", "chain_of_thought"]
+                          "enum": [
+                            "few_shot",
+                            "in_context",
+                            "chain_of_thought"
+                          ]
                         },
                         "demonstrations": {
                           "type": "object",
@@ -4791,6 +5134,9 @@
                                   "items": {
                                     "type": "object",
                                     "properties": {
+                                      "id": {
+                                        "type": "string"
+                                      },
                                       "name": {
                                         "type": "string"
                                       },
@@ -4839,30 +5185,47 @@
                                           {
                                             "type": "string",
                                             "const": "evaluations"
+                                          },
+                                          {
+                                            "type": "string",
+                                            "const": "image"
                                           }
                                         ]
                                       }
                                     },
-                                    "required": ["name", "type"]
+                                    "required": [
+                                      "name",
+                                      "type"
+                                    ]
                                   }
                                 }
                               },
-                              "required": ["records", "columnTypes"]
+                              "required": [
+                                "records",
+                                "columnTypes"
+                              ]
                             }
                           }
                         }
                       },
-                      "required": ["type"]
+                      "required": [
+                        "type"
+                      ]
                     },
                     "responseFormat": {
                       "type": "object",
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["json_schema"]
+                          "enum": [
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
-                          "type": ["object", "null"],
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "properties": {
                             "name": {
                               "type": "string"
@@ -4871,10 +5234,16 @@
                               "type": "object"
                             }
                           },
-                          "required": ["name", "schema"]
+                          "required": [
+                            "name",
+                            "schema"
+                          ]
                         }
                       },
-                      "required": ["type", "json_schema"]
+                      "required": [
+                        "type",
+                        "json_schema"
+                      ]
                     }
                   },
                   "required": [
@@ -4912,7 +5281,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4931,7 +5302,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4950,7 +5323,31 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error", "message"]
+                  "required": [
+                    "error",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4969,7 +5366,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -4990,7 +5389,10 @@
                   },
                   "scope": {
                     "type": "string",
-                    "enum": ["ORGANIZATION", "PROJECT"],
+                    "enum": [
+                      "ORGANIZATION",
+                      "PROJECT"
+                    ],
                     "default": "PROJECT"
                   },
                   "model": {
@@ -5018,13 +5420,20 @@
                       "properties": {
                         "role": {
                           "type": "string",
-                          "enum": ["user", "assistant", "system"]
+                          "enum": [
+                            "user",
+                            "assistant",
+                            "system"
+                          ]
                         },
                         "content": {
                           "type": "string"
                         }
                       },
-                      "required": ["role", "content"]
+                      "required": [
+                        "role",
+                        "content"
+                      ]
                     }
                   },
                   "inputs": {
@@ -5051,7 +5460,10 @@
                           ]
                         }
                       },
-                      "required": ["identifier", "type"]
+                      "required": [
+                        "identifier",
+                        "type"
+                      ]
                     }
                   },
                   "outputs": {
@@ -5065,7 +5477,12 @@
                         },
                         "type": {
                           "type": "string",
-                          "enum": ["str", "float", "bool", "json_schema"]
+                          "enum": [
+                            "str",
+                            "float",
+                            "bool",
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
                           "type": "object",
@@ -5075,19 +5492,28 @@
                               "minLength": 1
                             }
                           },
-                          "required": ["type"],
+                          "required": [
+                            "type"
+                          ],
                           "additionalProperties": true
                         }
                       },
-                      "required": ["identifier", "type"]
+                      "required": [
+                        "identifier",
+                        "type"
+                      ]
                     }
                   },
                   "schemaVersion": {
                     "type": "string",
-                    "enum": ["1.0"]
+                    "enum": [
+                      "1.0"
+                    ]
                   }
                 },
-                "required": ["handle"],
+                "required": [
+                  "handle"
+                ],
                 "additionalProperties": false
               }
             }
@@ -5109,10 +5535,15 @@
                       "type": "boolean"
                     },
                     "url": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
-                  "required": ["success"]
+                  "required": [
+                    "success"
+                  ]
                 }
               }
             }
@@ -5128,7 +5559,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5147,7 +5580,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5166,7 +5622,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5261,11 +5719,18 @@
                         ]
                       },
                       "results": {
-                        "type": ["object", "null"],
+                        "type": [
+                          "object",
+                          "null"
+                        ],
                         "properties": {
                           "verdict": {
                             "type": "string",
-                            "enum": ["success", "failure", "inconclusive"]
+                            "enum": [
+                              "success",
+                              "failure",
+                              "inconclusive"
+                            ]
                           },
                           "reasoning": {
                             "type": "string"
@@ -5286,7 +5751,11 @@
                             "type": "string"
                           }
                         },
-                        "required": ["verdict", "metCriteria", "unmetCriteria"]
+                        "required": [
+                          "verdict",
+                          "metCriteria",
+                          "unmetCriteria"
+                        ]
                       }
                     },
                     "required": [
@@ -5312,134 +5781,392 @@
                       "messages": {
                         "type": "array",
                         "items": {
-                          "oneOf": [
+                          "allOf": [
                             {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "role": {
-                                  "type": "string",
-                                  "const": "developer"
-                                },
-                                "content": {
-                                  "type": "string"
-                                },
-                                "name": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": ["id", "role", "content"]
-                            },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "role": {
-                                  "type": "string",
-                                  "const": "system"
-                                },
-                                "content": {
-                                  "type": "string"
-                                },
-                                "name": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": ["id", "role", "content"]
-                            },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "role": {
-                                  "type": "string",
-                                  "const": "assistant"
-                                },
-                                "content": {
-                                  "type": "string"
-                                },
-                                "name": {
-                                  "type": "string"
-                                },
-                                "toolCalls": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "string"
+                              "anyOf": [
+                                {
+                                  "oneOf": [
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "role": {
+                                          "type": "string",
+                                          "const": "developer"
+                                        },
+                                        "content": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        }
                                       },
-                                      "type": {
-                                        "type": "string",
-                                        "const": "function"
+                                      "required": [
+                                        "id",
+                                        "role",
+                                        "content"
+                                      ]
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "role": {
+                                          "type": "string",
+                                          "const": "system"
+                                        },
+                                        "content": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        }
                                       },
-                                      "function": {
-                                        "type": "object",
-                                        "properties": {
-                                          "name": {
-                                            "type": "string"
-                                          },
-                                          "arguments": {
-                                            "type": "string"
+                                      "required": [
+                                        "id",
+                                        "role",
+                                        "content"
+                                      ]
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "role": {
+                                          "type": "string",
+                                          "const": "assistant"
+                                        },
+                                        "content": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "toolCalls": {
+                                          "type": "array",
+                                          "items": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "string"
+                                              },
+                                              "type": {
+                                                "type": "string",
+                                                "const": "function"
+                                              },
+                                              "function": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "name": {
+                                                    "type": "string"
+                                                  },
+                                                  "arguments": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "name",
+                                                  "arguments"
+                                                ]
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "type",
+                                              "function"
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "role"
+                                      ]
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "role": {
+                                          "type": "string",
+                                          "const": "user"
+                                        },
+                                        "content": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "role",
+                                        "content"
+                                      ]
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "content": {
+                                          "type": "string"
+                                        },
+                                        "role": {
+                                          "type": "string",
+                                          "const": "tool"
+                                        },
+                                        "toolCallId": {
+                                          "type": "string"
+                                        },
+                                        "error": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "content",
+                                        "role",
+                                        "toolCallId"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "role": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "const": "system"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "user"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "assistant"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "function"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "tool"
+                                        },
+                                        {
+                                          "type": "string",
+                                          "const": "unknown"
+                                        }
+                                      ]
+                                    },
+                                    "content": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "array",
+                                          "items": {
+                                            "anyOf": [
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "type": {
+                                                    "type": "string",
+                                                    "const": "text"
+                                                  },
+                                                  "text": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "type"
+                                                ]
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "text": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "text"
+                                                ]
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "type": {
+                                                    "type": "string",
+                                                    "const": "image_url"
+                                                  },
+                                                  "image_url": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                      "url": {
+                                                        "type": "string"
+                                                      },
+                                                      "detail": {
+                                                        "anyOf": [
+                                                          {
+                                                            "type": "string",
+                                                            "const": "auto"
+                                                          },
+                                                          {
+                                                            "type": "string",
+                                                            "const": "low"
+                                                          },
+                                                          {
+                                                            "type": "string",
+                                                            "const": "high"
+                                                          }
+                                                        ]
+                                                      }
+                                                    },
+                                                    "required": [
+                                                      "url"
+                                                    ]
+                                                  }
+                                                },
+                                                "required": [
+                                                  "type"
+                                                ]
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "type": {
+                                                    "type": "string",
+                                                    "const": "tool_call"
+                                                  },
+                                                  "toolName": {
+                                                    "type": "string"
+                                                  },
+                                                  "toolCallId": {
+                                                    "type": "string"
+                                                  },
+                                                  "args": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "type"
+                                                ]
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
+                                                  "type": {
+                                                    "type": "string",
+                                                    "const": "tool_result"
+                                                  },
+                                                  "toolName": {
+                                                    "type": "string"
+                                                  },
+                                                  "toolCallId": {
+                                                    "type": "string"
+                                                  },
+                                                  "result": {}
+                                                },
+                                                "required": [
+                                                  "type"
+                                                ]
+                                              }
+                                            ]
                                           }
                                         },
-                                        "required": ["name", "arguments"]
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "function_call": {
+                                      "type": [
+                                        "object",
+                                        "null"
+                                      ],
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "arguments": {
+                                          "type": "string"
+                                        }
                                       }
                                     },
-                                    "required": ["id", "type", "function"]
+                                    "tool_calls": {
+                                      "type": [
+                                        "array",
+                                        "null"
+                                      ],
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "function": {
+                                            "type": "object",
+                                            "properties": {
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "arguments": {
+                                                "type": "string"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "type",
+                                          "function"
+                                        ]
+                                      }
+                                    },
+                                    "tool_call_id": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "name": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    }
                                   }
                                 }
-                              },
-                              "required": ["id", "role"]
-                            },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "role": {
-                                  "type": "string",
-                                  "const": "user"
-                                },
-                                "content": {
-                                  "type": "string"
-                                },
-                                "name": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": ["id", "role", "content"]
-                            },
-                            {
-                              "type": "object",
-                              "properties": {
-                                "id": {
-                                  "type": "string"
-                                },
-                                "content": {
-                                  "type": "string"
-                                },
-                                "role": {
-                                  "type": "string",
-                                  "const": "tool"
-                                },
-                                "toolCallId": {
-                                  "type": "string"
-                                }
-                              },
-                              "required": [
-                                "id",
-                                "content",
-                                "role",
-                                "toolCallId"
                               ]
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "trace_id": {
+                                  "type": "string"
+                                }
+                              }
                             }
                           ]
                         }
@@ -5486,10 +6213,15 @@
                       "type": "boolean"
                     },
                     "url": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
-                  "required": ["success"]
+                  "required": [
+                    "success"
+                  ]
                 }
               }
             }
@@ -5508,7 +6240,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5527,7 +6261,30 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5546,7 +6303,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5573,11 +6332,17 @@
                         "type": "string"
                       },
                       "handle": {
-                        "type": ["string", "null"]
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       "scope": {
                         "type": "string",
-                        "enum": ["ORGANIZATION", "PROJECT"]
+                        "enum": [
+                          "ORGANIZATION",
+                          "PROJECT"
+                        ]
                       },
                       "name": {
                         "type": "string"
@@ -5613,21 +6378,33 @@
                           "properties": {
                             "role": {
                               "type": "string",
-                              "enum": ["user", "assistant", "system"]
+                              "enum": [
+                                "user",
+                                "assistant",
+                                "system"
+                              ]
                             },
                             "content": {
                               "type": "string"
                             }
                           },
-                          "required": ["role", "content"]
+                          "required": [
+                            "role",
+                            "content"
+                          ]
                         }
                       },
                       "response_format": {
-                        "type": ["object", "null"],
+                        "type": [
+                          "object",
+                          "null"
+                        ],
                         "properties": {
                           "type": {
                             "type": "string",
-                            "enum": ["json_schema"]
+                            "enum": [
+                              "json_schema"
+                            ]
                           },
                           "json_schema": {
                             "type": "object",
@@ -5639,10 +6416,16 @@
                                 "type": "object"
                               }
                             },
-                            "required": ["name", "schema"]
+                            "required": [
+                              "name",
+                              "schema"
+                            ]
                           }
                         },
-                        "required": ["type", "json_schema"]
+                        "required": [
+                          "type",
+                          "json_schema"
+                        ]
                       }
                     },
                     "required": [
@@ -5677,7 +6460,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5693,7 +6478,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5709,7 +6496,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5732,11 +6521,17 @@
                       "type": "string"
                     },
                     "handle": {
-                      "type": ["string", "null"]
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     },
                     "scope": {
                       "type": "string",
-                      "enum": ["ORGANIZATION", "PROJECT"]
+                      "enum": [
+                        "ORGANIZATION",
+                        "PROJECT"
+                      ]
                     },
                     "name": {
                       "type": "string"
@@ -5772,21 +6567,33 @@
                         "properties": {
                           "role": {
                             "type": "string",
-                            "enum": ["user", "assistant", "system"]
+                            "enum": [
+                              "user",
+                              "assistant",
+                              "system"
+                            ]
                           },
                           "content": {
                             "type": "string"
                           }
                         },
-                        "required": ["role", "content"]
+                        "required": [
+                          "role",
+                          "content"
+                        ]
                       }
                     },
                     "response_format": {
-                      "type": ["object", "null"],
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "type": {
                           "type": "string",
-                          "enum": ["json_schema"]
+                          "enum": [
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
                           "type": "object",
@@ -5798,10 +6605,16 @@
                               "type": "object"
                             }
                           },
-                          "required": ["name", "schema"]
+                          "required": [
+                            "name",
+                            "schema"
+                          ]
                         }
                       },
-                      "required": ["type", "json_schema"]
+                      "required": [
+                        "type",
+                        "json_schema"
+                      ]
                     }
                   },
                   "required": [
@@ -5835,7 +6648,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5851,7 +6666,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5867,7 +6684,9 @@
                       "type": "string"
                     }
                   },
-                  "required": ["error"]
+                  "required": [
+                    "error"
+                  ]
                 }
               }
             }
@@ -5888,7 +6707,10 @@
                   },
                   "scope": {
                     "type": "string",
-                    "enum": ["ORGANIZATION", "PROJECT"],
+                    "enum": [
+                      "ORGANIZATION",
+                      "PROJECT"
+                    ],
                     "default": "PROJECT"
                   },
                   "authorId": {
@@ -5904,13 +6726,20 @@
                       "properties": {
                         "role": {
                           "type": "string",
-                          "enum": ["user", "assistant", "system"]
+                          "enum": [
+                            "user",
+                            "assistant",
+                            "system"
+                          ]
                         },
                         "content": {
                           "type": "string"
                         }
                       },
-                      "required": ["role", "content"]
+                      "required": [
+                        "role",
+                        "content"
+                      ]
                     }
                   },
                   "inputs": {
@@ -5937,7 +6766,10 @@
                           ]
                         }
                       },
-                      "required": ["identifier", "type"]
+                      "required": [
+                        "identifier",
+                        "type"
+                      ]
                     }
                   },
                   "outputs": {
@@ -5951,7 +6783,12 @@
                         },
                         "type": {
                           "type": "string",
-                          "enum": ["str", "float", "bool", "json_schema"]
+                          "enum": [
+                            "str",
+                            "float",
+                            "bool",
+                            "json_schema"
+                          ]
                         },
                         "json_schema": {
                           "type": "object",
@@ -5961,15 +6798,22 @@
                               "minLength": 1
                             }
                           },
-                          "required": ["type"],
+                          "required": [
+                            "type"
+                          ],
                           "additionalProperties": true
                         }
                       },
-                      "required": ["identifier", "type"]
+                      "required": [
+                        "identifier",
+                        "type"
+                      ]
                     }
                   }
                 },
-                "required": ["handle"]
+                "required": [
+                  "handle"
+                ]
               }
             }
           }
@@ -5980,7 +6824,9 @@
   "components": {
     "schemas": {
       "Annotation": {
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -6022,7 +6868,10 @@
         }
       },
       "Error": {
-        "required": ["error", "message"],
+        "required": [
+          "error",
+          "message"
+        ],
         "type": "object",
         "properties": {
           "error": {
@@ -6272,7 +7121,9 @@
             ]
           }
         },
-        "required": ["entries"]
+        "required": [
+          "entries"
+        ]
       }
     },
     "securitySchemes": {
