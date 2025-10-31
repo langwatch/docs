@@ -26,6 +26,10 @@ For a complete list of possible supported providers, please refer to the [NextAu
 
 Set `NEXTAUTH_PROVIDER` to `azure-ad` in your `.env` file.
 
+<Note>
+**Azure AD Configuration**: As of LangWatch version 1.4.0+, Azure AD authentication requires the `User.Read` permission to be granted in your Azure application registration. Make sure this permission is added to avoid authentication errors.
+</Note>
+
 ### Okta
 
 📄 [Okta Docs](https://developer.okta.com/docs/reference/api/oidc)
@@ -92,6 +96,28 @@ Set `NEXTAUTH_PROVIDER` to `github` in your `.env` file.
 
 Set `NEXTAUTH_PROVIDER` to `gitlab` in your `.env` file.
 
+### On-Premises Domain Configuration
+
+If you want to ensure only a single organization is created for on-premises deployments, you can
+configure the `Organization` table to map email domains to their corresponding organizations and SSO providers:
+
+```sql
+UPDATE "Organization"
+SET "ssoDomain" = 'yourcompany.com',
+    "ssoProvider" = 'azure-ad'
+WHERE id = 'your-organization-id';
+```
+
+**Configuration Parameters:**
+
+- **`ssoDomain`**: The email domain for your organization (e.g., `yourcompany.com`)
+- **`ssoProvider`**: The SSO provider name matching your `NEXTAUTH_PROVIDER` value (e.g., `azure-ad`, `okta`, `auth0`)
+
+This configuration ensures that:
+- New users with matching email domains are automatically assigned to the correct organization
+- Users don't need an explicit invite to join their organization
+- Multi-tenant deployments can support multiple organizations with different domains
+
 ## 2. Managed Service (app.langwatch.ai)
 
 If you want to use SSO with our Cloud version, contact our team with the required variables in hand for the following providers:
@@ -130,6 +156,47 @@ Once you have all these details, please contact us so we can set them up from ou
 If you use a different provider other than the ones listed above, contact us to check availability for a new implementation.
 
 ---
+
+## Migrating from Email/Password Authentication
+
+For security reasons, users are not automatically linked between email address and SSO provider, they can only link it themselves when already signed in.
+
+If you're then transitioning from a previous LangWatch setup that used email/password authentication to SSO, you'll need to enable automatic account linking to prevent "email already exists" errors and ensure a smooth migration for your existing users.
+
+### Migration Steps
+
+<Steps>
+<Step title="Enable SSO configuration">
+  Configure your chosen SSO provider following the instructions in the sections above, including setting all required environment variables and `NEXTAUTH_PROVIDER`.
+</Step>
+
+<Step title="Update database for existing users">
+  Run the following SQL command on your LangWatch database to enable automatic account linking:
+
+  ```sql
+  UPDATE "User"
+  SET "pendingSsoSetup" = true;
+  ```
+
+  This flags all existing user accounts to automatically link with their SSO provider when they next sign in.
+
+  <Info>
+  This is a **one-time operation** that only affects existing users. New users created after SSO is enabled will not need this flag.
+  </Info>
+</Step>
+
+<Step title="Notify your users">
+  Inform your users about the authentication method change. When they next attempt to sign in:
+
+  - They should use the **SSO sign-in option** instead of email/password
+  - Their existing account will be automatically linked to their SSO identity
+  - All their projects, data, and permissions will remain intact
+
+  <Check>
+  Users will maintain access to all their existing resources after the migration.
+  </Check>
+</Step>
+</Steps>
 
 ## Support
 

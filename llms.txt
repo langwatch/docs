@@ -43,6 +43,7 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [TypeScript Integration Guide](https://docs.langwatch.ai/integration/typescript/guide.md): Get started with LangWatch TypeScript SDK in 5 minutes
 - [TypeScript SDK API Reference](https://docs.langwatch.ai/integration/typescript/reference.md): LangWatch TypeScript SDK API reference
+- [Filtering Spans in TypeScript](https://docs.langwatch.ai/integration/typescript/tutorials/filtering-spans.md): Filter which spans are exported to LangWatch using presets or explicit criteria.
 - [Manual Instrumentation](https://docs.langwatch.ai/integration/typescript/tutorials/manual-instrumentation.md): Learn advanced manual span management techniques for fine-grained observability control
 - [OpenTelemetry Migration](https://docs.langwatch.ai/integration/typescript/tutorials/opentelemetry-migration.md): Migrate from OpenTelemetry to LangWatch while preserving all your custom configurations
 
