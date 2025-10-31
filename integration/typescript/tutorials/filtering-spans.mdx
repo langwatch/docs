@@ -9,29 +9,43 @@ keywords: langwatch, typescript, javascript, filtering, spans, traces, observabi
 You don’t need every span. Filter out the noise and ship the useful bits. LangWatch lets you keep AI and business spans while dropping framework chatter.
 
 <Info>
-Introduced in `langwatch@0.7.5`.
+Introduced in `langwatch@0.8.0`.
 </Info>
 
 ## Defaults
 
 By default we exclude HTTP request spans.
 
-```typescript
+<CodeGroup>
+```typescript With setupObservability
+import { setupObservability } from "langwatch/observability/node";
+import { LangWatchTraceExporter } from "langwatch";
+
+setupObservability({
+  // We are specifying a custom trace exporter, so we need to disable default
+  // integration to prevent double exporting
+  langwatch: "disabled",
+  traceExporter: new LangWatchTraceExporter(),
+});
+```
+
+```typescript Creating an exporter
 import { LangWatchTraceExporter } from "langwatch";
 
 // Default: excludes HTTP request spans
 const exporter = new LangWatchTraceExporter();
 ```
+</CodeGroup>
 
 <Note>
-Default is equivalent to `{ filters: [{ preset: "excludeHttpRequests" }] }`. Pass `filters: null` or `filters: []` to send all spans.
+Default is equivalent to `{ filters: [{ preset: "excludeHttpRequests" }] }`. You can set `filters: null` or `filters: []` to send all spans.
 </Note>
 
 ## Quick start
 
 <CodeGroup>
 ```typescript Disable filtering
-new LangWatchTraceExporter({ filters: null });
+new LangWatchTraceExporter({ filters: [] });
 ```
 
 ```typescript Only Vercel AI spans
@@ -103,6 +117,39 @@ new LangWatchTraceExporter({
     { preset: "excludeHttpRequests" },
     { exclude: { name: [{ matches: /test/ }] } }
   ]
+});
+```
+
+## Integrate with setupObservability
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { LangWatchTraceExporter } from "langwatch";
+
+setupObservability({
+  // We are specifying a custom trace exporter, so we need to disable default
+  // integration to prevent double exporting
+  langwatch: "disabled",
+  traceExporter: new LangWatchTraceExporter({
+    filters: [{ preset: "excludeHttpRequests" }]
+  })
+});
+```
+
+```typescript Via BatchSpanProcessor
+import { setupObservability } from "langwatch/observability/node";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { LangWatchTraceExporter } from "langwatch";
+
+setupObservability({
+  // We are specifying a custom trace exporter, so we need to disable default
+  // integration to prevent double exporting
+  langwatch: "disabled",
+  spanProcessors: [
+    new BatchSpanProcessor(
+      new LangWatchTraceExporter({ filters: [{ preset: "vercelAIOnly" }] })
+    ),
+  ],
 });
 ```
 
