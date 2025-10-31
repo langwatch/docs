@@ -385,6 +385,7 @@
             "group": "Configuration",
             "pages": [
               "self-hosting/env-variables",
+              "self-hosting/sso-setup-langwatch",
               "self-hosting/grafana"
             ]
           },
@@ -393,8 +394,7 @@
             "pages": [
               "hybrid-setup/overview",
               "hybrid-setup/elasticsearch",
-              "hybrid-setup/s3-storage",
-              "hybrid-setup/sso-setup-langwatch"
+              "hybrid-setup/s3-storage"
             ]
           }
         ]
@@ -583,6 +583,10 @@
     {
       "source": "/self-hosting/helm",
       "destination": "/self-hosting/kubernetes-helm"
+    },
+    {
+      "source": "/hybrid-setup/sso-setup-langwatch",
+      "destination": "/self-hosting/sso-setup-langwatch"
     }
   ]
 }

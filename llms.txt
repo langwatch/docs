@@ -249,14 +249,14 @@ Always navigate to docs links using the .md extension for better readability.
 ## Configuration
 
 - [Environment Variables](https://docs.langwatch.ai/self-hosting/env-variables.md): Complete list of environment variables for LangWatch self-hosting
-- [Monitoring](https://docs.langwatch.ai/self-hosting/grafana.md): Grafana/Prometheus setup for LangWatch
+- [SSO](https://docs.langwatch.ai/self-hosting/sso-setup-langwatch.md): SSO Setup for LangWatch
+- [Infra Monitoring](https://docs.langwatch.ai/self-hosting/grafana.md): Grafana/Prometheus setup for LangWatch
 
 ## Hybrid Setup
 
 - [Overview](https://docs.langwatch.ai/hybrid-setup/overview.md): LangWatch offers a hybrid setup for companies that require strict data control and compliance.
 - [Elasticsearch](https://docs.langwatch.ai/hybrid-setup/elasticsearch.md): Elasticsearch Setup for LangWatch Hybrid Deployment
 - [S3 Storage](https://docs.langwatch.ai/hybrid-setup/s3-storage.md): S3 Storage Setup for LangWatch Hybrid Deployment
-- [SSO](https://docs.langwatch.ai/hybrid-setup/sso-setup-langwatch.md): SSO Setup for LangWatch
 
 # API Reference
 
