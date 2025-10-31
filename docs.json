@@ -230,6 +230,7 @@
                 "pages": [
                   "integration/typescript/guide",
                   "integration/typescript/reference",
+                  "integration/typescript/tutorials/filtering-spans",
                   "integration/typescript/tutorials/manual-instrumentation",
                   "integration/typescript/tutorials/opentelemetry-migration"
                 ]
