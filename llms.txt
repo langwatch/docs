@@ -6,11 +6,12 @@ Always navigate to docs links using the .md extension for better readability.
 ## Get Started
 
 - [LangWatch: The Complete LLMOps Platform](https://docs.langwatch.ai/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub.
-- [Quick Start](https://docs.langwatch.ai/integration/quick-start.md)
+- [LangWatch MCP Server](https://docs.langwatch.ai/integration/mcp.md): Turn your coding assistant into a LangWatch expert
 
 ## Observability
 
 - [Observability & Tracing](https://docs.langwatch.ai/observability/overview.md): Monitor, debug, and optimize your LLM applications with comprehensive observability and tracing capabilities
+- [Quick Start](https://docs.langwatch.ai/integration/quick-start.md)
 - [Concepts](https://docs.langwatch.ai/concepts.md): LLM tracing and observability conceptual guide
 
 ### User Events
@@ -149,7 +150,6 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [OpenTelemetry Integration Guide](https://docs.langwatch.ai/integration/opentelemetry/guide.md): Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
 - [REST API](https://docs.langwatch.ai/integration/rest-api.md): Integrate LangWatch with any language by using the REST API
-- [LangWatch MCP Server](https://docs.langwatch.ai/integration/mcp.md): Use an agent to debug your LLM applications and fix the issues for you
 
 ## Agent Simulations
 

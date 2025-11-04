@@ -58,13 +58,14 @@
             "group": "Get Started",
             "pages": [
               "introduction",
-              "integration/quick-start"
+              "integration/mcp"
             ]
           },
           {
             "group": "Observability",
             "pages": [
               "observability/overview",
+              "integration/quick-start",
               "concepts",
               {
                 "group": "User Events",
@@ -369,8 +370,7 @@
             "group": "Direct Integrations",
             "pages": [
               "integration/opentelemetry/guide",
-              "integration/rest-api",
-              "integration/mcp"
+              "integration/rest-api"
             ]
           }
         ]

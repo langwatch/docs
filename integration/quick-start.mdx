@@ -14,8 +14,30 @@ Let's get cracking.
     <img src="/images/llm-observability/quick-start/setup-full.webp" />
   </Step>
 
+  <Step title="Let LangWatch MCP do the rest for you (Optional)">
+    Install the [LangWatch MCP Server](/integration/mcp) and ask your coding assistant (Cursor, Claude Code, Codex, etc.) to instrument your codebase with LangWatch, OR keep following the steps below to instrument your codebase manually.
+
+    Add the LangWatch MCP to your editor:
+
+    ```json
+    {
+      "mcpServers": {
+        "langwatch": {
+          "command": "npx -y @langwatch/mcp-server --apiKey=sk-lw-..."
+        }
+      }
+    }
+    ```
+
+    Then ask your coding assistant to instrument your codebase with LangWatch:
+
+    ```plaintext Cursor Chat
+    "Instrument my codebase with LangWatch"
+    ```
+  </Step>
+
   <Step title="Install the LangWatch SDK">
-    Next, install the LangWatch SDK for your stack. We have official SDKs for Python and Node.js ready to go. If you're using another language, our [OpenTelemetry Integration Guide](/integration/opentelemetry/guide) provides the details you need.
+    We have official SDKs for Python and Node.js ready to go. If you're using another language, our [OpenTelemetry Integration Guide](/integration/opentelemetry/guide) provides the details you need.
 
     <CodeGroup>
 ```bash Python

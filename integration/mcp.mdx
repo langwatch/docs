@@ -1,87 +1,220 @@
 ---
 title: LangWatch MCP Server
 sidebarTitle: LangWatch MCP
-description: Use an agent to debug your LLM applications and fix the issues for you
+description: Turn your coding assistant into a LangWatch expert
 ---
 
-The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) is a tool designed to aid finding, searching, and looking up LLM traces from the LangWatch platform via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
+The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) gives your AI coding assistant (Cursor, Claude Code, Codex, etc.) full access to all LangWatch documentation and features via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
 
-This server facilitates LLM development by allowing the agent to search for traces, understand all the steps in between a problematic output and try to fix the issue.
+- **Automatically instrument your code** with LangWatch tracing for any framework (OpenAI, Agno, Mastra, DSPy, and more)
+- **Create and manage prompts** using LangWatch's prompt management system
+- **Set up evaluations** to test and monitor your LLM outputs
+- **Debug production issues** by retrieving and analyzing traces from your dashboard
+- **Add labels, metadata, and custom tracking** following LangWatch best practices
+
+Instead of manually reading docs and writing boilerplate code, just ask your AI assistant to instrument your codebase with LangWatch, and it will do it for you.
+
+## Setup
+
+<Steps>
+<Step title="Get your LangWatch API key">
+Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/settings/api-keys).
+</Step>
+
+<Step title="Configure MCP in Cursor">
+1. Open Cursor Settings
+2. Navigate to the **MCP** section in the sidebar
+3. Add the LangWatch MCP server:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx -y @langwatch/mcp-server --apiKey=sk-lw-..."
+    }
+  }
+}
+```
+
+<Frame>
+<img alt="LangWatch MCP Setup in Cursor" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-setup.light.webp" />
+</Frame>
+
+<Tip>
+You can also set `LANGWATCH_API_KEY` as an environment variable instead of passing `--apiKey` in the command.
+</Tip>
+</Step>
+
+<Step title="Start using it">
+Open Cursor Chat (`Cmd/Ctrl + I`) and ask your AI assistant to help with LangWatch tasks.
+</Step>
+</Steps>
+
+## Usage Examples
+
+### Instrument Your Code with LangWatch
+
+Simply ask your AI assistant to add LangWatch tracking to your existing code:
+
+<CodeGroup>
+```plaintext Cursor Chat
+"Please instrument my code with LangWatch"
+```
+
+```plaintext More specific
+"Add LangWatch tracing to my OpenAI chatbot with RAG tracking for the vector search"
+```
+
+```plaintext Framework-specific
+"Instrument this LangChain agent with LangWatch, including all tool calls"
+```
+</CodeGroup>
+
+The AI assistant will:
+1. Fetch the relevant LangWatch documentation for your framework
+2. Add the necessary imports and setup code
+3. Wrap your functions with `@langwatch.trace()` decorators
+4. Configure automatic tracking for your LLM calls
+5. Add labels and metadata following best practices
+
+**Example transformation:**
+
+Before:
+```python
+from openai import OpenAI
+
+client = OpenAI()
+
+def chat(message: str):
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": message}]
+    )
+    return response.choices[0].message.content
+```
+
+After (automatically added by AI assistant):
+```python
+from openai import OpenAI
+import langwatch
+
+client = OpenAI()
+langwatch.setup()
+
+@langwatch.trace()
+def chat(message: str):
+    langwatch.get_current_trace().autotrack_openai_calls(client)
+    langwatch.get_current_trace().update(
+        metadata={"labels": ["document_parsing"]}
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": message}]
+    )
+    return response.choices[0].message.content
+```
+
+### Create Prompts with Prompt Management
+
+Ask your AI assistant to set up prompt management:
+
+```plaintext Cursor Chat
+"Create a prompt for my agents to parse PDFs using the prompts CLI"
+```
+
+The AI assistant will guide you through creating, versioning, and using prompts from LangWatch's [Prompts CLI](/prompt-management/cli).
+
+### Debug Production Issues
+
+When you encounter an issue in production, ask your AI to investigate:
+
+```plaintext Cursor Chat
+"Check the latest traces for errors and help me debug the issue"
+```
+
+The AI assistant will:
+1. Retrieve recent traces from your LangWatch dashboard
+2. Analyze the spans and identify problematic steps
+3. Suggest fixes based on the trace data
+4. Update your code with the fixes
+
+<Frame>
+<img alt="LangWatch MCP debugging traces" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-example.light.webp" />
+</Frame>
+
+### Set Up Evaluations
+
+Ask your AI assistant to add evaluations to your LLM outputs:
+
+```plaintext Cursor Chat
+"Create a notebook to evaluate the faithfulness of my RAG pipeline using LangWatch's Evaluating via Code guide"
+```
+
+The AI assistant will create a notebook with the necessary code to evaluate the faithfulness of your RAG pipeline following [Evaluating via Code](/llm-evaluation/offline/code/evaluation-api).
+
+## Advanced: Self-Building AI Agents
+
+The LangWatch MCP is so powerful that it can help AI agents automatically instrument themselves while being built. This enables self-improving AI systems that can track and debug their own behavior.
 
 <Frame>
 <iframe
   width="720"
   height="460"
   src="https://www.youtube.com/embed/ZPaG9H-N0uY"
-  title="YouTube video player"
+  title="AI Agent that vibe-codes itself - YouTube video player"
   frameborder="0"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
   allowFullScreen
 ></iframe>
 </Frame>
 
-## Setup in your Codebase
+## MCP Tools Reference
 
-Check out [the integration guides](/integration/overview) to start tracking your agents so both you and Cursor/Windsurf/Claude Code or your favorite coding assistant can debug it.
+The MCP server provides the following tools that your AI assistant can use:
 
-## Setup in Cursor 👩‍💻
+### `fetch_langwatch_docs`
 
-1. Navigate to the Cursor Settings
-2. Navigate to the MCP item in the sidebar
-3. Set the "name" as "LangWatch"
-4. Set the "type" to `command`
-5. Set the "command" to `npx -y @langwatch/mcp-server --apiKey=sk-lw-...`
-- `--apiKey`: Your LangWatch API key. This is mandatory and must be provided.
-- `--endpoint`: *Optional* The endpoint for the LangWatch API. Defaults to `https://app.langwatch.ai` if not specified.
+Fetches LangWatch documentation pages to understand how to implement features.
 
-
-<Tip>
-To aid in securing your keys, the MCP will first look at the global system environment variables `LANGWATCH_API_KEY` and `LANGWATCH_ENDPOINT` to check if they have values as well as looking at arguments passed into the server on start.
-</Tip>
-
-<Frame>
-<img alt="LangWatch MCP Setup" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-setup.light.webp" />
-</Frame>
-
-## Tools
-
-The MCP Server provides the following tools:
+**Parameters:**
+- `url` (optional): The full URL of a specific doc page. If not provided, fetches the docs index.
 
 ### `get_latest_traces`
 
-- **Description:** Retrieves the latest LLM traces.
-- **Parameters:**
-  - `pageOffset` (optional): The page offset for pagination.
-  - `daysBackToSearch` (optional): The number of days back to search for traces. Defaults to 1.
+Retrieves the latest LLM traces from your LangWatch dashboard.
+
+**Parameters:**
+- `pageOffset` (optional): Page offset for pagination
+- `daysBackToSearch` (optional): Number of days back to search. Defaults to 1.
 
 ### `get_trace_by_id`
 
-- **Description:** Retrieves a specific LLM trace by its ID.
-- **Parameters:**
-  - `id`: The ID of the trace to retrieve.
+Retrieves a specific trace by its ID for detailed debugging.
 
-## Usage in Cursor
+**Parameters:**
+- `id`: The trace ID to retrieve
 
-To use these tools within Cursor, follow these steps:
+### `list_traces_by_user_id`
 
-1. **Open the Cursor Chat view:**
-    - `Cmd + I`
+Lists traces filtered by user ID.
 
-2. **Ensure the MCP server is running:**
+**Parameters:**
+- `userId`: The user ID to filter by
+- `pageSize` (optional): Number of traces per page
+- `pageOffset` (optional): Page offset for pagination
+- `daysBackToSearch` (optional): Number of days back to search
 
-3. **Interact with your Agent:**
-    - Ask a question like the following to test the tools are accessible: *Note: When the tool is detected, you'll need to run `Run tool` in the chat view for it to be called.
+### `list_traces_by_thread_id`
 
-> "I just ran into an issue while debugging, can you check the latest traces and fix it?"
+Lists traces filtered by thread/session ID.
 
+**Parameters:**
+- `threadId`: The thread/session ID to filter by
+- `pageSize` (optional): Number of traces per page
+- `pageOffset` (optional): Page offset for pagination
+- `daysBackToSearch` (optional): Number of days back to search
 
-<Frame>
-<img alt="LangWatch MCP Example" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-example.light.webp" />
-</Frame>
-
-## 🛟 Support
-
-If you have questions or need help, join our community:
-
-- [Discord Community](https://discord.gg/kT4PhDS2gH)
-- [Email Support](mailto:support@langwatch.ai)
+<Info>
+Your AI assistant will automatically choose the right tools based on your request. You don't need to call these tools manually.
+</Info>
