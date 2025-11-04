@@ -76,6 +76,11 @@ Always navigate to docs links using the .md extension for better readability.
 - [Tracking LLM Costs and Tokens](https://docs.langwatch.ai/integration/python/tutorials/tracking-llm-costs.md): Troubleshooting & adjusting cost tracking in LangWatch
 - [Tracking LLM Costs and Tokens](https://docs.langwatch.ai/integration/typescript/tutorials/tracking-llm-costs.md): Troubleshooting & adjusting cost tracking in LangWatch
 
+#### Tracking Tool Calls
+
+- [Tracking Tool Calls](https://docs.langwatch.ai/integration/python/tutorials/tracking-tool-calls.md): Learn how to track tool calls in your LLM agent applications
+- [Tracking Tool Calls](https://docs.langwatch.ai/integration/typescript/tutorials/tracking-tool-calls.md): Learn how to track tool calls in your LLM agent applications
+
 ## Frameworks
 
 - [Mastra](https://docs.langwatch.ai/integration/typescript/integrations/mastra.md): Learn how to integrate Mastra, a TypeScript agent framework, with LangWatch for observability and tracing.

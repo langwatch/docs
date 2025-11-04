@@ -274,6 +274,13 @@
                       "integration/python/tutorials/tracking-llm-costs",
                       "integration/typescript/tutorials/tracking-llm-costs"
                     ]
+                  },
+                  {
+                    "group": "Tracking Tool Calls",
+                    "pages": [
+                      "integration/python/tutorials/tracking-tool-calls",
+                      "integration/typescript/tutorials/tracking-tool-calls"
+                    ]
                   }
                 ]
               }

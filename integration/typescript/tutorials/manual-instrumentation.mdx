@@ -33,13 +33,13 @@ const tracer = getLangWatchTracer("my-service");
 await tracer.withActiveSpan("my-operation", async (span) => {
   span.setType("llm");
   span.setInput("Hello, world!");
-  
+
   // Your business logic here
   const result = await processRequest("Hello, world!");
-  
+
   span.setOutput(result);
   span.setStatus({ code: SpanStatusCode.OK });
-  
+
   return result;
 });
 ```
@@ -52,7 +52,7 @@ await tracer.withActiveSpan("my-operation", async (span) => {
 await tracer.withActiveSpan("risky-operation", async (span) => {
   span.setType("external_api");
   span.setInput({ userId: "123", action: "update_profile" });
-  
+
   try {
     // This might throw an error
     const result = await externalApiCall();
@@ -81,15 +81,15 @@ async function processUserRequest(userId: string) {
   return await tracer.withActiveSpan("process-user-request", async (span) => {
     span.setType("user_operation");
     span.setInput({ userId });
-    
+
     // Child operations automatically inherit the span context
     const userData = await fetchUserData(userId);
     const userProfile = await updateUserProfile(userId);
-    
+
     const result = { userData, userProfile };
     span.setOutput(result);
     span.setStatus({ code: SpanStatusCode.OK });
-    
+
     return result;
   });
 }
@@ -112,7 +112,7 @@ Add rich metadata to your spans:
 await tracer.withActiveSpan("custom-operation", async (span) => {
   // Set span type
   span.setType("llm");
-  
+
   // Add custom attributes for filtering and analysis
   span.setAttributes({
     "custom.business_unit": "marketing",
@@ -122,24 +122,24 @@ await tracer.withActiveSpan("custom-operation", async (span) => {
     "llm.model": "gpt-5-mini",
     "llm.temperature": 0.7
   });
-  
+
   // Add events to track important milestones
   span.addEvent("processing_started", {
     timestamp: Date.now(),
     batch_size: 1000
   });
-  
+
   // Your business logic
   const result = await processBatch();
-  
+
   span.addEvent("processing_completed", {
     timestamp: Date.now(),
     processed_count: result.length
   });
-  
+
   span.setOutput(result);
   span.setStatus({ code: SpanStatusCode.OK });
-  
+
   return result;
 });
 ```
@@ -158,12 +158,12 @@ async function conditionalOperation(shouldTrace: boolean, data: any) {
     return await tracer.withActiveSpan("conditional-operation", async (span) => {
       span.setType("conditional");
       span.setInput(data);
-      
+
       const result = await processData(data);
-      
+
       span.setOutput(result);
       span.setStatus({ code: SpanStatusCode.OK });
-      
+
       return result;
     });
   } else {
@@ -238,14 +238,14 @@ import { context, trace } from "@opentelemetry/api";
 async function processWithContext(userId: string) {
   const span = tracer.startSpan("process-user");
   const ctx = trace.setSpan(context.active(), span);
-  
+
   try {
     // Propagate context to async operations
     await context.with(ctx, async () => {
       await processUserData(userId);
       await updateUserProfile(userId);
     });
-    
+
     span.setStatus({ code: SpanStatusCode.OK });
   } catch (error) {
     span.setStatus({
@@ -273,7 +273,7 @@ class SpanManager {
     operation: (span: Span) => Promise<T>
   ): Promise<T> {
     const span = this.tracer.startSpan(operationName);
-    
+
     try {
       const result = await operation(span);
       span.setStatus({ code: SpanStatusCode.OK });
@@ -314,14 +314,14 @@ import { setupObservability } from "langwatch/observability/node";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 
-const handle = setupObservability({  
+const handle = setupObservability({
   // Use custom span processors
   spanProcessors: [
     new BatchSpanProcessor(new OTLPTraceExporter({
       url: 'https://custom-collector.com/v1/traces'
     }))
   ],
-  
+
   // Or use a single trace exporter
   traceExporter: new OTLPTraceExporter({
     url: 'https://custom-collector.com/v1/traces'

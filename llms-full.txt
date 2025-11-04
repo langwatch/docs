@@ -5368,6 +5368,38 @@ process_customer_request(f"vip_{uuid.uuid4()}", {"type": "complaint", "content":
 process_customer_request(f"user_{uuid.uuid4()}", {"type": "inquiry", "content": "Product question"})
 ```
 
+### Adding Labels to Traces
+
+Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically inside your traced functions:
+
+```python
+import langwatch
+import os
+
+langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+
+@langwatch.trace()
+def handle_user_request(user_id: str, request_type: str):
+    trace = langwatch.get_current_trace()
+
+    # Set initial labels based on request type
+    if request_type == "support":
+        trace.update(metadata={"labels": ["customer_support", "high_priority"]})
+    elif request_type == "sales":
+        trace.update(metadata={"labels": ["sales_inquiry"]})
+
+    # Process the request
+    result = f"Processed {request_type} request for user {user_id}"
+
+    # Add additional labels based on processing results
+    if "urgent" in result.lower():
+        trace.update(metadata={"labels": ["urgent_escalation"]})
+
+    return result
+
+handle_user_request("user_123", "support")
+```
+
 ## Span Attributes
 
 Span attributes (often referred to simply as "attributes") provide context for a specific operation or unit of work *within* a trace. They are useful for details that are relevant only to that particular step. Examples include:
@@ -5949,6 +5981,49 @@ def main():
 The `capture_rag_from_tool` approach is generally less direct for RAG from retrievers because you have to parse the tool's output (which is usually a string) to extract structured context information. `capture_rag_from_retriever` is preferred when dealing directly with LangChain retrievers.
 
 By effectively capturing RAG spans, you gain much richer data in LangWatch, enabling more powerful analysis and evaluation of your RAG systems. Refer to the SDK examples for more detailed implementations.
+
+---
+
+# FILE: ./integration/python/tutorials/tracking-tool-calls.mdx
+
+---
+title: Tracking Tool Calls
+sidebarTitle: Python
+description: Learn how to track tool calls in your LLM agent applications
+icon: python
+keywords: langwatch, python, tools, agent, tracking, instrumentation
+---
+
+<Note>
+Most agent frameworks automatically track tool calls for you. If you're using [OpenAI Agents, Agno, Mastra, or other supported frameworks](/integration/overview#frameworks), tool calls are already being captured automatically. You only need manual instrumentation for custom tools or unsupported frameworks.
+</Note>
+
+## Manual Tool Tracking
+
+If you have custom tools that aren't automatically tracked, you can manually instrument them using the `@langwatch.span(type="tool")` decorator:
+
+```python
+import langwatch
+import os
+
+langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+
+@langwatch.trace()
+def agent_call(query: str):
+    # Your agent logic here
+    result = my_custom_tool(query)
+    return result
+
+@langwatch.span(type="tool")
+def my_custom_tool(query: str):
+    # Your custom tool implementation
+    result = f"Tool result for: {query}"
+    return result
+
+agent_call("What's the weather?")
+```
+
+This will display the tool call with a tool icon in the trace visualization and include it in tool call analytics in the LangWatch dashboard.
 
 ---
 
@@ -8499,6 +8574,48 @@ async function dynamicAttributes(customerId: string, requestDetails: any): Promi
 }
 ```
 
+## Adding Labels to Traces
+
+Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically by setting them on the span:
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
+
+setupObservability();
+
+const tracer = getLangWatchTracer("user-service");
+
+const handleUserRequest = async (userId: string, requestType: string): Promise<string> => {
+  return await tracer.withActiveSpan("UserRequest", async (span) => {
+    // Set initial labels based on request type
+    if (requestType === "support") {
+      span.setAttributes({
+        "langwatch.labels": JSON.stringify(["customer_support", "high_priority"])
+      });
+    } else if (requestType === "sales") {
+      span.setAttributes({
+        "langwatch.labels": JSON.stringify(["sales_inquiry"])
+      });
+    }
+
+    // Process the request
+    const result = `Processed ${requestType} request for user ${userId}`;
+
+    // Add additional labels based on processing results
+    if (result.toLowerCase().includes("urgent")) {
+      span.setAttributes({
+        "langwatch.labels": JSON.stringify(["urgent_escalation"])
+      });
+    }
+
+    return result;
+  });
+};
+
+await handleUserRequest("user_123", "support");
+```
+
 ## Using Semantic Conventions
 
 LangWatch supports OpenTelemetry semantic conventions for consistent attribute naming. You can import semantic convention attributes for type-safe attribute setting:
@@ -8995,6 +9112,57 @@ For more advanced RAG patterns and framework-specific implementations:
 <Tip>
 For production RAG applications, combine manual RAG spans with [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent observability and better analytics.
 </Tip>
+
+---
+
+# FILE: ./integration/typescript/tutorials/tracking-tool-calls.mdx
+
+---
+title: Tracking Tool Calls
+sidebarTitle: TypeScript/JS
+description: Learn how to track tool calls in your LLM agent applications
+icon: square-js
+keywords: langwatch, typescript, javascript, tools, agent, tracking, instrumentation
+---
+
+<Note>
+Most agent frameworks automatically track tool calls for you. If you're using [LangChain, LangGraph, Mastra, or other supported frameworks](/integration/overview#frameworks), tool calls are already being captured automatically. You only need manual instrumentation for custom tools or unsupported frameworks.
+</Note>
+
+## Manual Tool Tracking
+
+If you have custom tools that aren't automatically tracked, you can manually instrument them by setting the span type to `"tool"`:
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
+
+setupObservability();
+
+const tracer = getLangWatchTracer("agent-service");
+
+const agentCall = async (query: string): Promise<string> => {
+  return await tracer.withActiveSpan("AgentCall", async (span) => {
+    // Your agent logic here
+    const result = await myCustomTool(query);
+    return result;
+  });
+};
+
+const myCustomTool = async (query: string): Promise<string> => {
+  return await tracer.withActiveSpan("MyCustomTool", async (span) => {
+    span.setType("tool");
+
+    // Your custom tool implementation
+    const result = `Tool result for: ${query}`;
+    return result;
+  });
+};
+
+await agentCall("What's the weather?");
+```
+
+This will display the tool call with a tool icon in the trace visualization and include it in tool call analytics in the LangWatch dashboard.
 
 ---
 

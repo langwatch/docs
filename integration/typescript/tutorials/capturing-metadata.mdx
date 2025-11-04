@@ -85,16 +85,16 @@ async function processWithChildSpans(): Promise<void> {
       "operation.type": "batch_processing",
       "batch.size": 100
     });
-    
+
     await tracer.withActiveSpan("ChildOperation", async (childSpan) => {
       // Set attributes on the child span
       childSpan.setAttributes({
         "child.operation": "data_validation",
         "validation.rules": 5
       });
-      
+
       // ... logic for child operation ...
-      
+
       // Add more attributes based on results
       childSpan.setAttributes({
         "validation.passed": true,
@@ -138,6 +138,48 @@ async function dynamicAttributes(customerId: string, requestDetails: any): Promi
     return "Request processed successfully";
   });
 }
+```
+
+## Adding Labels to Traces
+
+Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically by setting them on the span:
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
+
+setupObservability();
+
+const tracer = getLangWatchTracer("user-service");
+
+const handleUserRequest = async (userId: string, requestType: string): Promise<string> => {
+  return await tracer.withActiveSpan("UserRequest", async (span) => {
+    // Set initial labels based on request type
+    if (requestType === "support") {
+      span.setAttributes({
+        "langwatch.labels": JSON.stringify(["customer_support", "high_priority"])
+      });
+    } else if (requestType === "sales") {
+      span.setAttributes({
+        "langwatch.labels": JSON.stringify(["sales_inquiry"])
+      });
+    }
+
+    // Process the request
+    const result = `Processed ${requestType} request for user ${userId}`;
+
+    // Add additional labels based on processing results
+    if (result.toLowerCase().includes("urgent")) {
+      span.setAttributes({
+        "langwatch.labels": JSON.stringify(["urgent_escalation"])
+      });
+    }
+
+    return result;
+  });
+};
+
+await handleUserRequest("user_123", "support");
 ```
 
 ## Using Semantic Conventions
@@ -252,7 +294,7 @@ async function llmAttributes(): Promise<void> {
   return await tracer.withActiveSpan("LLMOperation", async (span) => {
     span.setType("llm");
     span.setRequestModel("gpt-5");
-    
+
     span.setAttributes({
       [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
       [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7,
@@ -265,7 +307,7 @@ async function llmAttributes(): Promise<void> {
 
     // Simulate LLM call
     const response = "Generated response";
-    
+
     span.setAttributes({
       [semconv.ATTR_GEN_AI_RESPONSE_MODEL]: "gpt-5",
       [semconv.ATTR_GEN_AI_RESPONSE_PROMPT_TOKENS]: 150,

@@ -97,6 +97,38 @@ process_customer_request(f"vip_{uuid.uuid4()}", {"type": "complaint", "content":
 process_customer_request(f"user_{uuid.uuid4()}", {"type": "inquiry", "content": "Product question"})
 ```
 
+### Adding Labels to Traces
+
+Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically inside your traced functions:
+
+```python
+import langwatch
+import os
+
+langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+
+@langwatch.trace()
+def handle_user_request(user_id: str, request_type: str):
+    trace = langwatch.get_current_trace()
+
+    # Set initial labels based on request type
+    if request_type == "support":
+        trace.update(metadata={"labels": ["customer_support", "high_priority"]})
+    elif request_type == "sales":
+        trace.update(metadata={"labels": ["sales_inquiry"]})
+
+    # Process the request
+    result = f"Processed {request_type} request for user {user_id}"
+
+    # Add additional labels based on processing results
+    if "urgent" in result.lower():
+        trace.update(metadata={"labels": ["urgent_escalation"]})
+
+    return result
+
+handle_user_request("user_123", "support")
+```
+
 ## Span Attributes
 
 Span attributes (often referred to simply as "attributes") provide context for a specific operation or unit of work *within* a trace. They are useful for details that are relevant only to that particular step. Examples include:
