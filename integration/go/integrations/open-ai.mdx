@@ -16,6 +16,10 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 
 ## Usage
 
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
 Add the `otelopenai.Middleware` to your OpenAI client configuration. The middleware automatically creates detailed trace spans for each API call.
 
 ```go
