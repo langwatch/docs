@@ -3,292 +3,72 @@ title: LangChain Instrumentation
 sidebarTitle: Python
 description: Learn how to instrument Langchain applications with the LangWatch Python SDK.
 icon: python
-keywords: langchain, instrumentation, callback, opentelemetry, langwatch, python, tracing, openinference, openllmetry
+keywords: langchain, instrumentation, callback, langwatch, python, tracing
 ---
 
-Langchain is a powerful framework for building LLM applications. LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
+LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
 
-This guide covers the primary approaches to instrumenting Langchain with LangWatch:
-
-1.  **Using LangWatch's Langchain Callback Handler (Recommended)**: The most direct method, using a specific callback provided by LangWatch to capture rich Langchain-specific trace data.
-2.  **Using Community OpenTelemetry Instrumentors**: Leveraging dedicated Langchain instrumentors like those from OpenInference or OpenLLMetry.
-3.  **Utilizing Langchain's Native OpenTelemetry Export (Advanced)**: Configuring Langchain to send its own OpenTelemetry traces to an endpoint where LangWatch can collect them.
-
-## 1. Using LangWatch's Langchain Callback Handler (Recommended)
-
-This is the preferred and most comprehensive method for instrumenting Langchain with LangWatch. The LangWatch SDK provides a `LangchainCallbackHandler` that deeply integrates with Langchain's event system.
-
-```python
-import langwatch
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
-from langchain.schema.runnable import Runnable
-from langchain.schema.runnable.config import RunnableConfig
-import os
-import asyncio
-
-# Initialize LangWatch
-langwatch.setup()
-
-# Standard Langchain setup
-model = ChatOpenAI(streaming=True)
-prompt = ChatPromptTemplate.from_messages(
-    [("system", "You are a concise assistant."), ("human", "{question}")]
-)
-runnable = prompt | model | StrOutputParser()
-
-@langwatch.trace(name="Langchain - QA with Callback")
-async def handle_message_with_callback(user_question: str):
-    current_trace = langwatch.get_current_trace()
-    current_trace.update(metadata={"user_id": "callback-user"})
-
-    langwatch_callback = current_trace.get_langchain_callback()
-
-    final_response = ""
-    async for chunk in runnable.astream(
-        {"question": user_question},
-        config=RunnableConfig(callbacks=[langwatch_callback])
-    ):
-        final_response += chunk
-    return final_response
-
-async def main_callback():
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY not set. Skipping Langchain callback example.")
-        return
-    response = await handle_message_with_callback("What is Langchain? Explain briefly.")
-    print(f"AI (Callback): {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main_callback())
-```
-
-**How it Works:**
--   `@langwatch.trace()`: Creates a parent LangWatch trace.
--   `current_trace.get_langchain_callback()`: Retrieves a LangWatch-specific callback handler linked to the current trace.
--   `RunnableConfig(callbacks=[langwatch_callback])`: Injects the handler into Langchain's execution. Langchain emits events (on_llm_start, on_chain_end, etc.), which the handler converts into detailed LangWatch spans, correctly parented under the main trace.
-
-**Key points:**
--   Provides the most detailed Langchain-specific structural information (chains, agents, tools, LLMs as distinct steps).
--   Works for all Langchain execution methods (`astream`, `stream`, `invoke`, `ainvoke`).
-
-## 2. Using Community OpenTelemetry Instrumentors
-
-Dedicated Langchain instrumentors from libraries like OpenInference and OpenLLMetry can also be used to capture Langchain operations as OpenTelemetry traces, which LangWatch can then ingest.
-
-### Instrumenting Langchain with Dedicated Instrumentors
-
-#### i. Via `langwatch.setup()`
+## Installation
 
 <CodeGroup>
-```python OpenInference
-# OpenInference Example
-import langwatch
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
-from openinference.instrumentation.langchain import LangchainInstrumentor
-import os
-import asyncio
-
-langwatch.setup(
-    instrumentors=[LangchainInstrumentor()] # Add OpenInference LangchainInstrumentor
-)
-
-model = ChatOpenAI()
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are brief."), ("human", "{question}")]
-)
-runnable = prompt | model | StrOutputParser()
-
-@langwatch.trace(name="Langchain - OpenInference via Setup")
-async def handle_message_oinference_setup(user_question: str):
-    response = await runnable.ainvoke({"question": user_question})
-    return response
-
-async def main_community_oinference_setup():
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY not set. Skipping OpenInference Langchain (setup) example.")
-        return
-    response = await handle_message_oinference_setup("Explain Langchain instrumentation with OpenInference.")
-    print(f"AI (OInference Setup): {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main_community_oinference_setup())
+```bash pip
+pip install langwatch langchain langchain-openai
 ```
-```python OpenLLMetry
-# OpenLLMetry Example
-import langwatch
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
-from opentelemetry.instrumentation.langchain import LangchainInstrumentor # Corrected import
-import os
-import asyncio
 
-langwatch.setup(
-    instrumentors=[LangchainInstrumentor()] # Add OpenLLMetry LangchainInstrumentor
-)
-
-model = ChatOpenAI()
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are brief."), ("human", "{question}")]
-)
-runnable = prompt | model | StrOutputParser()
-
-@langwatch.trace(name="Langchain - OpenLLMetry via Setup")
-async def handle_message_openllmetry_setup(user_question: str):
-    response = await runnable.ainvoke({"question": user_question})
-    return response
-
-async def main_community_openllmetry_setup():
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY not set. Skipping OpenLLMetry Langchain (setup) example.")
-        return
-    response = await handle_message_openllmetry_setup("Explain Langchain instrumentation with OpenLLMetry.")
-    print(f"AI (OpenLLMetry Setup): {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main_community_openllmetry_setup())
+```bash uv
+uv add langwatch langchain langchain-openai
 ```
 </CodeGroup>
 
-#### ii. Direct Instrumentation
+## Usage
 
-<CodeGroup>
-```python OpenInference
-# OpenInference Example
-import langwatch
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
-from openinference.instrumentation.langchain import LangchainInstrumentor
-import os
-import asyncio
-
-langwatch.setup()
-LangchainInstrumentor().instrument() # Instrument Langchain directly
-
-model = ChatOpenAI()
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are very brief."), ("human", "{question}")]
-)
-runnable = prompt | model | StrOutputParser()
-
-@langwatch.trace(name="Langchain - OpenInference Direct")
-async def handle_message_oinference_direct(user_question: str):
-    response = await runnable.ainvoke({"question": user_question})
-    return response
-
-async def main_community_oinference_direct():
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY not set. Skipping OpenInference Langchain (direct) example.")
-        return
-    response = await handle_message_oinference_direct("How does direct Langchain instrumentation work?")
-    print(f"AI (OInference Direct): {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main_community_oinference_direct())
-```
-```python OpenLLMetry
-# OpenLLMetry Example
-import langwatch
-from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
-from opentelemetry.instrumentation.langchain import LangchainInstrumentor # Corrected import
-import os
-import asyncio
-
-langwatch.setup()
-LangchainInstrumentor().instrument() # Instrument Langchain directly
-
-model = ChatOpenAI()
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are very brief."), ("human", "{question}")]
-)
-runnable = prompt | model | StrOutputParser()
-
-@langwatch.trace(name="Langchain - OpenLLMetry Direct")
-async def handle_message_openllmetry_direct(user_question: str):
-    response = await runnable.ainvoke({"question": user_question})
-    return response
-
-async def main_community_openllmetry_direct():
-    if not os.getenv("OPENAI_API_KEY"):
-        print("OPENAI_API_KEY not set. Skipping OpenLLMetry Langchain (direct) example.")
-        return
-    response = await handle_message_openllmetry_direct("How does direct Langchain instrumentation work with OpenLLMetry?")
-    print(f"AI (OpenLLMetry Direct): {response}")
-
-if __name__ == "__main__":
-    asyncio.run(main_community_openllmetry_direct())
-```
-</CodeGroup>
-
-**Key points for dedicated Langchain instrumentors:**
-- Directly instrument Langchain operations, providing traces from Langchain's perspective.
-- Requires installing the respective instrumentation package (e.g., `openinference-instrumentation-langchain` or `opentelemetry-instrumentation-langchain` for OpenLLMetry).
-
-## 3. Utilizing Langchain's Native OpenTelemetry Export (Advanced)
-
-Langchain itself can be configured to export OpenTelemetry traces. If you set this up and configure Langchain to send traces to an OpenTelemetry collector endpoint that LangWatch is also configured to receive from (or if LangWatch *is* your OTLP endpoint), then LangWatch can ingest these natively generated Langchain traces.
-
-**Setup (Conceptual):**
-1.  Configure Langchain for OpenTelemetry export. This usually involves setting environment variables:
-    ```bash
-    export LANGCHAIN_TRACING_V2=true
-    export LANGCHAIN_ENDPOINT= # Your OTLP gRPC endpoint (e.g., http://localhost:4317)
-    # Potentially other OTEL_EXPORTER_OTLP_* variables for more granular control
-    ```
-2.  Initialize LangWatch: `langwatch.setup()`.
+Use LangWatch's callback handler to instrument your Langchain agents and chains. The callback automatically captures LLM calls, tool usage, and chain execution as spans within your trace.
 
 ```python
-# This example assumes Langchain is configured via environment variables
-# to send OTel traces to an endpoint LangWatch can access.
 import langwatch
+from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema import StrOutputParser
+from langchain_core.runnables import RunnableConfig
 import os
 import asyncio
 
-langwatch.setup() # LangWatch is ready to receive OTel traces
 
-model = ChatOpenAI()
-prompt = ChatPromptTemplate.from_messages([
-    ("system", "You are brief."), ("human", "{question}")]
+langwatch.setup()
+
+
+def get_weather(city: str) -> str:
+    """Get weather for a given city."""
+    return f"It's always sunny in {city}!"
+
+
+agent = create_agent(
+    model="openai:gpt-5",
+    tools=[get_weather],
+    system_prompt="You are a helpful assistant, that can get the weather.",
 )
-runnable = prompt | model | StrOutputParser()
 
-@langwatch.trace(name="Langchain - Native OTel Export") # Optional: group Langchain traces
-async def handle_message_native_otel(user_question: str):
-    response = await runnable.ainvoke({"question": user_question})
-    return response
 
-async def main_native_otel():
-    if not os.getenv("OPENAI_API_KEY") or not os.getenv("LANGCHAIN_TRACING_V2") == "true":
-        print("Required env vars (OPENAI_API_KEY, LANGCHAIN_TRACING_V2='true') not set. Skipping native OTel.")
-        return
-    response = await handle_message_native_otel("Tell me about Langchain OTel export itself.")
-    print(f"AI (Native OTel): {response}")
+@langwatch.trace(name="Langchain - Weather Agent")
+def main(user_question: str):
+    result = agent.invoke(
+        {"messages": [{"role": "user", "content": user_question}]},
+        config=RunnableConfig(
+            callbacks=[langwatch.get_current_trace().get_langchain_callback()]
+        ),
+    )
+
+    return result["messages"][-1].content
+
 
 if __name__ == "__main__":
-    asyncio.run(main_native_otel())
+    result = main("What is the weather in Philadelphia?")
+    print(result)
 ```
 
-**Key points for Langchain's native OTel export:**
--   LangWatch acts as a backend/collector for OpenTelemetry traces generated directly by Langchain.
--   Requires careful configuration of Langchain's environment variables.
--   The level of detail depends on Langchain's native OpenTelemetry instrumentation quality.
+The `@langwatch.trace()` decorator creates a parent trace, and `get_langchain_callback()` provides a callback handler that captures Langchain events as spans. Pass the callback to your agent or chain's `RunnableConfig` to enable instrumentation.
 
-<Note>
-### Which Approach to Choose?
+## Related
 
--   **LangWatch's Langchain Callback Handler (Recommended)**: Provides the richest, most Langchain-aware traces directly integrated with LangWatch's tracing context. Ideal for most users.
--   **Dedicated Langchain Instrumentors (OpenInference, OpenLLMetry)**: Good alternatives if you prefer an explicit instrumentor pattern for Langchain itself or are standardizing on these specific OpenTelemetry ecosystems.
--   **Langchain's Native OTel Export (Advanced)**: Suitable if you have an existing OpenTelemetry collection infrastructure and want Langchain to be another OTel-compliant source.
-
-For the best Langchain-specific observability within LangWatch, the **Langchain Callback Handler** is the generally recommended approach, with dedicated **Langchain Instrumentors** as strong alternatives for instrumentor-based setups.
-</Note>
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from LangChain retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your LangChain applications
