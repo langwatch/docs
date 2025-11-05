@@ -2,27 +2,30 @@
 title: Agno Instrumentation
 sidebarTitle: Agno
 description: Learn how to instrument Agno agents and send traces to LangWatch using the Python SDK.
-keywords: agno, openinference, openlit, opentelemetry, LangWatch, Python, tracing, observability
+keywords: agno, openinference, langwatch, python, tracing, observability
 ---
 
-LangWatch supports seamless observability for [Agno](https://github.com/agno-agi/agno) agents. You can instrument your Agno-based applications and send traces directly to LangWatch for monitoring and analysis.
+LangWatch integrates with Agno through OpenInference instrumentation to capture traces from your Agno agents automatically.
 
-This guide shows how to set up tracing for Agno agents using the LangWatch Python SDK. Unlike the default OpenTelemetry/OTLP setup, you only need to call `langwatch.setup()`—no manual exporter or environment variable configuration is required.
+## Installation
 
-## Prerequisites
+<CodeGroup>
+```bash pip
+pip install langwatch agno openai openinference-instrumentation-agno
+```
 
-- Install the required packages:
-  ```bash
-  pip install agno openai langwatch openinference-instrumentation-agno
-  ```
-- Get your LangWatch API key from your [project settings](https://app.langwatch.ai/) and set it as an environment variable:
-  ```bash
-  export LANGWATCH_API_KEY=your-langwatch-api-key
-  ```
+```bash uv
+uv add langwatch agno openai openinference-instrumentation-agno
+```
+</CodeGroup>
 
-## Instrumenting Agno with LangWatch
+## Usage
 
-You can use the [OpenInference Agno instrumentor](https://github.com/Arize-ai/openinference/tree/main/python/instrumentation/openinference-instrumentation-agno) to automatically capture traces from your Agno agents. Just pass the instrumentor to `langwatch.setup()`.
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Use the OpenInference instrumentation for Agno by passing `AgnoInstrumentor` to `langwatch.setup()`.
 
 ```python
 import langwatch
@@ -30,38 +33,26 @@ import os
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIChat
-from agno.tools.yfinance import YFinanceTools
 from openinference.instrumentation.agno import AgnoInstrumentor
 
-# Initialize LangWatch and instrument Agno
-langwatch.setup(
-    instrumentors=[AgnoInstrumentor()]
-)
+langwatch.setup(instrumentors=[AgnoInstrumentor()])
 
 # Create and configure your Agno agent
 agent = Agent(
-    name="Stock Price Agent",
+    name="A helpful AI Assistant",
     model=OpenAIChat(id="gpt-5"),
-    tools=[YFinanceTools()],
-    instructions="You are a stock price agent. Answer questions in the style of a stock analyst.",
+    tools=[],
+    instructions="You are a helpful AI Assistant.",
     debug_mode=True,
 )
 
-# Use the agent as usual—traces will be sent to LangWatch
-agent.print_response("What is the current price of Tesla?")
+agent.print_response("Tell me a joke.")
 ```
 
-**That's it!** All Agno agent activity will now be traced and sent to your LangWatch dashboard.
+The `AgnoInstrumentor` automatically captures all Agno agent activity. All traces will be sent to your LangWatch dashboard without requiring manual OpenTelemetry configuration.
 
-## Notes
+## Related
 
-- You do **not** need to set any OpenTelemetry environment variables or configure exporters manually—`langwatch.setup()` handles everything.
-- You can combine Agno instrumentation with other instrumentors (e.g., OpenAI, LangChain) by adding them to the `instrumentors` list.
-- For advanced configuration (custom attributes, endpoint, etc.), see the [Python integration guide](/integration/python/guide).
-
-## Troubleshooting
-
-- Make sure your `LANGWATCH_API_KEY` is set in the environment.
-- If you see no traces in LangWatch, check that the instrumentor is included in `langwatch.setup()` and that your agent code is being executed.
-
-For more details, see the [LangWatch Python SDK reference](/integration/python/reference) and the [Agno documentation](https://docs.agno.com/integrations/observability/introduction#opentelemetry).
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Agno applications

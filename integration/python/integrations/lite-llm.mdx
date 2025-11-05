@@ -2,22 +2,30 @@
 title: LiteLLM Instrumentation
 sidebarTitle: LiteLLM
 description: Learn how to instrument LiteLLM calls with the LangWatch Python SDK.
-keywords: litellm, instrumentation, autotrack, opentelemetry, langwatch, python, tracing, openinference, openllmetry
+keywords: litellm, instrumentation, autotrack, langwatch, python, tracing
 ---
 
-LiteLLM provides a unified interface to various Large Language Models. LangWatch integrates with LiteLLM by capturing OpenTelemetry traces, enabling detailed observability into your LLM calls made through LiteLLM.
+LangWatch integrates with LiteLLM to capture detailed information about your LLM calls across multiple providers through a unified interface.
 
-This guide outlines three primary approaches for instrumenting LiteLLM with LangWatch:
+## Installation
 
-1.  **Using `autotrack_litellm_calls()`**: This method, part of the LangWatch SDK, dynamically patches your LiteLLM module instance for the current trace to capture its calls.
-2.  **Using LiteLLM's Native OpenTelemetry Tracing with Global Setup**: LiteLLM can automatically generate OpenTelemetry traces for its operations when a global OpenTelemetry environment (established by `langwatch.setup()`) is active.
-3.  **Using Community OpenTelemetry Instrumentors (for Underlying SDKs)**: If LiteLLM internally uses other instrumented SDKs (like the `openai` SDK for OpenAI models), you can leverage community instrumentors for those specific underlying SDKs.
+<CodeGroup>
+```bash pip
+pip install langwatch litellm
+```
 
-## Using `autotrack_litellm_calls()`
+```bash uv
+uv add langwatch litellm
+```
+</CodeGroup>
 
-The `autotrack_litellm_calls()` function, called on a trace object, provides a straightforward way to capture all LiteLLM calls for the duration of the current trace. This is often the most direct way to ensure LiteLLM operations are captured by LangWatch within a specific traced function.
+## Usage
 
-You typically call this method on the trace object obtained via `langwatch.get_current_trace()` inside a function decorated with `@langwatch.trace()`.
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Use `autotrack_litellm_calls()` to automatically capture all LiteLLM calls within a trace.
 
 ```python
 import langwatch
@@ -25,132 +33,36 @@ import litellm
 import os
 import asyncio
 from typing import cast
-from litellm import CustomStreamWrapper # For streaming example
-from litellm.types.utils import StreamingChoices # For streaming example
+from litellm import CustomStreamWrapper
+from litellm.types.utils import StreamingChoices
 
 langwatch.setup()
+
 
 @langwatch.trace(name="LiteLLM Autotrack Example")
-async def get_litellm_response_autotrack(user_prompt: str):
-    # Get the current trace and enable autotracking for the litellm module
-    langwatch.get_current_trace().autotrack_litellm_calls(litellm) # Pass the imported litellm module
+def get_litellm_response_autotrack(user_message: str):
+    langwatch.get_current_trace().autotrack_litellm_calls(litellm)
 
-    messages = [
+    response = litellm.completion(
+        model="groq/llama-3.1-8b-instant",
+        messages=[
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": user_prompt}
-    ]
-
-    # This call will now be automatically captured as a span by LangWatch
-    response = await litellm.acompletion(
-        model="groq/llama3-70b-8192",
-        messages=messages,
+            {"role": "user", "content": user_message},
+        ],
     )
+
     return response.choices[0].message.content
 
-async def main():
-    reply = await get_litellm_response_autotrack("Tell me about LiteLLM.")
+
+if __name__ == "__main__":
+    reply = get_litellm_response_autotrack("Tell me a joke")
     print("AI Response:", reply)
-
-if __name__ == "__main__":
-    asyncio.run(main())
 ```
 
-**Key points for `autotrack_litellm_calls()`:**
--   It must be called on an active trace object (e.g., obtained via `langwatch.get_current_trace()`).
--   It instruments the passed `litellm` module instance specifically for the current trace.
+The `@langwatch.trace()` decorator creates a parent trace, and `autotrack_litellm_calls()` enables automatic tracking of all LiteLLM calls for the duration of that trace.
 
-## Using Community OpenTelemetry Instrumentors
+## Related
 
-If you are already using a dedicated community instrumentor for LiteLLM, such as the one provided by OpenInference, you can pass an instance of `LiteLLMInstrumentor` from `openinference.instrumentation.litellm` to the `instrumentors` list in `langwatch.setup()`.
-
-### 1. Via `langwatch.setup()`
-
-You can pass an instance of `LiteLLMInstrumentor` from `openinference.instrumentation.litellm` to the `instrumentors` list in `langwatch.setup()`.
-
-```python
-import langwatch
-import litellm
-import os
-import asyncio
-
-# Example using OpenInference's LiteLLMInstrumentor
-from openinference.instrumentation.litellm import LiteLLMInstrumentor
-
-# 1. Initialize LangWatch with the LiteLLMInstrumentor
-langwatch.setup(
-    instrumentors=[LiteLLMInstrumentor()] # Instruments LiteLLM directly
-)
-
-@langwatch.trace(name="LiteLLM via OpenInference Instrumentor Setup")
-async def get_response_via_litellm_instrumentor_setup(user_prompt: str):
-    messages = [
-        {"role": "user", "content": user_prompt}
-    ]
-
-    # This LiteLLM call will be captured by the LiteLLMInstrumentor
-    response = await litellm.acompletion(
-        model="groq/llama3-70b-8192", # Example model
-        messages=messages
-    )
-    return response.choices[0].message.content
-
-async def main_community_litellm_instrumentor_setup():
-    reply = await get_response_via_litellm_instrumentor_setup("Explain OpenInference for LiteLLM.")
-    print(f"AI Response (OpenInference via setup): {reply}")
-
-if __name__ == "__main__":
-    asyncio.run(main_community_litellm_instrumentor_setup())
-```
-
-<Note>
-  Ensure you have the `openinference-instrumentation-litellm` library installed.
-</Note>
-
-### 2. Direct Instrumentation with `LiteLLMInstrumentor`
-
-If you are managing your OpenTelemetry setup more directly, you can call `instrument()` on an instance of `LiteLLMInstrumentor`.
-
-```python
-import langwatch
-import litellm
-import os
-import asyncio
-
-from openinference.instrumentation.litellm import LiteLLMInstrumentor
-
-# 1. Initialize LangWatch (sets up global OTel provider for LangWatch exporter)
-langwatch.setup()
-
-# 2. Instrument LiteLLM directly using its OpenInference instrumentor
-# This should be done once, early in your application lifecycle.
-LiteLLMInstrumentor().instrument()
-
-@langwatch.trace(name="LiteLLM via Directly Instrumented OpenInference")
-async def get_response_direct_litellm_instrumentation(user_prompt: str):
-    messages = [
-        {"role": "user", "content": user_prompt}
-    ]
-    response = await litellm.acompletion(model="groq/llama3-70b-8192", messages=messages)
-    return response.choices[0].message.content
-
-async def main_direct_litellm_instrumentation():
-    reply = await get_response_direct_litellm_instrumentation("How does direct OTel instrumentation work for LiteLLM?")
-    print(f"AI Response (direct OpenInference): {reply}")
-
-if __name__ == "__main__":
-    asyncio.run(main_direct_litellm_instrumentation())
-
-```
-
-**Key points for using OpenInference `LiteLLMInstrumentor`:**
--   This instrumentor specifically targets LiteLLM calls.
--   It provides an alternative to `autotrack_litellm_calls` if you prefer an explicit instrumentor pattern or are using OpenInference across your stack.
-
-<Note>
-### Which Approach to Choose?
-
--   **`autotrack_litellm_calls()`**: Best for explicit, trace-specific instrumentation of LiteLLM. Offers clear control over when LiteLLM calls are tracked by LangWatch within a given trace.
--   **OpenInference `LiteLLMInstrumentor`**: Use if you are standardizing on OpenInference instrumentors or prefer this explicit way of instrumenting LiteLLM itself (rather than its underlying SDKs). It provides traces directly from LiteLLM's perspective.
-
-Choose the method that best fits your instrumentation strategy and the level of detail required.
-</Note>
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your LiteLLM applications

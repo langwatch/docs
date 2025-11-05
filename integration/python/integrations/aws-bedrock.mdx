@@ -1,7 +1,8 @@
 ---
 title: AWS Bedrock Instrumentation
-sidebarTitle: AWS Bedrock
+sidebarTitle: Bedrock
 description: Learn how to instrument AWS Bedrock calls with the LangWatch Python SDK using OpenInference.
+icon: python
 keywords: aws, bedrock, boto3, instrumentation, opentelemetry, openinference, langwatch, python, tracing
 ---
 
@@ -24,6 +25,10 @@ This guide explains how to configure your Python application to send Bedrock tra
     Note: `openinference-instrumentation-bedrock` will install necessary OpenTelemetry packages. Ensure your `boto3` and `botocore` versions are compatible with the Bedrock features you intend to use (e.g., `botocore >= 1.34.116` for the `converse` API).
 
 ## Instrumenting AWS Bedrock with LangWatch
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
 
 The integration involves initializing LangWatch to set up the OpenTelemetry environment and then applying the Bedrock instrumentor.
 

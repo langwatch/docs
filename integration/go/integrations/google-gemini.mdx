@@ -2,46 +2,25 @@
 title: Google Gemini Integration
 sidebarTitle: Google Gemini
 description: Learn how to instrument Google Gemini API calls in Go using the LangWatch SDK via a Vertex AI endpoint.
-keywords: go, golang, google, gemini, vertex ai, instrumentation, langwatch, opentelemetry, openai-compatible
+icon: golang
+keywords: go, golang, google, gemini, vertex ai, instrumentation, langwatch, openai-compatible
 ---
 
-You can trace Google Gemini models with LangWatch by using the OpenAI-compatible endpoint provided by [Google Cloud Vertex AI](https://cloud.google.com/vertex-ai). This requires setting up an authenticated endpoint in your Google Cloud project that serves the Gemini model.
+LangWatch supports tracing Google Gemini models through Google Cloud Vertex AI's OpenAI-compatible endpoint.
 
-<Note>
-Before you begin, ensure you have configured the LangWatch SDK by following the [Go setup guide](/integration/go/guide#setup).
-</Note>
-
-## Setup
-
-This setup is more involved than other providers and requires Google Cloud authentication.
-
-### 1. Enable Vertex AI
-Ensure the Vertex AI API is enabled in your Google Cloud project.
-
-### 2. Get an Authentication Token
-The Vertex AI API uses a Google Cloud access token, not a static API key. You must generate this token using the `gcloud` CLI. The token is short-lived (typically 1 hour) and needs to be refreshed.
+## Installation
 
 ```bash
-# Log in to gcloud
-gcloud auth login
-
-# Get a token and set it as an environment variable
-export GOOGLE_ACCESS_TOKEN=$(gcloud auth print-access-token)
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ```
-<Warning>
-In a production application, you should use a service account and the [Google Cloud client libraries for Go](https://cloud.google.com/go/docs/authentication) to programmatically generate access tokens instead of using `gcloud` directly.
-</Warning>
 
-### 3. Construct the Endpoint URL
-Your Vertex AI endpoint URL will follow this format:
-`https://<region>-aiplatform.googleapis.com/v1/projects/<project-id>/locations/<region>/publishers/google/models/<model-name>`
+## Usage
 
-For example:
-`https://us-central1-aiplatform.googleapis.com/v1/projects/my-gcp-project/locations/us-central1/publishers/google/models/gemini-1.5-pro-001`
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
 
-## Example
-
-Configure your `openai.Client` with the constructed Vertex AI URL and the temporary access token. The `gen_ai.system` attribute should be set to `"google"`.
+Configure the OpenAI client with your Gemini endpoint and API key:
 
 ```go
 package main
@@ -51,56 +30,42 @@ import (
 	"log"
 	"os"
 
-	"github.com/langwatch/langwatch-go/instrumentation/openai"
-	"github.com/sashabaranov/go-openai"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
 )
 
 func main() {
 	ctx := context.Background()
 
-	// Assumes LangWatch is already set up.
-
-	// Your Google Cloud details
-	projectID := "your-gcp-project-id"
-	region := "us-central1"
-	modelName := "gemini-1.5-pro-001" // Or another supported Gemini model
-
-	// Construct the Vertex AI endpoint URL
-	baseURL := "https://" + region + "-aiplatform.googleapis.com/v1/projects/" + projectID + "/locations/" + region + "/publishers/google/models/" + modelName
-
-	config := openai.DefaultConfig(os.Getenv("GOOGLE_ACCESS_TOKEN"))
-	config.BaseURL = baseURL
-	// Add the middleware, identifying the system as "google"
-	config.HTTPClient = langwatch_openai.Instrument(
-		config.HTTPClient,
-		"my-gemini-app",
-		langwatch_openai.WithGenAISystem("google"),
-		langwatch_openai.WithCaptureInput(),
-		langwatch_openai.WithCaptureOutput(),
+	client := openai.NewClient(
+		oaioption.WithAPIKey(os.Getenv("GEMINI_API_KEY")),
+		oaioption.WithBaseURL(os.Getenv("GEMINI_BASE_URL")),
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
 	)
 
-	client := openai.NewClientWithConfig(config)
-
-	// Make a call to the Gemini model
-	response, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
-		// The model parameter is not used in the path but can be set
-		Model: modelName,
-		Messages: []openai.ChatCompletionMessage{
-			{
-				Role:    openai.ChatMessageRoleUser,
-				Content: "Hello, Gemini! Explain the concept of multimodal models.",
-			},
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: openai.ChatModelGPT5,
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.SystemMessage("You are a helpful assistant."),
+			openai.UserMessage("Hello, OpenAI!"),
 		},
 	})
-
 	if err != nil {
-		log.Fatalf("Google Gemini API call failed: %v", err)
+		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Response from Gemini: %s", response.Choices[0].Message.Content)
+	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
 }
 ```
 
-<Note>
-The model name is part of the URL itself. While the `Model` parameter in the request body is less critical, it's good practice to set it to the model you are targeting.
-</Note>
+Set `GEMINI_BASE_URL` to your Vertex AI endpoint URL and use your Google Cloud access token as the API key.
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Google Gemini applications

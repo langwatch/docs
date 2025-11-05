@@ -57,8 +57,7 @@
           {
             "group": "Get Started",
             "pages": [
-              "introduction",
-              "integration/mcp"
+              "introduction"
             ]
           },
           {
@@ -288,10 +287,14 @@
             ]
           },
           {
+            "group": "MCPs",
+            "pages": [
+              "integration/mcp"
+            ]
+          },
+          {
             "group": "Frameworks",
             "pages": [
-              "integration/typescript/integrations/mastra",
-              "integration/python/integrations/vertex-ai",
               {
                 "group": "LangChain",
                 "pages": [
@@ -306,23 +309,24 @@
                   "integration/typescript/integrations/langgraph"
                 ]
               },
-              "integration/python/integrations/agno",
-              "integration/python/integrations/autogen",
-              "integration/python/integrations/crew-ai",
-              "integration/python/integrations/dspy",
-              "integration/python/integrations/google-ai",
-              "integration/java/integrations/spring-ai",
-              "integration/python/integrations/haystack",
-              "integration/python/integrations/instructor",
-              "integration/python/integrations/llamaindex",
+              "integration/typescript/integrations/vercel-ai-sdk",
               "integration/python/integrations/lite-llm",
               "integration/python/integrations/open-ai-agents",
-              "integration/go/integrations/openrouter",
-              "integration/python/integrations/promptflow",
               "integration/python/integrations/pydantic-ai",
-              "integration/python/integrations/smolagents",
+              "integration/typescript/integrations/mastra",
+              "integration/python/integrations/dspy",
+              "integration/python/integrations/llamaindex",
+              "integration/python/integrations/haystack",
               "integration/python/integrations/strand-agents",
-              "integration/python/integrations/semantic-kernel"
+              "integration/python/integrations/agno",
+              "integration/python/integrations/crew-ai",
+              "integration/python/integrations/autogen",
+              "integration/python/integrations/semantic-kernel",
+              "integration/java/integrations/spring-ai",
+              "integration/python/integrations/promptflow",
+              "integration/python/integrations/instructor",
+              "integration/python/integrations/smolagents",
+              "integration/python/integrations/google-ai"
             ]
           },
           {
@@ -344,18 +348,29 @@
                 ]
               },
               {
-                "group": "Azure AI",
+                "group": "Microsoft Azure",
                 "pages": [
                   "integration/python/integrations/azure-ai",
                   "integration/typescript/integrations/azure",
                   "integration/go/integrations/azure-openai"
                 ]
               },
-              "integration/go/integrations/google-gemini",
-              "integration/python/integrations/google-genai",
-              "integration/python/integrations/aws-bedrock",
+              {
+                "group": "Google Cloud",
+                "pages": [
+                  "integration/python/integrations/vertex-ai",
+                  "integration/go/integrations/google-gemini"
+                ]
+              },
+              {
+                "group": "Amazon Web Services",
+                "pages": [
+                  "integration/python/integrations/aws-bedrock"
+                ]
+              },
               "integration/go/integrations/groq",
-              "integration/go/integrations/ollama"
+              "integration/go/integrations/ollama",
+              "integration/go/integrations/openrouter"
             ]
           },
           {

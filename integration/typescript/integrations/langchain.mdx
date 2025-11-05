@@ -3,228 +3,63 @@ title: LangChain Instrumentation
 sidebarTitle: TypeScript/JS
 description: Learn how to instrument Langchain applications with the LangWatch TypeScript SDK.
 icon: square-js
-keywords: langchain, instrumentation, callback, opentelemetry, langwatch, typescript, tracing, openllmetry
+keywords: langchain, instrumentation, callback, langwatch, typescript, tracing
 ---
 
-Langchain is a powerful framework for building LLM applications. LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
+LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
 
-This guide covers how to instrument Langchain with LangWatch using the **LangWatch Langchain Callback Handler** - the most direct and comprehensive method for capturing rich Langchain-specific trace data.
+## Installation
 
-## Using LangWatch's Langchain Callback Handler
+<CodeGroup>
+```bash npm
+npm i langwatch @langchain/openai @langchain/core
+```
 
-This is the preferred and most comprehensive method for instrumenting Langchain with LangWatch. The LangWatch SDK provides a `LangWatchCallbackHandler` that deeply integrates with Langchain's event system.
+```bash pnpm
+pnpm add langwatch @langchain/openai @langchain/core
+```
+
+```bash yarn
+yarn add langwatch @langchain/openai @langchain/core
+```
+
+```bash bun
+bun add langwatch @langchain/openai @langchain/core
+```
+</CodeGroup>
+
+## Usage
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Use `LangWatchCallbackHandler` to capture Langchain events as spans within your trace.
 
 ```typescript
 import { setupObservability } from "langwatch/observability/node";
 import { LangWatchCallbackHandler } from "langwatch/observability/instrumentation/langchain";
-import { getLangWatchTracer } from "langwatch";
 import { ChatOpenAI } from "@langchain/openai";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { StringOutputParser } from "@langchain/core/output_parsers";
+import { HumanMessage } from "@langchain/core/messages";
 
-// Initialize LangWatch
-setupObservability();
+setupObservability({ serviceName: "<project_name>" });
 
-const tracer = getLangWatchTracer("langchain-example");
-
-async function handleMessageWithCallback(userQuestion: string) {
-  return await tracer.withActiveSpan("Langchain - QA with Callback", {
-    attributes: {
-      "langwatch.thread_id": "callback-user",
-    },
-  }, async (span) => {
-    const langWatchCallback = new LangWatchCallbackHandler();
-
-    const model = new ChatOpenAI({
-      modelName: "gpt-5",
-      temperature: 0.7,
-      callbacks: [langWatchCallback],
-    });
-
-    const prompt = ChatPromptTemplate.fromMessages([
-      ["system", "You are a concise assistant."],
-      ["human", "{question}"],
-    ]);
-
-    // Modern LCEL (LangChain Expression Language) syntax
-    const chain = prompt.pipe(model).pipe(new StringOutputParser());
-
-    const response = await chain.invoke({ question: userQuestion });
-    return response;
+async function main(message: string): Promise<string> {
+  const chatModel = new ChatOpenAI({ model: "gpt-5" }).withConfig({
+    callbacks: [new LangWatchCallbackHandler()],
   });
+
+  const result = await chatModel.invoke([new HumanMessage(message)]);
+  return result.content as string;
 }
 
-async function mainCallback() {
-  if (!process.env.OPENAI_API_KEY) {
-    console.log("OPENAI_API_KEY not set. Skipping Langchain callback example.");
-    return;
-  }
-
-  const response = await handleMessageWithCallback("What is Langchain? Explain briefly.");
-  console.log(`AI (Callback): ${response}`);
-}
-
-mainCallback().catch(console.error);
+console.log(await main("Hey, tell me a joke"));
 ```
 
-**How it Works:**
-- `setupObservability()`: Initializes LangWatch with default configuration.
-- `getLangWatchTracer()`: Creates a tracer instance for your application.
-- `tracer.withActiveSpan()`: Creates a parent LangWatch trace with automatic error handling and span management.
-- `LangWatchCallbackHandler`: A LangWatch-specific callback handler that captures Langchain events and converts them into detailed LangWatch spans.
-- The callback handler is passed to Langchain components via the `callbacks` option.
+The `LangWatchCallbackHandler` captures Langchain events and converts them into detailed LangWatch spans. Pass the callback handler to your Langchain components via the `callbacks` option in `withConfig()`.
 
-**Key points:**
-- Provides the most detailed Langchain-specific structural information (chains, agents, tools, LLMs as distinct steps).
-- Works for all Langchain execution methods (`invoke`, `stream`, `batch`, etc.).
-- Automatically handles span lifecycle management with `withActiveSpan()`.
+## Related
 
-<Note>
-### Why Use the LangWatch Langchain Callback Handler?
-
-The **LangWatch Langchain Callback Handler** provides the richest, most Langchain-aware traces directly integrated with LangWatch's tracing context. It's the recommended approach for optimal Langchain-specific observability within LangWatch.
-</Note>
-
-## Common Mistakes and Caveats
-
-### 1. Setup and Initialization Issues
-
-<Warning>
-**Multiple setup calls**: `setupObservability()` can only be called once per process. Subsequent calls will throw an error.
-</Warning>
-
-```typescript
-// ❌ Wrong - Multiple setup calls
-setupObservability();
-setupObservability(); // This will throw an error
-
-// ✅ Correct - Single setup call
-setupObservability();
-```
-
-### 2. Callback Handler Usage
-
-<Warning>
-**Reusing callback handlers**: Each trace should use a fresh `LangWatchCallbackHandler` instance to avoid span conflicts.
-</Warning>
-
-```typescript
-// ❌ Wrong - Reusing callback handler
-const callback = new LangWatchCallbackHandler();
-
-async function processMultipleRequests() {
-  // This can cause span conflicts
-  const model1 = new ChatOpenAI({ callbacks: [callback] });
-  const model2 = new ChatOpenAI({ callbacks: [callback] });
-}
-
-// ✅ Correct - Fresh callback handler per trace
-async function processMultipleRequests() {
-  const callback1 = new LangWatchCallbackHandler();
-  const callback2 = new LangWatchCallbackHandler();
-
-  const model1 = new ChatOpenAI({ callbacks: [callback1] });
-  const model2 = new ChatOpenAI({ callbacks: [callback2] });
-}
-```
-
-### 3. Span Management
-
-<Warning>
-**Manual span management**: Avoid manually managing spans when using `withActiveSpan()`. The function handles span lifecycle automatically.
-</Warning>
-
-```typescript
-// ❌ Wrong - Manual span management with withActiveSpan
-await tracer.withActiveSpan("my-operation", async (span) => {
-  span.setStatus({ code: SpanStatusCode.OK });
-  span.end(); // Don't manually end spans in withActiveSpan
-});
-
-// ✅ Correct - Let withActiveSpan handle span lifecycle
-await tracer.withActiveSpan("my-operation", async (span) => {
-  // Your code here - span is automatically ended
-});
-```
-
-### 4. Environment Configuration
-
-<Warning>
-**Missing environment variables**: Ensure all required environment variables are set before running your application.
-</Warning>
-
-```typescript
-// ❌ Wrong - No environment validation
-setupObservability();
-const model = new ChatOpenAI(); // May fail if OPENAI_API_KEY not set
-
-// ✅ Correct - Environment validation
-if (!process.env.OPENAI_API_KEY) {
-  console.error("OPENAI_API_KEY environment variable is required");
-  process.exit(1);
-}
-
-setupObservability();
-const model = new ChatOpenAI();
-```
-
-### 5. Error Handling
-
-<Warning>
-**Unhandled promise rejections**: Always handle errors in async operations to prevent unhandled promise rejections.
-</Warning>
-
-```typescript
-// ❌ Wrong - Unhandled promise rejection
-mainCallback(); // This can cause unhandled promise rejection
-
-// ✅ Correct - Proper error handling
-mainCallback().catch(console.error);
-// or
-try {
-  await mainCallback();
-} catch (error) {
-  console.error("Error in main callback:", error);
-}
-```
-
-<Info>
-### Best Practices Summary
-
-1. **Call `setupObservability()` only once per process**
-2. **Use fresh callback handlers** for each trace to avoid conflicts
-3. **Let `withActiveSpan()` handle span lifecycle** - don't manually end spans
-4. **Validate environment variables** before starting your application
-5. **Handle errors properly** to avoid unhandled promise rejections
-</Info>
-
-## Example Project
-
-You can find a complete example project demonstrating LangChain integration with LangWatch [on our GitHub](https://github.com/langwatch/langwatch/tree/main/typescript-sdk/examples/langchain). This example includes:
-
-- **Basic Chatbot**: A simple chatbot that handles conversation flow using LangChain
-- **Conversation Management**: User input handling and conversation history management
-- **Error Handling**: Comprehensive error handling and exit commands
-- **Full LangWatch Integration**: Complete observability and tracing setup
-
-### Key Features
-
-- **Automatic Tracing**: All LangChain operations are automatically traced and sent to LangWatch
-- **Conversation Flow**: Demonstrates proper conversation loop management
-- **Input/Output Tracking**: Tracks user inputs and AI responses
-- **Error Recovery**: Handles errors gracefully with proper cleanup
-
-## Related Documentation
-
-For more advanced LangChain integration patterns and best practices:
-
-- **[Integration Guide](/integration/typescript/guide)** - Basic setup and core concepts
-- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Advanced span management for LangChain operations
-- **[Capturing RAG](/integration/typescript/tutorials/capturing-rag)** - RAG-specific patterns with LangChain
-- **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - LangChain-specific attributes and conventions
-- **[Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript)** - Debug LangChain integration issues
-
-<Tip>
-LangChain's automatic instrumentation works well with [Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation) for custom operations and [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent attribute naming.
-</Tip>
+- [Capturing RAG](/integration/typescript/tutorials/capturing-rag) - Learn how to capture RAG data from LangChain retrievers and tools
+- [Capturing Metadata and Attributes](/integration/typescript/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your LangChain applications

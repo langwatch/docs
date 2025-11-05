@@ -43,6 +43,10 @@ from google.genai import types
 from openinference.instrumentation.google_adk import GoogleADKInstrumentor
 import os
 
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
 # Initialize LangWatch with the Google ADK instrumentor
 langwatch.setup(
     instrumentors=[GoogleADKInstrumentor()]

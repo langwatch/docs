@@ -5,55 +5,31 @@ sidebarTitle: Mastra
 keywords: mastra, langwatch, tracing, observability, typescript, agent framework, ai agents
 ---
 
-# Observability for Mastra With LangWatch
+LangWatch integrates with Mastra through OpenTelemetry to capture traces from your Mastra agents automatically.
 
-This guide shows you how to integrate **Mastra** with **LangWatch** for observability and tracing. By following these steps, you'll be able to monitor and debug your Mastra agents in the LangWatch dashboard.
+## Installation
 
-## Integration
-
-<Steps>
-<Step title="Create a Mastra project">
-Create a Mastra project using the Mastra CLI:
-
-```bash
-npx create-mastra
+<CodeGroup>
+```bash npm
+npm i langwatch mastra @mastra/core @ai-sdk/openai
 ```
 
-Move into the project directory:
-
-```bash
-cd your-mastra-project
+```bash pnpm
+pnpm add langwatch mastra @mastra/core @ai-sdk/openai
 ```
 
-For more information, view Mastra installation instructions [here](https://mastra.ai/docs/getting-started/installation)
-</Step>
-
-<Step title="Set up LangWatch project">
-Create a project in [LangWatch](https://app.langwatch.ai) and get your API keys from the project settings page.
-</Step>
-
-<Step title="Add environment variables">
-Create or update your `.env` file with the following variables:
-
-```bash
-# Your LLM API key
-OPENAI_API_KEY=your-api-key
-
-# LangWatch credentials
-LANGWATCH_API_KEY=sk-...
+```bash yarn
+yarn add langwatch mastra @mastra/core @ai-sdk/openai
 ```
-</Step>
 
-<Step title="Install required packages">
-Add the necessary packages to your project:
-
-```bash
-npm install langwatch mastra @mastra/core @mastra/libsql @mastra/loggers @mastra/otel-exporter
+```bash bun
+bun add langwatch mastra @mastra/core @ai-sdk/openai
 ```
-</Step>
+</CodeGroup>
 
-<Step title="Configure your Mastra instance">
-Configure your Mastra instance with telemetry enabled:
+## Usage
+
+Configure your Mastra instance with OpenTelemetry exporter pointing to LangWatch:
 
 ```typescript
 import { Agent } from "@mastra/core/agent";
@@ -92,49 +68,12 @@ export const mastra = new Mastra({
     },
   },
 });
-
-```
-</Step>
-
-<Step title="Run your Mastra application">
-Start your Mastra development server:
-
-```bash
-npm run dev
 ```
 
-Or run your application:
+Mastra automatically sends traces to LangWatch through the OpenTelemetry exporter. All agent interactions, tool calls, and workflow executions will be captured.
 
-```bash
-npm run start
-```
+## Related
 
-<Check>
-Visit your [LangWatch dashboard](https://app.langwatch.ai) to explore detailed insights into your agent interactions. Monitor and analyze every aspect of your AI conversations, from prompt engineering to response quality, helping you optimize your AI applications.
-</Check>
-</Step>
-</Steps>
-
-## Example Project
-
-You can find a complete example project demonstrating Mastra integration with LangWatch [on our GitHub](https://github.com/langwatch/langwatch/tree/main/typescript-sdk/examples/mastra). This example includes:
-
-- **Weather Agent**: An AI agent that fetches weather data and suggests activities
-- **Weather Tool**: A tool that fetches real-time weather data from Open-Meteo API
-- **CLI Chatbox Interface**: Interactive command-line interface for chatting with the weather agent
-- **Workflow Example**: Demonstrates Mastra workflows for programmatic weather data fetching
-- **Full LangWatch Integration**: Complete observability and tracing setup
-
-## Related Documentation
-
-For more advanced Mastra integration patterns and best practices:
-
-- **[Integration Guide](/integration/typescript/guide)** - Basic setup and core concepts
-- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Advanced span management for Mastra operations
-- **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - Mastra-specific attributes and conventions
-- **[Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript)** - Debug Mastra integration issues
-- **[Capturing Metadata](/integration/typescript/tutorials/capturing-metadata)** - Adding custom metadata to Mastra calls
-
-<Tip>
-For production Mastra applications, combine with manual instrumentation using [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent observability and better analytics.
-</Tip>
+- [Capturing RAG](/integration/typescript/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/typescript/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Mastra applications

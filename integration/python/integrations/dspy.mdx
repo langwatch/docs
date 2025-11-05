@@ -2,54 +2,56 @@
 title: DSPy Instrumentation
 sidebarTitle: DSPy
 description: Learn how to instrument DSPy programs with the LangWatch Python SDK
-keywords: dspy, instrumentation, autotrack, LangWatch, Python
+keywords: dspy, instrumentation, autotrack, langwatch, python
 ---
 
-LangWatch provides seamless integration with DSPy, allowing you to automatically capture detailed information about your DSPy program executions, including module calls and language model interactions.
+LangWatch integrates with DSPy to automatically capture detailed information about your DSPy program executions, including module calls and language model interactions.
 
-The primary way to instrument your DSPy programs is by using `autotrack_dspy()` on the current LangWatch trace.
+## Installation
 
-## Using `autotrack_dspy()`
+<CodeGroup>
+```bash pip
+pip install langwatch dspy
+```
 
-The `autotrack_dspy()` function, when called on an active trace object, dynamically patches the DSPy framework to capture calls made during the execution of your DSPy programs within that trace.
+```bash uv
+uv add langwatch dspy
+```
+</CodeGroup>
 
-You typically call this method on the trace object obtained via `langwatch.get_current_trace()` inside a function decorated with `@langwatch.trace()`. This ensures that all DSPy operations within that traced function are monitored.
+## Usage
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Use `autotrack_dspy()` to automatically capture all DSPy operations within a trace.
 
 ```python
 import langwatch
 import dspy
 import os
 
-# Ensure LANGWATCH_API_KEY is set, or set it in langwatch.setup()
-langwatch.setup() # If not done elsewhere or API key not in env
+langwatch.setup()
 
 # Initialize your DSPy LM (Language Model)
-# This example uses OpenAI, ensure OPENAI_API_KEY is set
-lm = dspy.LM("openai/gpt-5", api_key=os.environ.get("OPENAI_API_KEY"))
+lm = dspy.LM(
+    "openai/gpt-5",
+    api_key=os.environ.get("OPENAI_API_KEY"),
+    temperature=1.0,
+    max_tokens=16000,
+)
 dspy.settings.configure(lm=lm)
 
-class BasicRAG(dspy.Signature):
-    """Answer questions with short factoid answers."""
-    question = dspy.InputField()
-    answer = dspy.OutputField(desc="often between 1 and 5 words")
-
-class SimpleModule(dspy.Module):
-    def __init__(self):
-        super().__init__()
-        self.generate_answer = dspy.Predict(BasicRAG)
-
-    def forward(self, question):
-        prediction = self.generate_answer(question=question)
-        return dspy.Prediction(answer=prediction.answer)
 
 @langwatch.trace(name="DSPy RAG Execution")
 def run_dspy_program(user_query: str):
-    # Get the current trace and enable autotracking for DSPy
-    current_trace = langwatch.get_current_trace().autotrack_dspy()
+    langwatch.get_current_trace().autotrack_dspy()
 
-    program = SimpleModule()
-    prediction = program(question=user_query)
+    module = dspy.Predict("question -> answer")
+    prediction = module(question=user_query)
     return prediction.answer
+
 
 def main():
     user_question = "What is the capital of France?"
@@ -57,212 +59,15 @@ def main():
     print(f"Question: {user_question}")
     print(f"Answer: {response}")
 
+
 if __name__ == "__main__":
     main()
 ```
 
-### Key points for `autotrack_dspy()`:
--   It must be called on an active trace object (e.g., obtained via `langwatch.get_current_trace()`).
--   It instruments DSPy operations specifically for the duration and scope of the current trace.
--   LangWatch will capture interactions with DSPy modules (like `dspy.Predict`, `dspy.ChainOfThought`, `dspy.Retrieve`) and the underlying LM calls.
+The `@langwatch.trace()` decorator creates a parent trace, and `autotrack_dspy()` enables automatic tracking of all DSPy operations, including module calls and underlying LM interactions, for the duration of that trace.
 
-## Using Community OpenTelemetry Instrumentors
+## Related
 
-If you prefer to use broader OpenTelemetry-based instrumentation, or are already using libraries like OpenInference, LangWatch can seamlessly integrate with them. These libraries provide instrumentors that automatically capture data from various LLM frameworks, including DSPy.
-
-The [OpenInference community provides an instrumentor for DSPy](https://github.com/Arize-ai/openinference/tree/main/python/instrumentation/openinference-instrumentation-dspy) which can be used with LangWatch.
-
-There are two main ways to integrate these:
-
-### 1. Via `langwatch.setup()`
-
-You can pass an instance of the instrumentor (e.g., `OpenInferenceDSPyInstrumentor` from OpenInference) to the `instrumentors` list in the `langwatch.setup()` call. LangWatch will then manage the lifecycle of this instrumentor.
-
-```python
-import langwatch
-import dspy
-import os
-
-from openinference.instrumentation.dspy import DSPyInstrumentor
-
-# Initialize LangWatch with the DSPyInstrumentor
-langwatch.setup(
-    instrumentors=[DSPyInstrumentor()]
-)
-
-# Configure DSPy LM
-# This example uses OpenAI, ensure OPENAI_API_KEY is set
-lm = dspy.LM("openai/gpt-5", api_key=os.environ.get("OPENAI_API_KEY"))
-dspy.settings.configure(lm=lm)
-
-class BasicRAG(dspy.Signature):
-    question = dspy.InputField()
-    answer = dspy.OutputField()
-
-class SimpleModule(dspy.Module):
-    def __init__(self):
-        super().__init__()
-        self.generate_answer = dspy.Predict(BasicRAG)
-
-    def forward(self, question):
-        prediction = self.generate_answer(question=question)
-        return dspy.Prediction(answer=prediction.answer)
-
-@langwatch.trace(name="DSPy Call with Community Instrumentor")
-def generate_with_community_instrumentor(prompt: str):
-    # No need to call autotrack_dspy explicitly,
-    # the community instrumentor handles DSPy calls globally.
-    program = SimpleModule()
-    prediction = program(question=prompt)
-    return prediction.answer
-
-if __name__ == "__main__":
-    # from dotenv import load_dotenv # Make sure to load .env if you have one
-    # load_dotenv()
-    user_query = "What is DSPy?"
-    response = generate_with_community_instrumentor(user_query)
-    print(f"User: {user_query}")
-    print(f"AI: {response}")
-
-```
-<Note>
-  Ensure you have the respective community instrumentation library installed (e.g., `pip install openinference-instrumentation-dspy`).
-</Note>
-
-### 2. Direct Instrumentation
-
-If you have an existing OpenTelemetry `TracerProvider` configured in your application (or if LangWatch is configured to use the global provider), you can use the community instrumentor's `instrument()` method directly. LangWatch will automatically pick up the spans generated by these instrumentors as long as its exporter is part of the active `TracerProvider`.
-
-```python
-import langwatch
-import dspy
-import os
-
-from openinference.instrumentation.dspy import DSPyInstrumentor
-
-langwatch.setup() # Initialize LangWatch
-
-# Configure DSPy LM
-lm = dspy.LM("openai/gpt-5", api_key=os.environ.get("OPENAI_API_KEY"))
-dspy.settings.configure(lm=lm)
-
-# Instrument DSPy directly using the community library
-DSPyInstrumentor().instrument()
-
-class BasicRAG(dspy.Signature):
-    question = dspy.InputField()
-    answer = dspy.OutputField()
-
-class SimpleModule(dspy.Module):
-    def __init__(self):
-        super().__init__()
-        self.generate_answer = dspy.Predict(BasicRAG)
-
-    def forward(self, question):
-        prediction = self.generate_answer(question=question)
-        return dspy.Prediction(answer=prediction.answer)
-
-@langwatch.trace(name="DSPy Call with Direct Community Instrumentation")
-def ask_dspy_directly_instrumented(original_question: str):
-    program = SimpleModule()
-    prediction = program(question=original_question)
-    return prediction.answer
-
-if __name__ == "__main__":
-    query = "Explain the concept of few-shot learning in LLMs."
-    response = ask_dspy_directly_instrumented(query)
-    print(f"Query: {query}")
-    print(f"Response: {response}")
-```
-
-### Key points for community instrumentors:
--   These instrumentors often patch DSPy at a global level, meaning all DSPy calls will be captured once instrumented.
--   If using `langwatch.setup(instrumentors=[...])`, LangWatch handles the setup.
--   If instrumenting directly (e.g., `DSPyInstrumentor().instrument()`), ensure that the `TracerProvider` used by the instrumentor is the same one LangWatch is exporting from. This usually means LangWatch is configured to use an existing global provider or one you explicitly pass to `langwatch.setup()`.
-
-<Note>
-### Which Approach to Choose?
-
--   **`autotrack_dspy()`** is ideal for targeted instrumentation within specific traces or when you want fine-grained control over which DSPy program executions are tracked. It's simpler if you're not deeply invested in a separate OpenTelemetry setup.
--   **Community Instrumentors** (like OpenInference's `DSPyInstrumentor`) are powerful if you're already using OpenTelemetry, want to capture DSPy calls globally across your application, or need to instrument other libraries alongside DSPy with a consistent OpenTelemetry approach. They provide a more holistic observability solution if you have multiple OpenTelemetry-instrumented components.
-
-Choose the method that best fits your existing setup and instrumentation needs. Both approaches effectively send DSPy call data to LangWatch for monitoring and analysis.
-</Note>
-
-## Example: Chainlit Bot with DSPy and LangWatch
-
-The following is a more complete example demonstrating `autotrack_dspy()` in a Chainlit application, similar to the `dspy_bot.py` found in the SDK examples.
-
-```python
-import os
-
-import chainlit as cl
-import langwatch
-import dspy
-
-langwatch.setup()
-
-# Configure DSPy LM and RM (Retriever Model)
-# Ensure OPENAI_API_KEY is in your environment for the LM
-lm = dspy.LM("openai/gpt-5", api_key=os.environ["OPENAI_API_KEY"])
-# This example uses a public ColBERTv2 instance for retrieval
-colbertv2_wiki17_abstracts = dspy.ColBERTv2(
-    url="http://20.102.90.50:2017/wiki17_abstracts"
-)
-dspy.settings.configure(lm=lm, rm=colbertv2_wiki17_abstracts)
-
-
-class GenerateAnswer(dspy.Signature):
-    """Answer questions with short factoid answers."""
-
-    context = dspy.InputField(desc="may contain relevant facts")
-    question = dspy.InputField()
-    answer = dspy.OutputField(desc="often between 1 and 5 words")
-
-
-class RAG(dspy.Module):
-    def __init__(self, num_passages=3):
-        super().__init__()
-        self.retrieve = dspy.Retrieve(k=num_passages)
-        self.generate_answer = dspy.ChainOfThought(GenerateAnswer)
-
-    def forward(self, question):
-        context = self.retrieve(question).passages  # type: ignore
-        prediction = self.generate_answer(question=question, context=context)
-        return dspy.Prediction(answer=prediction.answer)
-
-
-@cl.on_message # Decorator for Chainlit message handling
-@langwatch.trace() # Decorator to trace this function with LangWatch
-async def main_chat_handler(message: cl.Message):
-    # Get the current LangWatch trace and enable DSPy autotracking
-    current_trace = langwatch.get_current_trace()
-    if current_trace:
-        current_trace.autotrack_dspy()
-
-    msg_ui = cl.Message(content="") # Chainlit UI message
-
-    # Initialize and run the DSPy RAG program
-    program = RAG()
-    prediction = program(question=message.content)
-
-    # Stream the answer to the Chainlit UI
-    # Note: For simplicity, this example doesn't stream token by token
-    # from the DSPy prediction if it were a streaming response.
-    # DSPy's prediction.answer is typically the full string.
-    final_answer = prediction.answer
-    if isinstance(final_answer, str):
-        await msg_ui.stream_token(final_answer)
-    else:
-        # Handle cases where answer might not be a direct string (e.g. structured output)
-        await msg_ui.stream_token(str(final_answer))
-
-    await msg_ui.update()
-
-# To run this example:
-# 1. Ensure you have .env file with OPENAI_API_KEY and LANGWATCH_API_KEY.
-# 2. Install dependencies: pip install langwatch dspy-ai openai chainlit python-dotenv
-# 3. Run with Chainlit: chainlit run your_script_name.py -w
-```
-
-By calling `autotrack_dspy()` within your LangWatch-traced functions, you gain valuable insights into your DSPy program's behavior, including latencies, token counts, and the flow of data through your defined modules and signatures. This is essential for debugging, optimizing, and monitoring your DSPy-powered AI applications.
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your DSPy applications

@@ -2,119 +2,64 @@
 title: Vercel AI SDK
 description: LangWatch Vercel AI SDK integration guide
 sidebarTitle: Vercel AI SDK
-keywords: vercel ai sdk, langwatch, tracing, observability, vercel, ai, sdk, langwatch, tracing, observability
+keywords: vercel ai sdk, langwatch, tracing, observability, vercel, ai, sdk
 ---
 
 import TypeScriptIntro from "/snippets/typescript-intro.mdx";
 
 <TypeScriptIntro />
 
-## Integration
-
-
-The Vercel AI SDK supports tracing via Next.js OpenTelemetry integration. By using the `LangWatchExporter`, you can automatically collect those traces to LangWatch.
-
-First, you need to install the necessary dependencies:
-
-```bash
-npm install @vercel/otel langwatch @opentelemetry/api-logs @opentelemetry/instrumentation @opentelemetry/sdk-logs
-```
-
-Then, set up the OpenTelemetry for your application, follow one of the tabs below depending whether you are using AI SDK with Next.js or on Node.js:
-
-<Tabs>
-<Tab title="Next.js">
-You need to enable the `instrumentationHook` in your `next.config.js` file if you haven't already:
-
-```javascript
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    instrumentationHook: true,
-  },
-};
-
-module.exports = nextConfig;
-```
-
-Next, you need to create a file named `instrumentation.ts` (or `.js`) in the __root directory__ of the project (or inside `src` folder if using one), with `LangWatchExporter` as the traceExporter:
+## Installation
 
 <CodeGroup>
-```typescript
-import { registerOTel } from '@vercel/otel';
-import { LangWatchExporter } from 'langwatch';
+```bash npm
+npm i langwatch ai @ai-sdk/openai
+```
 
-export function register() {
-  registerOTel({
-    serviceName: 'next-app',
-    traceExporter: new LangWatchExporter({
-      apiKey: process.env.LANGWATCH_API_KEY
-    }),
-  })
-}
+```bash pnpm
+pnpm add langwatch ai @ai-sdk/openai
+```
+
+```bash yarn
+yarn add langwatch ai @ai-sdk/openai
+```
+
+```bash bun
+bun add langwatch ai @ai-sdk/openai
 ```
 </CodeGroup>
 
-(Read more about Next.js OpenTelemetry configuration [on the official guide](https://nextjs.org/docs/app/building-your-application/optimizing/open-telemetry#manual-opentelemetry-configuration))
+## Usage
 
-Finally, enable `experimental_telemetry` tracking on the AI SDK calls you want to trace:
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
 
-```typescript
-import { attributes } from 'langwatch';
-
-const result = await generateText({
-  model: openai('gpt-5'),
-  prompt: 'Explain why a chicken would make a terrible astronaut, be creative and humorous about it.',
-  experimental_telemetry: {
-    isEnabled: true,
-    // optional metadata
-    metadata: {
-      "langwatch.user.id": "myuser-123",
-      "langwatch.thread.id": "mythread-123",
-    },
-  },
-});
-```
-</Tab>
-<Tab title="Node.js">
-For Node.js, start by following the official OpenTelemetry guide:
-
-- [OpenTelemetry Node.js Getting Started](https://opentelemetry.io/docs/languages/js/getting-started/nodejs/)
-
-Once you have set up OpenTelemetry, you can use `setupObservability` from the LangWatch
-SDK to automatically instrument your application and send your traces to LangWatch:
+Set up observability and enable telemetry on your Vercel AI SDK calls:
 
 ```typescript
-import { setupObservability } from 'langwatch/observability/node';
+import { setupObservability } from "langwatch/observability/node";
+import { generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
 
-const handle = setupObservability({
-  langwatch: {
-    apiKey: process.env.LANGWATCH_API_KEY, // optional, defaults to LANGWATCH_API_KEY env var
-  },
-  serviceName: "my-service",
-});
+setupObservability({ serviceName: "<project_name>" });
+
+async function main(message: string): Promise<string> {
+  const response = await generateText({
+    model: openai("gpt-5-mini"),
+    prompt: message,
+    experimental_telemetry: { isEnabled: true },
+  });
+  return response.text;
+}
+
+console.log(await main("Hey, tell me a joke"));
 ```
-</Tab>
-</Tabs>
 
-That's it! Your messages will now be visible on LangWatch:
+The Vercel AI SDK automatically sends traces to LangWatch when `experimental_telemetry.isEnabled` is set to `true`. For Next.js applications, configure OpenTelemetry in your `instrumentation.ts` file using `LangWatchExporter`.
 
-![Vercel AI SDK](/images/integration/vercel-ai-sdk.png)
+## Related
 
-## Example Project
-
-You can find a full example project with a more complex pipeline and Vercel AI SDK and LangWatch integration [on our GitHub](https://github.com/langwatch/langwatch/tree/main/typescript-sdk/examples/vercel-ai).
-
-## Related Documentation
-
-For more advanced Vercel AI SDK integration patterns and best practices:
-
-- **[Integration Guide](/integration/typescript/guide)** - Basic setup and core concepts
-- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Advanced span management for Vercel AI SDK calls
-- **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - Vercel AI SDK-specific attributes and conventions
-- **[Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript)** - Debug Vercel AI SDK integration issues
-- **[Capturing Metadata](/integration/typescript/tutorials/capturing-metadata)** - Adding custom metadata to Vercel AI SDK calls
-
-<Tip>
-For production Vercel AI SDK applications, combine manual instrumentation with [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent observability and better analytics.
-</Tip>
+- [Capturing RAG](/integration/typescript/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/typescript/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Vercel AI SDK applications

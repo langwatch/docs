@@ -3,18 +3,24 @@ title: OpenAI Instrumentation
 sidebarTitle: Go
 description: Learn how to instrument OpenAI API calls with the LangWatch Go SDK using middleware.
 icon: golang
-keywords: openai, instrumentation, golang, go, LangWatch, middleware, streaming, opentelemetry
+keywords: openai, instrumentation, golang, go, langwatch, middleware, streaming
 ---
 
-LangWatch provides seamless, automatic instrumentation for the official `openai-go` client library through a dedicated middleware. This approach captures detailed information about your OpenAI API calls—including requests, responses, token usage, and streaming data—without requiring manual tracing around each call.
+LangWatch provides automatic instrumentation for the official `openai-go` client library through a dedicated middleware that captures detailed information about your OpenAI API calls.
 
-## Basic Usage
+## Installation
 
-Instrumenting your OpenAI client involves adding the `otelopenai.Middleware` to its configuration. The middleware will then automatically create detailed trace spans for each API call.
+```bash
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
+```
 
-<Note>
-The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details. For complete API documentation of all middleware options, see the [OpenAI Instrumentation section](/integration/go/reference#openai-instrumentation) in the reference.
-</Note>
+## Usage
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Add the `otelopenai.Middleware` to your OpenAI client configuration. The middleware automatically creates detailed trace spans for each API call.
 
 ```go
 package main
@@ -24,7 +30,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
@@ -32,27 +37,17 @@ import (
 
 func main() {
 	ctx := context.Background()
-	// Assumes LangWatch is already set up.
 
-	// Create an instrumented OpenAI client
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("OPENAI_API_KEY")),
-		// Add the middleware
-		oaioption.WithMiddleware(otelopenai.Middleware("my-llm-app",
-			// Optional: Capture request/response content
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
 	)
 
-	// Create a trace for your overall operation
-	tracer := langwatch.Tracer("my-llm-app")
-	ctx, span := tracer.Start(ctx, "UserRequestHandler")
-	defer span.End()
-
-	// Make an API call as usual. A span will be automatically created for this call.
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		Model: openai.ChatModelGPT4oMini,
+		Model: openai.ChatModelGPT5,
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
 			openai.UserMessage("Hello, OpenAI!"),
@@ -66,168 +61,10 @@ func main() {
 }
 ```
 
-## Configuration Options
+The middleware automatically captures request/response content, token usage, and model information. Streaming responses are fully supported and automatically accumulated.
 
-The `Middleware` function accepts a required `instrumentationName` string followed by optional configuration functions to customize its behavior.
+## Related
 
-<ParamField path="WithCaptureInput()" type="function">
-  Records the full input payload (e.g., messages, model) as the `llm.request.body` span attribute.
-
-  ```go
-  otelopenai.Middleware("my-app", otelopenai.WithCaptureInput())
-  ```
-  <Warning>Use with caution if conversations contain sensitive data.</Warning>
-</ParamField>
-
-<ParamField path="WithCaptureOutput()" type="function">
-  Records the full response payload as the `llm.response.body` span attribute. For streams, this contains the final, accumulated response.
-
-  ```go
-  otelopenai.Middleware("my-app", otelopenai.WithCaptureOutput())
-  ```
-</ParamField>
-
-<ParamField path="WithGenAISystem(system string)" type="function">
-  Sets the `gen_ai.system` attribute on spans, which is useful for identifying the underlying model provider. Defaults to `"openai"`.
-
-  ```go
-  // Example for an OpenAI-compatible API from Anthropic
-  otelopenai.Middleware("my-app", 
-      otelopenai.WithGenAISystem("anthropic"),
-  )
-  ```
-</ParamField>
-
-<ParamField path="WithTracerProvider(provider trace.TracerProvider)" type="function">
-  Specifies the OpenTelemetry `TracerProvider` to use. Defaults to the global provider.
-
-  ```go
-  // Provide a custom tracer provider
-  otelopenai.Middleware("my-app", 
-      otelopenai.WithTracerProvider(customProvider),
-  )
-  ```
-</ParamField>
-
-## Streaming Support
-
-The middleware has full, built-in support for streaming responses. It automatically processes Server-Sent Events (SSE) to capture and accumulate the streamed content, recording the final result in the span's output field.
-
-No extra configuration is needed—just use the streaming methods of the OpenAI client as you normally would.
-
-```go
-import (
-    "fmt"
-    "log"
-    "strings"
-    "github.com/openai/openai-go"
-)
-// ... inside a function with an instrumented `client` and `ctx`
-
-// Create a streaming request
-stream, err := client.Chat.Completions.NewStreaming(ctx, openai.ChatCompletionNewParams{
-	Model: openai.ChatModelGPT4oMini,
-	Messages: []openai.ChatCompletionMessageParamUnion{
-		openai.UserMessage("Tell me a long story about a robot."),
-	},
-	Stream: openai.F(true),
-})
-if err != nil {
-    log.Fatalf("Streaming request failed: %v", err)
-}
-defer stream.Close() // Always close the stream
-
-// Process the stream as usual
-var fullResponse strings.Builder
-for stream.Next() {
-	chunk := stream.Current()
-	content := chunk.Choices[0].Delta.Content
-	fullResponse.WriteString(content)
-	fmt.Print(content)
-}
-
-if err := stream.Err(); err != nil {
-	log.Fatalf("Stream error: %v", err)
-}
-
-// The complete story is automatically captured and sent to LangWatch.
-```
-
-## Multi-Provider Examples
-
-You can use the same instrumentation for any OpenAI-compatible API.
-
-### Anthropic (Claude)
-
-```go
-import (
-	"os"
-	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
-	"github.com/openai/openai-go"
-	oaioption "github.com/openai/openai-go/option"
-)
-
-client := openai.NewClient(
-	oaioption.WithBaseURL("https://api.anthropic.com/v1"),
-	oaioption.WithAPIKey(os.Getenv("ANTHROPIC_API_KEY")),
-	oaioption.WithMiddleware(otelopenai.Middleware("my-app-anthropic",
-		otelopenai.WithGenAISystem("anthropic"),
-		// other options...
-	)),
-)
-```
-
-### Azure OpenAI
-
-```go
-import (
-	"os"
-	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
-	"github.com/openai/openai-go"
-	oaioption "github.com/openai/openai-go/option"
-)
-
-client := openai.NewClient(
-	oaioption.WithBaseURL("https://your-resource.openai.azure.com/openai/deployments/your-deployment"),
-	oaioption.WithAPIKey(os.Getenv("AZURE_OPENAI_API_KEY")),
-	oaioption.WithMiddleware(otelopenai.Middleware("my-app-azure",
-		otelopenai.WithGenAISystem("azure"),
-		// other options...
-	)),
-)
-```
-
-## Supported Operations
-
-The middleware traces all requests made through the instrumented client, with enriched support for specific operations:
-
-| API | Support Level | Details |
-|-----|---------|---------|
-| Chat Completions | Full | Captures request/response, token usage, model info. |
-| Chat Completions Streaming | Full | Accumulates streaming chunks into a final response. |
-| Embeddings | Full | Captures input text and embedding vector dimensions. |
-| Images | Partial (Input) | Captures image generation prompts and parameters. |
-| Audio | Partial (Input) | Captures audio generation request parameters. |
-
-<Note>
-"Partial" support means that while the call is traced, only the input parameters are captured, not the generated binary content (image/audio).
-</Note>
-
-## Installation
-
-```bash
-go get github.com/langwatch/langwatch/sdk-go/instrumentation/openai
-```
-
-## Collected Attributes
-
-The middleware adds comprehensive attributes following [OpenTelemetry GenAI Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/):
-
-### Request Attributes
-
-- `gen_ai.system` (e.g., `"openai"`)
-- `gen_ai.request.model`
-- `gen_ai.request.temperature`
-- `gen_ai.request.top_p`
-- `gen_ai.request.top_k`
-- `gen_ai.request.frequency_penalty`
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your OpenAI applications

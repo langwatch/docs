@@ -3,140 +3,78 @@ title: OpenAI
 sidebarTitle: TypeScript/JS
 description: LangWatch OpenAI TypeScript integration guide
 icon: square-js
-keywords: openai, langwatch, typescript, javascript, sdk, instrumentation, opentelemetry
+keywords: openai, langwatch, typescript, javascript, sdk, instrumentation
 ---
 
 import TypeScriptIntro from "/snippets/typescript-intro.mdx";
 
 <TypeScriptIntro />
 
-## Integration
+## Installation
 
-Start by setting up observability and initializing the LangWatch tracer:
+<CodeGroup>
+```bash npm
+npm i langwatch openai
+```
+
+```bash pnpm
+pnpm add langwatch openai
+```
+
+```bash yarn
+yarn add langwatch openai
+```
+
+```bash bun
+bun add langwatch openai
+```
+</CodeGroup>
+
+## Usage
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Set up observability and use `withActiveSpan` to capture your OpenAI calls:
 
 ```typescript
 import { setupObservability } from "langwatch/observability/node";
 import { getLangWatchTracer } from "langwatch";
-
-// Setup observability first
-setupObservability();
-
-const tracer = getLangWatchTracer("my-service");
-```
-
-Then to capture your LLM calls, you can use the `withActiveSpan` method to create an LLM span with automatic lifecycle management:
-
-```typescript
 import { OpenAI } from "openai";
 
-// Model to be used and messages that will be sent to the LLM
-const model = "gpt-5-mini";
-const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-  { role: "system", content: "You are a helpful assistant." },
-  {
-    role: "user",
-    content: "Write a tweet-size vegetarian lasagna recipe for 4 people.",
-  },
-];
+setupObservability({ serviceName: "<project_name>" });
 
-const openai = new OpenAI();
+const tracer = getLangWatchTracer("<project_name>");
 
-// Use withActiveSpan for automatic error handling and span cleanup
-const result = await tracer.withActiveSpan("llm-call", async (span) => {
-  // Set span type and input
-  span.setType("llm");
-  span.setInput("chat_messages", messages);
-  span.setRequestModel(model);
+async function main(message: string): Promise<string> {
+  const openai = new OpenAI();
 
-  // Make the OpenAI call
-  const chatCompletion = await openai.chat.completions.create({
-    messages: messages,
-    model: model,
+  return await tracer.withActiveSpan("main", async span => {
+    span.setInput(message);
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-5",
+      messages: [{ role: "user", content: message }],
+    });
+
+    const text = response.choices[0].message.content as string;
+    span.setOutput(text);
+    return text;
   });
+}
 
-  // Set output and metrics
-  span.setOutput("chat_messages", [chatCompletion.choices[0]!.message]);
-  span.setMetrics({
-    promptTokens: chatCompletion.usage?.prompt_tokens,
-    completionTokens: chatCompletion.usage?.completion_tokens,
-  });
-
-  return chatCompletion;
-});
+console.log(await main("Hey, tell me a joke"));
 ```
 
-The `withActiveSpan` method automatically:
-- Creates the span with the specified name
-- Handles errors and sets appropriate span status
-- Ends the span when the function completes
-- Returns the result of your async function
-
-## Community Auto-Instrumentation
-
-For automatic instrumentation without manual span creation, you can use the [OpenInference instrumentation for OpenAI](https://github.com/Arize-ai/openinference/tree/main/js/packages/openinference-instrumentation-openai):
-
-<Steps>
-<Step title="Install the OpenInference instrumentation">
-  ```bash
-  npm install @arizeai/openinference-instrumentation-openai
-  ```
-</Step>
-
-<Step title="Register the instrumentation">
-  ```typescript
-  import { NodeSDK } from "@opentelemetry/sdk-node";
-  import { OpenAIInstrumentation } from "@arizeai/openinference-instrumentation-openai";
-  import { setupObservability } from "langwatch/observability/node";
-
-  // Setup observability with the instrumentation
-  setupObservability({
-    instrumentations: [new OpenAIInstrumentation()],
-  });
-  ```
-</Step>
-
-<Step title="Use OpenAI normally">
-  ```typescript
-  import { OpenAI } from "openai";
-
-  const openai = new OpenAI();
-  
-  // This call will be automatically instrumented
-  const completion = await openai.chat.completions.create({
-    model: "gpt-5-mini",
-    messages: [{ role: "user", content: "Hello!" }],
-  });
-  ```
-</Step>
-</Steps>
-
-<Info>
-The OpenInference instrumentation automatically captures:
-- Input messages and model configuration
-- Output responses and token usage
-- Error handling and status codes
-- Request/response timing
-</Info>
-
-<Warning>
-When using auto-instrumentation, you may need to configure data capture settings to control what information is sent to LangWatch.
-</Warning>
+The `withActiveSpan` method automatically creates the span, handles errors, and ends the span when the function completes.
 
 import TypeScriptSharedSpanExcepEval from "/snippets/typescript-shared-span-excep-eval.mdx";
 
 <TypeScriptSharedSpanExcepEval />
 
-## Related Documentation
+## Related
 
-For more advanced OpenAI integration patterns and best practices:
-
-- **[Integration Guide](/integration/typescript/guide)** - Basic setup and core concepts
-- **[Manual Instrumentation](/integration/typescript/tutorials/manual-instrumentation)** - Advanced span management for OpenAI calls
-- **[Semantic Conventions](/integration/typescript/tutorials/semantic-conventions)** - OpenAI-specific attributes and conventions
-- **[Debugging and Troubleshooting](/integration/typescript/tutorials/debugging-typescript)** - Debug OpenAI integration issues
-- **[Capturing Metadata](/integration/typescript/tutorials/capturing-metadata)** - Adding custom metadata to OpenAI calls
-
-<Tip>
-For production OpenAI applications, combine manual instrumentation with [Semantic Conventions](/integration/typescript/tutorials/semantic-conventions) for consistent observability and better analytics.
-</Tip>
-
+- [Capturing RAG](/integration/typescript/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/typescript/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your OpenAI applications
