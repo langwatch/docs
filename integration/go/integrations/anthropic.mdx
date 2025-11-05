@@ -3,28 +3,20 @@ title: Anthropic (Claude) Integration
 sidebarTitle: Go
 description: Learn how to instrument Anthropic Claude API calls in Go using LangWatch.
 icon: golang
-keywords: go, golang, anthropic, claude, instrumentation, langwatch, opentelemetry, openai-compatible
+keywords: go, golang, anthropic, claude, instrumentation, langwatch, openai-compatible
 ---
 
-LangWatch provides seamless instrumentation for Anthropic's Claude models through its OpenAI-compatible middleware. This allows you to capture detailed traces of your Claude API calls with minimal code changes.
+LangWatch supports tracing Anthropic Claude API calls using the same `otelopenai` middleware used for OpenAI. Configure the client to point to Anthropic's API endpoint.
 
-## Setup
-
-The key to this integration is to configure the `openai.Client` to point to Anthropic's API endpoint and use your Anthropic API key.
-
-You will need your Anthropic API key, which you can find in your Anthropic dashboard. Set it as an environment variable:
+## Installation
 
 ```bash
-export ANTHROPIC_API_KEY="your-anthropic-api-key"
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ```
 
-## Example
+## Usage
 
-When creating your `openai.Client`, configure it with Anthropic's base URL and your API key. It's also a best practice to set the `gen_ai.system` attribute to `"anthropic"` for clear identification in LangWatch.
-
-<Note>
-The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details. For detailed configuration options and middleware settings, see the [OpenAI Instrumentation section](/integration/go/reference#openai-instrumentation) in the reference.
-</Note>
+Configure the OpenAI client with Anthropic's base URL and API key:
 
 ```go
 package main
@@ -34,7 +26,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
@@ -44,37 +35,33 @@ func main() {
 	ctx := context.Background()
 
 	client := openai.NewClient(
-		// Use the Anthropic API endpoint
-		oaioption.WithBaseURL("https://api.anthropic.com/v1"),
-
-		// Use your Anthropic API key
 		oaioption.WithAPIKey(os.Getenv("ANTHROPIC_API_KEY")),
-
-		// Add the middleware, identifying the system as "anthropic"
-		oaioption.WithMiddleware(otelopenai.Middleware("my-anthropic-app",
-			otelopenai.WithGenAISystem("anthropic"),
+		oaioption.WithBaseURL(os.Getenv("ANTHROPIC_BASE_URL")),
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
 	)
 
-	// Make a call to a Claude model
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		Model: "claude-3-5-sonnet-20241022",
+		Model: openai.ChatModelGPT5,
 		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.UserMessage("Hello, Claude! What are you?"),
+			openai.SystemMessage("You are a helpful assistant."),
+			openai.UserMessage("Hello, OpenAI!"),
 		},
-		MaxTokens: openai.I(100),
 	})
-
 	if err != nil {
-		log.Fatalf("Anthropic API call failed: %v", err)
+		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Response from Claude: %s", response.Choices[0].Message.Content)
+	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
 }
 ```
 
-<Note>
-When using the OpenAI-compatible endpoint, you may need to add the `MaxTokens` parameter to your request, as it is often required by Anthropic.
-</Note>
+Set `ANTHROPIC_BASE_URL` to `https://api.anthropic.com/v1` and use your Anthropic API key.
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Anthropic applications

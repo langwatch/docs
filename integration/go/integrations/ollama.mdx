@@ -2,31 +2,20 @@
 title: Ollama (Local Models) Integration
 sidebarTitle: Ollama (Local)
 description: Learn how to trace local LLMs running via Ollama in Go using the LangWatch SDK.
-keywords: go, golang, ollama, local llm, instrumentation, langwatch, opentelemetry, openai-compatible
+keywords: go, golang, ollama, local llm, instrumentation, langwatch, openai-compatible
 ---
 
-You can use LangWatch to trace interactions with local models served by [Ollama](https://ollama.com). Ollama exposes an OpenAI-compatible endpoint, making it easy to integrate with the standard `otelopenai` middleware.
+LangWatch supports tracing local models served by Ollama through its OpenAI-compatible endpoint.
 
-## Setup
-
-First, ensure Ollama is running and you have pulled a model.
+## Installation
 
 ```bash
-# Pull the Llama 3 model
-ollama pull llama3
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ```
 
-By default, Ollama's server runs at `http://localhost:11434`.
+## Usage
 
-## Example
-
-Configure your `openai.Client` to point to the local Ollama endpoint. While Ollama doesn't require an API key, the `openai-go` library requires one to be set, so you can use a non-empty string like `"ollama"`.
-
-Set the `gen_ai.system` attribute to `"ollama"` to identify the provider in your LangWatch traces.
-
-<Note>
-The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
-</Note>
+Configure the OpenAI client to point to your local Ollama endpoint:
 
 ```go
 package main
@@ -34,8 +23,8 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
-	"github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
@@ -45,36 +34,32 @@ func main() {
 	ctx := context.Background()
 
 	client := openai.NewClient(
-		// Use the default Ollama endpoint
-		oaioption.WithBaseURL("http://localhost:11434/v1"),
-
-		// The API key is required but not used by Ollama
-		oaioption.WithAPIKey("ollama"),
-
-		// Add the middleware, identifying the system as "ollama"
-		oaioption.WithMiddleware(otelopenai.Middleware("my-ollama-app",
-			otelopenai.WithGenAISystem("ollama"),
+		oaioption.WithBaseURL(os.Getenv("OLLAMA_BASE_URL")),
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
 	)
 
-	// Make a call to a local model
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		Model: "llama3",
+		Model: openai.ChatModelGPT5,
 		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.UserMessage("Hello, local model! Write a haiku about Go."),
+			openai.SystemMessage("You are a helpful assistant."),
+			openai.UserMessage("Hello, OpenAI!"),
 		},
 	})
-
 	if err != nil {
-		log.Fatalf("Ollama API call failed: %v", err)
+		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Response from Ollama: %s", response.Choices[0].Message.Content)
+	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
 }
 ```
 
-<Note>
-This same pattern works for any tool that provides an OpenAI-compatible endpoint for local models, such as LM Studio or vLLM.
-</Note> 
+Set `OLLAMA_BASE_URL` to your Ollama endpoint (default: `http://localhost:11434/v1`). Ollama doesn't require an API key, but you can set any non-empty string.
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Ollama applications

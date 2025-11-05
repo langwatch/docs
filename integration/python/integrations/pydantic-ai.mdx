@@ -2,92 +2,47 @@
 title: PydanticAI Instrumentation
 sidebarTitle: PydanticAI
 description: Learn how to instrument PydanticAI applications with the LangWatch Python SDK.
-keywords: pydantic-ai, pydanticai, instrumentation, opentelemetry, langwatch, python, tracing
+keywords: pydantic-ai, pydanticai, instrumentation, langwatch, python, tracing
 ---
 
-PydanticAI is a library for building AI applications with Pydantic models. It features built-in, optional support for OpenTelemetry, allowing detailed tracing of agent runs and model interactions. LangWatch, being an OpenTelemetry-compatible observability platform, can seamlessly ingest these traces.
+LangWatch integrates with PydanticAI through its built-in OpenTelemetry support to capture traces of agent runs and model interactions.
 
-This guide explains how to configure PydanticAI and LangWatch to capture this observability data. For more background on PydanticAI's observability features, refer to their debugging and monitoring documentation.
+## Installation
 
-## Prerequisites
-
-1.  **Install LangWatch SDK**:
-    ```bash
-    pip install langwatch
-    ```
-
-2.  **Install PydanticAI**:
-    ```bash
-    pip install pydantic-ai
-    ```
-
-## Instrumenting PydanticAI with LangWatch
-
-The primary way to integrate PydanticAI with LangWatch is by leveraging PydanticAI's native OpenTelemetry emission in an environment configured by `langwatch.setup()`.
-
-### Using PydanticAI's Built-in OpenTelemetry with LangWatch Global Setup
-
-When `langwatch.setup()` is called, it initializes a global OpenTelemetry environment, including a trace exporter configured for LangWatch. If PydanticAI's instrumentation is enabled (via `Agent(instrument=True)` or `Agent.instrument_all()`), it will emit OpenTelemetry traces that are automatically captured by LangWatch.
-
-```python
-import langwatch
-from pydantic_ai import Agent
-from pydantic_ai.agent import InstrumentationSettings # Optional, for event_mode
-import os
-import asyncio
-
-# 1. Initialize LangWatch
-# This sets up the global OpenTelemetry environment for LangWatch.
-langwatch.setup()
-
-# 2. Enable PydanticAI Instrumentation
-# Option A: Instrument all agents globally
-Agent.instrument_all()
-
-# Option B: Instrument a specific agent instance
-# For this example, we'll instrument a specific agent.
-# If targeting a generic OTel collector like LangWatch, event_mode='logs' is recommended
-# as it aligns with OTel semantic conventions for capturing message events.
-# The default mode might use a custom attribute format for events.
-instrumentation_settings_for_langwatch = InstrumentationSettings(event_mode='logs')
-agent = Agent(model_name='openai:gpt-5', instrument=instrumentation_settings_for_langwatch)
-
-@langwatch.trace(name="PydanticAI - City Capital Query")
-async def get_capital_city(country: str):
-    langwatch.get_current_trace().update(metadata={"country_queried": country})
-
-    try:
-        # PydanticAI agent calls will now generate OpenTelemetry spans
-        # that LangWatch captures under the "PydanticAI - City Capital Query" trace.
-        result = await agent.run(f'What is the capital of {country}?')
-        return result.output
-    except Exception as e:
-        if current_trace:
-            current_trace.record_exception(e)
-            current_trace.set_status("error", str(e))
-        raise
-
-async def main():
-    try:
-        capital = await get_capital_city("France")
-        print(f"The capital of France is: {capital}")
-    except Exception as e:
-        print(f"Error getting capital of France: {e}")
-
-    try:
-        capital_error = await get_capital_city("NonExistentCountry") # Example to show error tracing
-        print(f"Query for NonExistentCountry returned: {capital_error}")
-    except Exception as e:
-        print(f"Correctly caught error for NonExistentCountry: {e}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+<CodeGroup>
+```bash pip
+pip install langwatch pydantic-ai
 ```
 
-**Key points for this approach:**
--   `langwatch.setup()`: Essential for initializing the OpenTelemetry environment that LangWatch uses.
--   `Agent(instrument=True)` or `Agent.instrument_all()`: Activates PydanticAI's OpenTelemetry signal emission.
--   `InstrumentationSettings(event_mode='logs')`: As per PydanticAI documentation, using `event_mode='logs'` aligns message capture with OpenTelemetry Semantic Conventions for Generative AI, which might be better for generic OTel collectors. The default mode (`json_array`) uses a custom attribute format for events.
--   `@langwatch.trace()`: Creates a parent trace in LangWatch, under which PydanticAI's operation spans will be nested.
+```bash uv
+uv add langwatch pydantic-ai
+```
+</CodeGroup>
 
-By following these steps, you can effectively monitor your PydanticAI applications using LangWatch, gaining insights into agent behavior, model performance, and overall application flow.
+## Usage
+
+Initialize LangWatch and create your PydanticAI agent. PydanticAI's built-in OpenTelemetry support will automatically send traces to LangWatch.
+
+```python
+from pydantic_ai import Agent
+import langwatch
+
+langwatch.setup()
+
+agent = Agent(
+    "openai:gpt-5",
+    instructions="Be funny, but not too funny.",
+)
+
+if __name__ == "__main__":
+    result = agent.run_sync("Tell me a joke")
+    print(result.output)
+```
+
+LangWatch automatically captures all PydanticAI agent runs and model interactions through PydanticAI's built-in OpenTelemetry support. Use `@langwatch.trace()` decorators to add custom traces and metadata as needed.
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your PydanticAI applications

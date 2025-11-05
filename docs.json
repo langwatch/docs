@@ -325,7 +325,8 @@
               "integration/java/integrations/spring-ai",
               "integration/python/integrations/promptflow",
               "integration/python/integrations/instructor",
-              "integration/python/integrations/smolagents"
+              "integration/python/integrations/smolagents",
+              "integration/python/integrations/google-ai"
             ]
           },
           {
@@ -349,16 +350,15 @@
               {
                 "group": "Microsoft Azure",
                 "pages": [
-                  "integration/go/integrations/azure-openai",
                   "integration/python/integrations/azure-ai",
-                  "integration/typescript/integrations/azure"
+                  "integration/typescript/integrations/azure",
+                  "integration/go/integrations/azure-openai"
                 ]
               },
               {
                 "group": "Google Cloud",
                 "pages": [
                   "integration/python/integrations/vertex-ai",
-                  "integration/python/integrations/google-ai",
                   "integration/go/integrations/google-gemini"
                 ]
               },

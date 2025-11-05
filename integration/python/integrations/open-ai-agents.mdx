@@ -2,157 +2,60 @@
 title: OpenAI Agents SDK Instrumentation
 sidebarTitle: OpenAI Agents
 description: Learn how to instrument OpenAI Agents with the LangWatch Python SDK
-keywords: openai-agents, instrumentation, openinference, LangWatch, Python, tracing
+keywords: openai-agents, instrumentation, openinference, langwatch, python, tracing
 ---
 
-LangWatch allows you to monitor your OpenAI Agents by integrating with their tracing capabilities. Since OpenAI Agents manage their own execution flow, including LLM calls and tool usage, the direct `autotrack_openai_calls()` method used for the standard OpenAI client is not applicable here.
+LangWatch integrates with OpenAI Agents through OpenInference instrumentation to monitor agent execution, LLM calls, and tool usage.
 
-Instead, you can integrate LangWatch in one of two ways:
+## Installation
 
-1.  **Using OpenInference Instrumentation (Recommended)**: Leverage the `openinference-instrumentation-openai-agents` library, which provides OpenTelemetry-based instrumentation for OpenAI Agents. This is generally the simplest and most straightforward method.
-2.  **Alternative: Using OpenAI Agents' Built-in Tracing with a Custom Processor**: If you choose not to use OpenInference or have highly specific requirements, you can adapt the built-in tracing mechanism of the `openai-agents` SDK to forward trace data to LangWatch by implementing your own custom `TracingProcessor`.
-
-This guide will walk you through both methods.
-
-## 1. Using OpenInference Instrumentation for OpenAI Agents (Recommended)
-
-The most straightforward way to integrate LangWatch with OpenAI Agents is by using the OpenInference instrumentation library specifically designed for it: `openinference-instrumentation-openai-agents`. This library is currently in an Alpha stage, so while ready for experimentation, it may undergo breaking changes.
-
-This approach uses OpenTelemetry-based instrumentation and is generally recommended for ease of setup.
-
-### Installation
-
-First, ensure you have the necessary packages installed:
-
-```bash
+<CodeGroup>
+```bash pip
 pip install langwatch openai-agents openinference-instrumentation-openai-agents
 ```
 
-### Integration via `langwatch.setup()`
+```bash uv
+uv add langwatch openai-agents openinference-instrumentation-openai-agents
+```
+</CodeGroup>
 
-You can pass an instance of the `OpenAIAgentsInstrumentor` from `openinference-instrumentation-openai-agents` to the `instrumentors` list in the `langwatch.setup()` call. LangWatch will then manage the lifecycle of this instrumentor.
+## Usage
+
+Use the OpenInference instrumentation for OpenAI Agents by passing `OpenAIAgentsInstrumentor` to `langwatch.setup()`.
 
 ```python
 import langwatch
-from openai_agents.agents import Agent, Runner # Using openai_agents SDK
+from agents import Agent, Runner
 from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
 import os
 import asyncio
 
-# Ensure LANGWATCH_API_KEY is set in your environment, or pass it to setup
-# e.g., langwatch.setup(api_key="your_api_key", instrumentors=[OpenAIAgentsInstrumentor()])
-# If LANGWATCH_API_KEY is in env, this is sufficient:
-langwatch.setup(
-    instrumentors=[OpenAIAgentsInstrumentor()]
-)
+langwatch.setup(instrumentors=[OpenAIAgentsInstrumentor()])
 
-# Initialize your agent
 agent = Agent(name="ExampleAgent", instructions="You are a helpful assistant.")
+
 
 @langwatch.trace(name="OpenAI Agent Run with OpenInference")
 async def run_agent_with_openinference(prompt: str):
-    # The OpenAIAgentsInstrumentor will automatically capture agent activities.
     result = await Runner.run(agent, prompt)
     return result.final_output
 
+
 async def main():
-    user_query = "Tell me a fun fact."
+    user_query = "Tell me a joke"
     response = await run_agent_with_openinference(user_query)
     print(f"User: {user_query}")
     print(f"AI: {response}")
 
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-<Note>
-  The `OpenAIAgentsInstrumentor` is part of the `openinference-instrumentation-openai-agents` package. Always refer to its [official documentation](https://github.com/Arize-ai/openinference/tree/main/python/instrumentation/openinference-instrumentation-openai-agents) for the latest updates, especially as it's in Alpha.
-</Note>
-
-### Direct Instrumentation
-
-Alternatively, if you manage your OpenTelemetry `TracerProvider` more directly (e.g., if LangWatch is configured to use an existing global provider), you can use the instrumentor's `instrument()` method. LangWatch will pick up the spans if its exporter is part of the active `TracerProvider`.
-
-```python
-import langwatch
-from openai_agents.agents import Agent, Runner
-from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
-import os
-import asyncio
-
-# Initialize LangWatch (it will set up its OTel exporter)
-langwatch.setup() # Ensure API key is available via env or parameters
-
-# Instrument OpenAI Agents directly
-OpenAIAgentsInstrumentor().instrument()
-
-agent = Agent(name="ExampleAgentDirect", instructions="You are a helpful assistant.")
-
-@langwatch.trace(name="OpenAI Agent Run with Direct OpenInference")
-async def run_agent_direct_instrumentation(prompt: str):
-    result = await Runner.run(agent, prompt)
-    return result.final_output
-
-async def main():
-    user_query = "What's the weather like?"
-    response = await run_agent_direct_instrumentation(user_query)
-    print(f"User: {user_query}")
-    print(f"AI: {response}")
 
 if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-Key points for OpenInference instrumentation:
--   It patches `openai-agents` activities globally once instrumented.
--   Ensure `langwatch.setup()` is called so LangWatch's OpenTelemetry exporter is active and configured.
--   The `@langwatch.trace()` decorator on your calling function helps create a parent span under which the agent's detailed operations will be nested.
+The `OpenAIAgentsInstrumentor` automatically captures agent activities, LLM calls, and tool usage. Use `@langwatch.trace()` to create a parent trace under which agent operations will be nested.
 
-## 2. Alternative: Using OpenAI Agents' Built-in Tracing with a Custom Processor
+## Related
 
-If you prefer not to use the OpenInference instrumentor, or if you have highly specific tracing requirements not met by it, you can leverage the `openai-agents` SDK's own [built-in tracing system](https://openai.github.io/openai-agents-python/tracing/).
-
-This involves creating a custom `TracingProcessor` that intercepts trace data from the `openai-agents` SDK and then uses the standard OpenTelemetry Python API to create OpenTelemetry spans. LangWatch will then ingest these OpenTelemetry spans, provided `langwatch.setup()` has been called.
-
-**Conceptual Outline for Your Custom Processor:**
-
-1.  **Initialize LangWatch**: Ensure `langwatch.setup()` is called in your application. This sets up LangWatch to receive OpenTelemetry data.
-2.  **Implement Your Custom `TracingProcessor`**: 
-    -   Following the `openai-agents` SDK documentation, create a class that implements their `TracingProcessor` interface (see their docs on [Custom Tracing Processors](https://openai.github.io/openai-agents-python/tracing/#custom-tracing-processors) and the API reference for [`TracingProcessor`](https://openai.github.io/openai-agents-python/ref/tracing/#agents.tracing.TracingProcessor)).
-    -   In your processor's methods (e.g., `on_span_start`, `on_span_end`), you will receive `Trace` and `Span` objects from the `openai-agents` SDK.
-    -   You will then use the `opentelemetry-api` and `opentelemetry-sdk` (e.g., `opentelemetry.trace.get_tracer(__name__).start_span()`) to translate this information into OpenTelemetry spans, including their names, attributes, timings, and status. Consult the `openai-agents` documentation on [Traces and spans](https://openai.github.io/openai-agents-python/tracing/#traces-and-spans) for details on their data structures.
-3.  **Register Your Custom Processor**: Use `openai_agents.tracing.add_trace_processor(your_custom_processor)` or `openai_agents.tracing.set_trace_processors([your_custom_processor])` as per the `openai-agents` SDK documentation.
-
-**Implementation Guidance:**
-
-LangWatch does not provide a pre-built custom `TracingProcessor` for this purpose. The implementation of such a processor is your responsibility and should be based on the official `openai-agents` SDK documentation. This ensures your processor correctly interprets the agent's trace data and remains compatible with `openai-agents` SDK updates.
-
--   Key `openai-agents` documentation:
-    -   [OpenAI Agents Tracing Documentation](https://openai.github.io/openai-agents-python/tracing/)
-    -   [API Reference for Tracing](https://openai.github.io/openai-agents-python/ref/tracing/)
-
-<Warning>
-Implementing a custom `TracingProcessor` is an advanced task that requires:
-- A thorough understanding of both the `openai-agents` tracing internals and OpenTelemetry concepts and semantic conventions.
-- Careful mapping of `openai-agents` `SpanData` types to OpenTelemetry attributes.
-- Robust handling of span parenting, context propagation, and error states.
-- Diligent maintenance to keep your processor aligned with any changes in the `openai-agents` SDK.
-This approach offers maximum flexibility but comes with significant development and maintenance overhead.
-</Warning>
-
-## Which Approach to Choose?
-
--   **OpenInference Instrumentation (Recommended)**:
-    -   **Pros**: Significantly simpler to set up and maintain. Relies on a community-supported library (`openinference-instrumentation-openai-agents`) designed for OpenTelemetry integration. Aligns well with standard OpenTelemetry practices.
-    -   **Cons**: As the `openinference-instrumentation-openai-agents` library is in Alpha, it may have breaking changes. You have less direct control over the exact span data compared to a fully custom processor.
-
--   **Custom `TracingProcessor` (Alternative for advanced needs)**:
-    -   **Pros**: Offers complete control over the transformation of trace data from `openai-agents` to OpenTelemetry. Allows for highly customized span data and behaviors.
-    -   **Cons**: Far more complex to implement correctly and maintain. Requires deep expertise in both `openai-agents` tracing and OpenTelemetry. You are responsible for adapting your processor to any changes in the `openai-agents` SDK.
-
-For most users, the **OpenInference instrumentation is the recommended path** due to its simplicity and lower maintenance burden.
-
-The **custom `TracingProcessor`** approach should generally be reserved for situations where the OpenInference instrumentor is unsuitable, or when you have highly specialized tracing requirements that demand direct manipulation of the agent's trace data before converting it to OpenTelemetry spans.
-
----
-Always refer to the latest documentation for `langwatch`, `openai-agents`, and `openinference-instrumentation-openai-agents` for the most up-to-date instructions and API details.
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your OpenAI Agents applications

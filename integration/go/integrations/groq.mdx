@@ -2,28 +2,20 @@
 title: Groq Integration
 sidebarTitle: Groq
 description: Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
-keywords: go, golang, groq, groqcloud, instrumentation, langwatch, opentelemetry, openai-compatible, fast llm
+keywords: go, golang, groq, groqcloud, instrumentation, langwatch, openai-compatible, fast llm
 ---
 
-LangWatch can trace calls to the Groq API, allowing you to monitor its high-speed inference capabilities. Since Groq provides an OpenAI-compatible endpoint, you can use the standard `otelopenai` middleware with minimal changes.
+LangWatch supports tracing Groq API calls using the same `otelopenai` middleware used for OpenAI. Configure the client to point to Groq's endpoint.
 
-## Setup
-
-You will need a Groq API key from the [GroqCloud Console](https://console.groq.com/keys).
-
-Set your Groq API key as an environment variable:
+## Installation
 
 ```bash
-export GROQ_API_KEY="your-groq-api-key"
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ```
 
-## Example
+## Usage
 
-Configure your `openai.Client` to use Groq's base URL and your API key. Set the `gen_ai.system` attribute to `"groq"` to correctly identify the provider in LangWatch.
-
-<Note>
-The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
-</Note>
+Configure the OpenAI client with Groq's base URL and API key:
 
 ```go
 package main
@@ -33,7 +25,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
@@ -43,31 +34,33 @@ func main() {
 	ctx := context.Background()
 
 	client := openai.NewClient(
-		// Use the Groq API endpoint
-		oaioption.WithBaseURL("https://api.groq.com/openai/v1"),
-
-		// Use your Groq API key
-		oaioption.WithAPIKey(os.Getenv("GROQ_API_KEY")),
-
-		// Add the middleware, identifying the system as "groq"
-		oaioption.WithMiddleware(otelopenai.Middleware("my-groq-app",
-			otelopenai.WithGenAISystem("groq"),
+		oaioption.WithAPIKey(os.Getenv("XAI_API_KEY")),
+		oaioption.WithBaseURL(os.Getenv("GROK_BASE_URL")),
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
 	)
 
-	// Make a call to a model on Groq
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		Model: "llama3-70b-8192",
+		Model: openai.ChatModelGPT5,
 		Messages: []openai.ChatCompletionMessageParamUnion{
-			openai.UserMessage("Hello, Groq! Can you explain the concept of inference speed?"),
+			openai.SystemMessage("You are a helpful assistant."),
+			openai.UserMessage("Hello, OpenAI!"),
 		},
 	})
-
 	if err != nil {
-		log.Fatalf("Groq API call failed: %v", err)
+		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Response from Groq: %s", response.Choices[0].Message.Content)
-} 
+	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+}
+```
+
+Set `GROK_BASE_URL` to Groq's API endpoint and use your Groq API key.
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Groq applications
