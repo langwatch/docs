@@ -175,6 +175,17 @@
             ]
           },
           {
+            "group": "Platform",
+            "pages": [
+              {
+                "group": "Administration",
+                "pages": [
+                  "platform/rbac"
+                ]
+              }
+            ]
+          },
+          {
             "group": "Examples & Cookbooks",
             "pages": [
               {
