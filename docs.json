@@ -380,6 +380,7 @@
                 ]
               },
               "integration/go/integrations/groq",
+              "integration/go/integrations/grok",
               "integration/go/integrations/ollama",
               "integration/go/integrations/openrouter"
             ]

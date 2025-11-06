@@ -1,12 +1,11 @@
 ---
-title: Google Gemini Integration
-sidebarTitle: Google Gemini
-description: Learn how to instrument Google Gemini API calls in Go using the LangWatch SDK via a Vertex AI endpoint.
-icon: golang
-keywords: go, golang, google, gemini, vertex ai, instrumentation, langwatch, openai-compatible
+title: Grok (xAI) Integration
+sidebarTitle: Grok (xAI)
+description: Instrument Grok (xAI) API calls in Go with the LangWatch SDK for full observability.
+keywords: go, golang, grok, xai, instrumentation, langwatch, openai-compatible
 ---
 
-LangWatch supports tracing Google Gemini models through Google Cloud Vertex AI's OpenAI-compatible endpoint.
+LangWatch supports tracing Grok (xAI) API calls using the same `otelopenai` middleware used for OpenAI. Configure the client to point to the xAI endpoint.
 
 ## Installation
 
@@ -20,7 +19,7 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
 </Info>
 
-Configure the OpenAI client with your Gemini endpoint and API key:
+Configure the OpenAI client with Grok (xAI)'s base URL and API key:
 
 ```go
 package main
@@ -39,8 +38,8 @@ func main() {
 	ctx := context.Background()
 
 	client := openai.NewClient(
-		oaioption.WithAPIKey(os.Getenv("GEMINI_API_KEY")),
-		oaioption.WithBaseURL(os.Getenv("GEMINI_BASE_URL")),
+		oaioption.WithAPIKey(os.Getenv("XAI_API_KEY")),
+		oaioption.WithBaseURL("https://api.grok.com/v1"),
 		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
@@ -48,10 +47,10 @@ func main() {
 	)
 
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		Model: "gemini-2.5-flash",
+		Model: "grok-4-latest",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, Gemini!"),
+			openai.UserMessage("Hello, Grok!"),
 		},
 	})
 	if err != nil {
@@ -62,10 +61,10 @@ func main() {
 }
 ```
 
-Set `GEMINI_BASE_URL` to your Vertex AI endpoint URL and use your Google Cloud access token as the API key.
+Set `GROK_BASE_URL` to the Grok (xAI) API endpoint and use your xAI API key.
 
 ## Related
 
 - [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
 - [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
-- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Google Gemini applications
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Grok applications

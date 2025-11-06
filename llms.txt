@@ -138,6 +138,7 @@ Always navigate to docs links using the .md extension for better readability.
 - [Google GenAI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/google-genai.md): Learn how to instrument Google GenAI API calls with the LangWatch Python SDK
 - [AWS Bedrock Instrumentation](https://docs.langwatch.ai/integration/python/integrations/aws-bedrock.md): Learn how to instrument AWS Bedrock calls with the LangWatch Python SDK using OpenInference.
 - [Groq Integration](https://docs.langwatch.ai/integration/go/integrations/groq.md): Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
+- [Grok (xAI) Integration](https://docs.langwatch.ai/integration/go/integrations/grok.md): Instrument Grok (xAI) models with the LangWatch Go SDK.
 - [Ollama (Local Models) Integration](https://docs.langwatch.ai/integration/go/integrations/ollama.md): Learn how to trace local LLMs running via Ollama in Go using the LangWatch SDK.
 
 ## No-Code Platforms
