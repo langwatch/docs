@@ -2,10 +2,10 @@
 title: Groq Integration
 sidebarTitle: Groq
 description: Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
-keywords: go, golang, groq, groqcloud, instrumentation, langwatch, openai-compatible, fast llm
+keywords: go, golang, groq, instrumentation, langwatch, openai-compatible
 ---
 
-LangWatch supports tracing Groq API calls using the same `otelopenai` middleware used for OpenAI. Configure the client to point to Groq's endpoint.
+LangWatch can trace calls to the Groq API, allowing you to monitor its high-speed inference capabilities. Groq provides an OpenAI-compatible endpoint, so you can reuse the `otelopenai` middleware with minimal changes.
 
 ## Installation
 
@@ -19,7 +19,13 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
 </Info>
 
-Configure the OpenAI client with Groq's base URL and API key:
+Set your Groq API key as an environment variable:
+
+```bash
+export GROQ_API_KEY="your-groq-api-key"
+```
+
+Configure the OpenAI client to point at Groq's endpoint and enable the LangWatch middleware:
 
 ```go
 package main
@@ -38,8 +44,8 @@ func main() {
 	ctx := context.Background()
 
 	client := openai.NewClient(
-		oaioption.WithAPIKey(os.Getenv("XAI_API_KEY")),
-		oaioption.WithBaseURL(os.Getenv("GROK_BASE_URL")),
+		oaioption.WithBaseURL("https://api.groq.com/openai/v1"),
+		oaioption.WithAPIKey(os.Getenv("GROQ_API_KEY")),
 		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
@@ -47,24 +53,31 @@ func main() {
 	)
 
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		Model: openai.ChatModelGPT5,
+		Model: "openai/gpt-oss-20b",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, OpenAI!"),
+			openai.UserMessage("Hello, Groq! Can you explain the concept of inference speed?"),
 		},
 	})
 	if err != nil {
-		log.Fatalf("Chat completion failed: %v", err)
+		log.Fatalf("Groq API call failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Groq response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-Set `GROK_BASE_URL` to Groq's API endpoint and use your Groq API key.
+## Observability Metrics
+
+The middleware automatically captures:
+
+- Prompt and completion text (configurable)
+- Token usage (prompt, completion, total)
+- Full request/response metadata
+- Latency and error details
 
 ## Related
 
-- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
-- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
-- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Groq applications
+- [Capturing RAG](/integration/python/tutorials/capturing-rag)
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata)
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails)

@@ -67,6 +67,7 @@ otel:
     exporter: otlp
     sampler:
       ratio: 1.0
+  metrics.exporter: otlp
   logs.exporter: otlp
   ```
 </Step>
@@ -99,7 +100,7 @@ Once configured:
 <AccordionGroup>
 <Accordion title="I don't see any traces in LangWatch">
   - **Authorization header**: Ensure `Authorization: Bearer <your-langwatch-key>` is set under `otel.exporter.otlp.headers`.
-  - **Endpoint URL**: Confirm the endpoint is `https://app.langwatch.ai/api/otel` and protocol is `http/protobuf`.
+  - **Endpoint URL**: Confirm `otel.exporter.otlp.endpoint` resolves to your LangWatch endpoint (for cloud: `https://app.langwatch.ai/api/otel`) and protocol is `http/protobuf`.
   - **Network egress**: Verify your environment can reach LangWatch (egress/proxy/firewall settings).
 </Accordion>
 

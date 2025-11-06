@@ -44,26 +44,16 @@ import (
 func main() {
 	ctx := context.Background()
 
-	// Assumes LangWatch is already set up.
-
 	client := openai.NewClient(
-		// Use the OpenRouter API endpoint
 		oaioption.WithBaseURL("https://openrouter.ai/api/v1"),
-
-		// Use your OpenRouter API key
 		oaioption.WithAPIKey(os.Getenv("OPENROUTER_API_KEY")),
-
-		// Add the middleware, identifying the system as "openrouter"
 		oaioption.WithMiddleware(otelopenai.Middleware("my-openrouter-app",
-			otelopenai.WithGenAISystem("openrouter"),
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
 	)
 
-	// Make a call to a model available on OpenRouter
 	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-		// Model names are prefixed with the provider
 		Model: "anthropic/claude-3.5-sonnet",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.UserMessage("Hello via OpenRouter!"),

@@ -396,7 +396,7 @@ Use LangWatch to effortlessly integrate with popular AI model providers
 <Card title="Gemini" icon="/images/logos/google.svg" href="/integration/go/integrations/google-gemini" horizontal arrow />
 <Card title="Azure AI" icon="/images/logos/azure.svg" href="/integration/python/integrations/azure-ai" horizontal arrow />
 <Card title="AWS Bedrock" icon="/images/logos/aws.svg" href="/integration/python/integrations/aws-bedrock" horizontal arrow />
-<Card title="Groq" icon="/images/logos/groq.svg" href="/integration/go/integrations/groq" horizontal arrow />
+<Card title="Grok (xAI)" icon="/images/logos/grok.svg" href="/integration/go/integrations/grok" horizontal arrow />
 <Card title="Ollama" icon="/images/logos/ollama.png" href="/integration/go/integrations/ollama" horizontal arrow />
 <Card title="OpenRouter" icon="/images/logos/openrouter.svg" href="/integration/go/integrations/openrouter" horizontal arrow />
 <Card title="Vertex AI" icon="/images/logos/google.svg" href="/integration/python/integrations/vertex-ai" horizontal arrow />
@@ -11431,7 +11431,6 @@ func main() {
 
 		// Add the middleware, identifying the system as "azure"
 		oaioption.WithMiddleware(otelopenai.Middleware("my-azure-app",
-			otelopenai.WithGenAISystem("azure"),
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
@@ -11460,6 +11459,162 @@ func main() {
 ---
 
 # FILE: ./integration/go/integrations/groq.mdx
+
+---
+title: Groq Integration
+sidebarTitle: Groq
+description: Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
+keywords: go, golang, groq, instrumentation, langwatch, openai-compatible
+---
+
+LangWatch can trace calls to the Groq API, allowing you to monitor its high-speed inference capabilities. Groq provides an OpenAI-compatible endpoint, so you can reuse the `otelopenai` middleware with minimal changes.
+
+## Installation
+
+```bash
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
+```
+
+## Usage
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Set your Groq API key as an environment variable:
+
+```bash
+export GROQ_API_KEY="your-groq-api-key"
+```
+
+Configure the OpenAI client to point at Groq's endpoint and enable the LangWatch middleware:
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+
+	client := openai.NewClient(
+		oaioption.WithBaseURL("https://api.groq.com/openai/v1"),
+		oaioption.WithAPIKey(os.Getenv("GROQ_API_KEY")),
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: "llama3-70b-8192",
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.SystemMessage("You are a helpful assistant."),
+			openai.UserMessage("Hello, Groq! Can you explain the concept of inference speed?"),
+		},
+	})
+	if err != nil {
+		log.Fatalf("Groq API call failed: %v", err)
+	}
+
+	log.Printf("Groq response: %s", response.Choices[0].Message.Content)
+}
+```
+
+## Observability Metrics
+
+The middleware automatically captures:
+
+- Prompt and completion text (configurable)
+- Token usage (prompt, completion, total)
+- Full request/response metadata
+- Latency and error details
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag)
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata)
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails)
+---
+title: Groq Integration
+sidebarTitle: Groq
+description: Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
+keywords: go, golang, groq, groqcloud, instrumentation, langwatch, openai-compatible, fast llm
+---
+
+LangWatch supports tracing Groq API calls using the same `otelopenai` middleware used for OpenAI. Configure the client to point to Groq's endpoint.
+
+## Installation
+
+```bash
+go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
+```
+
+## Usage
+
+<Info>
+The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+</Info>
+
+Configure the OpenAI client with Groq's base URL and API key:
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	"github.com/openai/openai-go"
+	oaioption "github.com/openai/openai-go/option"
+)
+
+func main() {
+	ctx := context.Background()
+
+	client := openai.NewClient(
+		oaioption.WithAPIKey(os.Getenv("XAI_API_KEY")),
+		oaioption.WithBaseURL(os.Getenv("GROK_BASE_URL")),
+		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: openai.ChatModelGPT5,
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.SystemMessage("You are a helpful assistant."),
+			openai.UserMessage("Hello, OpenAI!"),
+		},
+	})
+	if err != nil {
+		log.Fatalf("Chat completion failed: %v", err)
+	}
+
+	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+}
+```
+
+Set `GROK_BASE_URL` to Groq's API endpoint and use your Groq API key.
+
+## Related
+
+- [Capturing RAG](/integration/python/tutorials/capturing-rag) - Learn how to capture RAG data from retrievers and tools
+- [Capturing Metadata and Attributes](/integration/python/tutorials/capturing-metadata) - Add custom metadata and attributes to your traces and spans
+- [Capturing Evaluations & Guardrails](/integration/python/tutorials/capturing-evaluations-guardrails) - Log evaluations and implement guardrails in your Groq applications
+
+# FILE: ./integration/go/integrations/grok.mdx
 
 ---
 title: Groq Integration
@@ -11514,7 +11669,6 @@ func main() {
 
 		// Add the middleware, identifying the system as "groq"
 		oaioption.WithMiddleware(otelopenai.Middleware("my-groq-app",
-			otelopenai.WithGenAISystem("groq"),
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
@@ -11596,7 +11750,6 @@ func main() {
 
 		// Add the middleware, identifying the system as "openrouter"
 		oaioption.WithMiddleware(otelopenai.Middleware("my-openrouter-app",
-			otelopenai.WithGenAISystem("openrouter"),
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
@@ -11681,7 +11834,6 @@ func main() {
 
 		// Add the middleware, identifying the system as "anthropic"
 		oaioption.WithMiddleware(otelopenai.Middleware("my-anthropic-app",
-			otelopenai.WithGenAISystem("anthropic"),
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
@@ -11767,7 +11919,6 @@ func main() {
 
 		// Add the middleware, identifying the system as "ollama"
 		oaioption.WithMiddleware(otelopenai.Middleware("my-ollama-app",
-			otelopenai.WithGenAISystem("ollama"),
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
@@ -11873,7 +12024,6 @@ func main() {
 	config.HTTPClient = langwatch_openai.Instrument(
 		config.HTTPClient,
 		"my-gemini-app",
-		langwatch_openai.WithGenAISystem("google"),
 		langwatch_openai.WithCaptureInput(),
 		langwatch_openai.WithCaptureOutput(),
 	)
