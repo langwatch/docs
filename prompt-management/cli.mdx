@@ -62,6 +62,141 @@ langwatch prompt sync
 
 Go to [app.langwatch.ai](https://app.langwatch.ai) to see your new synced prompts.
 
+## Using the Prompts
+
+Once you've created your prompts, you can use them in your application code. The LangWatch SDK provides a simple interface to fetch and compile prompts with dynamic variables.
+
+<Tabs>
+<Tab title="Python">
+```python
+import langwatch
+from litellm import completion
+
+# Get the latest prompt by handle
+prompt = langwatch.prompts.get("my-summarizer")
+
+# Compile prompt with variables
+compiled_prompt = prompt.compile(
+    user_input="Summarize this article for me...",
+    context="Article content here"
+)
+
+# Use with LiteLLM (supports all major providers)
+response = completion(
+    model=prompt.model,
+    messages=compiled_prompt.messages,
+    temperature=prompt.temperature,
+    max_tokens=prompt.max_tokens
+)
+
+print(response.choices[0].message.content)
+```
+
+</Tab>
+
+<Tab title="TypeScript">
+```typescript
+import { LangWatch } from "langwatch";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+
+const langwatch = new LangWatch({
+  apiKey: process.env.LANGWATCH_API_KEY
+});
+
+// Get the latest prompt by handle
+const prompt = await langwatch.prompts.get("my-summarizer");
+
+// Compile prompt with variables
+const compiledPrompt = prompt.compile({
+  user_input: "Summarize this article for me...",
+  context: "Article content here"
+});
+
+// Use with Vercel AI SDK
+const result = await generateText({
+  model: openai(prompt.model.replace("openai/", "")),
+  messages: compiledPrompt.messages,
+  temperature: prompt.temperature,
+  maxTokens: prompt.maxTokens
+});
+
+console.log(result.text);
+```
+
+</Tab>
+</Tabs>
+
+### Working with Local and Remote Prompts
+
+The SDK loads prompts dynamically at runtime, so you don't need to worry about whether they're local or remote:
+
+- **Local prompts**: Fetched directly from your LangWatch project
+- **Remote prompts**: Also fetched from LangWatch after being synced from the materialized files
+
+<Info>
+For production deployments, the CLI materializes prompts locally so you have a complete snapshot of all dependencies. The SDK can automatically use these materialized prompts for [guaranteed availability](/prompt-management/features/advanced/guaranteed-availability) in offline or air-gapped environments. However, when online, the SDK always fetches the latest version from the server unless you specify a version.
+
+Learn more about [guaranteed availability and offline deployments](/prompt-management/features/advanced/guaranteed-availability).
+</Info>
+
+### Loading Specific Versions
+
+You can also load specific prompt versions instead of always using the latest:
+
+<CodeGroup>
+```python Python
+# Get a specific version
+prompt = langwatch.prompts.get("my-summarizer", version=5)
+```
+
+```typescript TypeScript
+// Get a specific version
+const prompt = await langwatch.prompts.get("my-summarizer", { version: 5 });
+```
+</CodeGroup>
+
+### Prompt Variables
+
+Prompts use `{{variable_name}}` syntax for dynamic content. When you compile a prompt, provide all required variables:
+
+```yaml my-prompt.prompt.yaml
+messages:
+  - role: system
+    content: |
+      You are a {{role}} assistant.
+      User: {{user_name}}
+      Context: {{context}}
+  - role: user
+    content: "{{user_input}}"
+```
+
+Then compile with all variables:
+
+<CodeGroup>
+```python Python
+compiled = prompt.compile(
+    role="customer support",
+    user_name="John Doe",
+    context="Premium user since 2020",
+    user_input="I need help with my account"
+)
+```
+
+```typescript TypeScript
+const compiled = prompt.compile({
+  role: "customer support",
+  user_name: "John Doe",
+  context: "Premium user since 2020",
+  user_input: "I need help with my account"
+});
+```
+</CodeGroup>
+
+<Check>
+The compiled prompt contains fully rendered messages ready to send to your LLM provider, with all variables replaced and the correct model configuration applied.
+</Check>
+
 ## Core Concepts
 
 ### Dependency Management

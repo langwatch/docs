@@ -6,6 +6,7 @@ Always navigate to docs links using the .md extension for better readability.
 ## Get Started
 
 - [LangWatch: The Complete LLMOps Platform](https://docs.langwatch.ai/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub.
+- [LangWatch MCP Server](https://docs.langwatch.ai/integration/mcp.md): Turn your coding assistant into a LangWatch expert
 
 ## Observability
 
@@ -80,10 +81,6 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [Tracking Tool Calls](https://docs.langwatch.ai/integration/python/tutorials/tracking-tool-calls.md): Learn how to track tool calls in your LLM agent applications
 - [Tracking Tool Calls](https://docs.langwatch.ai/integration/typescript/tutorials/tracking-tool-calls.md): Learn how to track tool calls in your LLM agent applications
-
-## MCPs
-
-- [LangWatch MCP Server](https://docs.langwatch.ai/integration/mcp.md): Turn your coding assistant into a LangWatch expert
 
 ## Frameworks
 
@@ -231,6 +228,12 @@ Always navigate to docs links using the .md extension for better readability.
 - [Using Prompts in the Optimization Studio](https://docs.langwatch.ai/prompt-management/features/advanced/optimization-studio.md): Use prompts in the Optimization Studio to test and optimize your prompts
 - [Guaranteed Availability](https://docs.langwatch.ai/prompt-management/features/advanced/guaranteed-availability.md): Ensure your prompts are always available, even in offline or air-gapped environments
 - [A/B Testing](https://docs.langwatch.ai/prompt-management/features/advanced/a-b-testing.md): Implement A/B testing for your prompts using LangWatch's version control and analytics
+
+## Platform
+
+### Administration
+
+- [Access Control (RBAC)](https://docs.langwatch.ai/platform/rbac.md): Manage user permissions and access levels for LangWatch
 
 ## Examples & Cookbooks
 
