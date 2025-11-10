@@ -23,7 +23,8 @@ Let's get cracking.
     {
       "mcpServers": {
         "langwatch": {
-          "command": "npx -y @langwatch/mcp-server --apiKey=sk-lw-..."
+          "command": "npx",
+          "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
         }
       }
     }
@@ -31,7 +32,7 @@ Let's get cracking.
 
     Then ask your coding assistant to instrument your codebase with LangWatch:
 
-    ```plaintext Cursor Chat
+    ```plaintext
     "Instrument my codebase with LangWatch"
     ```
   </Step>
