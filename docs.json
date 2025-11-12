@@ -17,12 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "banner": {
     "content": "**Join our webinar**: Building Reliable Conversational & Voice AI with Simulations, this Thursday, November 13th. [Link](https://luma.com/event/manage/evt-WgWcopObG0hLN2D)",
@@ -33,11 +28,7 @@
       "display": "interactive"
     },
     "examples": {
-      "languages": [
-        "python",
-        "typescript",
-        "curl"
-      ],
+      "languages": ["python", "typescript", "curl"],
       "defaults": "required"
     },
     "mdx": {
@@ -56,10 +47,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": [
-              "introduction",
-              "integration/mcp"
-            ]
+            "pages": ["introduction", "integration/mcp"]
           },
           {
             "group": "Observability",
@@ -143,6 +131,7 @@
               "prompt-management/data-model",
               "prompt-management/scope",
               "prompt-management/cli",
+              "prompt-management/prompt-playground",
               {
                 "group": "Optimization Studio",
                 "pages": [
@@ -180,9 +169,7 @@
             "pages": [
               {
                 "group": "Administration",
-                "pages": [
-                  "platform/rbac"
-                ]
+                "pages": ["platform/rbac"]
               }
             ]
           },
@@ -219,9 +206,7 @@
         "groups": [
           {
             "group": "Overview",
-            "pages": [
-              "integration/overview"
-            ]
+            "pages": ["integration/overview"]
           },
           {
             "group": "SDKs",
@@ -250,10 +235,7 @@
               {
                 "group": "Go",
                 "icon": "golang",
-                "pages": [
-                  "integration/go/guide",
-                  "integration/go/reference"
-                ]
+                "pages": ["integration/go/guide", "integration/go/reference"]
               },
               "integration/opentelemetry/guide",
               {
@@ -370,9 +352,7 @@
               },
               {
                 "group": "Amazon Web Services",
-                "pages": [
-                  "integration/python/integrations/aws-bedrock"
-                ]
+                "pages": ["integration/python/integrations/aws-bedrock"]
               },
               "integration/go/integrations/groq",
               "integration/go/integrations/grok",
@@ -390,10 +370,7 @@
           },
           {
             "group": "Direct Integrations",
-            "pages": [
-              "integration/opentelemetry/guide",
-              "integration/rest-api"
-            ]
+            "pages": ["integration/opentelemetry/guide", "integration/rest-api"]
           }
         ]
       },
@@ -471,15 +448,11 @@
           },
           {
             "group": "Datasets",
-            "pages": [
-              "api-reference/datasets/post-dataset-entries"
-            ]
+            "pages": ["api-reference/datasets/post-dataset-entries"]
           },
           {
             "group": "Triggers",
-            "pages": [
-              "api-reference/triggers/create-slack-trigger"
-            ]
+            "pages": ["api-reference/triggers/create-slack-trigger"]
           },
           {
             "group": "Scenarios",
