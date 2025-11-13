@@ -144,6 +144,18 @@
               "prompt-management/scope",
               "prompt-management/cli",
               {
+                "group": "Features",
+                "pages": [
+                  "prompt-management/features/essential/version-control",
+                  "prompt-management/features/essential/analytics",
+                  "prompt-management/features/essential/github-integration",
+                  "prompt-management/features/advanced/link-to-traces",
+                  "prompt-management/features/advanced/optimization-studio",
+                  "prompt-management/features/advanced/guaranteed-availability",
+                  "prompt-management/features/advanced/a-b-testing"
+                ]
+              },
+              {
                 "group": "Optimization Studio",
                 "pages": [
                   "optimization-studio/overview",
@@ -159,18 +171,6 @@
                   "dspy-visualization/quickstart",
                   "dspy-visualization/custom-optimizer",
                   "dspy-visualization/rag-visualization"
-                ]
-              },
-              {
-                "group": "Features",
-                "pages": [
-                  "prompt-management/features/essential/version-control",
-                  "prompt-management/features/essential/analytics",
-                  "prompt-management/features/essential/github-integration",
-                  "prompt-management/features/advanced/link-to-traces",
-                  "prompt-management/features/advanced/optimization-studio",
-                  "prompt-management/features/advanced/guaranteed-availability",
-                  "prompt-management/features/advanced/a-b-testing"
                 ]
               }
             ]

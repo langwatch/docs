@@ -21,24 +21,64 @@ Instead of manually reading docs and writing boilerplate code, just ask your AI 
 Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/settings/api-keys).
 </Step>
 
-<Step title="Configure MCP in Cursor">
+<Step title="Configure MCP in your editor">
+
+<Tabs>
+<Tab title="Cursor">
 1. Open Cursor Settings
-2. Navigate to the **MCP** section in the sidebar
+2. Navigate to the **Tools and MCP** section in the sidebar
 3. Add the LangWatch MCP server:
 
 ```json
 {
   "mcpServers": {
     "langwatch": {
-      "command": "npx -y @langwatch/mcp-server --apiKey=sk-lw-..."
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
     }
   }
 }
 ```
 
-<Frame>
-<img alt="LangWatch MCP Setup in Cursor" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-setup.light.webp" />
-</Frame>
+
+</Tab>
+
+<Tab title="Claude Code">
+1. Open Claude Code settings (press `Cmd/Ctrl + ,`)
+2. Search for "MCP" or navigate to the MCP configuration
+3. Add the LangWatch MCP server to your configuration:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+    }
+  }
+}
+```
+
+See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp#plugin-provided-mcp-servers) for more details.
+</Tab>
+
+<Tab title="Other Editors">
+For other MCP-compatible editors, add the following configuration to your MCP settings file:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+    }
+  }
+}
+```
+
+Refer to your editor's MCP documentation for the specific configuration file location.
+</Tab>
+</Tabs>
 
 <Tip>
 You can also set `LANGWATCH_API_KEY` as an environment variable instead of passing `--apiKey` in the command.
@@ -46,7 +86,7 @@ You can also set `LANGWATCH_API_KEY` as an environment variable instead of passi
 </Step>
 
 <Step title="Start using it">
-Open Cursor Chat (`Cmd/Ctrl + I`) and ask your AI assistant to help with LangWatch tasks.
+Open your AI assistant chat (e.g., `Cmd/Ctrl + I` in Cursor, or `Cmd/Ctrl + Shift + P` > "Claude Code: Open Chat" in Claude Code) and ask it to help with LangWatch tasks.
 </Step>
 </Steps>
 
@@ -57,7 +97,7 @@ Open Cursor Chat (`Cmd/Ctrl + I`) and ask your AI assistant to help with LangWat
 Simply ask your AI assistant to add LangWatch tracking to your existing code:
 
 <CodeGroup>
-```plaintext Cursor Chat
+```plaintext Basic
 "Please instrument my code with LangWatch"
 ```
 
@@ -119,7 +159,7 @@ def chat(message: str):
 
 Ask your AI assistant to set up prompt management:
 
-```plaintext Cursor Chat
+```plaintext
 "Create a prompt for my agents to parse PDFs using the prompts CLI"
 ```
 
@@ -129,7 +169,7 @@ The AI assistant will guide you through creating, versioning, and using prompts 
 
 When you encounter an issue in production, ask your AI to investigate:
 
-```plaintext Cursor Chat
+```plaintext
 "Check the latest traces for errors and help me debug the issue"
 ```
 
@@ -147,7 +187,7 @@ The AI assistant will:
 
 Ask your AI assistant to add evaluations to your LLM outputs:
 
-```plaintext Cursor Chat
+```plaintext
 "Create a notebook to evaluate the faithfulness of my RAG pipeline using LangWatch's Evaluating via Code guide"
 ```
 
