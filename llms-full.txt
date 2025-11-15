@@ -11324,9 +11324,6 @@ For other MCP-compatible editors, add the following configuration to your MCP se
 
 Refer to your editor's MCP documentation for the specific configuration file location.
 
-<Tip>
-You can also set `LANGWATCH_API_KEY` as an environment variable instead of passing `--apiKey` in the command.
-</Tip>
 </Step>
 
 <Step title="Start using it">
