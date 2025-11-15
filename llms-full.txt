@@ -466,6 +466,16 @@ Let's get cracking.
     <img src="/images/llm-observability/quick-start/setup-full.webp" />
   </Step>
 
+  <Step title="Sign in with LangWatch">
+    Open a terminal and run the following command to sign in with LangWatch:
+
+    ```bash
+    npx langwatch login
+    ```
+
+    This will add the `LANGWATCH_API_KEY` to your local `.env` file.
+  </Step>
+
   <Step title="Let LangWatch MCP do the rest for you (Optional)">
     Install the [LangWatch MCP Server](/integration/mcp) and ask your coding assistant (Cursor, Claude Code, Codex, etc.) to instrument your codebase with LangWatch, OR keep following the steps below to instrument your codebase manually.
 
@@ -476,7 +486,7 @@ Let's get cracking.
       "mcpServers": {
         "langwatch": {
           "command": "npx",
-          "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+          "args": ["-y", "@langwatch/mcp-server"]
         }
       }
     }
@@ -11281,7 +11291,7 @@ Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/setting
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+      "args": ["-y", "@langwatch/mcp-server"]
     }
   }
 }
@@ -11298,7 +11308,7 @@ Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/setting
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+      "args": ["-y", "@langwatch/mcp-server"]
     }
   }
 }
@@ -11316,7 +11326,7 @@ For other MCP-compatible editors, add the following configuration to your MCP se
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+      "args": ["-y", "@langwatch/mcp-server"]
     }
   }
 }
