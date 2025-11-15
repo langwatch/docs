@@ -52,6 +52,19 @@ Or add an existing remote prompt dependency:
 langwatch prompt add agent/customer-service
 ```
 
+Your newly created or fetched prompt will be on a yaml file in the `prompts/` directory, and look like this:
+
+```yaml
+model: openai/gpt-5
+modelParameters:
+  temperature: 1.0
+messages:
+  - role: system
+    content: You are a helpful assistant.
+  - role: user
+    content: "{{input}}"
+```
+
 ### 3. Synchronize
 
 Sync all prompts (fetch remote, push local changes):

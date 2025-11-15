@@ -204,6 +204,17 @@ Always navigate to docs links using the .md extension for better readability.
 - [Data Model](https://docs.langwatch.ai/prompt-management/data-model.md): Understand the structure of prompts in LangWatch
 - [Scope](https://docs.langwatch.ai/prompt-management/scope.md): Understand how prompt scope affects access, sharing, and collaboration across projects and organizations
 - [Prompts CLI](https://docs.langwatch.ai/prompt-management/cli.md): Manage AI prompts as code with version control and dependency management
+- [Prompt Playground](https://docs.langwatch.ai/prompt-management/prompt-playground.md): Interactive workspace for editing, testing, and iterating on prompts with AI assistance
+
+### Features
+
+- [Version Control](https://docs.langwatch.ai/prompt-management/features/essential/version-control.md): Manage prompt versions and track changes over time
+- [Analytics](https://docs.langwatch.ai/prompt-management/features/essential/analytics.md): Monitor prompt performance and usage with comprehensive analytics
+- [GitHub Integration](https://docs.langwatch.ai/prompt-management/features/essential/github-integration.md): Version your prompts in GitHub repositories and automatically sync with LangWatch
+- [Link to Traces](https://docs.langwatch.ai/prompt-management/features/advanced/link-to-traces.md): Connect prompts to execution traces for performance monitoring and analysis
+- [Using Prompts in the Optimization Studio](https://docs.langwatch.ai/prompt-management/features/advanced/optimization-studio.md): Use prompts in the Optimization Studio to test and optimize your prompts
+- [Guaranteed Availability](https://docs.langwatch.ai/prompt-management/features/advanced/guaranteed-availability.md): Ensure your prompts are always available, even in offline or air-gapped environments
+- [A/B Testing](https://docs.langwatch.ai/prompt-management/features/advanced/a-b-testing.md): Implement A/B testing for your prompts using LangWatch's version control and analytics
 
 ### Optimization Studio
 
@@ -218,16 +229,6 @@ Always navigate to docs links using the .md extension for better readability.
 - [DSPy Visualization Quickstart](https://docs.langwatch.ai/dspy-visualization/quickstart.md): Visualize your DSPy notebooks experimentations to better track and debug the optimization process
 - [Tracking Custom DSPy Optimizer](https://docs.langwatch.ai/dspy-visualization/custom-optimizer.md): Build custom DSPy optimizers and track them in LangWatch
 - [RAG Visualization](https://docs.langwatch.ai/dspy-visualization/rag-visualization.md): Visualize your DSPy RAG optimization process in LangWatch
-
-### Features
-
-- [Version Control](https://docs.langwatch.ai/prompt-management/features/essential/version-control.md): Manage prompt versions and track changes over time
-- [Analytics](https://docs.langwatch.ai/prompt-management/features/essential/analytics.md): Monitor prompt performance and usage with comprehensive analytics
-- [GitHub Integration](https://docs.langwatch.ai/prompt-management/features/essential/github-integration.md): Version your prompts in GitHub repositories and automatically sync with LangWatch
-- [Link to Traces](https://docs.langwatch.ai/prompt-management/features/advanced/link-to-traces.md): Connect prompts to execution traces for performance monitoring and analysis
-- [Using Prompts in the Optimization Studio](https://docs.langwatch.ai/prompt-management/features/advanced/optimization-studio.md): Use prompts in the Optimization Studio to test and optimize your prompts
-- [Guaranteed Availability](https://docs.langwatch.ai/prompt-management/features/advanced/guaranteed-availability.md): Ensure your prompts are always available, even in offline or air-gapped environments
-- [A/B Testing](https://docs.langwatch.ai/prompt-management/features/advanced/a-b-testing.md): Implement A/B testing for your prompts using LangWatch's version control and analytics
 
 ## Platform
 

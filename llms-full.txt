@@ -475,7 +475,8 @@ Let's get cracking.
     {
       "mcpServers": {
         "langwatch": {
-          "command": "npx -y @langwatch/mcp-server --apiKey=sk-lw-..."
+          "command": "npx",
+          "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
         }
       }
     }
@@ -483,7 +484,7 @@ Let's get cracking.
 
     Then ask your coding assistant to instrument your codebase with LangWatch:
 
-    ```plaintext Cursor Chat
+    ```plaintext
     "Instrument my codebase with LangWatch"
     ```
   </Step>
@@ -11266,24 +11267,62 @@ Instead of manually reading docs and writing boilerplate code, just ask your AI 
 Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/settings/api-keys).
 </Step>
 
-<Step title="Configure MCP in Cursor">
+<Step title="Configure MCP in your editor">
+
+
+### Cursor
+
 1. Open Cursor Settings
-2. Navigate to the **MCP** section in the sidebar
+2. Navigate to the **Tools and MCP** section in the sidebar
 3. Add the LangWatch MCP server:
 
 ```json
 {
   "mcpServers": {
     "langwatch": {
-      "command": "npx -y @langwatch/mcp-server --apiKey=sk-lw-..."
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
     }
   }
 }
 ```
 
-<Frame>
-<img alt="LangWatch MCP Setup in Cursor" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-setup.light.webp" />
-</Frame>
+### Claude Code
+
+1. Open Claude Code settings (press `Cmd/Ctrl + ,`)
+2. Search for "MCP" or navigate to the MCP configuration
+3. Add the LangWatch MCP server to your configuration:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+    }
+  }
+}
+```
+
+See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp#plugin-provided-mcp-servers) for more details.
+
+
+### Other Editors
+
+For other MCP-compatible editors, add the following configuration to your MCP settings file:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server", "--apiKey=sk-lw-..."]
+    }
+  }
+}
+```
+
+Refer to your editor's MCP documentation for the specific configuration file location.
 
 <Tip>
 You can also set `LANGWATCH_API_KEY` as an environment variable instead of passing `--apiKey` in the command.
@@ -11291,7 +11330,7 @@ You can also set `LANGWATCH_API_KEY` as an environment variable instead of passi
 </Step>
 
 <Step title="Start using it">
-Open Cursor Chat (`Cmd/Ctrl + I`) and ask your AI assistant to help with LangWatch tasks.
+Open your AI assistant chat (e.g., `Cmd/Ctrl + I` in Cursor, or `Cmd/Ctrl + Shift + P` > "Claude Code: Open Chat" in Claude Code) and ask it to help with LangWatch tasks.
 </Step>
 </Steps>
 
@@ -11302,7 +11341,7 @@ Open Cursor Chat (`Cmd/Ctrl + I`) and ask your AI assistant to help with LangWat
 Simply ask your AI assistant to add LangWatch tracking to your existing code:
 
 <CodeGroup>
-```plaintext Cursor Chat
+```plaintext Basic
 "Please instrument my code with LangWatch"
 ```
 
@@ -11364,7 +11403,7 @@ def chat(message: str):
 
 Ask your AI assistant to set up prompt management:
 
-```plaintext Cursor Chat
+```plaintext
 "Create a prompt for my agents to parse PDFs using the prompts CLI"
 ```
 
@@ -11374,7 +11413,7 @@ The AI assistant will guide you through creating, versioning, and using prompts 
 
 When you encounter an issue in production, ask your AI to investigate:
 
-```plaintext Cursor Chat
+```plaintext
 "Check the latest traces for errors and help me debug the issue"
 ```
 
@@ -11392,7 +11431,7 @@ The AI assistant will:
 
 Ask your AI assistant to add evaluations to your LLM outputs:
 
-```plaintext Cursor Chat
+```plaintext
 "Create a notebook to evaluate the faithfulness of my RAG pipeline using LangWatch's Evaluating via Code guide"
 ```
 
@@ -13436,19 +13475,19 @@ description: Measuring your LLM performance with Offline Evaluations
   allowFullScreen
 ></iframe>
 
-LLMs are by nature non-deterministic, producing answers to any open questions, this is their very power, but it also what makes it hard to guarantee the quality, as two inputs won't produce the same output. This leads to lack of confidence for going to production, and unscalable testing practice, relying solely on the "vibe" feeling of the development team.
+LLMs are non-deterministic systems that generate responses to open-ended questions. While this flexibility is powerful, it makes quality assurance challenging, as identical inputs may produce varying outputs. This variability can reduce confidence in production deployments and lead to unscalable testing practices that rely on subjective assessments.
 
-What we need then, is a systematic approach for measuring quality, and improving LLM applications: you need a dataset with good test examples to run through your LLM application, and a way to define quality, either with strict definitions (e.g: golden answer, retrieval metrics), or open ones (e.g: task was achieved, openly defined criteria and style).
+A systematic approach to measuring and improving LLM application quality requires two components: a dataset with representative test examples to evaluate your application, and well-defined quality metrics. These metrics can be strict (e.g., golden answers, retrieval metrics) or flexible (e.g., task completion, defined criteria and style guidelines).
 
-In this guide, we are going to explore a few in-depth use cases for offline evaluations, and how can you easily get started with LLM evals by using LangWatch.
+This guide explores in-depth use cases for offline evaluations and demonstrates how to implement LLM evaluations using LangWatch.
 
 ## Evaluating if the LLM is generating the right answers
 
-Let's consider the case where there is actually a correct answer that you expect to be generated by your LLM given a set of example questions (*if this is not your case, jump to other sections for more use cases where there is definition of correct answer*), maybe you have some internal documents you are using to generate answers, or maybe you have a customer support agent that should reply the questions correctly.
+Consider scenarios where a correct answer exists for your LLM given a set of example questions. This applies when you have internal documents for answer generation or when building a customer support agent that must provide accurate responses.
 
-We will use the latest as our example, let's evaluate a customer support agent.
+This example demonstrates how to evaluate a customer support agent.
 
-1. First, go to the [evaluations page](https://app.langwatch.ai/@project/evaluations) and click in New Evaluation:
+1. Navigate to the [evaluations page](https://app.langwatch.ai/@project/evaluations) and click "New Evaluation":
 
 <Frame>
 <img src="/images/offline-evaluation/image_psd_2.png" alt="" style={{ maxWidth: '400px' }} />
@@ -13460,30 +13499,29 @@ We will use the latest as our example, let's evaluate a customer support agent.
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.26.31_1.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-3. Now it's time we choose a sample dataset. You could generate a new one with AI here, but you can also use this one we already provide for the Customer Support Agent example, just click the link to download: [Download Dataset](https://huggingface.co/datasets/MakTek/Customer_support_faqs_dataset/resolve/main/train_expanded.json)
+3. Select a sample dataset. You can generate a new dataset with AI or use the provided Customer Support Agent example dataset: [Download Dataset](https://huggingface.co/datasets/MakTek/Customer_support_faqs_dataset/resolve/main/train_expanded.json)
 
-4. Now choose Upload CSV and select the dataset file:
+4. Choose "Upload CSV" and select the dataset file:
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.26.31_2.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-5. Save the dataset, and you should see the full 200 examples in there:
+5. Save the dataset. You should see all 200 examples displayed:
 
 <Frame>
 <img src="/images/offline-evaluation/image.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-6. Now press "Next". This is where we are going to choose our executor, that will run our examples. This could be for example an API that your application have where we can run the examples through, a Python code block, or a simple prompt we can create right now.
-\
-\
-So let's choose Create a prompt to get started:
+6. Click "Next". Select an executor to run your examples. This can be an API endpoint from your application, a Python code block, or a prompt.
+
+For this example, select "Create a prompt":
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.26.31_3.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-7. Then paste our sample Customer Service prompt in there:
+7. Paste the following sample Customer Service prompt:
 
 ```
 **Role:** You are an AI Customer Support Assistant for the company **XPTO**.
@@ -13566,41 +13604,41 @@ So let's choose Create a prompt to get started:
 *   Use the placeholders 1-888-555-0123, support@xpto-example.com, and Monday-Friday 9am-6pm EST, Saturday 10am-4pm EST exactly as written when providing contact details or hours.
 ```
 
-8. Also choose the LLM you want to execute this, I'm going to run it with gemini-2.0-flash-lite:
+8. Select the LLM to execute this evaluation. This example uses gemini-2.0-flash-lite:
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.52.21.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-9. Next, it's time to chose our evaluator, here is where you have all the options depending on your use case. For our use case, we do have the expected answers before hand, so we can choose "Expected Answer Evaluation":
+9. Select an evaluator based on your use case. Since this example has expected answers beforehand, select "Expected Answer Evaluation":
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.53.38.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-10. Next, select "LLM Answer Match", this evaluator uses an LLM to compare to generated answer (output) with the gold standard one (expected_output) and verify that they are equivalent, that is, that they both reply the question the same way, even if written very differently:
+10. Select "LLM Answer Match". This evaluator uses an LLM to compare the generated answer (output) with the gold standard answer (expected_output) to verify semantic equivalence, even when phrased differently:
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.54.59.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-11. Press "Next", then finally, it's time for us to run our evaluation, give it a name and press "Run Evaluation":
+11. Click "Next". Provide a name for your evaluation and click "Run Evaluation":
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.26.31_4.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-12. You can see the results now, and they are great! 95% pass, just a couple answers wrong that we might want to iron out.
+12. Review the results. This evaluation achieved a 95% pass rate, with only a few answers requiring refinement.
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_17.12.05.png" />
 </Frame>
 
-At this point you might want to go back to the prompt, make some adjustments, make sure it gets those two failing questions right, then run it again to check it didn't break anything else, and so on.
+You can now iterate on the prompt to address the failing questions. After making adjustments, run the evaluation again to ensure no regressions occur in previously passing examples.
 
-You can also see the First version marker there, as you make changes and run it again, you can easily compare the performance of different version and go back to the one that worked the best.
+The version marker allows you to compare performance across different iterations and identify the best-performing version.
 
-But that's it, we ran our first offline evaluation! Now you can use this prompt — that is versioned — on your application by using LangWatch APIs, while keeping this evaluation on LangWatch to make sure any new versions, of prompts, of data, or of LLM models, work as well or better, before you go live with the next version in production.
+This completes your first offline evaluation. You can now integrate this versioned prompt into your application using LangWatch APIs. Maintain this evaluation in LangWatch to validate that future versions of prompts, datasets, or LLM models meet or exceed current performance standards before deploying to production.
 ---
 
 # FILE: ./llm-evaluation/offline/code/evaluation-api.mdx
@@ -19107,7 +19145,7 @@ title: Selected Text Events
 description: Track when a user selects text generated by your LLM application
 ---
 
-Selected text events track when a user selects text generated by your LLM application, indicating the response was useful enough to be copied and used elsewhere.
+Selected text events allow you to track when a user selects text generated by your LLM application, indicating the response was useful enough to be copied and used elsewhere.
 
 ## REST API Specification
 
@@ -19165,9 +19203,9 @@ title: Custom Events
 description: Track any user events with your LLM application, with textual or numeric metrics
 ---
 
-Appart from the reserved pre-defined events, you can also define your own events revelant to your business and be captured to correlate with your LLM messages and threads to measure your product performance.
+Apart from the reserved pre-defined events, you can also define your own events relevant to your business to correlate with your LLM messages and threads to measure your product performance.
 
-Custom events allow you to track any user interevents with your LLM application by sending numeric metrics and capturing additional details about the event. You can defined any name for the event on `event_type` field, and any metric names you want on `metrics` with numeric values, plus any extra details you want to capture on `event_details` with string values, just keep them consistent to be able to visualize on the dashboard, where you can customize the display later on.
+Custom events allow you to track any user interactions with your LLM application by sending numeric metrics and capturing additional details about the event. You can define any name for the event on the `event_type` field, and any metric names you want on `metrics` with numeric values, plus any extra details you want to capture on `event_details` with string values. Keep them consistent to visualize on the dashboard, where you can customize the display later on.
 
 ## REST API Specification
 
@@ -19183,7 +19221,7 @@ Custom events allow you to track any user interevents with your LLM application 
 
 ```javascript
 {
-  "trace_id": "id of the message the event ocurred",
+  "trace_id": "id of the message the event occurred",
   "event_type": "your_custom_event_type",
   "metrics": {
     "your_metric_key": 123 // Any numeric metric
@@ -19229,9 +19267,9 @@ title: Waited To Finish Events
 description: Track if users leave before the LLM application finishes generating a response
 ---
 
-Waited to finish events are used to determine if users are waiting for the LLM application to finish generating a response or if they leave before it's completed, this is interesting to capture using impatience with regards to the response generation.
+Waited to finish events are used to determine if users are waiting for the LLM application to finish generating a response or if they leave before it's completed. This is useful for capturing user impatience with regards to the response generation.
 
-Since the user can simply close the window, to be able to track it, we need to send two requests, first one with `finished` set as `0`, to identify the output has started, and the another one with `finished` set as `1` when the output finishes at client side. If `"finished": 1` is never received, we assume the user didn't let the AI finish.
+Since the user can simply close the window, to track this behavior, you need to send two requests: first with `finished` set as `0` to identify the output has started, and another one with `finished` set as `1` when the output finishes at client side. If `"finished": 1` is never received, LangWatch assumes the user didn't let the AI finish.
 
 ## REST API Specification
 
