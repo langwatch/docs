@@ -506,7 +506,7 @@
         },
         {
           "anchor": "Get Support",
-          "href": "https://docs.langwatch.ai/support#email-support",
+          "href": "/support#email-support",
           "icon": "life-ring"
         }
       ]
