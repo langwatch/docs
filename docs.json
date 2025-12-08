@@ -58,6 +58,7 @@
             "group": "Get Started",
             "pages": [
               "introduction",
+              "better-agents/overview",
               "integration/mcp"
             ]
           },
