@@ -62,26 +62,6 @@
             ]
           },
           {
-            "group": "Observability",
-            "pages": [
-              "observability/overview",
-              "integration/quick-start",
-              "concepts",
-              {
-                "group": "User Events",
-                "pages": [
-                  "user-events/overview",
-                  "user-events/thumbs-up-down",
-                  "user-events/waited-to-finish",
-                  "user-events/selected-text",
-                  "user-events/custom"
-                ]
-              },
-              "features/triggers",
-              "features/embedded-analytics"
-            ]
-          },
-          {
             "group": "Agent Simulations",
             "pages": [
               "agent-simulations/introduction",
@@ -92,6 +72,26 @@
               "agent-simulations/individual-run"
             ]
           },
+      {
+        "group": "Observability",
+        "pages": [
+          "observability/overview",
+          "integration/quick-start",
+          "concepts",
+          {
+            "group": "User Events",
+            "pages": [
+              "user-events/overview",
+              "user-events/thumbs-up-down",
+              "user-events/waited-to-finish",
+              "user-events/selected-text",
+              "user-events/custom"
+            ]
+          },
+          "features/triggers",
+          "features/embedded-analytics"
+        ]
+      },
           {
             "group": "Evaluation",
             "pages": [
