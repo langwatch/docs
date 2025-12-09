@@ -24,10 +24,6 @@
       "claude"
     ]
   },
-  "banner": {
-    "content": "**Join our webinar**: Building Reliable Conversational & Voice AI with Simulations, this Thursday, November 13th. [Link](https://luma.com/event/manage/evt-WgWcopObG0hLN2D)",
-    "dismissible": true
-  },
   "api": {
     "playground": {
       "display": "interactive"
