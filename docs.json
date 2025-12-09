@@ -73,26 +73,26 @@
               "agent-simulations/individual-run"
             ]
           },
-      {
-        "group": "Observability",
-        "pages": [
-          "observability/overview",
-          "integration/quick-start",
-          "concepts",
           {
-            "group": "User Events",
+            "group": "Observability",
             "pages": [
-              "user-events/overview",
-              "user-events/thumbs-up-down",
-              "user-events/waited-to-finish",
-              "user-events/selected-text",
-              "user-events/custom"
+              "observability/overview",
+              "integration/quick-start",
+              "concepts",
+              {
+                "group": "User Events",
+                "pages": [
+                  "user-events/overview",
+                  "user-events/thumbs-up-down",
+                  "user-events/waited-to-finish",
+                  "user-events/selected-text",
+                  "user-events/custom"
+                ]
+              },
+              "features/triggers",
+              "features/embedded-analytics"
             ]
           },
-          "features/triggers",
-          "features/embedded-analytics"
-        ]
-      },
           {
             "group": "Evaluation",
             "pages": [
@@ -545,7 +545,7 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1764758135",
+      "source": "/ci/cache/busted/1765278176",
       "destination": "/"
     },
     {
