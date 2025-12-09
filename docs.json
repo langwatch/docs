@@ -16,6 +16,10 @@
     "dark": "/logo/light.svg"
   },
   "favicon": "/favicon.svg",
+  "banner": {
+    "content": "**Ship reliable, testable agents – not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](/better-agents/overview)",
+    "dismissible": true
+  },
   "contextual": {
     "options": [
       "copy",
@@ -23,10 +27,6 @@
       "chatgpt",
       "claude"
     ]
-  },
-  "banner": {
-    "content": "**Join our webinar**: Building Reliable Conversational & Voice AI with Simulations, this Thursday, November 13th. [Link](https://luma.com/event/manage/evt-WgWcopObG0hLN2D)",
-    "dismissible": true
   },
   "api": {
     "playground": {
@@ -58,7 +58,19 @@
             "group": "Get Started",
             "pages": [
               "introduction",
+              "better-agents/overview",
               "integration/mcp"
+            ]
+          },
+          {
+            "group": "Agent Simulations",
+            "pages": [
+              "agent-simulations/introduction",
+              "agent-simulations/overview",
+              "agent-simulations/getting-started",
+              "agent-simulations/set-overview",
+              "agent-simulations/batch-runs",
+              "agent-simulations/individual-run"
             ]
           },
           {
@@ -79,17 +91,6 @@
               },
               "features/triggers",
               "features/embedded-analytics"
-            ]
-          },
-          {
-            "group": "Agent Simulations",
-            "pages": [
-              "agent-simulations/introduction",
-              "agent-simulations/overview",
-              "agent-simulations/getting-started",
-              "agent-simulations/set-overview",
-              "agent-simulations/batch-runs",
-              "agent-simulations/individual-run"
             ]
           },
           {
@@ -544,7 +545,7 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1763998763",
+      "source": "/ci/cache/busted/1765291477",
       "destination": "/"
     },
     {
