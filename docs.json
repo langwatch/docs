@@ -16,6 +16,10 @@
     "dark": "/logo/light.svg"
   },
   "favicon": "/favicon.svg",
+  "banner": {
+    "content": "**Ship reliable, testable agents – not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](/better-agents/overview)",
+    "dismissible": true
+  },
   "contextual": {
     "options": [
       "copy",
@@ -23,10 +27,6 @@
       "chatgpt",
       "claude"
     ]
-  },
-  "banner": {
-    "content": "**Join our webinar**: Building Reliable Conversational & Voice AI with Simulations, this Thursday, November 13th. [Link](https://luma.com/event/manage/evt-WgWcopObG0hLN2D)",
-    "dismissible": true
   },
   "api": {
     "playground": {
@@ -508,7 +508,7 @@
         },
         {
           "anchor": "Get Support",
-          "href": "https://docs.langwatch.ai/support#email-support",
+          "href": "/support#email-support",
           "icon": "life-ring"
         }
       ]
@@ -546,7 +546,7 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1765278176",
+      "source": "/ci/cache/busted/1765291477",
       "destination": "/"
     },
     {
