@@ -1,6 +1,6 @@
 ---
 title: "Version Control"
-description: "Manage prompt versions and track changes over time"
+description: "Manage version control for prompts in LangWatch to run evaluations, compare models, and improve agent performance."
 ---
 
 # Prompt Version Control
@@ -52,7 +52,7 @@ const langwatch = new LangWatch({
   apiKey: process.env.LANGWATCH_API_KEY,
 });
 
-// Get a specific prompt (latest version by default)
+// Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines. (latest version by default)
 const prompt = await langwatch.prompts.get("customer-support-bot");
 
 // The prompt object contains version information
@@ -83,7 +83,7 @@ curl --request GET \
   --url "https://app.langwatch.ai/api/prompts/{prompt_handle}/versions" \
   --header "X-Auth-Token: your-api-key"
 
-# Get a specific prompt (latest version)
+# Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines. (latest version)
 curl --request GET \
   --url "https://app.langwatch.ai/api/prompts/{prompt_handle}" \
   --header "X-Auth-Token: your-api-key"

@@ -111,7 +111,7 @@
     "/langevals/basic/evaluate": {
       "post": {
         "summary": "Custom Basic Evaluator",
-        "description": "Allows you to check for simple text matches or regex evaluation.",
+        "description": "Configure the Custom Basic Evaluator to check simple matches or regex rules for lightweight automated AI agent evaluations.",
         "operationId": "langevals_basic_evaluate",
         "requestBody": {
           "content": {
@@ -202,7 +202,7 @@
     "/langevals/competitor_blocklist/evaluate": {
       "post": {
         "summary": "Competitor Blocklist",
-        "description": "This evaluator checks if any of the specified competitors was mentioned",
+        "description": "Detect competitor mentions using LangWatch’s Competitor Blocklist evaluator to enforce content rules in AI agent testing pipelines.",
         "operationId": "langevals_competitor_blocklist_evaluate",
         "requestBody": {
           "content": {
@@ -475,7 +475,7 @@
     "/langevals/exact_match/evaluate": {
       "post": {
         "summary": "Exact Match Evaluator",
-        "description": "A simple evaluator that checks if the output matches the expected_output exactly.",
+        "description": "Use the Exact Match evaluator in LangWatch to verify outputs that require precise matching during AI agent testing.",
         "operationId": "langevals_exact_match_evaluate",
         "requestBody": {
           "content": {
@@ -657,7 +657,7 @@
     "/langevals/llm_boolean/evaluate": {
       "post": {
         "summary": "LLM-as-a-Judge Boolean Evaluator",
-        "description": "Use an LLM as a judge with a custom prompt to do a true/false boolean evaluation of the message.",
+        "description": "Use the LLM-as-a-Judge Boolean Evaluator to classify outputs as true or false for fast automated agent evaluations.",
         "operationId": "langevals_llm_boolean_evaluate",
         "requestBody": {
           "content": {
@@ -748,7 +748,7 @@
     "/langevals/llm_category/evaluate": {
       "post": {
         "summary": "LLM-as-a-Judge Category Evaluator",
-        "description": "Use an LLM as a judge with a custom prompt to classify the message into custom defined categories.",
+        "description": "Use the LLM-as-a-Judge Category Evaluator to classify outputs into custom categories for structured AI agent evaluations.",
         "operationId": "langevals_llm_category_evaluate",
         "requestBody": {
           "content": {
@@ -839,7 +839,7 @@
     "/langevals/llm_score/evaluate": {
       "post": {
         "summary": "LLM-as-a-Judge Score Evaluator",
-        "description": "Use an LLM as a judge with custom prompt to do a numeric score evaluation of the message.",
+        "description": "Score messages with an LLM-as-a-Judge evaluator to generate numeric performance metrics for AI agent testing.",
         "operationId": "langevals_llm_score_evaluate",
         "requestBody": {
           "content": {
@@ -930,7 +930,7 @@
     "/langevals/off_topic/evaluate": {
       "post": {
         "summary": "Off Topic Evaluator",
-        "description": "This evaluator checks if the user message is concerning one of the allowed topics of the chatbot",
+        "description": "Detect off-topic messages using LangWatch’s Off Topic Evaluator to enforce domain boundaries during AI agent testing.",
         "operationId": "langevals_off_topic_evaluate",
         "requestBody": {
           "content": {
@@ -1385,7 +1385,7 @@
     "/azure/jailbreak/evaluate": {
       "post": {
         "summary": "Azure Jailbreak Detection",
-        "description": "This evaluator checks for jailbreak-attempt in the input using Azure's Content Safety API.",
+        "description": "Use Azure Jailbreak Detection in LangWatch to identify jailbreak attempts and improve safety across AI agent testing workflows.",
         "operationId": "azure_jailbreak_evaluate",
         "requestBody": {
           "content": {
@@ -2362,7 +2362,7 @@
     "/example/word_count/evaluate": {
       "post": {
         "summary": "Example Evaluator",
-        "description": "This evaluator serves as a boilerplate for creating new evaluators.",
+        "description": "Use the Example Evaluator template in LangWatch to implement and test",
         "operationId": "example_word_count_evaluate",
         "requestBody": {
           "content": {
@@ -2441,7 +2441,7 @@
     "/ragas/bleu_score/evaluate": {
       "post": {
         "summary": "BLEU Score",
-        "description": "Traditional NLP metric. BLEU score for evaluating the similarity between two strings.",
+        "description": "Use the BLEU Score evaluator to measure string similarity and support automated NLP and AI agent evaluation workflows.",
         "operationId": "ragas_bleu_score_evaluate",
         "requestBody": {
           "content": {
@@ -2793,7 +2793,7 @@
     "/ragas/factual_correctness/evaluate": {
       "post": {
         "summary": "LLM Factual Match",
-        "description": "Computes with an LLM how factually similar the generated answer is to the expected output.",
+        "description": "Compute factual similarity with LangWatch’s LLM Factual Match evaluator to validate truthfulness in AI agent evaluations.",
         "operationId": "ragas_factual_correctness_evaluate",
         "requestBody": {
           "content": {
@@ -3248,7 +3248,7 @@
     "/ragas/rouge_score/evaluate": {
       "post": {
         "summary": "ROUGE Score",
-        "description": "Traditional NLP metric. ROUGE score for evaluating the similarity between two strings.",
+        "description": "Use the ROUGE Score evaluator in LangWatch to measure text similarity and support AI agent evaluations and NLP quality checks.",
         "operationId": "ragas_rouge_score_evaluate",
         "requestBody": {
           "content": {
@@ -3521,7 +3521,7 @@
     "/ragas/summarization_score/evaluate": {
       "post": {
         "summary": "Summarization Score",
-        "description": "Measures how well the summary captures important information from the retrieved contexts.",
+        "description": "Measure summary quality with LangWatch’s Summarization Score to support RAG evaluations and AI agent testing accuracy.",
         "operationId": "ragas_summarization_score_evaluate",
         "requestBody": {
           "content": {

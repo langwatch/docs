@@ -144,7 +144,7 @@ Ready to get started? [Sign up for free](https://app.langwatch.ai) and begin bui
 
 ---
 title: Concepts
-description: LLM tracing and observability conceptual guide
+description: Explore core concepts of LLM tracing, observability, datasets, and evaluations in LangWatch to design reliable AI agent testing workflows.
 keywords: LangWatch, concepts, tracing, observability, LLM, AI, travel, blog, user, customer, labels, threads, traces, spans
 ---
 
@@ -577,7 +577,7 @@ const result = await generateText({
 
 ---
 title: Code Examples
-description: Examples of LangWatch integrated applications
+description: Explore code examples showing LangWatch integrations for tracing, evaluating, and improving AI agent testing pipelines.
 keywords: langwatch, examples, code, integration, python, typescript, opentelemetry
 ---
 
@@ -653,7 +653,7 @@ Below are some examples for integrating LangWatch into your project.
 ---
 title: PromptFlow Instrumentation
 sidebarTitle: PromptFlow
-description: Learn how to instrument PromptFlow applications with LangWatch.
+description: Instrument PromptFlow with LangWatch to trace pipelines, measure outcomes, and power AI agent testing workflows.
 keywords: promptflow, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -864,7 +864,7 @@ This approach allows you to combine the automatic tracing capabilities of Prompt
 ---
 title: LangChain Instrumentation
 sidebarTitle: Python
-description: Learn how to instrument Langchain applications with the LangWatch Python SDK.
+description: Instrument LangChain applications with LangWatch to trace chains, RAG flows, and metrics for AI agent evaluations.
 icon: python
 keywords: langchain, instrumentation, callback, langwatch, python, tracing
 ---
@@ -947,7 +947,7 @@ The `@langwatch.trace()` decorator creates a parent trace, and `get_langchain_ca
 ---
 title: Agno Instrumentation
 sidebarTitle: Agno
-description: Learn how to instrument Agno agents and send traces to LangWatch using the Python SDK.
+description: Instrument Agno agents with LangWatch’s Python SDK to send traces, analyze behaviors, and strengthen AI agent testing and evaluations.
 keywords: agno, openinference, langwatch, python, tracing, observability
 ---
 
@@ -1073,7 +1073,7 @@ The `HaystackInstrumentor` automatically captures Haystack pipeline operations, 
 ---
 title: Azure OpenAI Instrumentation
 sidebarTitle: Azure OpenAI
-description: Learn how to instrument Azure OpenAI API calls with the LangWatch Python SDK
+description: Instrument Azure OpenAI API calls with the LangWatch Python SDK to capture traces, measure costs, and run agent evaluations.
 keywords: azure openai, openai, instrumentation, autotrack, openinference, openllmetry, LangWatch, Python
 ---
 
@@ -1248,7 +1248,7 @@ Choose the method that best fits your existing setup and instrumentation needs. 
 ---
 title: Google Agent Development Kit (ADK) Instrumentation
 sidebarTitle: Google ADK
-description: Learn how to instrument Google Agent Development Kit (ADK) applications with LangWatch.
+description: Integrate Google ADK agents into LangWatch to trace actions, tools, and interactions for structured AI agent evaluations.
 keywords: google adk, agent development kit, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -1466,7 +1466,7 @@ This approach allows you to combine the automatic tracing capabilities of Google
 ---
 title: DSPy Instrumentation
 sidebarTitle: DSPy
-description: Learn how to instrument DSPy programs with the LangWatch Python SDK
+description: Learn how to instrument DSPy programs with the LangWatch Python SDK to trace RAG pipelines, optimize prompts, and improve AI agent evaluations.
 keywords: dspy, instrumentation, autotrack, langwatch, python
 ---
 
@@ -1544,7 +1544,7 @@ The `@langwatch.trace()` decorator creates a parent trace, and `autotrack_dspy()
 ---
 title: LlamaIndex Instrumentation
 sidebarTitle: LlamaIndex
-description: Learn how to instrument LlamaIndex applications with LangWatch.
+description: Instrument LlamaIndex applications with LangWatch to trace retrieval, generation, and RAG behavior for AI agent evaluations.
 keywords: llamaindex, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -1725,7 +1725,7 @@ This approach allows you to combine the automatic tracing capabilities of LlamaI
 ---
 title: AWS Bedrock Instrumentation
 sidebarTitle: Bedrock
-description: Learn how to instrument AWS Bedrock calls with the LangWatch Python SDK using OpenInference.
+description: Instrument AWS Bedrock calls using OpenInference and LangWatch to capture metrics and behaviors for AI agent testing workflows.
 icon: python
 keywords: aws, bedrock, boto3, instrumentation, opentelemetry, openinference, langwatch, python, tracing
 ---
@@ -1844,7 +1844,7 @@ Remember to replace placeholder values for AWS credentials and adapt the model I
 ---
 title: Instructor AI Instrumentation
 sidebarTitle: Instructor AI
-description: Learn how to instrument Instructor AI applications with LangWatch using OpenInference.
+description: Instrument Instructor AI with LangWatch to track structured outputs, detect errors, and enhance AI agent testing workflows.
 keywords: instructor, python, sdk, instrumentation, opentelemetry, langwatch, tracing, openinference, structured output
 ---
 
@@ -2071,7 +2071,7 @@ This approach allows you to combine the automatic tracing capabilities of Instru
 ---
 title: Semantic Kernel Instrumentation
 sidebarTitle: Semantic Kernel
-description: Learn how to instrument Semantic Kernel applications with LangWatch.
+description: Instrument Semantic Kernel applications with LangWatch to trace skills, pipelines, and agent evaluation stages.
 keywords: semantic-kernel, python, sdk, instrumentation, opentelemetry, langwatch, tracing, openinference
 ---
 
@@ -2318,7 +2318,7 @@ This approach allows you to combine the tracing capabilities of Semantic Kernel 
 ---
 title: SmolAgents Instrumentation
 sidebarTitle: SmolAgents
-description: Learn how to instrument SmolAgents applications with LangWatch.
+description: Add SmolAgents tracing with LangWatch to analyze behaviors, detect errors, and improve AI agent testing accuracy.
 keywords: smolagents, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -2494,7 +2494,7 @@ This approach allows you to combine the automatic tracing capabilities of SmolAg
 
 ---
 title: CrewAI
-description: Learn how to instrument the CrewAI Python SDK with LangWatch.
+description: Integrate the CrewAI Python SDK with LangWatch to trace multi-agent workflows, debug failures, and support systematic AI agent testing.
 keywords: crewai, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -2720,7 +2720,7 @@ if __name__ == "__main__":
 ---
 title: Strands Agents Instrumentation
 sidebarTitle: Strands Agents
-description: Learn how to instrument Strands Agents applications with LangWatch.
+description: Instrument Strands Agents with LangWatch to capture decision flows and support repeatable AI agent testing.
 keywords: strands agents, python, sdk, instrumentation, langwatch, tracing
 ---
 
@@ -2796,7 +2796,7 @@ LangWatch automatically captures all agent interactions, model calls, and tool e
 ---
 title: PydanticAI Instrumentation
 sidebarTitle: PydanticAI
-description: Learn how to instrument PydanticAI applications with the LangWatch Python SDK.
+description: Connect PydanticAI applications to LangWatch using the Python SDK to trace calls, debug structured outputs, and improve AI agent evaluations.
 keywords: pydantic-ai, pydanticai, instrumentation, langwatch, python, tracing
 ---
 
@@ -2853,7 +2853,7 @@ LangWatch automatically captures all PydanticAI agent runs and model interaction
 ---
 title: Anthropic Instrumentation
 sidebarTitle: Python
-description: Learn how to instrument Anthropic API calls with the LangWatch Python SDK
+description: Instrument Anthropic API calls with LangWatch’s Python SDK to trace usage, debug issues, and support AI agent testing.
 icon: python
 keywords: anthropic, claude, instrumentation, openinference, langwatch, python
 ---
@@ -2924,7 +2924,7 @@ The `AnthropicInstrumentor` automatically captures all Anthropic API calls globa
 ---
 title: LangGraph Instrumentation
 sidebarTitle: LangGraph
-description: Learn how to instrument LangGraph applications with the LangWatch Python SDK.
+description: Instrument LangGraph applications with the LangWatch Python SDK to trace graph nodes, analyze workflows, and support AI agent testing.
 icon: python
 keywords: langgraph, instrumentation, callback, langwatch, python, tracing
 ---
@@ -3061,7 +3061,7 @@ The `@langwatch.trace()` decorator creates a parent trace for your graph executi
 ---
 title: OpenAI Agents SDK Instrumentation
 sidebarTitle: OpenAI Agents
-description: Learn how to instrument OpenAI Agents with the LangWatch Python SDK
+description: Instrument OpenAI Agents with the LangWatch Python SDK to capture traces, run AI agent evaluations, and debug agent testing scenarios.
 keywords: openai-agents, instrumentation, openinference, langwatch, python, tracing
 ---
 
@@ -3131,7 +3131,7 @@ The `OpenAIAgentsInstrumentor` automatically captures agent activities, LLM call
 ---
 title: LiteLLM Instrumentation
 sidebarTitle: LiteLLM
-description: Learn how to instrument LiteLLM calls with the LangWatch Python SDK.
+description: Instrument LiteLLM calls with the LangWatch Python SDK to capture LLM traces, measure quality, and support AI agent testing workflows.
 keywords: litellm, instrumentation, autotrack, langwatch, python, tracing
 ---
 
@@ -3204,7 +3204,7 @@ The `@langwatch.trace()` decorator creates a parent trace, and `autotrack_litell
 ---
 title: Other OpenTelemetry Instrumentors
 sidebarTitle: Other
-description: Learn how to use any OpenTelemetry-compatible instrumentor with LangWatch.
+description: Use any OpenTelemetry-compatible instrumentor with LangWatch to standardize tracing and centralize AI agent testing observability.
 keywords: opentelemetry, instrumentation, custom, other, generic, BaseInstrumentor, LangWatch, Python
 ---
 
@@ -3313,7 +3313,7 @@ By leveraging the `BaseInstrumentor` interface, LangWatch remains flexible and e
 ---
 title: Azure AI Inference SDK Instrumentation
 sidebarTitle: Python
-description: Learn how to instrument the Azure AI Inference Python SDK with LangWatch.
+description: Instrument Azure AI Inference SDK calls with LangWatch to trace requests, monitor quality, and run AI agent evaluations.
 icon: python
 keywords: azure ai inference, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
@@ -3551,7 +3551,7 @@ Both approaches effectively send Vertex AI call data to LangWatch for monitoring
 ---
 title: AutoGen Instrumentation
 sidebarTitle: AutoGen
-description: Learn how to instrument AutoGen applications with LangWatch.
+description: Integrate AutoGen applications with LangWatch to trace multi-agent interactions and run systematic AI agent evaluations.
 keywords: autogen, python, sdk, instrumentation, opentelemetry, langwatch, tracing
 ---
 
@@ -3768,7 +3768,7 @@ This approach allows you to combine the automatic tracing capabilities of AutoGe
 ---
 title: OpenAI Instrumentation
 sidebarTitle: Python
-description: Learn how to instrument OpenAI API calls with the LangWatch Python SDK
+description: Instrument OpenAI API calls with the LangWatch Python SDK to capture traces, debug, and support AI agent testing workflows.
 icon: python
 keywords: openai, instrumentation, autotrack, langwatch, python
 ---
@@ -4320,7 +4320,7 @@ By combining these methods, you can build a robust evaluation and guardrailing s
 ---
 title: Capturing RAG
 sidebarTitle: Capturing RAG
-description: Learn how to capture Retrieval Augmented Generation (RAG) data with LangWatch.
+description: Learn how to capture Retrieval-Augmented Generation (RAG) data with LangWatch to support evaluations and agent testing.
 icon: python
 keywords: RAG, Retrieval Augmented Generation, LangChain, LangWatch, LangChain RAG, RAG Span, RAG Chunk, RAG Tool
 ---
@@ -4555,7 +4555,7 @@ By effectively capturing RAG spans, you gain much richer data in LangWatch, enab
 ---
 title: Tracking Tool Calls
 sidebarTitle: Python
-description: Learn how to track tool calls in your LLM agent applications
+description: Track tool calls in Python-based agent applications with LangWatch to improve debugging and evaluation completeness.
 icon: python
 keywords: langwatch, python, tools, agent, tracking, instrumentation
 ---
@@ -4882,7 +4882,7 @@ Controlling how inputs and outputs are captured in LangWatch allows you to tailo
 
 ---
 title: Manual Instrumentation
-description: Learn how to manually instrument your code with the LangWatch Python SDK
+description: Learn manual instrumentation with the LangWatch Python SDK for full control over tracing, evaluations, and agent testing.
 keywords: manual instrumentation, context managers, span, trace, async, synchronous, LangWatch, Python
 ---
 
@@ -5003,7 +5003,7 @@ def process_data_manually(data):
 
 ---
 title: OpenTelemetry Migration
-description: Learn how to integrate the LangWatch Python SDK with your existing OpenTelemetry setup.
+description: Integrate LangWatch with existing OpenTelemetry setups to enhance tracing, analysis, and agent evaluation workflows.
 keywords: OpenTelemetry, OTel, auto-instrumentation, OpenAI, Celery, HTTP clients, databases, ORMs, LangWatch, Python
 ---
 
@@ -5378,7 +5378,7 @@ langwatch.setup(
 ---
 title: Tracking LLM Costs and Tokens
 sidebarTitle: Python
-description: Troubleshooting & adjusting cost tracking in LangWatch
+description: Track LLM costs and tokens with LangWatch to monitor efficiency and support performance evaluations in agent testing.
 icon: python
 keywords: LangWatch, cost tracking, token counting, debugging, troubleshooting, model costs, metrics, LLM spans
 ---
@@ -5604,7 +5604,7 @@ Cost and token tracking should work reliably once the model information and metr
 ---
 title: LangChain Instrumentation
 sidebarTitle: TypeScript/JS
-description: Learn how to instrument Langchain applications with the LangWatch TypeScript SDK.
+description: Instrument LangChain applications with the LangWatch TypeScript SDK to trace chains, RAG flows, and agent evaluation metrics.
 icon: square-js
 keywords: langchain, instrumentation, callback, langwatch, typescript, tracing
 ---
@@ -5673,7 +5673,7 @@ The `LangWatchCallbackHandler` captures Langchain events and converts them into 
 
 ---
 title: Vercel AI SDK
-description: LangWatch Vercel AI SDK integration guide
+description: Integrate the Vercel AI SDK with LangWatch for TypeScript-based tracing, token tracking, and real-time agent testing.
 sidebarTitle: Vercel AI SDK
 keywords: vercel ai sdk, langwatch, tracing, observability, vercel, ai, sdk
 ---
@@ -5772,7 +5772,7 @@ The Vercel AI SDK automatically sends traces to LangWatch when `experimental_tel
 title: Azure OpenAI
 sidebarTitle: TypeScript/JS
 icon: square-js
-description: LangWatch Azure OpenAI integration guide
+description: Use the LangWatch Azure OpenAI guide to instrument LLM calls, trace interactions, and support AI agent test workflows.
 keywords: azure openai, langwatch, typescript, javascript, sdk, instrumentation, opentelemetry
 ---
 
@@ -5984,7 +5984,7 @@ For production Azure AI applications, combine manual instrumentation with [Seman
 ---
 title: LangGraph Instrumentation
 sidebarTitle: TypeScript/JS
-description: Learn how to instrument LangGraph applications with the LangWatch TypeScript SDK.
+description: Instrument LangGraph applications with the LangWatch TypeScript SDK for deep observability and agent testing workflows.
 icon: square-js
 keywords: langgraph, instrumentation, callback, langwatch, typescript, tracing, state graph, workflow
 ---
@@ -6163,7 +6163,7 @@ Mastra automatically sends traces to LangWatch through the OpenTelemetry exporte
 ---
 title: OpenAI
 sidebarTitle: TypeScript/JS
-description: LangWatch OpenAI TypeScript integration guide
+description: Follow the LangWatch OpenAI TypeScript integration guide to trace LLM calls and support agent testing workflows.
 icon: square-js
 keywords: openai, langwatch, typescript, javascript, sdk, instrumentation
 ---
@@ -6713,7 +6713,7 @@ Remember to instrument your code thoughtfully, adding data that provides meaning
 ---
 title: Capturing RAG
 sidebarTitle: TypeScript/JS
-description: Learn how to capture Retrieval Augmented Generation (RAG) data with LangWatch.
+description: Learn how to capture Retrieval-Augmented Generation (RAG) data with LangWatch to support evaluations and agent testing.
 icon: square-js
 keywords: RAG, Retrieval Augmented Generation, LangChain, LangWatch, LangChain RAG, RAG Span, RAG Chunk, RAG Tool
 ---
@@ -6986,7 +6986,7 @@ For production RAG applications, combine manual RAG spans with [Semantic Convent
 ---
 title: Tracking Tool Calls
 sidebarTitle: TypeScript/JS
-description: Learn how to track tool calls in your LLM agent applications
+description: Track tool calls in Python-based agent applications with LangWatch to improve debugging and evaluation completeness.
 icon: square-js
 keywords: langwatch, typescript, javascript, tools, agent, tracking, instrumentation
 ---
@@ -7334,7 +7334,7 @@ Use semantic conventions consistently across your application for better analyti
 
 ---
 title: OpenTelemetry Migration
-description: "Migrate from OpenTelemetry to LangWatch while preserving all your custom configurations"
+description: "Migrate from OpenTelemetry to LangWatch while preserving custom tracing to support more advanced AI agent testing."
 ---
 
 # OpenTelemetry Migration
@@ -7791,7 +7791,7 @@ The migration process is designed to be non-disruptive. You can run your existin
 ---
 title: "Manual Instrumentation"
 sidebarTitle: "Manual Control"
-description: "Learn advanced manual span management techniques for fine-grained observability control"
+description: "Use LangWatch TypeScript manual instrumentation for fine-grained tracing control during AI agent testing."
 ---
 
 # Manual Instrumentation
@@ -8334,7 +8334,7 @@ Combine manual instrumentation with [Semantic Conventions](/integration/typescri
 
 ---
 title: Debugging and Troubleshooting
-description: Debug LangWatch TypeScript SDK integration issues
+description: Debug TypeScript SDK integrations with LangWatch to fix tracing gaps, evaluation mismatches, and agent testing issues.
 sidebarTitle: Debugging
 ---
 
@@ -8889,7 +8889,7 @@ Controlling how inputs and outputs are captured in LangWatch allows you to tailo
 ---
 title: Tracking LLM Costs and Tokens
 sidebarTitle: TypeScript/JS
-description: Troubleshooting & adjusting cost tracking in LangWatch
+description: Track LLM costs and tokens with LangWatch to monitor efficiency and support performance evaluations in agent testing.
 icon: square-js
 keywords: LangWatch, cost tracking, token counting, debugging, troubleshooting, model costs, metrics, LLM spans
 ---
@@ -9311,7 +9311,7 @@ Use simple matchers (`equals`, `startsWith`) where possible; regex is powerful b
 ---
 title: Azure OpenAI Integration
 sidebarTitle: Go
-description: Learn how to instrument Azure OpenAI API calls in Go using the LangWatch SDK.
+description: Instrument Azure OpenAI API calls in Go using LangWatch to monitor model usage, latency, and AI agent evaluation metrics.
 icon: golang
 keywords: go, golang, azure, azure openai, instrumentation, langwatch, openai-compatible
 ---
@@ -9387,7 +9387,7 @@ Set `AZURE_OPENAI_ENDPOINT` to your Azure OpenAI resource endpoint URL (e.g., `h
 ---
 title: Groq Integration
 sidebarTitle: Groq
-description: Learn how to instrument Groq API calls in Go using the LangWatch SDK for high-speed LLM tracing.
+description: Instrument Groq API calls in Go using LangWatch for fast LLM observability, cost tracking, and agent evaluation insights.
 keywords: go, golang, groq, instrumentation, langwatch, openai-compatible
 ---
 
@@ -9475,7 +9475,7 @@ The middleware automatically captures:
 ---
 title: Grok (xAI) Integration
 sidebarTitle: Grok (xAI)
-description: Instrument Grok (xAI) API calls in Go with the LangWatch SDK for full observability.
+description: Instrument Grok (xAI) API calls in Go using LangWatch to capture high-speed traces and improve AI agent evaluations.
 keywords: go, golang, grok, xai, instrumentation, langwatch, openai-compatible
 ---
 
@@ -9550,7 +9550,7 @@ Set `GROK_BASE_URL` to the Grok (xAI) API endpoint and use your xAI API key.
 ---
 title: OpenRouter Integration
 sidebarTitle: OpenRouter
-description: Learn how to instrument calls to hundreds of models via OpenRouter in Go using the LangWatch SDK.
+description: Instrument OpenRouter model calls in Go with LangWatch to compare models, track quality, and run AI agent evaluations.
 keywords: go, golang, openrouter, model router, instrumentation, langwatch, opentelemetry, openai-compatible
 ---
 
@@ -9628,7 +9628,7 @@ Using OpenRouter is a great way to experiment with different models without chan
 ---
 title: Anthropic (Claude) Integration
 sidebarTitle: Go
-description: Learn how to instrument Anthropic Claude API calls in Go using LangWatch.
+description: Instrument Anthropic Claude API calls in Go using LangWatch to track performance, detect errors, and improve AI agent testing.
 icon: golang
 keywords: go, golang, anthropic, claude, instrumentation, langwatch, openai-compatible
 ---
@@ -9704,7 +9704,7 @@ Set `ANTHROPIC_BASE_URL` to `https://api.anthropic.com/v1` and use your Anthropi
 ---
 title: Ollama (Local Models) Integration
 sidebarTitle: Ollama (Local)
-description: Learn how to trace local LLMs running via Ollama in Go using the LangWatch SDK.
+description: Instrument local Ollama models in Go to monitor performance, debug RAG flows, and support AI agent testing environments.
 keywords: go, golang, ollama, local llm, instrumentation, langwatch, openai-compatible
 ---
 
@@ -9854,7 +9854,7 @@ Set `GEMINI_BASE_URL` to your Vertex AI endpoint URL and use your Google Cloud a
 ---
 title: OpenAI Instrumentation
 sidebarTitle: Go
-description: Learn how to instrument OpenAI API calls with the LangWatch Go SDK using middleware.
+description: Instrument OpenAI API calls with the Go SDK to trace LLM interactions, measure performance, and support agent evaluation pipelines.
 icon: golang
 keywords: openai, instrumentation, golang, go, langwatch, middleware, streaming
 ---
@@ -9929,7 +9929,7 @@ The middleware automatically captures request/response content, token usage, and
 ---
 title: Spring AI (Java) Integration
 sidebarTitle: Spring AI
-description: Configure OpenTelemetry in your Spring AI app to send traces to LangWatch.
+description: Configure Spring AI with OpenTelemetry and LangWatch to capture LLM traces and enable full-stack AI agent evaluations.
 keywords: java, spring, spring ai, spring boot, opentelemetry, langwatch, observability
 ---
 
@@ -10050,7 +10050,7 @@ For a complete implementation showing controllers, Spring AI configuration, and 
 ---
 title: OpenTelemetry Integration Guide
 sidebarTitle: OpenTelemetry
-description: Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
+description: Integrate OpenTelemetry with LangWatch to collect LLM spans from any language for unified AI agent evaluation data.
 icon: telescope
 keywords: langwatch, opentelemetry, integration, guide, java, c#, .net, python, typescript, javascript, go, sdk, open telemetry, open telemetry integration, open telemetry guide, open telemetry integration guide, open telemetry integration guide java, open telemetry integration guide c#, open telemetry integration guide .net, open telemetry integration guide python, open telemetry integration guide typescript, open telemetry integration guide javascript, open telemetry integration guide go
 ---
@@ -10310,7 +10310,7 @@ After setting up your instrumentation, you can verify that traces are being sent
 title: REST API
 sidebarTitle: HTTP API
 icon: globe
-description: Integrate LangWatch with any language by using the REST API
+description: Use the LangWatch REST API to send traces, evaluations, and interactions from any stack, enabling unified agent testing data flows.
 keywords: LangWatch, REST API, HTTP API, curl, integration, observability, evaluation, prompts, datasets, workflows, automation
 ---
 
@@ -10417,7 +10417,7 @@ After following the above guide, your interactions with LLMs should now be captu
 
 ---
 title: "RAG Context Tracking"
-description: Capture the RAG documents used in your LLM pipelines
+description: Track RAG documents used in LLM applications with LangWatch to improve transparency and AI agent evaluation accuracy.
 ---
 
 Retrieval Augmented Generation (RAGs) is a common way to augment the generation of your LLM by retrieving a set of documents based on the user query and giving it to the LLM to use as context for answering, either by using a vector database, getting responses from an API, or integrated agent files and memory.
@@ -10686,7 +10686,7 @@ EOF
 ---
 title: Langflow Integration
 sidebarTitle: Langflow
-description: LangWatch is the best observability integration for Langflow
+description: Integrate Langflow with LangWatch to capture node execution, prompt behavior, and evaluation metrics for AI agent testing.
 ---
 
 [Langflow](https://www.langflow.org/) is a low-code tool for building LLM pipelines. If you are using Langflow, you can easily enable LangWatch from their UI for analytics, evaluations and much more.
@@ -10773,7 +10773,7 @@ For more information, check out [Langflow docs](https://docs.langflow.org/).
 ---
 title: Flowise Integration
 sidebarTitle: Flowise
-description: Capture LLM traces and send them to LangWatch from Flowise
+description: Send Flowise LLM traces to LangWatch to monitor performance, detect issues, and support AI agent evaluation workflows.
 ---
 
 [Flowise](https://flowiseai.com/) is a low-code tool for building LLM pipelines. If you are using Flowise, you can easily enable LangWatch from their UI for analytics, evaluations and much more.
@@ -11257,7 +11257,7 @@ Key concepts for n8n integration:
 ---
 title: LangWatch MCP Server
 sidebarTitle: LangWatch MCP
-description: Turn your coding assistant into a LangWatch expert
+description: Use the LangWatch MCP Server to extend your coding assistant with deep LangWatch insights for tracing, testing, and agent evaluations.
 ---
 
 The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) gives your AI coding assistant (Cursor, Claude Code, Codex, etc.) full access to all LangWatch documentation and features via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
@@ -13333,7 +13333,7 @@ From here, you can click on a set to view its detailed history of batch runs.
 
 ---
 title: Setting up Real-Time Evaluations
-description: How to set up Real-Time LLM Evaluations
+description: Set up real-time LLM evaluations in LangWatch to score outputs instantly and support continuous AI agent testing.
 ---
 
 <iframe
@@ -13447,7 +13447,7 @@ That's it, we are now monitoring messages for any Jailbreak Attempts:
 ---
 title: How to evaluate an LLM when you don't have defined answers
 sidebarTitle: How to evaluate when you don't have defined answers
-description: Measuring your LLM performance using an LLM-as-a-judge
+description: Measure LLM performance using LLM-as-a-Judge when no ground-truth answers exist to support scalable AI agent evaluations.
 ---
 
 For some AI applications, it's not really possible to define a golden answer, this happens for example in creative tasks, where it's hard to define a single correct answer.
@@ -13469,7 +13469,7 @@ On the video below, we show how to use the LangWatch Evaluation Wizard to evalua
 
 ---
 title: How to evaluate that your LLM answers correctly
-description: Measuring your LLM performance with Offline Evaluations
+description: Measure correctness in LLM answers using LangWatch’s Offline Evaluations to compare outputs and support AI agent evaluations.
 ---
 
 <iframe
@@ -13652,7 +13652,7 @@ This completes your first offline evaluation. You can now integrate this version
 
 ---
 title: Evaluating via Code
-description: Evaluate and visualize your LLM evals with LangWatch
+description: Evaluate LLM behavior using LangWatch’s Evaluation API to run batch tests, visualize metrics, and automate AI agent evaluations.
 ---
 
 LangWatch makes it incredibly easy to add evaluation tracking to your existing workflows.
@@ -13931,7 +13931,7 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
 
 ---
 title: Generating a dataset with AI
-description: Bootstrap your evaluations by generating sample data
+description: Generate datasets with AI to bootstrap LLM evaluations, regression tests, and simulation-based agent testing.
 ---
 
 Getting started with evaluations can be a bit daunting, especially when you don't have a dataset to use yet.
@@ -13958,7 +13958,7 @@ In the video below, we showcase the process of creating an evaluation for a Busi
 
 ---
 title: Automatically build datasets from real-time traces
-description: Continuously populate your datasets with comming data from production
+description: Automatically build datasets from real-time traces to power LLM evaluations, regression tests, and AI agent testing workflows.
 ---
 
 You can keep continously populating the dataset with new data arriving from production by using **Triggers**, mapping trace fields to any dataset columns you prefer.
@@ -13992,7 +13992,7 @@ Hit save, and that's it! Now every time a new message matches the filter, the tr
 ---
 title: Datasets
 sidebarTitle: Overview
-description: Create and manage datasets with LangWatch
+description: Create and manage datasets in LangWatch to build evaluation sets for LLMs and structured AI agent testing.
 ---
 
 ## Create datasets
@@ -14072,7 +14072,7 @@ To add data by CSV upload, go to your datasets page and select the dataset you w
 
 ---
 title: View images in datasets
-description: Add ability to view images in datasets
+description: View image datasets in LangWatch to support multimodal evaluations and agent testing scenarios.
 ---
 
 With the your images column type set to type set to `image (URL)`, you will be able to view images in your dataset. This is useful to analyze the images at a glance.
@@ -14101,7 +14101,7 @@ Once you select the image type, the dataset will be updated to show the image co
 
 ---
 title: Add trace threads to datasets
-description: Add full conversation threads to your datasets on a per row basis
+description: Add full conversation threads to datasets in LangWatch to generate richer evaluation inputs for AI agent testing.
 ---
 
 To add trace threads to a dataset, follow these steps:
@@ -14137,7 +14137,7 @@ You can select multiple traces to add to the dataset. When using the thread mapp
 
 ---
 title: "Guaranteed Availability"
-description: "Ensure your prompts are always available, even in offline or air-gapped environments"
+description: "Ensure prompt availability with LangWatch’s Guaranteed Availability feature, even in offline or air-gapped agent testing setups."
 ---
 
 Guaranteed availability ensures your application can continue operating with prompts even when disconnected from the LangWatch platform. This is achieved through local prompt materialization using the [Prompts CLI](/prompt-management/cli).
@@ -14470,7 +14470,7 @@ jobs:
 
 ---
 title: "Using Prompts in the Optimization Studio"
-description: "Use prompts in the Optimization Studio to test and optimize your prompts"
+description: "Use JudgeResult to inspect LLM-judged evaluation outcomes during simulation-based agent testing."
 ---
 
 ### Watch: Prompt Management Tutorial
@@ -14513,7 +14513,7 @@ To get started with prompt versioning in the Optimization Studio:
 
 ---
 title: "A/B Testing"
-description: "Implement A/B testing for your prompts using LangWatch's version control and analytics"
+description: "Implement A/B testing for prompts in LangWatch to compare performance, measure regressions, and improve AI agent evaluations."
 ---
 
 LangWatch enables A/B testing by allowing you to create different versions of your prompts and randomly alternate between them. Your application can test different prompt variants while LangWatch tracks performance metrics for each version.
@@ -14725,7 +14725,7 @@ Compare metrics between versions in the LangWatch UI to see which variant perfor
 
 ---
 title: "Link to Traces"
-description: "Connect prompts to execution traces for performance monitoring and analysis"
+description: "Link prompts to execution traces in LangWatch to analyze performance, measure regressions, and support informed AI agent evaluations."
 ---
 
 Linking prompts to traces enables tracking of metrics and evaluations per prompt version. It's the foundation of improving prompt quality over time.
@@ -14838,7 +14838,7 @@ For more detailed information about setting up tracing in your application, see 
 
 ---
 title: "Version Control"
-description: "Manage prompt versions and track changes over time"
+description: "Manage version control for prompts in LangWatch to run evaluations, compare models, and improve agent performance."
 ---
 
 # Prompt Version Control
@@ -14892,7 +14892,7 @@ const langwatch = new LangWatch({
   apiKey: process.env.LANGWATCH_API_KEY,
 });
 
-// Get a specific prompt (latest version by default)
+// Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines. (latest version by default)
 const prompt = await langwatch.prompts.get("customer-support-bot");
 
 // The prompt object contains version information
@@ -14924,7 +14924,7 @@ curl --request GET \
   --url "https://app.langwatch.ai/api/prompts/{prompt_handle}/versions" \
   --header "X-Auth-Token: your-api-key"
 
-# Get a specific prompt (latest version)
+# Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines. (latest version)
 curl --request GET \
   --url "https://app.langwatch.ai/api/prompts/{prompt_handle}" \
   --header "X-Auth-Token: your-api-key"
@@ -15184,7 +15184,7 @@ Learn how to use advanced prompt features to improve your AI application perform
 
 ---
 title: "GitHub Integration"
-description: "Version your prompts in GitHub repositories and automatically sync with LangWatch"
+description: "Sync prompts with GitHub using LangWatch to maintain version history, enable review workflows, and support agent evaluations."
 ---
 
 LangWatch's prompt management integrates seamlessly with GitHub through the [Prompts CLI](/prompt-management/cli), enabling you to version control your prompts alongside your code and automatically sync changes with the LangWatch platform.
@@ -15313,7 +15313,7 @@ For complete documentation on all CLI commands, advanced workflows, conflict res
 
 ---
 title: "Analytics"
-description: "Monitor prompt performance and usage with comprehensive analytics"
+description: "Use Analytics in LangWatch to measure prompt performance, detect regressions, and support continuous AI agent evaluations."
 ---
 
 LangWatch provides analytics to help you understand how your prompts are performing in production.
@@ -15367,7 +15367,7 @@ Monitor your AI model usage:
 
 ---
 title: "RAG Visualization"
-description: Visualize your DSPy RAG optimization process in LangWatch
+description: Visualize DSPy RAG optimization steps in LangWatch to better understand performance and support AI agent testing.
 ---
 
 [<img align="center" src="https://colab.research.google.com/assets/colab-badge.svg" />](https://colab.research.google.com/github/langwatch/langevals/blob/main/notebooks/tutorials/dspy_rag.ipynb)
@@ -15482,7 +15482,7 @@ Additionally, you can see each LLM call that has been done during the optimizati
 ---
 title: Tracking Custom DSPy Optimizer
 sidebarTitle: Custom Optimizer Tracking
-description: Build custom DSPy optimizers and track them in LangWatch
+description: Track custom DSPy optimizer logic in LangWatch to visualize optimization steps and improve AI agent testing workflows.
 ---
 
 If you are building a custom DSPy optimizer, then LangWatch won't support tracking it out of the box, but adding track to any custom optimizer is also very simple.
@@ -15539,7 +15539,7 @@ For any questions or issues, feel free to contact our support, join our channel 
 ---
 title: DSPy Visualization Quickstart
 sidebarTitle: Quickstart
-description: Visualize your DSPy notebooks experimentations to better track and debug the optimization process
+description: Quickly visualize DSPy notebooks and optimization experiments in LangWatch to support debugging and agent evaluation.
 ---
 
 [<img align="center" src="https://colab.research.google.com/assets/colab-badge.svg" />](https://colab.research.google.com/github/langwatch/langwatch/blob/main/python-sdk/examples/dspy_visualization.ipynb)
@@ -15664,7 +15664,7 @@ Ensure that you return the `output` as some evaluations may require it. As you c
 
 ---
 title: Alerts and Triggers
-description: Be alerted when something goes wrong and trigger actions automatically
+description: Configure Alerts and Triggers in LangWatch to detect regressions, notify teams, and enforce automated guardrails for AI agent testing.
 ---
 
 ## Create triggers based on LangWatch filters
@@ -15716,7 +15716,7 @@ Once the trigger is created, you will receive an alert whenever a message meets 
 
 ---
 title: Exporting Analytics
-description: Build and integrate LangWatch graphs on your own systems and applications
+description: Export LangWatch analytics into your own dashboards to monitor LLM quality, agent testing metrics, and evaluation performance.
 ---
 
 ## Export Analytics with REST Endpoint
@@ -15789,7 +15789,7 @@ If you encounter any hurdles or have questions, our support team is eager to ass
 
 ---
 title: Annotations
-description: Collaborate with domain experts using annotations
+description: Use annotations in LangWatch for expert labeling, trace review, and structured evaluation workflows for AI agent testing.
 ---
 
 # Create annotations on messages
@@ -15896,7 +15896,7 @@ Thats it! You can now annotate messages and add your custom score metrics to the
 
 ---
 title: Instrumenting Custom Evaluator
-description: Add your own evaluation results into LangWatch trace
+description: Integrate custom evaluator results into LangWatch to extend scoring logic for advanced AI agent evaluations.
 ---
 
 If you have a custom evaluator built in-house which run on your own code, either during the LLM pipeline or after, you can still capture the evaluation results
@@ -15996,7 +15996,7 @@ The evaluation `name` is required and must be a string. The other fields are opt
 
 ---
 title: Evaluation by Thread
-description: Evaluate your LLM applications by thread
+description: Evaluate LLM applications by thread in LangWatch to analyze conversation-level performance in agent testing setups.
 ---
 
 With LangWatch, you can evaluate your LLM applications by thread. This approach is useful for analyzing the performance of your LLM applications across entire conversation threads, helping you identify which threads are performing well or poorly.
@@ -18632,7 +18632,7 @@ For the full notebook, check it out on: [GitHub](https://github.com/langwatch/co
 
 ---
 title: Evaluating an AI Coach with LLM-as-a-Judge
-description: A developer guide for building reliable AI coaches using LangWatch
+description: Evaluate AI coaching systems using LangWatch with LLM-as-a-Judge scoring to measure quality and consistency in agent behavior.
 keywords: AI coach, evaluation, LangWatch, AI therapist, AI Leadership
 ---
 
@@ -18802,7 +18802,7 @@ For more examples of building and evaluating conversational AI, explore [Scenari
 
 ---
 title: Evaluating Structured Data Extraction
-description: A developer guide for evaluating structured data extraction using LangWatch
+description: Evaluate structured data extraction using LangWatch to validate output correctness and strengthen AI agent testing pipelines.
 keywords: structured data extraction, evaluation, LangWatch, ground truth
 ---
 
@@ -18975,7 +18975,7 @@ Now that you've set up evaluation for your structured data extraction, you can u
 
 ---
 title: Evaluating a RAG Chatbot for Technical Manuals
-description: A developer guide for building reliable RAG systems for technical documentation using LangWatch
+description: Use LangWatch to evaluate a technical RAG chatbot by measuring retrieval quality, hallucination rates, and agent performance.
 keywords: RAG, technical documentation, evaluation, LangWatch, embeddings, chunking, faithfulness, retrieval evaluation, ground truth
 ---
 
@@ -19131,7 +19131,7 @@ For more implementation examples, check out our [RAG cookbook](/cookbooks/build-
 
 ---
 title: Overview
-description: Track user interactions with your LLM applications
+description: Track user interactions in LangWatch to analyze LLM usage patterns and power AI agent evaluation workflows.
 ---
 
 Learn how to track user interactions with your LLM applications using the LangWatch REST API. This section provides detailed guides for predefined events such as thumbs up/down, text selection, and waiting times, as well as instructions for custom event tracking.
@@ -19149,7 +19149,7 @@ Learn how to track user interactions with your LLM applications using the LangWa
 
 ---
 title: Selected Text Events
-description: Track when a user selects text generated by your LLM application
+description: Track selected text events in LangWatch to understand user behavior and improve LLM performance across AI agent evaluations.
 ---
 
 Selected text events allow you to track when a user selects text generated by your LLM application, indicating the response was useful enough to be copied and used elsewhere.
@@ -19207,7 +19207,7 @@ The `text_length` metric is mandatory and should reflect the length of the selec
 
 ---
 title: Custom Events
-description: Track any user events with your LLM application, with textual or numeric metrics
+description: Track custom user events in your LLM application using LangWatch to support analytics, evaluations, and agent testing workflows.
 ---
 
 Apart from the reserved pre-defined events, you can also define your own events relevant to your business to correlate with your LLM messages and threads to measure your product performance.
@@ -19271,7 +19271,7 @@ On the dashboard, you can visualize the tracked events on the "Events" tab when 
 
 ---
 title: Waited To Finish Events
-description: Track if users leave before the LLM application finishes generating a response
+description: Track whether users leave before the LLM response completes to identify UX issues that affect downstream agent evaluations.
 ---
 
 Waited to finish events are used to determine if users are waiting for the LLM application to finish generating a response or if they leave before it's completed. This is useful for capturing user impatience with regards to the response generation.
@@ -19335,7 +19335,7 @@ curl -X POST "https://app.langwatch.ai/api/track_event" \\
 
 ---
 title: Thumbs Up/Down
-description: Track user feedback on specific messages or interactions with your chatbot or LLM application
+description: Track thumbs up/down user feedback in LangWatch to evaluate LLM quality and guide AI agent testing improvements.
 ---
 
 Thumbs up/down events are used to capture user feedback on specific messages or interactions with your chatbot or LLM application, with an optional textual feedback.
@@ -19397,7 +19397,7 @@ The `vote` metric is mandatory and must be either `1` or `-1`. The `feedback` fi
 
 ---
 title: Environment Variables
-description: Complete list of environment variables for LangWatch self-hosting
+description: Review all environment variables available for LangWatch self-hosting to configure observability and AI agent testing pipelines.
 ---
 
 # Environment Variables
@@ -19527,7 +19527,7 @@ Check out the [Hybrid Setup](/hybrid-setup/overview) page for more details.
 
 ### Docker Compose
 
-For the open-source version, LangWatch is available as a Docker Compose setup for easy deployment on your local machine.
+For the open-source version, Deploy LangWatch using Docker Compose for easy local setups supporting observability, evaluations, and AI agent testing..
 
 Check out the [Docker Compose](/self-hosting/docker-compose) page for more details.
 
@@ -19542,7 +19542,7 @@ Check out the [Helm Chart](/self-hosting/helm) page for more details.
 
 ---
 title: OnPrem
-description: LangWatch on-premises solution.
+description: Deploy LangWatch on-premises for full control over data, compliance, and secure AI agent evaluation workflows.
 ---
 
 <img src="/images/onprem-logo.png" alt="LangWatch On Prem" width="400px" style={{marginTop: "50px"}} />
@@ -19628,7 +19628,7 @@ Schedule a free consultation with our team to get started on the On-Prem setup:
 
 ---
 title: Docker Compose
-description: LangWatch is available as a Docker Compose setup for easy deployment on your local machine
+description: Deploy LangWatch using Docker Compose for easy local setups supporting observability, evaluations, and AI agent testing.
 keywords: self-hosting, docker, docker-compose, deployment, langwatch
 ---
 
@@ -19669,7 +19669,7 @@ Check out the [Helm Chart](/self-hosting/helm) page for more details.
 
 ---
 title: Docker Images
-description: Overview of LangWatch Docker images and their endpoints
+description: Explore LangWatch Docker images and endpoints for setting up observability, evaluations, and AI agent testing environments.
 ---
 
 # LangWatch Docker Images
@@ -19765,7 +19765,7 @@ For detailed instructions on how to deploy LangWatch using Docker or Kubernetes,
 
 ---
 title: Kubernetes (Helm Chart)
-description: LangWatch is available as a Kubernetes Helm chart for easy deployment on Kubernetes
+description: Install LangWatch using a Kubernetes Helm chart for production-grade deployments supporting LLM and agent testing workflows.
 keywords: self-hosting, helm, kubernetes, deployment, langwatch
 ---
 
@@ -20199,7 +20199,7 @@ Alternatively, configure an Istio `ServiceEntry`/egress policy for your OpenSear
 
 ---
 title: SSO
-description: SSO Setup for LangWatch
+description: Configure SSO for LangWatch to secure access to evaluation dashboards, observability data, and agent testing environments.
 keywords: [sso, hybrid, azure, auth0]
 ---
 
@@ -20414,7 +20414,7 @@ We look forward to helping you set up LangWatch seamlessly and efficiently.
 
 ---
 title: Infra Monitoring
-description: Grafana/Prometheus setup for LangWatch
+description: Set up Grafana and Prometheus for LangWatch infra monitoring to track system health in large-scale agent testing setups.
 ---
 
 ## Installation with Monitoring
@@ -20507,7 +20507,7 @@ You can find the LangWatch dashboard template <a href="/langwatch-dashboard.json
 
 ---
 title: Overview
-description: LangWatch offers a hybrid setup for companies that require strict data control and compliance.
+description: Learn how LangWatch's hybrid setup ensures strict data control, compliance needs, and secure AI agent testing infrastructure.
 ---
 
 # Hybrid Setup Overview
@@ -20547,7 +20547,7 @@ For more information or to schedule a consultation, please [contact our sales te
 
 ---
 title: Elasticsearch
-description: Elasticsearch Setup for LangWatch Hybrid Deployment
+description: Set up Elasticsearch for LangWatch Hybrid deployments to enable scalable search and analysis of traces and agent evaluations.
 ---
 
 ### Introduction
@@ -20600,7 +20600,7 @@ LangWatch relies on Elasticsearch (or OpenSearch) for core functionality such as
 
 ---
 title: S3 Storage
-description: S3 Storage Setup for LangWatch Hybrid Deployment
+description: Configure S3 storage for LangWatch Hybrid deployments to store traces, evaluations, and AI agent testing datasets.
 ---
 
 ### S3-Compatible Object Storage Setup
@@ -20664,7 +20664,7 @@ openapi: 'GET /api/trace/{id}'
 
 ---
 title: 'Overview'
-description: 'A Trace is a collection of runs that are related to a single operation'
+description: 'Understand LangWatch Traces, how runs are grouped into a single operation, and how to use them for LLM observability and AI agent evaluations.'
 ---
 
 ## Intro
@@ -20731,7 +20731,7 @@ openapi: 'POST /api/trigger/slack'
 # FILE: ./api-reference/datasets/post-dataset-entries.mdx
 
 ---
-title: 'Add entries to a dataset'
+title: 'Add dataset entries programmatically using the LangWatch API to build evaluation sets for LLM testing and agent validation.'
 openapi: 'POST /api/dataset/{slug}/entries'
 ---
 
@@ -21028,7 +21028,7 @@ openapi: post /legacy/ragas_answer_relevancy/evaluate
 
 ---
 title: 'Overview'
-description: 'Annotations are used to annotate traces with additional information'
+description: 'Learn how annotations enhance trace review, labeling, and evaluation workflows for more reliable AI agent testing.'
 ---
 
 ## Intro
@@ -21047,7 +21047,7 @@ To make a call to the Annotations API, you will need to pass through your LangWa
 - `DELETE /api/annotations/:id` - Delete a single annotation
 - `PATCH /api/annotations/:id` - Update a single annotation
 - `GET /api/annotations/trace/:id` - Get the annotations for a single trace
-- `POST /api/annotations/trace/:id` - Create an annotation for a single trace
+- `POST /api/annotations/trace/:id` - Create annotations for traces to support domain labeling, evaluation scoring, and agent testing workflows.
 
 
 ---
@@ -21198,7 +21198,7 @@ openapi: post /api/scenario-events
 
 ---
 title: "Overview"
-description: "Prompts are used to manage and version your prompts"
+description: "Understand how prompts are versioned, managed, and used in evaluations and agent testing within LangWatch."
 ---
 
 ## Intro
@@ -21211,11 +21211,11 @@ To make a call to the Prompts API, you will need to pass through your LangWatch 
 
 #### Allowed Methods
 
-- `GET /api/prompts` - Get all prompts for a project
+- `GET /api/prompts` - Retrieve all prompts for a project to manage prompt versioning, run comparisons, and support agent testing pipelines.
 - `POST /api/prompts` - Create a new prompt
-- `GET /api/prompts/:id` - Get a specific prompt
-- `PUT /api/prompts/:id` - Update a prompt
-- `DELETE /api/prompts/:id` - Delete a prompt
+- `GET /api/prompts/:id` - Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines.
+- `PUT /api/prompts/:id` - Update prompts to refine versions, run new evaluations, and test agent performance under changing configurations.
+- `DELETE /api/prompts/:id` - Delete prompts programmatically using LangWatch to manage versioning and maintain clean evaluation pipelines.
 - `GET /api/prompts/:id/versions` - Get all versions for a prompt
 - `POST /api/prompts/:id/versions` - Create a new version for a prompt
 
