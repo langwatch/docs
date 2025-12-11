@@ -1,7 +1,7 @@
 ---
 title: TypeScript SDK API Reference
 sidebarTitle: Reference
-description: LangWatch TypeScript SDK API reference
+description: Access the LangWatch TypeScript SDK reference to instrument LLMs, capture traces, and support AI agent testing workflows.
 keywords: langwatch, typescript, sdk, api, reference, observability, tracing, logging, data capture, data collection, data ingestion
 icon: terminal
 ---
@@ -411,7 +411,7 @@ Each update operation creates a new version of the prompt. Previous versions are
 Deletes a prompt and all its versions from the LangWatch platform.
 
 ```typescript
-// Delete a prompt
+// Delete prompts programmatically using LangWatch to manage versioning and maintain clean evaluation pipelines.
 const result = await langwatch.prompts.delete("customer-support-bot");
 ```
 

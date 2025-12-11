@@ -18,7 +18,7 @@
   "paths": {
     "/api/annotations": {
       "get": {
-        "description": "Returns all annotations for project",
+        "description": "Retrieve project-wide annotations for large-scale dataset building and AI agent evaluation workflows.",
         "responses": {
           "200": {
             "description": "Annotation response",
@@ -48,7 +48,7 @@
     },
     "/api/annotations/trace/{id}": {
       "get": {
-        "description": "Returns all annotations for single trace",
+        "description": "Retrieve all annotations for a trace to support systematic debugging and evaluation workflows in agent testing.",
         "parameters": [
           {
             "name": "id",
@@ -87,7 +87,7 @@
         }
       },
       "post": {
-        "description": "Create an annotation for a single trace",
+        "description": "Create annotations for traces to support domain labeling, evaluation scoring, and agent testing workflows.",
         "parameters": [
           {
             "name": "id",
@@ -147,7 +147,7 @@
     },
     "/api/annotations/{id}": {
       "get": {
-        "description": "Returns a single annotation based on the ID supplied",
+        "description": "Retrieve single annotations to inspect evaluation inputs, domain labels, and agent testing context.",
         "parameters": [
           {
             "name": "id",
@@ -183,7 +183,7 @@
         }
       },
       "delete": {
-        "description": "Deletes a single annotation based on the ID supplied",
+        "description": "Delete annotations as part of maintaining clean evaluation datasets and agent testing pipelines.",
         "parameters": [
           {
             "name": "id",
@@ -227,7 +227,7 @@
         }
       },
       "patch": {
-        "description": "Updates a single annotation based on the ID supplied",
+        "description": "Patch annotations programmatically to refine trace labeling and support structured AI agent evaluation workflows.",
         "parameters": [
           {
             "name": "id",
@@ -294,7 +294,7 @@
     },
     "/api/trace/{id}": {
       "get": {
-        "description": "Returns single trace details based on the ID supplied",
+        "description": "Get detailed trace information via the API to analyze LLM behavior, debug workflows, and support agent testing.",
         "parameters": [
           {
             "name": "id",
@@ -689,7 +689,7 @@
     "/api/trace/search": {
       "post": {
         "summary": "Search traces",
-        "description": "Search for traces based on given criteria",
+        "description": "Search for traces using LangWatch APIs to filter performance issues, evaluation results, and agent testing data.",
         "tags": [
           "Traces"
         ],
@@ -719,7 +719,7 @@
     },
     "/api/trace/{id}/share": {
       "post": {
-        "description": "Returns a public path for a trace",
+        "description": "Generate public trace paths using LangWatch to share insights, evaluations, and agent testing results securely.",
         "parameters": [
           {
             "name": "id",
@@ -762,7 +762,7 @@
     },
     "/api/trace/{id}/unshare": {
       "post": {
-        "description": "Deletes a public path for a trace",
+        "description": "Delete public trace paths using LangWatch’s API to maintain control over evaluation and agent testing data.",
         "parameters": [
           {
             "name": "id",
@@ -1365,7 +1365,7 @@
             "required": true
           }
         ],
-        "description": "Get a specific prompt"
+        "description": "Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines."
       },
       "put": {
         "responses": {
@@ -1940,7 +1940,7 @@
             "required": true
           }
         ],
-        "description": "Update a prompt",
+        "description": "Update prompts to refine versions, run new evaluations, and test agent performance under changing configurations.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2220,7 +2220,7 @@
             "required": true
           }
         ],
-        "description": "Delete a prompt"
+        "description": "Delete prompts programmatically using LangWatch to manage versioning and maintain clean evaluation pipelines."
       }
     },
     "/api/prompts/{id}/versions": {
@@ -2778,7 +2778,7 @@
             "required": true
           }
         ],
-        "description": "Get all versions for a prompt. Does not include base prompt data, only versioned data."
+        "description": "Retrieve prompt versions for structured version control, evaluations, and automated AI agent testing workflows."
       }
     },
     "/api/prompts/{id}/sync": {
@@ -4121,7 +4121,7 @@
             "required": true
           }
         ],
-        "description": "Add entries to a dataset",
+        "description": "Add dataset entries programmatically using the LangWatch API to build evaluation sets for LLM testing and agent validation.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4831,7 +4831,7 @@
         },
         "operationId": "getApiPrompts",
         "parameters": [],
-        "description": "Get all prompts for a project"
+        "description": "Retrieve all prompts for a project to manage prompt versioning, run comparisons, and support agent testing pipelines."
       },
       "post": {
         "responses": {
@@ -5376,7 +5376,7 @@
         },
         "operationId": "postApiPrompts",
         "parameters": [],
-        "description": "Create a new prompt with default initial version",
+        "description": "Create new prompts with LangWatch’s API to manage versions, run evaluations, and support automated agent testing pipelines.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5632,7 +5632,7 @@
         },
         "operationId": "postApiScenario-events",
         "parameters": [],
-        "description": "Create a new scenario event",
+        "description": "Create new scenario events for simulation-based agent testing using LangWatch’s API.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6506,7 +6506,7 @@
         },
         "operationId": "getIndex",
         "parameters": [],
-        "description": "Get all prompts for a project"
+        "description": "Retrieve all prompts for a project to manage prompt versioning, run comparisons, and support agent testing pipelines."
       },
       "post": {
         "responses": {
@@ -6694,7 +6694,7 @@
         },
         "operationId": "postIndex",
         "parameters": [],
-        "description": "Create a new prompt with default initial version",
+        "description": "Create new prompts with LangWatch’s API to manage versions, run evaluations, and support automated agent testing pipelines.",
         "requestBody": {
           "content": {
             "application/json": {
