@@ -6,7 +6,17 @@ Always navigate to docs links using the .md extension for better readability.
 ## Get Started
 
 - [LangWatch: The Complete LLMOps Platform](https://docs.langwatch.ai/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub.
+- [Better Agents](https://docs.langwatch.ai/better-agents/overview.md): Build reliable, testable, production-grade AI agents with Better Agents CLI - the reliability layer for agent development
 - [LangWatch MCP Server](https://docs.langwatch.ai/integration/mcp.md): Turn your coding assistant into a LangWatch expert
+
+## Agent Simulations
+
+- [Introduction to Agent Testing](https://docs.langwatch.ai/agent-simulations/introduction.md)
+- [Overview](https://docs.langwatch.ai/agent-simulations/overview.md)
+- [Getting Started](https://docs.langwatch.ai/agent-simulations/getting-started.md)
+- [Simulation Sets](https://docs.langwatch.ai/agent-simulations/set-overview.md)
+- [Batch Runs](https://docs.langwatch.ai/agent-simulations/batch-runs.md)
+- [Individual Run View](https://docs.langwatch.ai/agent-simulations/individual-run.md)
 
 ## Observability
 
@@ -157,15 +167,6 @@ Always navigate to docs links using the .md extension for better readability.
 - [OpenTelemetry Integration Guide](https://docs.langwatch.ai/integration/opentelemetry/guide.md): Use OpenTelemetry to capture LLM traces and send them to LangWatch from any programming language
 - [REST API](https://docs.langwatch.ai/integration/rest-api.md): Integrate LangWatch with any language by using the REST API
 
-## Agent Simulations
-
-- [Introduction to Agent Testing](https://docs.langwatch.ai/agent-simulations/introduction.md)
-- [Overview](https://docs.langwatch.ai/agent-simulations/overview.md)
-- [Getting Started](https://docs.langwatch.ai/agent-simulations/getting-started.md)
-- [Simulation Sets](https://docs.langwatch.ai/agent-simulations/set-overview.md)
-- [Batch Runs](https://docs.langwatch.ai/agent-simulations/batch-runs.md)
-- [Individual Run View](https://docs.langwatch.ai/agent-simulations/individual-run.md)
-
 ## Evaluation
 
 - [LLM Evaluation Overview](https://docs.langwatch.ai/llm-evaluation/overview.md): Overview of LLM evaluation features in LangWatch
@@ -235,6 +236,7 @@ Always navigate to docs links using the .md extension for better readability.
 ### Administration
 
 - [Access Control (RBAC)](https://docs.langwatch.ai/platform/rbac.md): Manage user permissions and access levels for LangWatch
+- [Audit Log](https://docs.langwatch.ai/platform/audit-log.md): Track user actions and changes in LangWatch
 
 ## Examples & Cookbooks
 
