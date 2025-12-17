@@ -11260,9 +11260,9 @@ sidebarTitle: LangWatch MCP
 description: Turn your coding assistant into a LangWatch expert
 ---
 
-The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) gives your AI coding assistant (Cursor, Claude Code, Codex, etc.) full access to all LangWatch and [Scenario](https://scenario.langwatch.ai/) documentation and features via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
+The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) gives your AI coding assistant (Cursor, Claude Code, Codex, etc.) full access to all LangWatch and [Scenario](https://langwatch.ai/scenario/) documentation and features via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
 
-- **Set up agent testing with [Scenario](https://scenario.langwatch.ai/)** to test agent behavior through user simulations and edge cases
+- **Set up agent testing with [Scenario](https://langwatch.ai/scenario/)** to test agent behavior through user simulations and edge cases
 - **Automatically instrument your code** with LangWatch tracing for any framework (OpenAI, Agno, Mastra, DSPy, and more)
 - **Create and manage prompts** using LangWatch's prompt management system
 - **Set up evaluations** to test and monitor your LLM outputs
@@ -13036,7 +13036,7 @@ script=[
 
 ## Why Use LangWatch Scenario?
 
-[Scenario](https://scenario.langwatch.ai/) is the most advanced agent testing framework available. It provides:
+[Scenario](https://langwatch.ai/scenario/) is the most advanced agent testing framework available. It provides:
 
 - **Powerful simulations** - Test real agent behavior by simulating users in different scenarios and edge cases
 - **Flexible evaluations** - Judge agent behavior at any point in conversations, combine with evals, test error recovery, and complex workflows
@@ -13067,7 +13067,7 @@ The rest of this documentation will show you how to use LangWatch's simulation v
 - [Getting Started](/agent-simulations/getting-started) - Set up your first simulation
 - [Individual Run Analysis](/agent-simulations/individual-run) - Learn how to debug specific scenarios
 - [Batch Runs](/agent-simulations/batch-runs) - Understand how to organize multiple tests
-- [Scenario Documentation](https://scenario.langwatch.ai/) - Deep dive into the testing framework
+- [Scenario Documentation](https://langwatch.ai/scenario/) - Deep dive into the testing framework
 
 ---
 
@@ -13115,7 +13115,7 @@ You can find your `LANGWATCH_API_KEY` in your [LangWatch project settings](https
 
 Here's how to create and run a simple scenario to test an agent.
 
-First, you need to create an agent adapter that implements your agent logic. For detailed information about agent integration patterns, see the [agent integration guide](https://scenario.langwatch.ai/agent-integration/).
+First, you need to create an agent adapter that implements your agent logic. For detailed information about agent integration patterns, see the [agent integration guide](https://langwatch.ai/scenario/agent-integration/).
 
 
   ### Python
@@ -18827,7 +18827,7 @@ This script produces a detailed, multi-faceted evaluation of your AI coach. In t
 
 By implementing this evaluation framework with LangWatch, you can systematically improve the quality and consistency of your AI coaching conversations. The combination of specialized LLM judges and ground truth annotations provides a robust way to measure and enhance key aspects of coaching interactions, from question quality to conversational flow. This approach ensures your AI coach maintains high standards of engagement and effectiveness as it scales to serve more users.
 
-For more examples of building and evaluating conversational AI, explore [Scenarios](https://scenario.langwatch.ai/).
+For more examples of building and evaluating conversational AI, explore [Scenarios](https://langwatch.ai/scenario/).
 
 ---
 
