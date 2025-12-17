@@ -17,7 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "banner": {
-    "content": "**Ship reliable, testable agents – not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](/better-agents/overview)",
+    "content": "**Ship reliable, testable agents – not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](/docs/better-agents/overview)",
     "dismissible": true
   },
   "contextual": {
@@ -341,6 +341,7 @@
           {
             "group": "Model Providers",
             "pages": [
+              "integration/custom-models",
               {
                 "group": "OpenAI",
                 "pages": [
@@ -546,7 +547,7 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1765888578",
+      "source": "/ci/cache/busted/1765360123",
       "destination": "/"
     },
     {
