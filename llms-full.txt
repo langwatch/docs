@@ -11260,12 +11260,12 @@ sidebarTitle: LangWatch MCP
 description: Use the LangWatch MCP Server to extend your coding assistant with deep LangWatch insights for tracing, testing, and agent evaluations.
 ---
 
-The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) gives your AI coding assistant (Cursor, Claude Code, Codex, etc.) full access to all LangWatch documentation and features via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
+The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) gives your AI coding assistant (Cursor, Claude Code, Codex, etc.) full access to all LangWatch and [Scenario](https://langwatch.ai/scenario/) documentation and features via the [Model Context Protocol](https://modelcontextprotocol.io/introduction).
 
+- **Set up agent testing with [Scenario](https://langwatch.ai/scenario/)** to test agent behavior through user simulations and edge cases
 - **Automatically instrument your code** with LangWatch tracing for any framework (OpenAI, Agno, Mastra, DSPy, and more)
 - **Create and manage prompts** using LangWatch's prompt management system
 - **Set up evaluations** to test and monitor your LLM outputs
-- **Debug production issues** by retrieving and analyzing traces from your dashboard
 - **Add labels, metadata, and custom tracking** following LangWatch best practices
 
 Instead of manually reading docs and writing boilerplate code, just ask your AI assistant to instrument your codebase with LangWatch, and it will do it for you.
@@ -11273,11 +11273,8 @@ Instead of manually reading docs and writing boilerplate code, just ask your AI 
 ## Setup
 
 <Steps>
-<Step title="Get your LangWatch API key">
-Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/settings/api-keys).
-</Step>
 
-<Step title="Configure MCP in your editor">
+<Step title="Configure your MCP">
 
 
 ### Cursor
@@ -11291,7 +11288,10 @@ Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/setting
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server"]
+      "args": [
+        "-y",
+        "@langwatch/mcp-server"
+      ]
     }
   }
 }
@@ -11308,14 +11308,16 @@ Get your API key from the [LangWatch dashboard](https://app.langwatch.ai/setting
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server"]
+      "args": [
+        "-y",
+        "@langwatch/mcp-server"
+      ]
     }
   }
 }
 ```
 
 See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp#plugin-provided-mcp-servers) for more details.
-
 
 ### Other Editors
 
@@ -11326,7 +11328,10 @@ For other MCP-compatible editors, add the following configuration to your MCP se
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server"]
+      "args": [
+        "-y",
+        "@langwatch/mcp-server"
+      ]
     }
   }
 }
@@ -11342,6 +11347,76 @@ Open your AI assistant chat (e.g., `Cmd/Ctrl + I` in Cursor, or `Cmd/Ctrl + Shif
 </Steps>
 
 ## Usage Examples
+
+### Write Agent Tests with Scenario
+
+Simply ask your AI assistant to write scenario tests for your agents:
+
+<CodeGroup>
+```plaintext Basic
+"Write a scenario test that checks the agent calls the summarization tool when requested"
+```
+
+```plaintext More specific
+"Create a scenario test that verifies my agent handles error cases when the API is unavailable"
+```
+
+```plaintext Edge cases
+"Write scenario tests for my customer support agent covering refund requests and policy questions"
+```
+</CodeGroup>
+
+The AI assistant will:
+1. Fetch the Scenario documentation and best practices
+2. Create test files with proper imports and setup
+3. Write scenario scripts that simulate user interactions
+4. Add verification logic to check agent behavior
+5. Include judge criteria to evaluate conversation quality
+
+**Example scenario test:**
+
+Here's an example scenario that checks for tool calls and includes criteria validation:
+
+```python
+@pytest.mark.agent_test
+@pytest.mark.asyncio
+async def test_conversation_summary_request(agent_adapter):
+    """Explicit summary requests should call the conversation summary tool."""
+
+    def verify_summary_call(state: scenario.ScenarioState) -> bool:
+        args = _require_tool_call(state, "get_conversation_summary")
+        assert "conversation_context" in args, "summary tool must include context reference"
+        return True
+
+    result = await scenario.run(
+        name="conversation summary follow-up",
+        description="Customer wants a recap of troubleshooting steps that were discussed.",
+        agents=[
+            agent_adapter,
+            scenario.UserSimulatorAgent(),
+            scenario.JudgeAgent(
+                criteria=[
+                    "Agent provides a clear recap",
+                    "Agent confirms next steps and resources",
+                ]
+            ),
+        ],
+        script=[
+            scenario.user("Thanks for explaining the dispute process earlier."),
+            scenario.agent(),
+            scenario.user(
+                "Before we wrap, can you summarize everything we covered so I don't miss a step?"
+            ),
+            scenario.agent(),
+            verify_summary_call,
+            scenario.judge(),
+        ],
+    )
+
+    assert result.success, result.reasoning
+```
+
+The LangWatch MCP automatically handles fetching the right documentation, understanding your agent's framework, and generating tests that follow Scenario best practices.
 
 ### Instrument Your Code with LangWatch
 
@@ -11416,33 +11491,19 @@ Ask your AI assistant to set up prompt management:
 
 The AI assistant will guide you through creating, versioning, and using prompts from LangWatch's [Prompts CLI](/prompt-management/cli).
 
-### Debug Production Issues
-
-When you encounter an issue in production, ask your AI to investigate:
-
-```plaintext
-"Check the latest traces for errors and help me debug the issue"
-```
-
-The AI assistant will:
-1. Retrieve recent traces from your LangWatch dashboard
-2. Analyze the spans and identify problematic steps
-3. Suggest fixes based on the trace data
-4. Update your code with the fixes
-
-<Frame>
-<img alt="LangWatch MCP debugging traces" src="https://github.com/langwatch/langwatch/raw/main/assets/mcp-server/cursor-example.light.webp" />
-</Frame>
-
 ### Set Up Evaluations
 
-Ask your AI assistant to add evaluations to your LLM outputs:
+Ask your AI assistant to set up evaluation code for your LLM outputs:
 
 ```plaintext
 "Create a notebook to evaluate the faithfulness of my RAG pipeline using LangWatch's Evaluating via Code guide"
 ```
 
-The AI assistant will create a notebook with the necessary code to evaluate the faithfulness of your RAG pipeline following [Evaluating via Code](/llm-evaluation/offline/code/evaluation-api).
+The AI assistant will:
+1. Fetch the relevant LangWatch evaluation documentation
+2. Create evaluation notebooks or scripts with proper setup
+3. Add evaluation metrics and criteria for your use case
+4. Include code to run evaluations following [Evaluating via Code](/llm-evaluation/offline/code/evaluation-api)
 
 ## Advanced: Self-Building AI Agents
 
@@ -11471,40 +11532,12 @@ Fetches LangWatch documentation pages to understand how to implement features.
 **Parameters:**
 - `url` (optional): The full URL of a specific doc page. If not provided, fetches the docs index.
 
-### `get_latest_traces`
+### `fetch_scenario_docs`
 
-Retrieves the latest LLM traces from your LangWatch dashboard.
-
-**Parameters:**
-- `pageOffset` (optional): Page offset for pagination
-- `daysBackToSearch` (optional): Number of days back to search. Defaults to 1.
-
-### `get_trace_by_id`
-
-Retrieves a specific trace by its ID for detailed debugging.
+Fetches Scenario documentation pages to understand how to write agent tests.
 
 **Parameters:**
-- `id`: The trace ID to retrieve
-
-### `list_traces_by_user_id`
-
-Lists traces filtered by user ID.
-
-**Parameters:**
-- `userId`: The user ID to filter by
-- `pageSize` (optional): Number of traces per page
-- `pageOffset` (optional): Page offset for pagination
-- `daysBackToSearch` (optional): Number of days back to search
-
-### `list_traces_by_thread_id`
-
-Lists traces filtered by thread/session ID.
-
-**Parameters:**
-- `threadId`: The thread/session ID to filter by
-- `pageSize` (optional): Number of traces per page
-- `pageOffset` (optional): Page offset for pagination
-- `daysBackToSearch` (optional): Number of days back to search
+- `url` (optional): The full URL of a specific doc page. If not provided, fetches the docs index.
 
 <Info>
 Your AI assistant will automatically choose the right tools based on your request. You don't need to call these tools manually.
@@ -13003,7 +13036,7 @@ script=[
 
 ## Why Use LangWatch Scenario?
 
-[Scenario](https://scenario.langwatch.ai/) is the most advanced agent testing framework available. It provides:
+[Scenario](https://langwatch.ai/scenario/) is the most advanced agent testing framework available. It provides:
 
 - **Powerful simulations** - Test real agent behavior by simulating users in different scenarios and edge cases
 - **Flexible evaluations** - Judge agent behavior at any point in conversations, combine with evals, test error recovery, and complex workflows
@@ -13034,7 +13067,7 @@ The rest of this documentation will show you how to use LangWatch's simulation v
 - [Getting Started](/agent-simulations/getting-started) - Set up your first simulation
 - [Individual Run Analysis](/agent-simulations/individual-run) - Learn how to debug specific scenarios
 - [Batch Runs](/agent-simulations/batch-runs) - Understand how to organize multiple tests
-- [Scenario Documentation](https://scenario.langwatch.ai/) - Deep dive into the testing framework
+- [Scenario Documentation](https://langwatch.ai/scenario/) - Deep dive into the testing framework
 
 ---
 
@@ -13082,7 +13115,7 @@ You can find your `LANGWATCH_API_KEY` in your [LangWatch project settings](https
 
 Here's how to create and run a simple scenario to test an agent.
 
-First, you need to create an agent adapter that implements your agent logic. For detailed information about agent integration patterns, see the [agent integration guide](https://scenario.langwatch.ai/agent-integration/).
+First, you need to create an agent adapter that implements your agent logic. For detailed information about agent integration patterns, see the [agent integration guide](https://langwatch.ai/scenario/agent-integration/).
 
 
   ### Python
@@ -18794,7 +18827,7 @@ This script produces a detailed, multi-faceted evaluation of your AI coach. In t
 
 By implementing this evaluation framework with LangWatch, you can systematically improve the quality and consistency of your AI coaching conversations. The combination of specialized LLM judges and ground truth annotations provides a robust way to measure and enhance key aspects of coaching interactions, from question quality to conversational flow. This approach ensures your AI coach maintains high standards of engagement and effectiveness as it scales to serve more users.
 
-For more examples of building and evaluating conversational AI, explore [Scenarios](https://scenario.langwatch.ai/).
+For more examples of building and evaluating conversational AI, explore [Scenarios](https://langwatch.ai/scenario/).
 
 ---
 
@@ -19535,7 +19568,7 @@ Check out the [Docker Compose](/self-hosting/docker-compose) page for more detai
 
 LangWatch open-source is also available as a Helm chart for easy deployment on Kubernetes.
 
-Check out the [Helm Chart](/self-hosting/helm) page for more details.
+Check out the [Helm Chart](/self-hosting/kubernetes-helm) page for more details.
 ---
 
 # FILE: ./self-hosting/onprem.mdx
@@ -19661,7 +19694,7 @@ The application will be available at [http://localhost:5560](http://localhost:55
 
 LangWatch is available as a Helm chart for easy deployment on Kubernetes. The next section provides instructions for installing the Langwatch Helm chart.
 
-Check out the [Helm Chart](/self-hosting/helm) page for more details.
+Check out the [Helm Chart](/self-hosting/kubernetes-helm) page for more details.
 
 ---
 
@@ -19754,7 +19787,7 @@ For detailed instructions on how to deploy LangWatch using Docker or Kubernetes,
   Easily get started with LangWatch using Docker Compose.
 </Card>
 
-<Card title="Helm Chart" icon="dharmachakra" href="/self-hosting/helm">
+<Card title="Helm Chart" icon="dharmachakra" href="/self-hosting/kubernetes-helm">
   Run LangWatch on Kubernetes with our pre-configured Helm chart.
 </Card>
 </CardGroup>
@@ -20496,7 +20529,7 @@ metadata:
 
 ### LangWatch Dashboard
 
-You can find the LangWatch dashboard template <a href="/langwatch-dashboard.json" target="_blank">here</a>.
+You can find the LangWatch dashboard template [here](/langwatch-dashboard.json).
 
 ![Grafana](/images/monitoring.png)
 

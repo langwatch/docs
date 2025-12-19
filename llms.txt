@@ -29,7 +29,7 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Overview
 
-- [Getting Started](https://docs.langwatch.ai/integration/overview.md): LangWatch integrates with all major LLM providers, frameworks, and tools. See our complete list of integrations below.
+- [Getting Started](https://langwatch.ai/docs/integration/overview.md): LangWatch integrates with all major LLM providers, frameworks, and tools. See our complete list of integrations below.
 
 ## SDKs
 
@@ -59,8 +59,8 @@ Always navigate to docs links using the .md extension for better readability.
 
 #### Capturing Input/Output
 
-- [Capturing and Mapping Inputs & Outputs](https://docs.langwatch.ai/integration/python/tutorials/capturing-mapping-input-output.md): Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch Python SDK.
-- [Capturing and Mapping Inputs & Outputs](https://docs.langwatch.ai/integration/typescript/tutorials/capturing-input-output.md): Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch TypeScript SDK.
+- [Capturing and Mapping Inputs & Outputs](https://langwatch.ai/docs/integration/python/tutorials/capturing-mapping-input-output.md): Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch Python SDK.
+- [Capturing and Mapping Inputs & Outputs](https://langwatch.ai/docs/integration/typescript/tutorials/capturing-input-output.md): Learn how to control the capture and structure of input and output data for traces and spans with the LangWatch TypeScript SDK.
 
 #### Capturing RAG
 
@@ -69,8 +69,8 @@ Always navigate to docs links using the .md extension for better readability.
 
 #### Capturing Metadata
 
-- [Capturing Metadata and Attributes](https://docs.langwatch.ai/integration/python/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch Python SDK.
-- [Capturing Metadata and Attributes](https://docs.langwatch.ai/integration/typescript/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch TypeScript SDK.
+- [Capturing Metadata and Attributes](https://langwatch.ai/docs/integration/python/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch Python SDK.
+- [Capturing Metadata and Attributes](https://langwatch.ai/docs/integration/typescript/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch TypeScript SDK.
 
 #### Tracking LLM Costs
 
@@ -115,6 +115,8 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Model Providers
 
+- [Custom Models](https://langwatch.ai/docs/integration/custom-models.md)
+
 ### OpenAI
 
 - [OpenAI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/open-ai.md): Instrument OpenAI API calls with the LangWatch Python SDK to capture traces, debug, and support AI agent testing workflows.
@@ -134,8 +136,8 @@ Always navigate to docs links using the .md extension for better readability.
 
 ### Google Cloud
 
-- [Google Vertex AI Instrumentation](https://docs.langwatch.ai/integration/python/integrations/vertex-ai.md): Learn how to instrument Google Vertex AI API calls with the LangWatch Python SDK using OpenInference
-- [Google Gemini Integration](https://docs.langwatch.ai/integration/go/integrations/google-gemini.md): Learn how to instrument Google Gemini API calls in Go using the LangWatch SDK via a Vertex AI endpoint.
+- [Google Vertex AI Instrumentation](https://langwatch.ai/docs/integration/python/integrations/vertex-ai.md): Learn how to instrument Google Vertex AI API calls with the LangWatch Python SDK using OpenInference
+- [Google Gemini Integration](https://langwatch.ai/docs/integration/go/integrations/google-gemini.md): Learn how to instrument Google Gemini API calls in Go using the LangWatch SDK via a Vertex AI endpoint.
 
 ### Amazon Web Services
 
@@ -240,12 +242,12 @@ Always navigate to docs links using the .md extension for better readability.
 
 ### Cookbooks
 
-- [Measuring RAG Performance](https://docs.langwatch.ai/cookbooks/build-a-simple-rag-app.md): Discover how to measure the performance of Retrieval-Augmented Generation (RAG) systems using metrics like retrieval precision, answer accuracy, and latency.
-- [Optimizing Embeddings](https://docs.langwatch.ai/cookbooks/finetuning-embedding-models.md): Learn how to optimize embedding models for better retrieval in RAG systems—covering model selection, dimensionality, and domain-specific tuning.
-- [Vector Search vs Hybrid Search using LanceDB](https://docs.langwatch.ai/cookbooks/vector-vs-hybrid-search.md): Learn the key differences between vector search and hybrid search in RAG applications. Use cases, performance tradeoffs, and when to choose each.
-- [Evaluating Tool Selection](https://docs.langwatch.ai/cookbooks/tool-selection.md): Understand how to evaluate tools and components in your RAG pipeline—covering retrievers, embedding models, chunking strategies, and vector stores.
-- [Finetuning Agents with GRPO](https://docs.langwatch.ai/cookbooks/finetuning-agents.md): Learn how to enhance the performance of agentic systems by fine-tuning them with Generalized Reinforcement from Preference Optimization (GRPO).
-- [Multi-Turn Conversations](https://docs.langwatch.ai/cookbooks/evaluating-multi-turn-conversations.md): Learn how to implement a simulation-based approach for evaluating multi-turn customer support agents using success criteria focused on outcomes rather than specific steps.
+- [Measuring RAG Performance](https://langwatch.ai/docs/cookbooks/build-a-simple-rag-app.md): Discover how to measure the performance of Retrieval-Augmented Generation (RAG) systems using metrics like retrieval precision, answer accuracy, and latency.
+- [Optimizing Embeddings](https://langwatch.ai/docs/cookbooks/finetuning-embedding-models.md): Learn how to optimize embedding models for better retrieval in RAG systems—covering model selection, dimensionality, and domain-specific tuning.
+- [Vector Search vs Hybrid Search using LanceDB](https://langwatch.ai/docs/cookbooks/vector-vs-hybrid-search.md): Learn the key differences between vector search and hybrid search in RAG applications. Use cases, performance tradeoffs, and when to choose each.
+- [Evaluating Tool Selection](https://langwatch.ai/docs/cookbooks/tool-selection.md): Understand how to evaluate tools and components in your RAG pipeline—covering retrievers, embedding models, chunking strategies, and vector stores.
+- [Finetuning Agents with GRPO](https://langwatch.ai/docs/cookbooks/finetuning-agents.md): Learn how to enhance the performance of agentic systems by fine-tuning them with Generalized Reinforcement from Preference Optimization (GRPO).
+- [Multi-Turn Conversations](https://langwatch.ai/docs/cookbooks/evaluating-multi-turn-conversations.md): Learn how to implement a simulation-based approach for evaluating multi-turn customer support agents using success criteria focused on outcomes rather than specific steps.
 
 ### Use Cases
 
@@ -315,9 +317,9 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Triggers
 
-- [Create Slack trigger](https://docs.langwatch.ai/api-reference/triggers/create-slack-trigger.md)
+- [Create Slack trigger](https://langwatch.ai/docs/api-reference/triggers/create-slack-trigger.md)
 
 ## Scenarios
 
-- [Overview](https://docs.langwatch.ai/api-reference/scenarios/overview.md)
-- [Create Event](https://docs.langwatch.ai/api-reference/scenarios/create-event.md)
+- [Overview](https://langwatch.ai/docs/api-reference/scenarios/overview.md)
+- [Create Event](https://langwatch.ai/docs/api-reference/scenarios/create-event.md)

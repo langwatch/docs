@@ -72,7 +72,7 @@ function processNavigationPages(pages, level = 0, output = []) {
       const filePath = `${cleanPage}.mdx`;
       const { title, description } = extractFrontmatter(filePath);
       const displayTitle = title || generateTitleFromFilename(path.basename(cleanPage));
-      const url = `https://docs.langwatch.ai/${cleanPage}.md`;
+      const url = `https://langwatch.ai/docs/${cleanPage}.md`;
 
       if (description) {
         output.push(`- [${displayTitle}](${url}): ${description}`);
