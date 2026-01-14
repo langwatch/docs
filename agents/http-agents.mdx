@@ -1,0 +1,201 @@
+---
+title: HTTP Agents
+description: Configure HTTP endpoints as testable agents for LangWatch scenarios
+sidebarTitle: HTTP Agents
+---
+
+HTTP Agents let you test any AI agent deployed as an API endpoint. Configure your endpoint once, then use it across multiple scenarios.
+
+## Creating an HTTP Agent
+
+1. Navigate to **Scenarios** in the sidebar
+2. When running a scenario, click **Add New Agent** in the target selector
+3. Configure the HTTP agent settings
+
+<Frame>
+  <img src="/images/agents/http-agent-form.png" alt="HTTP Agent configuration form" />
+</Frame>
+
+## Configuration
+
+### Basic Settings
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Name** | Descriptive name | "Production Chat API" |
+| **URL** | Endpoint to call | `https://api.example.com/chat` |
+| **Method** | HTTP method | `POST` |
+
+### Authentication
+
+Choose how to authenticate requests:
+
+| Type | Description | Header |
+|------|-------------|--------|
+| **None** | No authentication | - |
+| **Bearer Token** | OAuth/JWT token | `Authorization: Bearer <token>` |
+| **API Key** | Custom API key header | `X-API-Key: <key>` (configurable) |
+| **Basic Auth** | Username/password | `Authorization: Basic <base64>` |
+
+<Frame>
+  <img src="/images/agents/auth-config.png" alt="Authentication configuration" />
+</Frame>
+
+### Body Template
+
+Define the JSON body sent to your endpoint. Use placeholders for dynamic values:
+
+```json
+{
+  "messages": {{messages}},
+  "stream": false,
+  "max_tokens": 1000
+}
+```
+
+**Available placeholders:**
+
+| Placeholder | Type | Description |
+|-------------|------|-------------|
+| `{{messages}}` | Array | Full conversation history (OpenAI format) |
+| `{{input}}` | String | Latest user message only |
+| `{{threadId}}` | String | Unique conversation identifier |
+
+**Messages format:**
+
+The `{{messages}}` placeholder expands to an OpenAI-compatible message array:
+
+```json
+[
+  {"role": "system", "content": "You are a helpful assistant."},
+  {"role": "user", "content": "Hello!"},
+  {"role": "assistant", "content": "Hi! How can I help?"},
+  {"role": "user", "content": "I need help with my order"}
+]
+```
+
+### Response Extraction
+
+Use JSONPath to extract the assistant's response from your API's response format.
+
+**Common patterns:**
+
+| API Response Format | Response Path |
+|--------------------|---------------|
+| `{"choices": [{"message": {"content": "..."}}]}` | `$.choices[0].message.content` |
+| `{"response": "..."}` | `$.response` |
+| `{"data": {"reply": "..."}}` | `$.data.reply` |
+| `{"message": "..."}` | `$.message` |
+
+<Tip>
+  If your endpoint returns the message directly as a string (not JSON), leave
+  the response path empty.
+</Tip>
+
+## Example Configurations
+
+### OpenAI-Compatible Endpoint
+
+```
+Name: OpenAI Compatible API
+URL: https://api.yourcompany.com/v1/chat/completions
+Method: POST
+Auth: Bearer Token
+
+Body Template:
+{
+  "model": "gpt-4",
+  "messages": {{messages}},
+  "temperature": 0.7
+}
+
+Response Path: $.choices[0].message.content
+```
+
+### Simple Chat API
+
+```
+Name: Simple Chat Service
+URL: https://chat.yourcompany.com/api/message
+Method: POST
+Auth: API Key (X-API-Key)
+
+Body Template:
+{
+  "message": {{input}},
+  "conversation_id": {{threadId}}
+}
+
+Response Path: $.reply
+```
+
+### Custom Agent with Context
+
+```
+Name: Customer Support Agent
+URL: https://support.yourcompany.com/agent
+Method: POST
+Auth: Bearer Token
+
+Body Template:
+{
+  "messages": {{messages}},
+  "context": {
+    "source": "scenario_test",
+    "timestamp": "{{threadId}}"
+  }
+}
+
+Response Path: $.response.content
+```
+
+## Managing Agents
+
+### Editing Agents
+
+HTTP Agents are project-level resources. To edit an existing agent:
+
+1. Open any scenario
+2. Click the target selector
+3. Find the agent in the HTTP Agents section
+4. Click the edit icon
+
+### Deleting Agents
+
+Deleting an agent won't affect past scenario runs, but will prevent future runs against that agent.
+
+## Troubleshooting
+
+### Common Issues
+
+| Problem | Possible Cause | Solution |
+|---------|---------------|----------|
+| 401 Unauthorized | Invalid or expired token | Check authentication credentials |
+| 404 Not Found | Wrong URL | Verify endpoint URL |
+| Timeout | Slow response | Check endpoint performance |
+| Invalid JSON | Malformed body template | Validate JSON syntax |
+| Empty response | Wrong response path | Test JSONPath against actual response |
+
+### Testing Your Configuration
+
+Before running scenarios:
+
+1. Test your endpoint manually (curl, Postman)
+2. Verify the response format matches your JSONPath
+3. Check that authentication works
+
+<Warning>
+  HTTP Agent credentials are stored in your project. Use environment-specific
+  agents (dev, staging, prod) rather than sharing credentials.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Running Scenarios" icon="play" href="/scenarios/running-scenarios">
+    Test your agent with scenarios
+  </Card>
+  <Card title="Creating Scenarios" icon="plus" href="/scenarios/creating-scenarios">
+    Write test cases for your agent
+  </Card>
+</CardGroup>

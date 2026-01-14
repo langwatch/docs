@@ -1,0 +1,140 @@
+---
+title: On-Platform Scenarios
+description: Create and run agent simulations directly in the LangWatch UI without writing code
+sidebarTitle: Overview
+---
+
+**On-Platform Scenarios** let you create, configure, and run agent simulations directly in the LangWatch UI. This is a visual, no-code alternative to the [Scenario library](https://langwatch.ai/scenario/) for testing agents.
+
+<Frame>
+  <img src="/images/scenarios/scenario-library.png" alt="Scenario Library showing a list of scenarios with labels and run status" />
+</Frame>
+
+## Scenarios vs. Simulations
+
+Understanding the terminology:
+
+| Term | What it means |
+|------|---------------|
+| **Scenario** | A test case definition: the situation, criteria, and configuration |
+| **Simulation** | An execution of a scenario against a target, producing a conversation trace |
+| **Run** | A single simulation execution with its results |
+| **Set** | A group of related scenario runs (used by the testing library) |
+
+**On-Platform Scenarios** are test definitions you create in the UI. When you run a scenario against a target, it produces a **simulation** that you can view in the [Simulations visualizer](/agent-simulations/overview).
+
+## When to Use On-Platform vs. Code
+
+| Use Case | On-Platform | Code |
+|----------|:-----------:|:---:|
+| Quick iteration and experimentation | ✓ | |
+| Non-technical team members (PMs, QA) | ✓ | |
+| Simple behavioral tests | ✓ | ✓ |
+| CI/CD pipeline integration | | ✓ |
+| Complex multi-turn scripts | | ✓ |
+| Programmatic assertions | | ✓ |
+| Dataset-driven testing | Coming soon | ✓ |
+
+**Choose On-Platform Scenarios when you want to:**
+- Quickly test agent behavior without writing code
+- Enable non-technical team members to create and run tests
+- Iterate on prompts with fast visual feedback
+- Demonstrate agent behavior to stakeholders
+
+**Choose the [Scenario library](https://langwatch.ai/scenario/) when you need to:**
+- Run tests in CI/CD pipelines
+- Write complex programmatic assertions
+- Build automated regression test suites
+- Define custom conversation scripts with precise control
+
+## What is a Scenario?
+
+A Scenario is a test case with three parts:
+
+### 1. Situation
+
+The **Situation** describes the context and persona of the simulated user. It tells the User Simulator how to behave during the conversation.
+
+```
+It's Saturday evening. The user is hungry and tired but doesn't want to order
+out. They're looking for a quick, easy vegetarian recipe they can make with
+common pantry ingredients.
+```
+
+### 2. Script
+
+The **Script** defines the conversation flow. In the current release, scenarios run in autopilot mode where the User Simulator drives the conversation based on the Situation.
+
+<Note>
+  The visual Turn Builder for creating custom conversation scripts is coming in a future release.
+</Note>
+
+### 3. Criteria
+
+The **Criteria** (or Score) define how to evaluate the agent's behavior. Each criterion is a natural language statement that should be true for the scenario to pass.
+
+```
+- Agent should not ask more than two follow-up questions
+- Agent should generate a recipe
+- Recipe should include a list of ingredients
+- Recipe should include step-by-step cooking instructions
+- Recipe should be vegetarian and not include any meat
+```
+
+## Key Concepts
+
+### What to Test Against
+
+When you run a scenario, you choose what to test:
+
+- **HTTP Agent**: Call an external API endpoint (your deployed agent)
+- **Prompt**: Use a versioned prompt from [Prompt Management](/prompt-management/overview)
+
+See [Running Scenarios](/scenarios/running-scenarios) for details on setting up each option.
+
+### Labels
+
+**Labels** help organize scenarios in your library. Use them to group scenarios by feature, agent type, priority, or any taxonomy that works for your team.
+
+## Architecture
+
+When you run a scenario, here's what happens:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     LangWatch Platform                      │
+│                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐ │
+│  │  Scenario   │───▶│    User     │◀──▶│   Your Agent    │ │
+│  │ (Situation) │    │  Simulator  │    │    (Target)     │ │
+│  └─────────────┘    └─────────────┘    └─────────────────┘ │
+│                            │                                │
+│                            ▼                                │
+│  ┌─────────────┐    ┌─────────────┐                        │
+│  │  Criteria   │───▶│    Judge    │───▶ Pass/Fail         │
+│  └─────────────┘    └─────────────┘                        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+1. The **Situation** configures the User Simulator's persona and goals
+2. The **User Simulator** and your **Target** have a multi-turn conversation
+3. The **Judge** evaluates the conversation against your **Criteria**
+4. The result (pass/fail with reasoning) is displayed in the Run Visualizer
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Scenarios" icon="plus" href="/scenarios/creating-scenarios">
+    Write effective scenarios with good criteria
+  </Card>
+  <Card title="Running Scenarios" icon="play" href="/scenarios/running-scenarios">
+    Execute scenarios and analyze results
+  </Card>
+  <Card title="Simulations Visualizer" icon="chart-line" href="/agent-simulations/overview">
+    Analyze simulation results
+  </Card>
+  <Card title="Scenario library" icon="code" href="https://langwatch.ai/scenario/">
+    Use the library for CI/CD integration
+  </Card>
+</CardGroup>
