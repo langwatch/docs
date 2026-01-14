@@ -83,6 +83,13 @@
                   "agent-simulations/batch-runs",
                   "agent-simulations/individual-run"
                 ]
+              },
+              {
+                "group": "Agents",
+                "pages": [
+                  "agents/overview",
+                  "agents/http-agents"
+                ]
               }
             ]
           },

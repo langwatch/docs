@@ -1,0 +1,57 @@
+---
+title: Agents Overview
+description: Configure HTTP agents to test your deployed AI agents with LangWatch scenarios
+sidebarTitle: Overview
+---
+
+**Agents** in LangWatch represent external AI systems you want to test. When you run a scenario, you test it against an agent to evaluate its behavior.
+
+## Agent Types
+
+Currently, LangWatch supports **HTTP Agents** - external API endpoints that receive conversation messages and return responses.
+
+<Frame>
+  <img src="/images/agents/agent-list.png" alt="Agent list showing configured HTTP agents" />
+</Frame>
+
+## When to Use Agents
+
+Use HTTP Agents when you want to test:
+
+- **Deployed agents** - Your production or staging AI endpoints
+- **External services** - Third-party AI APIs
+- **Custom implementations** - Any HTTP endpoint that handles conversations
+
+For testing prompts directly (without a deployed endpoint), use [Prompt targets](/prompt-management/overview) instead.
+
+## Key Concepts
+
+### HTTP Agent
+
+An HTTP Agent configuration includes:
+
+| Field | Description |
+|-------|-------------|
+| **Name** | Descriptive name for the agent |
+| **URL** | The endpoint to call |
+| **Authentication** | How to authenticate requests |
+| **Body Template** | JSON body format with message placeholders |
+| **Response Path** | JSONPath to extract the response |
+
+### Agent vs. Prompt
+
+| Testing... | Use |
+|------------|-----|
+| A deployed endpoint (API) | HTTP Agent |
+| A prompt before deployment | Prompt (from Prompt Management) |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="HTTP Agents" icon="globe" href="/agents/http-agents">
+    Configure HTTP agents for scenario testing
+  </Card>
+  <Card title="Running Scenarios" icon="play" href="/scenarios/running-scenarios">
+    Test your agents with scenarios
+  </Card>
+</CardGroup>
