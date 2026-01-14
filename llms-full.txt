@@ -6986,7 +6986,7 @@ For production RAG applications, combine manual RAG spans with [Semantic Convent
 ---
 title: Tracking Tool Calls
 sidebarTitle: TypeScript/JS
-description: Track tool calls in Python-based agent applications with LangWatch to improve debugging and evaluation completeness.
+description: Track tool calls in TypeScript/JavaScript agent applications with LangWatch to improve debugging and evaluation completeness.
 icon: square-js
 keywords: langwatch, typescript, javascript, tools, agent, tracking, instrumentation
 ---
@@ -13689,22 +13689,33 @@ description: Evaluate LLM behavior using LangWatch’s Evaluation API to run bat
 ---
 
 LangWatch makes it incredibly easy to add evaluation tracking to your existing workflows.
-You can keep using pandas and your favorite tools, just add a few lines to start tracking your experiments.
+Just add a few lines to start tracking your experiments.
 
 ## Quickstart
 
-### 1. Install the Python library
+### 1. Install the SDK
+
+
+  ### Python
 
 ```bash
 pip install langwatch
 ```
 
-### 2. Login to LangWatch
+  ### TypeScript
 
-Import and authenticate the LangWatch SDK:
+```bash
+npm install langwatch
+# or
+pnpm add langwatch
+```
 
 
-  ### Notebook
+
+### 2. Set your API Key
+
+
+  ### Python (Notebook)
 
 ```python
 import langwatch
@@ -13714,7 +13725,7 @@ langwatch.login()
 
 Be sure to login or create an account on the link that will be displayed, then provide your API key when prompted.
 
-  ### Command Line
+  ### Environment Variable
 
 ```bash
 export LANGWATCH_API_KEY=your_api_key
@@ -13723,6 +13734,9 @@ export LANGWATCH_API_KEY=your_api_key
 
 
 ### 3. Start tracking
+
+
+  ### Python
 
 ```python
 import langwatch
@@ -13743,6 +13757,35 @@ for idx, row in evaluation.loop(df.iterrows()):
     evaluation.log("sample_metric", index=idx, score=0.95)
 ```
 
+  ### TypeScript
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+// Initialize the SDK
+const langwatch = new LangWatch();
+
+// Your dataset
+const dataset = [
+  { question: "What is 2+2?", expected: "4" },
+  { question: "What is the capital of France?", expected: "Paris" },
+];
+
+// Initialize evaluation
+const evaluation = await langwatch.evaluation.init("my-experiment");
+
+// Run evaluation with a callback
+await evaluation.run(dataset, async ({ item, index }) => {
+  // Run your model or pipeline
+  const response = await myAgent(item.question);
+
+  // Log a metric for this sample
+  evaluation.log("sample_metric", { index, score: 0.95 });
+});
+```
+
+
+
 That's it! Your evaluation metrics are now being tracked and visualized in LangWatch.
 
 <Frame>
@@ -13755,11 +13798,25 @@ That's it! Your evaluation metrics are now being tracked and visualized in LangW
 
 The evaluation is started by creating an evaluation session with a descriptive name:
 
+
+  ### Python
+
 ```python
 evaluation = langwatch.evaluation.init("rag-pipeline-openai-vs-claude")
 ```
 
-### Loop wrapping
+  ### TypeScript
+
+```typescript
+const evaluation = await langwatch.evaluation.init("rag-pipeline-openai-vs-claude");
+```
+
+
+
+### Iterating over data
+
+
+  ### Python
 
 Use `evaluation.loop()` around your iterator so the entries are tracked:
 
@@ -13768,9 +13825,29 @@ for index, row in evaluation.loop(df.iterrows()):
     # Your existing evaluation code
 ```
 
+  ### TypeScript
+
+Use `evaluation.run()` with a callback that receives each item:
+
+```typescript
+await evaluation.run(dataset, async ({ item, index, span }) => {
+  // Your existing evaluation code
+});
+```
+
+The callback receives:
+- `item` - The current dataset item
+- `index` - The current index in the dataset
+- `span` - An OpenTelemetry span for custom tracing
+
+
+
 ### Metrics logging
 
 Track any metric you want with `evaluation.log()`:
+
+
+  ### Python
 
 ```python
 # Numeric scores
@@ -13784,70 +13861,169 @@ evaluation.log("coherence", index=index, score=0.9,
                data={"output": result["text"], "tokens": result["token_count"]})
 ```
 
-## Use LangWatch Datasets
+  ### TypeScript
 
-Collaborate with your team using datasets stored in LangWatch:
+```typescript
+// Numeric scores
+evaluation.log("relevance", { index, score: 0.85 });
+
+// Boolean pass/fail
+evaluation.log("contains_citation", { index, passed: true });
+
+// Include additional data for debugging
+evaluation.log("coherence", {
+  index,
+  score: 0.9,
+  data: { output: result.text, tokens: result.tokenCount }
+});
+```
+
+
+
+## Comparing Multiple Targets
+
+When comparing different models, prompts, or configurations, use the `target` parameter to organize your results:
+
+
+  ### Python
 
 ```python
-# Load dataset from LangWatch
-df = langwatch.dataset.get_dataset("dataset-id").to_pandas()
-
-evaluation = langwatch.evaluation.init("team-shared-eval")
+evaluation = langwatch.evaluation.init("model-comparison")
 
 for index, row in evaluation.loop(df.iterrows()):
-    # Your evaluation logic
+    # Evaluate GPT-5
+    gpt5_response = call_openai("gpt-5", row["question"])
+    evaluation.log(
+        "accuracy",
+        index=index,
+        score=calculate_accuracy(gpt5_response, row["expected"]),
+        target="gpt5-baseline",
+        metadata={"model": "openai/gpt-5", "temperature": 0.7}
+    )
+
+    # Evaluate Claude
+    claude_response = call_anthropic("claude-4-opus", row["question"])
+    evaluation.log(
+        "accuracy",
+        index=index,
+        score=calculate_accuracy(claude_response, row["expected"]),
+        target="claude-experiment",
+        metadata={"model": "anthropic/claude-4-opus", "temperature": 0.5}
+    )
 ```
 
-<Info>
-  Create and manage datasets in the LangWatch UI. See our [Datasets Overview](/datasets/overview) for more details.
-</Info>
+  ### TypeScript
 
-## Capture Full Pipeline
+```typescript
+const evaluation = await langwatch.evaluation.init("model-comparison");
 
-### Add Custom Data
+await evaluation.run(dataset, async ({ item, index }) => {
+  // Evaluate GPT-5
+  const gpt5Response = await callOpenAI("gpt-5", item.question);
+  evaluation.log("accuracy", {
+    index,
+    score: calculateAccuracy(gpt5Response, item.expected),
+    target: "gpt5-baseline",
+    metadata: { model: "openai/gpt-5", temperature: 0.7 }
+  });
 
-Beyond just metrics, you can capture outputs and other relevant data for analysis:
+  // Evaluate Claude
+  const claudeResponse = await callAnthropic("claude-4-opus", item.question);
+  evaluation.log("accuracy", {
+    index,
+    score: calculateAccuracy(claudeResponse, item.expected),
+    target: "claude-experiment",
+    metadata: { model: "anthropic/claude-4-opus", temperature: 0.5 }
+  });
+});
+```
+
+
+
+### Target Registration
+
+The first time you use a target name, it's automatically registered with the provided metadata:
+
+
+  ### Python
 
 ```python
-result = agent(row["question"])
+# First call registers the target with metadata
+evaluation.log("latency", index=0, target="gpt5", metadata={"model": "gpt-5", "temp": 0.7})
 
-evaluation.log("helpfulness",
-               index=index,
-               score=0.88,
-               data={
-                  "response": result["text"],
-                  "contexts": result["contexts"]
-               })
+# Subsequent calls can omit metadata - it's already registered
+evaluation.log("accuracy", index=0, target="gpt5", score=0.95)
+evaluation.log("latency", index=1, target="gpt5", score=150)
 ```
 
-### Trace Your LLM Pipeline
+  ### TypeScript
 
-To get complete visibility into your LLM pipeline, trace your agent with the `@langwatch.trace()` decorator:
+```typescript
+// First call registers the target with metadata
+evaluation.log("latency", { index: 0, target: "gpt5", metadata: { model: "gpt-5", temp: 0.7 } });
+
+// Subsequent calls can omit metadata - it's already registered
+evaluation.log("accuracy", { index: 0, target: "gpt5", score: 0.95 });
+evaluation.log("latency", { index: 1, target: "gpt5", score: 150 });
+```
+
+
+
+<Warning>
+  If you provide different metadata for the same target name, an error will be raised.
+  Use a different target name if you want different configurations.
+</Warning>
+
+### Metadata for Comparison
+
+Target metadata is used for comparison charts in the LangWatch UI. You can group results by any metadata field:
+
+
+  ### Python
 
 ```python
-@langwatch.trace()
-def agent(question):
-    # Your RAG pipeline, chain, or agent logic
-    context = retrieve_documents(question)
-    completion = llm.generate(question, context)
-    return {"text": completion.text, "context": context}
-
-for index, row in evaluation.loop(df.iterrows()):
-    result = agent(row["question"])
-    evaluation.log("accuracy", index=index, score=0.9)
+# Compare different temperatures
+for temp in [0.0, 0.5, 0.7, 1.0]:
+    for index, row in evaluation.loop(df.iterrows()):
+        response = call_llm(row["question"], temperature=temp)
+        evaluation.log(
+            "quality",
+            index=index,
+            score=evaluate_quality(response),
+            target=f"temp-{temp}",
+            metadata={"model": "gpt-5", "temperature": temp}
+        )
 ```
 
-<Info>
-  With tracing enabled, you can click through from any evaluation result to see the complete execution trace, including all LLM calls, prompts, and intermediate steps.
+  ### TypeScript
 
-  Learn more in our [Python Integration Guide](/integration/python/guide).
-</Info>
+```typescript
+// Compare different temperatures
+for (const temp of [0.0, 0.5, 0.7, 1.0]) {
+  await evaluation.run(dataset, async ({ item, index }) => {
+    const response = await callLLM(item.question, { temperature: temp });
+    evaluation.log("quality", {
+      index,
+      score: evaluateQuality(response),
+      target: `temp-${temp}`,
+      metadata: { model: "gpt-5", temperature: temp }
+    });
+  });
+}
+```
+
+
+
+In the LangWatch UI, you can then visualize how quality varies across temperature values.
 
 ## Parallel Execution
 
-LLM calls can be slow. To speed up your evaluations, you can use the built-in parallelization,
-by putting the content of the loop in a function and submitting it to the evaluation for
-parallel execution:
+LLM calls can be slow. Both SDKs support parallel execution to speed up your evaluations.
+
+
+  ### Python
+
+Use the built-in parallelization by putting the content of the loop in a function and submitting it:
 
 ```python {4,8}
 evaluation = langwatch.evaluation.init("parallel-eval-example")
@@ -13864,9 +14040,31 @@ for index, row in evaluation.loop(df.iterrows(), threads=4):
   By default, `threads=4`. Adjust based on your API rate limits and system resources.
 </Note>
 
+  ### TypeScript
+
+Pass the `concurrency` option to control how many items run in parallel:
+
+```typescript
+await evaluation.run(dataset, async ({ item, index }) => {
+  const result = await agent(item.question);  // Runs in parallel
+  evaluation.log("response_quality", { index, score: 0.92 });
+}, { concurrency: 4 });
+```
+
+<Note>
+  By default, `concurrency=4`. Adjust based on your API rate limits and system resources.
+</Note>
+
+
+
 ## Built-in Evaluators
 
-LangWatch provides a comprehensive suite of evaluation metrics out of the box. Use `evaluation.run()` to leverage pre-built evaluators:
+LangWatch provides a comprehensive suite of evaluation metrics out of the box.
+
+
+  ### Python
+
+Use `evaluation.run()` to leverage pre-built evaluators:
 
 ```python
 for index, row in evaluation.loop(df.iterrows()):
@@ -13894,13 +14092,43 @@ for index, row in evaluation.loop(df.iterrows()):
     evaluation.submit(evaluate, index, row)
 ```
 
+  ### TypeScript
+
+Use `evaluation.evaluate()` to leverage pre-built evaluators:
+
+```typescript
+await evaluation.run(dataset, async ({ item, index }) => {
+  const { response, contexts } = await executeRagPipeline(item.question);
+
+  // Use built-in RAGAS faithfulness evaluator
+  await evaluation.evaluate("ragas/faithfulness", {
+    index,
+    data: {
+      input: item.question,
+      output: response,
+      contexts,
+    },
+    settings: {
+      model: "openai/gpt-5",
+      max_tokens: 2048,
+    }
+  });
+
+  // Log custom metrics alongside
+  evaluation.log("confidence", { index, score: response.confidence });
+});
+```
+
+
+
 <Info>
   Browse our complete list of [available evaluators](/llm-evaluation/list) including metrics for RAG quality, hallucination detection, safety, and more.
 </Info>
 
 ## Complete Example
 
-Here's a full example combining all the features:
+
+  ### Python
 
 ```python
 import langwatch
@@ -13929,7 +14157,6 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
             settings={
                 "model": "openai/gpt-5",
                 "max_tokens": 2048,
-                "autodetect_dont_know": True,
             }
         )
 
@@ -13944,10 +14171,108 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
     evaluation.submit(evaluate, index, row)
 ```
 
+  ### TypeScript
+
+```typescript
+import { LangWatch } from 'langwatch';
+
+const langwatch = new LangWatch();
+
+// Your dataset (or load from LangWatch)
+const dataset = await loadDataset();
+
+// Initialize evaluation
+const evaluation = await langwatch.evaluation.init("rag-pipeline-evaluation-v2");
+
+// Run evaluation with parallelization
+await evaluation.run(dataset, async ({ item, index }) => {
+  // Execute your RAG pipeline
+  const { response, contexts } = await executeRagPipeline(item.question);
+
+  // Use LangWatch evaluators
+  await evaluation.evaluate("ragas/faithfulness", {
+    index,
+    data: {
+      input: item.question,
+      output: response,
+      contexts,
+    },
+    settings: {
+      model: "openai/gpt-5",
+      max_tokens: 2048,
+    }
+  });
+
+  // Log custom metrics
+  evaluation.log("response_time", {
+    index,
+    score: response.durationMs,
+    data: { timestamp: response.timestamp }
+  });
+}, { concurrency: 8 });
+```
+
+
+
+## Tracing Your Pipeline
+
+To get complete visibility into your LLM pipeline, add tracing to your functions:
+
+
+  ### Python
+
+```python
+@langwatch.trace()
+def agent(question):
+    # Your RAG pipeline, chain, or agent logic
+    context = retrieve_documents(question)
+    completion = llm.generate(question, context)
+    return {"text": completion.text, "context": context}
+
+for index, row in evaluation.loop(df.iterrows()):
+    result = agent(row["question"])
+    evaluation.log("accuracy", index=index, score=0.9)
+```
+
+<Info>
+  Learn more in our [Python Integration Guide](/integration/python/guide).
+</Info>
+
+  ### TypeScript
+
+```typescript
+import { getLangWatchTracer } from 'langwatch';
+
+const tracer = getLangWatchTracer('my-app');
+
+const agent = async (question: string) => {
+  return tracer.withActiveSpan('agent', async (span) => {
+    // Your RAG pipeline, chain, or agent logic
+    const context = await retrieveDocuments(question);
+    const completion = await llm.generate(question, context);
+    return { text: completion.text, context };
+  });
+};
+
+await evaluation.run(dataset, async ({ item, index }) => {
+  const result = await agent(item.question);
+  evaluation.log("accuracy", { index, score: 0.9 });
+});
+```
+
+<Info>
+  Learn more in our [TypeScript Integration Guide](/integration/typescript/guide).
+</Info>
+
+
+
+With tracing enabled, you can click through from any evaluation result to see the complete execution trace, including all LLM calls, prompts, and intermediate steps.
+
 ## What's Next?
 
 - **[View Evaluators](/llm-evaluation/list)** - Explore all available evaluation metrics
-- **[Python Integration](/integration/python/guide)** - Set up comprehensive tracing
+- **[Python Integration](/integration/python/guide)** - Set up comprehensive tracing for Python
+- **[TypeScript Integration](/integration/typescript/guide)** - Set up comprehensive tracing for TypeScript
 - **[Datasets](/datasets/overview)** - Learn about dataset management
 
 <CardGroup cols={2}>
@@ -13958,6 +14283,7 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
     Check out example notebooks
   </Card>
 </CardGroup>
+
 ---
 
 # FILE: ./datasets/ai-dataset-generation.mdx
@@ -14503,7 +14829,7 @@ jobs:
 
 ---
 title: "Using Prompts in the Optimization Studio"
-description: "Use JudgeResult to inspect LLM-judged evaluation outcomes during simulation-based agent testing."
+description: "Learn how to version, test, and optimize prompts directly inside the Optimization Studio."
 ---
 
 ### Watch: Prompt Management Tutorial
@@ -15646,7 +15972,7 @@ For any questions or issues, feel free to contact our support, join our channel 
 title: Batch Evaluations
 ---
 
-If you intend to conduct batch evaluations on the datasets you've created in LangWatch, we offer a Python SDK to facilitate this process. This guide aims to provide comprehensive instructions on leveraging our Python SDK to execute batch evaluations effectively.
+LangWatch provides SDKs for both Python and TypeScript to help you run batch evaluations on your datasets. This guide covers the basics of batch evaluations - for detailed API documentation, see our [Evaluation API Guide](/llm-evaluation/offline/code/evaluation-api).
 
 ### Usage
 
@@ -20784,13 +21110,6 @@ openapi: post /legacy/ragas_context_recall/evaluate
 ---
 ---
 
-# FILE: ./api-reference/evaluators/llama-guard.mdx
-
----
-openapi: post /huggingface/llama_guard/evaluate
----
----
-
 # FILE: ./api-reference/evaluators/context-f1.mdx
 
 ---
@@ -20844,13 +21163,6 @@ openapi: post /langevals/similarity/evaluate
 
 ---
 openapi: post /langevals/basic/evaluate
----
----
-
-# FILE: ./api-reference/evaluators/example-evaluator.mdx
-
----
-openapi: post /example/word_count/evaluate
 ---
 ---
 
@@ -21231,7 +21543,7 @@ openapi: post /api/scenario-events
 
 ---
 title: "Overview"
-description: "Understand how prompts are versioned, managed, and used in evaluations and agent testing within LangWatch."
+description: "Prompts are used to manage and version your prompts"
 ---
 
 ## Intro
@@ -21244,11 +21556,11 @@ To make a call to the Prompts API, you will need to pass through your LangWatch 
 
 #### Allowed Methods
 
-- `GET /api/prompts` - Retrieve all prompts for a project to manage prompt versioning, run comparisons, and support agent testing pipelines.
+- `GET /api/prompts` - Get all prompts for a project
 - `POST /api/prompts` - Create a new prompt
-- `GET /api/prompts/:id` - Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines.
-- `PUT /api/prompts/:id` - Update prompts to refine versions, run new evaluations, and test agent performance under changing configurations.
-- `DELETE /api/prompts/:id` - Delete prompts programmatically using LangWatch to manage versioning and maintain clean evaluation pipelines.
+- `GET /api/prompts/:id` - Get a specific prompt
+- `PUT /api/prompts/:id` - Update a prompt
+- `DELETE /api/prompts/:id` - Delete a prompt
 - `GET /api/prompts/:id/versions` - Get all versions for a prompt
 - `POST /api/prompts/:id/versions` - Create a new version for a prompt
 
