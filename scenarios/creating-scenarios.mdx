@@ -1,47 +1,56 @@
 ---
 title: Creating Scenarios
-description: Learn how to create and edit scenarios on the LangWatch platform
+description: Write effective scenarios with good situations and criteria
+sidebarTitle: Creating Scenarios
 ---
 
-# Creating Scenarios
-
-This guide walks you through creating scenarios in the LangWatch UI.
+This guide walks you through creating scenarios in the LangWatch UI and provides best practices for writing effective test cases.
 
 ## Accessing the Scenario Library
 
-Navigate to **Scenarios** in the left sidebar to open the Scenario Library. This is where all your project's scenarios are listed.
+Navigate to **Scenarios** in the left sidebar to open the Scenario Library.
 
-<img src="/images/scenarios/scenario-library.png" alt="Scenario Library" />
+<Frame>
+  <img src="/images/scenarios/scenario-library.png" alt="Scenario Library" />
+</Frame>
 
 From here you can:
 - View all scenarios with their labels and last updated time
 - Filter scenarios by label
 - Create new scenarios
-- Click a scenario to edit it
+- Click any scenario to edit it
 
 ## Creating a New Scenario
 
-Click the **New Scenario** button to create a scenario. This opens the Scenario Editor.
+Click **New Scenario** to open the Scenario Editor.
 
-<img src="/images/scenarios/scenario-editor.png" alt="Scenario Editor" />
+<Frame>
+  <img src="/images/scenarios/scenario-editor.png" alt="Scenario Editor" />
+</Frame>
 
 ### Step 1: Name Your Scenario
 
 Give your scenario a descriptive name that explains what it tests:
 
-- "Handles refund request politely"
-- "Recommends vegetarian recipes"
-- "Escalates frustrated customer to human"
+**Good names:**
+- "Handles refund request for damaged item"
+- "Recommends vegetarian recipes when asked"
+- "Escalates frustrated customer to human agent"
 
-### Step 2: Define the Situation
+**Avoid vague names:**
+- "Test 1"
+- "Refund"
+- "Customer service"
 
-The **Situation** describes the context for the simulated user. Write it as a narrative that captures:
+### Step 2: Write the Situation
+
+The **Situation** describes the simulated user's context, persona, and goals. Write it as a narrative that captures:
 
 - **Who** the user is (persona, mood, background)
-- **What** they're trying to accomplish
-- **Any constraints** or special circumstances
+- **What** they want to accomplish
+- **Constraints** or special circumstances
 
-**Example:**
+**Example - Support scenario:**
 
 ```
 The user is a frustrated customer who received the wrong item in their order.
@@ -50,69 +59,166 @@ patience and want either a replacement shipped overnight or a full refund.
 They're not interested in store credit.
 ```
 
-<Tip>
-  Be specific about the user's emotional state and constraints. This helps the
-  User Simulator generate realistic, challenging interactions.
-</Tip>
+**Example - Sales scenario:**
 
-### Step 3: Add Evaluation Criteria
-
-The **Criteria** (or Score) define how to evaluate the agent's behavior. Add criteria as natural language statements that should be true for the scenario to pass.
-
-Click **Add Criterion** and enter statements like:
-
-- "Agent should acknowledge the customer's frustration"
-- "Agent should offer a concrete solution within 3 messages"
-- "Agent should not ask the customer to repeat information"
-- "Agent should use a polite, empathetic tone throughout"
-
-<img src="/images/scenarios/criteria-list.png" alt="Criteria List" />
-
-**Tips for writing good criteria:**
-
-| Do | Don't |
-|----|-------|
-| Be specific and measurable | Use vague language ("be nice") |
-| Focus on observable behavior | Reference internal state |
-| Test one thing per criterion | Combine multiple requirements |
-| Include edge cases | Only test happy paths |
-
-### Step 4: Add Labels (Optional)
-
-Labels help organize scenarios in your library. Add labels to group scenarios by:
-
-- Feature area: `checkout`, `support`, `onboarding`
-- Agent type: `customer-service`, `sales`, `assistant`
-- Priority: `critical`, `regression`, `exploratory`
-
-## Editing Scenarios
-
-Click any scenario in the library to open it in the editor. All changes are auto-saved.
-
-<Warning>
-  Changes to a scenario don't affect past runs. Each run captures the scenario
-  state at execution time.
-</Warning>
-
-## Scenario Anatomy
-
-Here's how the scenario components map to the testing flow:
-
-```mermaid
-graph LR
-    S[Situation] --> US[User Simulator]
-    US --> A[Your Agent]
-    A --> US
-    C[Criteria] --> J[Judge]
-    US --> J
-    A --> J
-    J --> R[Pass/Fail]
+```
+The user is researching project management tools for their 15-person startup.
+They currently use spreadsheets and are overwhelmed. Budget is limited to $50
+per user per month. They need something that integrates with Slack and Google
+Workspace.
 ```
 
-1. The **Situation** configures the User Simulator's persona
-2. The User Simulator and your Agent have a conversation
-3. The **Criteria** configure the Judge's evaluation
-4. The Judge scores the conversation and determines pass/fail
+<Tip>
+  Be specific about emotional state and constraints. Vague situations produce
+  generic conversations that don't test edge cases.
+</Tip>
+
+### Step 3: Define Criteria
+
+**Criteria** are natural language statements that should be true for the scenario to pass. The Judge evaluates each criterion and explains its reasoning.
+
+Click **Add Criterion** and enter evaluation statements:
+
+<Frame>
+  <img src="/images/scenarios/criteria-list.png" alt="Criteria List" />
+</Frame>
+
+## Writing Good Criteria
+
+Criteria are the heart of your scenario. Well-written criteria catch real issues; poorly-written ones create noise.
+
+### Be Specific and Observable
+
+| Good | Bad |
+|------|-----|
+| Agent acknowledges the customer's frustration within the first 2 messages | Agent is empathetic |
+| Agent offers a concrete solution (refund, replacement, or escalation) | Agent helps the customer |
+| Agent does not ask the customer to repeat their order number | Agent doesn't waste time |
+
+### Test One Thing Per Criterion
+
+| Good | Bad |
+|------|-----|
+| Agent uses a polite tone throughout | Agent is polite and helpful and resolves the issue quickly |
+| Agent offers a solution within 3 messages | Agent is fast and accurate |
+
+### Include Both Positive and Negative Checks
+
+```
+✓ Agent should offer to process a refund
+✓ Agent should not suggest store credit after user declined it
+✓ Agent should apologize for the inconvenience
+✓ Agent should not ask for the order number more than once
+```
+
+### Cover Different Aspects
+
+**Behavioral criteria:**
+- "Agent should not ask more than 2 clarifying questions"
+- "Agent should summarize the user's issue before proposing a solution"
+
+**Content criteria:**
+- "Recipe should include a list of ingredients with quantities"
+- "Response should mention the 30-day return policy"
+
+**Tone criteria:**
+- "Agent should maintain a professional but friendly tone"
+- "Agent should not use corporate jargon"
+
+**Safety criteria:**
+- "Agent should not make promises it cannot keep"
+- "Agent should not disclose other customers' information"
+
+### Avoid Criteria the Judge Can't Evaluate
+
+The Judge can only see the conversation. It cannot:
+- Check if a database was updated
+- Verify if an email was sent
+- Confirm tool calls succeeded (use the SDK for this)
+
+## Adding Labels
+
+Labels help organize your scenario library. Click the label input to add tags.
+
+**Common labeling strategies:**
+
+| Category | Examples |
+|----------|----------|
+| Feature area | `checkout`, `support`, `onboarding`, `search` |
+| Agent type | `customer-service`, `sales`, `assistant` |
+| Priority | `critical`, `regression`, `exploratory` |
+| User type | `new-user`, `power-user`, `frustrated-user` |
+
+## Scenario Templates
+
+Here are templates for common scenario types:
+
+### Customer Support
+
+```
+Name: Handles [issue type] for [customer type]
+
+Situation:
+The user is a [persona] who [problem description]. They have [relevant context]
+and want [specific outcome]. They are feeling [emotional state].
+
+Criteria:
+- Agent acknowledges the issue within first response
+- Agent asks relevant clarifying questions (no more than 2)
+- Agent provides a clear solution or next steps
+- Agent maintains empathetic tone throughout
+- Agent does not make promises outside policy
+```
+
+### Product Recommendation
+
+```
+Name: Recommends [product type] for [use case]
+
+Situation:
+The user is looking for [product category] because [reason]. They need
+[specific requirements] and have [constraints]. They're comparing options
+and want honest recommendations.
+
+Criteria:
+- Agent asks about key requirements before recommending
+- Recommendations match stated requirements
+- Agent explains why each recommendation fits
+- Agent mentions relevant tradeoffs
+- Agent does not oversell or make exaggerated claims
+```
+
+### Information Retrieval
+
+```
+Name: Answers [topic] question accurately
+
+Situation:
+The user needs to know [specific information] for [reason]. They have
+[level of expertise] and prefer [communication style].
+
+Criteria:
+- Agent provides accurate information
+- Agent cites sources or documentation when available
+- Agent admits uncertainty rather than guessing
+- Response is appropriately detailed for the question
+- Agent offers to clarify or expand if needed
+```
+
+## Iterating on Scenarios
+
+Scenarios improve through iteration:
+
+1. **Start simple**: Begin with core criteria that capture the main behavior
+2. **Run and review**: Execute the scenario and read the Judge's reasoning
+3. **Refine criteria**: If criteria pass/fail unexpectedly, adjust the wording
+4. **Add edge cases**: Once the happy path works, add criteria for edge cases
+5. **Use labels**: Tag scenarios by iteration stage (`draft`, `validated`, `production`)
+
+<Warning>
+  Editing a scenario doesn't affect past runs. Each run captures the scenario
+  state at execution time.
+</Warning>
 
 ## Next Steps
 
@@ -121,6 +227,6 @@ graph LR
     Connect your scenario to an agent
   </Card>
   <Card title="Running Scenarios" icon="play" href="/scenarios/running-scenarios">
-    Execute scenarios and view results
+    Execute and analyze results
   </Card>
 </CardGroup>

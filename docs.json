@@ -71,7 +71,6 @@
                 "pages": [
                   "scenarios/overview",
                   "scenarios/creating-scenarios",
-                  "scenarios/targets",
                   "scenarios/running-scenarios"
                 ]
               },
