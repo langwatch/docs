@@ -75,7 +75,7 @@
                 ]
               },
               {
-                "group": "Scenario SDK",
+                "group": "Scenario Library",
                 "pages": [
                   "agent-simulations/overview",
                   "agent-simulations/getting-started",

@@ -129,12 +129,26 @@ Criteria are the heart of your scenario. Well-written criteria catch real issues
 - "Agent should not make promises it cannot keep"
 - "Agent should not disclose other customers' information"
 
-### Avoid Criteria the Judge Can't Evaluate
+### Platform vs. Code-Based Evaluation
 
-The Judge can only see the conversation. It cannot:
-- Check if a database was updated
-- Verify if an email was sent
-- Confirm tool calls succeeded (use the SDK for this)
+On-Platform Scenarios evaluate based on the **conversation transcript only**. The Judge sees the messages exchanged but not internal system behavior.
+
+For advanced evaluation that includes **execution traces** (tool calls, API latency, span attributes), use the [Scenario testing library](https://langwatch.ai/scenario/) in code. The library integrates with OpenTelemetry to give the Judge access to:
+- Tool call verification (was the right tool called?)
+- Execution timing (was latency under threshold?)
+- Span attributes (what model was used? how many tokens?)
+- Error detection (did any operations fail?)
+
+**On-Platform (conversation only):**
+- "Agent should apologize for the inconvenience" ✓
+- "Agent should mention the 30-day return policy" ✓
+
+**Code-based (with trace access):**
+- "Agent called the search_inventory tool exactly once" ✓
+- "No errors occurred during execution" ✓
+- "API response time was under 500ms" ✓
+
+See the [Scenario documentation](https://langwatch.ai/scenario/) for trace-based evaluation.
 
 ## Adding Labels
 

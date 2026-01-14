@@ -4,7 +4,7 @@ description: Create and run agent simulations directly in the LangWatch UI witho
 sidebarTitle: Overview
 ---
 
-**On-Platform Scenarios** let you create, configure, and run agent simulations directly in the LangWatch UI. This is a visual, no-code alternative to the [Scenario SDK](https://langwatch.ai/scenario/) for testing agents.
+**On-Platform Scenarios** let you create, configure, and run agent simulations directly in the LangWatch UI. This is a visual, no-code alternative to the [Scenario library](https://langwatch.ai/scenario/) for testing agents.
 
 <Frame>
   <img src="/images/scenarios/scenario-library.png" alt="Scenario Library showing a list of scenarios with labels and run status" />
@@ -19,13 +19,13 @@ Understanding the terminology:
 | **Scenario** | A test case definition: the situation, criteria, and configuration |
 | **Simulation** | An execution of a scenario against a target, producing a conversation trace |
 | **Run** | A single simulation execution with its results |
-| **Set** | A group of related scenario runs (used by the SDK) |
+| **Set** | A group of related scenario runs (used by the testing library) |
 
 **On-Platform Scenarios** are test definitions you create in the UI. When you run a scenario against a target, it produces a **simulation** that you can view in the [Simulations visualizer](/agent-simulations/overview).
 
-## When to Use On-Platform vs. SDK
+## When to Use On-Platform vs. Code
 
-| Use Case | On-Platform | SDK |
+| Use Case | On-Platform | Code |
 |----------|:-----------:|:---:|
 | Quick iteration and experimentation | ✓ | |
 | Non-technical team members (PMs, QA) | ✓ | |
@@ -41,7 +41,7 @@ Understanding the terminology:
 - Iterate on prompts with fast visual feedback
 - Demonstrate agent behavior to stakeholders
 
-**Choose the [Scenario SDK](https://langwatch.ai/scenario/) when you need to:**
+**Choose the [Scenario library](https://langwatch.ai/scenario/) when you need to:**
 - Run tests in CI/CD pipelines
 - Write complex programmatic assertions
 - Build automated regression test suites
@@ -134,7 +134,7 @@ When you run a scenario, here's what happens:
   <Card title="Simulations Visualizer" icon="chart-line" href="/agent-simulations/overview">
     Analyze simulation results
   </Card>
-  <Card title="Scenario SDK" icon="code" href="https://langwatch.ai/scenario/">
-    Use the SDK for CI/CD integration
+  <Card title="Scenario library" icon="code" href="https://langwatch.ai/scenario/">
+    Use the library for CI/CD integration
   </Card>
 </CardGroup>
