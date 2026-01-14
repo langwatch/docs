@@ -1,0 +1,108 @@
+---
+title: Overview
+description: Create and run agent simulations directly on the LangWatch platform
+---
+
+# On-Platform Scenarios
+
+**On-Platform Scenarios** let you create, configure, and run agent simulations directly in the LangWatch UI - no code required. This is a visual, no-code companion to the [Scenario SDK](/agent-simulations/getting-started) for testing agents.
+
+<img src="/images/scenarios/scenario-library.png" alt="Scenario Library" />
+
+## When to Use On-Platform Scenarios
+
+| Use Case | On-Platform | SDK |
+|----------|-------------|-----|
+| Quick iteration and experimentation | Best | Good |
+| Non-technical team members (PMs, QA) | Best | - |
+| Simple behavioral tests | Best | Good |
+| CI/CD integration | - | Best |
+| Complex multi-turn scripts | Good | Best |
+| Programmatic assertions | - | Best |
+| Dataset-driven testing | Coming soon | Best |
+
+**Use On-Platform Scenarios when:**
+- You want to quickly test agent behavior without writing code
+- Non-technical team members need to create or run tests
+- You're iterating on prompts and want fast feedback
+- You need to demonstrate agent behavior to stakeholders
+
+**Use the SDK when:**
+- You need to run tests in CI/CD pipelines
+- You require complex programmatic assertions
+- You're building automated regression test suites
+- You need fine-grained control over conversation flow
+
+## What is a Scenario?
+
+A Scenario is a **3-part specification** that defines how to test an agent:
+
+### 1. Situation (Context)
+
+The **Situation** describes the context and persona of the simulated user. It tells the User Simulator how to behave during the conversation.
+
+```
+It's Saturday evening. The user is hungry and tired but doesn't want to order
+out. They're looking for a quick, easy vegetarian recipe they can make with
+common pantry ingredients.
+```
+
+### 2. Script (Conversation Flow)
+
+The **Script** defines the turn-by-turn flow of the conversation. For M1, scenarios use auto-pilot mode where the User Simulator drives the conversation based on the Situation.
+
+<Note>
+  The visual Turn Builder for creating custom scripts is coming in M2 (Jan 31).
+</Note>
+
+### 3. Score (Evaluation Criteria)
+
+The **Score** is a list of criteria the Judge uses to evaluate the agent's behavior. Each criterion is a natural language statement that should be true for the scenario to pass.
+
+```
+- Agent should not ask more than two follow-up questions
+- Agent should generate a recipe
+- Recipe should include a list of ingredients
+- Recipe should include step-by-step cooking instructions
+- Recipe should be vegetarian and not include any meat
+```
+
+## Key Concepts
+
+### Targets
+
+A **Target** is what the scenario tests against. It defines how the platform invokes your agent:
+
+- **HTTP**: Call an external API endpoint
+- **LLM**: Direct model calls using your project's provider keys
+- **Prompt Config**: Use a versioned prompt from Prompt Management
+
+See [Configuring Targets](/scenarios/targets) for details.
+
+### Runs
+
+A **Run** is a single execution of a scenario against a target. Each run produces:
+- A conversation trace showing all messages
+- Evaluation scores for each criterion
+- Pass/fail status
+
+### Labels
+
+**Labels** help organize scenarios in your library. Use them to group scenarios by feature, agent type, or any other taxonomy that makes sense for your team.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Scenarios" icon="plus" href="/scenarios/creating-scenarios">
+    Learn how to create and edit scenarios
+  </Card>
+  <Card title="Configuring Targets" icon="bullseye" href="/scenarios/targets">
+    Set up HTTP, LLM, or Prompt Config targets
+  </Card>
+  <Card title="Running Scenarios" icon="play" href="/scenarios/running-scenarios">
+    Execute scenarios and analyze results
+  </Card>
+  <Card title="SDK Integration" icon="code" href="/agent-simulations/getting-started">
+    Use the Scenario SDK for CI/CD
+  </Card>
+</CardGroup>
