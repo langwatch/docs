@@ -3,20 +3,19 @@ title: 'Overview'
 description: 'Browse all available evaluators in LangWatch to find the right scoring method for your AI agent evaluation use case.'
 ---
 
+## Intro
+
 LangWatch offers an extensive library of evaluators to help you evaluate the quality and guarantee the safety of your LLM apps.
 
 While here you can find a reference list, to get the execution code you can use the [Evaluation Wizard](https://app.langwatch.ai/@project/evaluations) on LangWatch platform.
 
 ## Authentication
 
-To make a call to the Evaluators API, you will need to pass through your LangWatch API key in the header as `x-api-key`. Your API key can be found on the setup page under settings.
+To make a call to the Evaluators API, you will need to pass through your LangWatch API key in the header as `X-Auth-Token`. Your API key can be found on the setup page under settings.
 
-## Base URL
+#### Allowed Methods
 
-All evaluator endpoints are available at:
-```
-https://app.langwatch.ai/api/evaluations
-```
+- `POST /api/evaluations/{evaluator}/evaluate` - Run an evaluation using a specific evaluator
 
 ## Evaluators List
 
