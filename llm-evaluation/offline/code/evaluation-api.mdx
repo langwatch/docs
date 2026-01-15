@@ -140,13 +140,8 @@ await evaluation.run(dataset, async ({ item, index, span }) => {
 });
 ```
 
-The callback receives:
-
-- `item` - The current dataset item
-- `index` - The current index in the dataset
-- `span` - An OpenTelemetry span for custom tracing
-
-</Tab>
+The callback receives `item` (the current dataset item), `index` (the current index), and `span` (an OpenTelemetry span for custom tracing).
+  </Tab>
 </Tabs>
 
 ### Metrics logging
@@ -187,59 +182,83 @@ evaluation.log("coherence", {
 
 ## Comparing Multiple Targets
 
-When comparing different models, prompts, or configurations, use the `target` parameter to organize your results:
+When comparing different models, prompts, or configurations, use targets to organize your results.
+Both SDKs provide a `target()` / `withTarget()` context that automatically captures latency and enables context inference.
 
 <Tabs>
   <Tab title="Python">
+Use `evaluation.target()` for automatic latency capture and context inference:
+
 ```python
 evaluation = langwatch.evaluation.init("model-comparison")
 
 for index, row in evaluation.loop(df.iterrows()):
-    # Evaluate GPT-5
-    gpt5_response = call_openai("gpt-5", row["question"])
-    evaluation.log(
-        "accuracy",
-        index=index,
-        score=calculate_accuracy(gpt5_response, row["expected"]),
-        target="gpt5-baseline",
-        metadata={"model": "openai/gpt-5", "temperature": 0.7}
-    )
+    def compare_models(index, row):
+        # Evaluate GPT-5 with automatic latency tracking
+        with evaluation.target("gpt5-baseline", {"model": "openai/gpt-5"}):
+            response = call_openai("gpt-5", row["question"])
+            evaluation.log_response(response)  # Store the model output
+            # Target is auto-inferred inside target()!
+            evaluation.log("accuracy", index=index,
+                          score=calculate_accuracy(response, row["expected"]))
 
-    # Evaluate Claude
-    claude_response = call_anthropic("claude-4-opus", row["question"])
-    evaluation.log(
-        "accuracy",
-        index=index,
-        score=calculate_accuracy(claude_response, row["expected"]),
-        target="claude-experiment",
-        metadata={"model": "anthropic/claude-4-opus", "temperature": 0.5}
-    )
+        # Evaluate Claude with automatic latency tracking
+        with evaluation.target("claude-experiment", {"model": "anthropic/claude-4-opus"}):
+            response = call_anthropic("claude-4-opus", row["question"])
+            evaluation.log_response(response)
+            evaluation.log("accuracy", index=index,
+                          score=calculate_accuracy(response, row["expected"]))
+
+    evaluation.submit(compare_models, index, row)
+```
+
+<Info>
+  `evaluation.target()` automatically captures latency, creates isolated traces per target, and enables context inference so `log()` calls don't need explicit `target` parameters. Use `log_response()` to store the model's output.
+</Info>
+
+Alternatively, use the `target` parameter directly with `evaluation.log()`:
+
+```python
+evaluation.log(
+    "accuracy",
+    index=index,
+    score=0.95,
+    target="gpt5-baseline",
+    metadata={"model": "openai/gpt-5", "temperature": 0.7}
+)
 ```
   </Tab>
   <Tab title="TypeScript">
+Use `withTarget()` for automatic latency capture and context inference:
+
 ```typescript
 const evaluation = await langwatch.evaluation.init("model-comparison");
 
 await evaluation.run(dataset, async ({ item, index }) => {
-  // Evaluate GPT-5
-  const gpt5Response = await callOpenAI("gpt-5", item.question);
-  evaluation.log("accuracy", {
-    index,
-    score: calculateAccuracy(gpt5Response, item.expected),
-    target: "gpt5-baseline",
-    metadata: { model: "openai/gpt-5", temperature: 0.7 }
-  });
+  // Run targets in parallel with automatic tracing
+  const [gpt5Result, claudeResult] = await Promise.all([
+    evaluation.withTarget("gpt5-baseline", { model: "openai/gpt-5" }, async () => {
+      const response = await callOpenAI("gpt-5", item.question);
+      // Target and index are auto-inferred inside withTarget()!
+      evaluation.log("accuracy", { score: calculateAccuracy(response, item.expected) });
+      return response;
+    }),
 
-  // Evaluate Claude
-  const claudeResponse = await callAnthropic("claude-4-opus", item.question);
-  evaluation.log("accuracy", {
-    index,
-    score: calculateAccuracy(claudeResponse, item.expected),
-    target: "claude-experiment",
-    metadata: { model: "anthropic/claude-4-opus", temperature: 0.5 }
-  });
+    evaluation.withTarget("claude-experiment", { model: "anthropic/claude-4-opus" }, async () => {
+      const response = await callAnthropic("claude-4-opus", item.question);
+      evaluation.log("accuracy", { score: calculateAccuracy(response, item.expected) });
+      return response;
+    }),
+  ]);
+
+  // Latency is automatically captured from each withTarget() span
+  console.log(`GPT-5: ${gpt5Result.duration}ms, Claude: ${claudeResult.duration}ms`);
 });
 ```
+
+<Info>
+  `withTarget()` automatically captures latency, creates isolated traces per target, and enables context inference so `log()` calls don't need explicit `target` or `index` parameters.
+</Info>
   </Tab>
 </Tabs>
 
@@ -250,7 +269,13 @@ The first time you use a target name, it's automatically registered with the pro
 <Tabs>
   <Tab title="Python">
 ```python
-# First call registers the target with metadata
+# Using target() - metadata is set when entering the context
+with evaluation.target("gpt5", {"model": "gpt-5", "temp": 0.7}):
+    evaluation.log_response("AI response here")  # Store the output
+    evaluation.log("latency", index=0, score=150)  # target auto-inferred
+    evaluation.log("accuracy", index=0, score=0.95)  # target auto-inferred
+
+# Or using explicit target parameter (without target() context)
 evaluation.log("latency", index=0, target="gpt5", metadata={"model": "gpt-5", "temp": 0.7})
 
 # Subsequent calls can omit metadata - it's already registered
@@ -260,12 +285,15 @@ evaluation.log("latency", index=1, target="gpt5", score=150)
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-// First call registers the target with metadata
-evaluation.log("latency", { index: 0, target: "gpt5", metadata: { model: "gpt-5", temp: 0.7 } });
+// Using withTarget() - metadata is set once when registering the target
+await evaluation.withTarget("gpt5", { model: "gpt-5", temp: 0.7 }, async () => {
+  evaluation.log("latency", { score: 150 });  // target auto-inferred
+  evaluation.log("accuracy", { score: 0.95 }); // target auto-inferred
+});
 
-// Subsequent calls can omit metadata - it's already registered
-evaluation.log("accuracy", { index: 0, target: "gpt5", score: 0.95 });
-evaluation.log("latency", { index: 1, target: "gpt5", score: 150 });
+// Or using explicit target parameter
+evaluation.log("latency", { index: 0, target: "gpt5", metadata: { model: "gpt-5", temp: 0.7 } });
+evaluation.log("accuracy", { index: 0, target: "gpt5", score: 0.95 }); // metadata already registered
 ```
   </Tab>
 </Tabs>
@@ -436,31 +464,34 @@ evaluation = langwatch.evaluation.init("rag-pipeline-evaluation-v2")
 # Run evaluation with parallelization
 for index, row in evaluation.loop(df.iterrows(), threads=8):
     def evaluate(index, row):
-        # Execute your RAG pipeline
-        response, contexts = execute_rag_pipeline(row["question"])
+        # Compare two RAG configurations
+        with evaluation.target("rag-v1", {"model": "gpt-5", "retriever": "dense"}):
+            response, contexts = execute_rag_pipeline(row["question"], version="v1")
+            evaluation.log_response(response.text)  # Store the output
 
-        # Use LangWatch evaluators
-        evaluation.run(
-            "ragas/faithfulness",
-            index=index,
-            data={
-                "input": row["question"],
-                "output": response,
-                "contexts": contexts,
-            },
-            settings={
-                "model": "openai/gpt-5",
-                "max_tokens": 2048,
-            }
-        )
+            # Use LangWatch evaluators - target auto-inferred
+            evaluation.run(
+                "ragas/faithfulness",
+                index=index,
+                data={"input": row["question"], "output": response, "contexts": contexts},
+                settings={"model": "openai/gpt-5", "max_tokens": 2048}
+            )
 
-        # Log custom metrics
-        evaluation.log(
-            "response_time",
-            index=index,
-            score=response.duration_ms,
-            data={"timestamp": response.timestamp}
-        )
+            # Log custom metrics - latency auto-captured by target()
+            evaluation.log("response_quality", index=index, score=response.quality)
+
+        with evaluation.target("rag-v2", {"model": "gpt-5", "retriever": "hybrid"}):
+            response, contexts = execute_rag_pipeline(row["question"], version="v2")
+            evaluation.log_response(response.text)
+
+            evaluation.run(
+                "ragas/faithfulness",
+                index=index,
+                data={"input": row["question"], "output": response, "contexts": contexts},
+                settings={"model": "openai/gpt-5", "max_tokens": 2048}
+            )
+
+            evaluation.log("response_quality", index=index, score=response.quality)
 
     evaluation.submit(evaluate, index, row)
 ```
@@ -479,29 +510,32 @@ const evaluation = await langwatch.evaluation.init("rag-pipeline-evaluation-v2")
 
 // Run evaluation with parallelization
 await evaluation.run(dataset, async ({ item, index }) => {
-  // Execute your RAG pipeline
-  const { response, contexts } = await executeRagPipeline(item.question);
+  // Compare multiple RAG configurations in parallel
+  await Promise.all([
+    evaluation.withTarget("rag-v1", { model: "gpt-5", retriever: "dense" }, async () => {
+      const { response, contexts } = await executeRagPipeline(item.question, "v1");
 
-  // Use LangWatch evaluators
-  await evaluation.evaluate("ragas/faithfulness", {
-    index,
-    data: {
-      input: item.question,
-      output: response,
-      contexts,
-    },
-    settings: {
-      model: "openai/gpt-5",
-      max_tokens: 2048,
-    }
-  });
+      // Use LangWatch evaluators - target auto-inferred
+      await evaluation.evaluate("ragas/faithfulness", {
+        data: { input: item.question, output: response, contexts },
+        settings: { model: "openai/gpt-5", max_tokens: 2048 }
+      });
 
-  // Log custom metrics
-  evaluation.log("response_time", {
-    index,
-    score: response.durationMs,
-    data: { timestamp: response.timestamp }
-  });
+      // Log custom metrics - latency auto-captured by withTarget()
+      evaluation.log("response_quality", { score: response.quality });
+    }),
+
+    evaluation.withTarget("rag-v2", { model: "gpt-5", retriever: "hybrid" }, async () => {
+      const { response, contexts } = await executeRagPipeline(item.question, "v2");
+
+      await evaluation.evaluate("ragas/faithfulness", {
+        data: { input: item.question, output: response, contexts },
+        settings: { model: "openai/gpt-5", max_tokens: 2048 }
+      });
+
+      evaluation.log("response_quality", { score: response.quality });
+    }),
+  ]);
 }, { concurrency: 8 });
 ```
   </Tab>
