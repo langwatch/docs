@@ -593,6 +593,105 @@ await evaluation.run(dataset, async ({ item, index }) => {
 
 With tracing enabled, you can click through from any evaluation result to see the complete execution trace, including all LLM calls, prompts, and intermediate steps.
 
+## Exporting Results to CSV
+
+After running your evaluations, you can export results to CSV for further analysis in spreadsheet tools like Excel or Google Sheets.
+
+### How to Export
+
+Click the **Export to CSV** button in the top-right corner of the evaluation results page to download a complete CSV file with all your data.
+
+### CSV Structure
+
+The exported CSV contains comprehensive data organized by dataset rows and targets. Here's the complete column structure:
+
+#### Row Index
+
+| Column | Description |
+|--------|-------------|
+| `index` | Row number (0-based) for cross-referencing with the UI |
+
+#### Dataset Columns
+
+All columns from your input dataset are included with their original names.
+
+#### Target Columns (per target)
+
+For each target in your evaluation, the following columns are exported:
+
+| Column Pattern | Description | Example |
+|----------------|-------------|---------|
+| `{target}_model` | Model used for this target | `gpt-4_model` → `openai/gpt-4` |
+| `{target}_prompt_id` | Prompt configuration ID (for prompt targets) | `gpt-4_prompt_id` → `prompt-abc123` |
+| `{target}_prompt_version` | Prompt version number | `gpt-4_prompt_version` → `2` |
+| `{target}_{metadata_key}` | Custom metadata values | `gpt-4_temperature` → `0.7` |
+| `{target}_output` | Model output (or individual output fields) | `gpt-4_output` → `"The answer is 42"` |
+| `{target}_cost` | Execution cost in USD | `gpt-4_cost` → `0.0012` |
+| `{target}_duration_ms` | Execution time in milliseconds | `gpt-4_duration_ms` → `1250` |
+| `{target}_error` | Error message if execution failed | `gpt-4_error` → `"Rate limit exceeded"` |
+| `{target}_trace_id` | Trace ID for viewing execution details | `gpt-4_trace_id` → `trace_abc123` |
+
+#### Evaluator Columns (per target, per evaluator)
+
+For each evaluator applied to a target:
+
+| Column Pattern | Description | Example |
+|----------------|-------------|---------|
+| `{target}_{evaluator}_score` | Numeric score (0-1) | `gpt-4_faithfulness_score` → `0.95` |
+| `{target}_{evaluator}_passed` | Boolean pass/fail | `gpt-4_faithfulness_passed` → `true` |
+| `{target}_{evaluator}_label` | Classification label | `gpt-4_sentiment_label` → `positive` |
+| `{target}_{evaluator}_details` | Additional details or explanation | `gpt-4_faithfulness_details` → `"All claims supported"` |
+| `{target}_{evaluator}_cost` | Cost of running the evaluator | `gpt-4_faithfulness_cost` → `0.0005` |
+| `{target}_{evaluator}_duration_ms` | Evaluator execution time | `gpt-4_faithfulness_duration_ms` → `850` |
+
+### Example CSV Output
+
+For an evaluation comparing GPT-4 and Claude with a faithfulness evaluator:
+
+```csv
+index,question,expected,gpt-4_model,gpt-4_output,gpt-4_cost,gpt-4_duration_ms,gpt-4_faithfulness_score,gpt-4_faithfulness_passed,claude_model,claude_output,claude_cost,claude_duration_ms,claude_faithfulness_score,claude_faithfulness_passed
+0,What is 2+2?,4,openai/gpt-4,The answer is 4,0.0012,1250,0.95,true,anthropic/claude-3,2+2 equals 4,0.0008,980,0.92,true
+1,Capital of France?,Paris,openai/gpt-4,Paris is the capital of France,0.0015,1100,0.98,true,anthropic/claude-3,The capital of France is Paris,0.0010,890,0.97,true
+```
+
+### Using the Data
+
+The CSV export enables powerful analysis workflows:
+
+<AccordionGroup>
+<Accordion title="Filter and compare models">
+Use spreadsheet filters to compare specific models or configurations:
+- Filter by `{target}_model` to analyze specific model performance
+- Sort by `{target}_{evaluator}_score` to find best/worst performing samples
+- Filter by `{target}_error` to identify failed executions
+</Accordion>
+
+<Accordion title="Analyze costs and latency">
+Calculate aggregate metrics across your evaluation:
+- Sum `{target}_cost` columns for total evaluation cost per model
+- Average `{target}_duration_ms` to compare response times
+- Identify outliers with high latency or cost
+</Accordion>
+
+<Accordion title="Group by metadata">
+Analyze performance across different configurations:
+- Pivot tables by temperature, max_tokens, or custom metadata
+- Compare prompt versions side-by-side
+- Track improvements across iterations
+</Accordion>
+
+<Accordion title="Debug failures">
+Investigate problematic samples:
+- Filter rows where `{target}_error` is not empty
+- Cross-reference `index` with the UI for detailed inspection
+- Click through to traces using `{target}_trace_id`
+</Accordion>
+</AccordionGroup>
+
+<Info>
+  All column headers are normalized to lowercase with spaces replaced by underscores for consistency and compatibility with data analysis tools.
+</Info>
+
 ## What's Next?
 
 - **[View Evaluators](/llm-evaluation/list)** - Explore all available evaluation metrics
