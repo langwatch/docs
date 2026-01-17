@@ -1,6 +1,6 @@
 ---
 title: How to evaluate that your LLM answers correctly
-description: Measure correctness in LLM answers using LangWatch’s Offline Evaluations to compare outputs and support AI agent evaluations.
+description: Measure correctness in LLM answers using LangWatch’s Experiments to compare outputs and support AI agent evaluations.
 ---
 
 <iframe
@@ -17,7 +17,7 @@ LLMs are non-deterministic systems that generate responses to open-ended questio
 
 A systematic approach to measuring and improving LLM application quality requires two components: a dataset with representative test examples to evaluate your application, and well-defined quality metrics. These metrics can be strict (e.g., golden answers, retrieval metrics) or flexible (e.g., task completion, defined criteria and style guidelines).
 
-This guide explores in-depth use cases for offline evaluations and demonstrates how to implement LLM evaluations using LangWatch.
+This guide explores in-depth use cases for experiments and demonstrates how to implement LLM evaluations using LangWatch.
 
 ## Evaluating if the LLM is generating the right answers
 
@@ -25,13 +25,13 @@ Consider scenarios where a correct answer exists for your LLM given a set of exa
 
 This example demonstrates how to evaluate a customer support agent.
 
-1. Navigate to the [evaluations page](https://app.langwatch.ai/@project/evaluations) and click "New Evaluation":
+1. Navigate to the [experiments page](https://app.langwatch.ai/@project/evaluations) and click "New Evaluation":
 
 <Frame>
 <img src="/images/offline-evaluation/image_psd_2.png" alt="" style={{ maxWidth: '400px' }} />
 </Frame>
 
-2. Choose Offline evaluation:
+2. Choose Experiment:
 
 <Frame>
 <img src="/images/offline-evaluation/Screenshot_2025-04-17_at_16.26.31_1.png" alt="" style={{ maxWidth: '400px' }} />
@@ -176,4 +176,4 @@ You can now iterate on the prompt to address the failing questions. After making
 
 The version marker allows you to compare performance across different iterations and identify the best-performing version.
 
-This completes your first offline evaluation. You can now integrate this versioned prompt into your application using LangWatch APIs. Maintain this evaluation in LangWatch to validate that future versions of prompts, datasets, or LLM models meet or exceed current performance standards before deploying to production.
+This completes your first experiment. You can now integrate this versioned prompt into your application using LangWatch APIs. Maintain this evaluation in LangWatch to validate that future versions of prompts, datasets, or LLM models meet or exceed current performance standards before deploying to production.

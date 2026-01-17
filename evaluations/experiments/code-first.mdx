@@ -1,9 +1,10 @@
 ---
-title: Evaluating via Code
-description: Evaluate LLM behavior using LangWatch’s Evaluation API to run batch tests, visualize metrics, and automate AI agent evaluations.
+title: Code-First Experiments
+sidebarTitle: Code-First
+description: Run experiments programmatically from notebooks or scripts to batch test your LLM applications.
 ---
 
-LangWatch makes it incredibly easy to add evaluation tracking to your existing workflows.
+LangWatch makes it easy to run experiments from code.
 Just add a few lines to start tracking your experiments.
 
 ## Quickstart
@@ -355,11 +356,11 @@ Use the built-in parallelization by putting the content of the loop in a functio
 evaluation = langwatch.evaluation.init("parallel-eval-example")
 
 for index, row in evaluation.loop(df.iterrows(), threads=4):
-    def evaluate(index, row):
+    def task(index, row):
         result = agent(row["question"])  # Runs in parallel
         evaluation.log("response_quality", index=index, score=0.92)
 
-    evaluation.submit(evaluate, index, row)
+    evaluation.submit(task, index, row)
 ```
 
 <Note>
@@ -392,11 +393,11 @@ Use `evaluation.run()` to leverage pre-built evaluators:
 
 ```python
 for index, row in evaluation.loop(df.iterrows()):
-    def evaluate(index, row):
+    def task(index, row):
         response, contexts = execute_rag_pipeline(row["question"])
 
         # Use built-in RAGAS faithfulness evaluator
-        evaluation.run(
+        evaluation.evaluate(
             "ragas/faithfulness",
             index=index,
             data={
@@ -413,7 +414,7 @@ for index, row in evaluation.loop(df.iterrows()):
         # Log custom metrics alongside
         evaluation.log("confidence", index=index, score=response.confidence)
 
-    evaluation.submit(evaluate, index, row)
+    evaluation.submit(task, index, row)
 ```
   </Tab>
   <Tab title="TypeScript">
@@ -445,7 +446,7 @@ await evaluation.run(dataset, async ({ item, index }) => {
 </Tabs>
 
 <Info>
-  Browse our complete list of [available evaluators](/llm-evaluation/list) including metrics for RAG quality, hallucination detection, safety, and more.
+  Browse our complete list of [available evaluators](/evaluations/evaluators/list) including metrics for RAG quality, hallucination detection, safety, and more.
 </Info>
 
 ## Complete Example
@@ -463,14 +464,14 @@ evaluation = langwatch.evaluation.init("rag-pipeline-evaluation-v2")
 
 # Run evaluation with parallelization
 for index, row in evaluation.loop(df.iterrows(), threads=8):
-    def evaluate(index, row):
+    def task(index, row):
         # Compare two RAG configurations
         with evaluation.target("rag-v1", {"model": "gpt-5", "retriever": "dense"}):
             response, contexts = execute_rag_pipeline(row["question"], version="v1")
             evaluation.log_response(response.text)  # Store the output
 
             # Use LangWatch evaluators - target auto-inferred
-            evaluation.run(
+            evaluation.evaluate(
                 "ragas/faithfulness",
                 index=index,
                 data={"input": row["question"], "output": response, "contexts": contexts},
@@ -484,7 +485,7 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
             response, contexts = execute_rag_pipeline(row["question"], version="v2")
             evaluation.log_response(response.text)
 
-            evaluation.run(
+            evaluation.evaluate(
                 "ragas/faithfulness",
                 index=index,
                 data={"input": row["question"], "output": response, "contexts": contexts},
@@ -493,7 +494,7 @@ for index, row in evaluation.loop(df.iterrows(), threads=8):
 
             evaluation.log("response_quality", index=index, score=response.quality)
 
-    evaluation.submit(evaluate, index, row)
+    evaluation.submit(task, index, row)
 ```
   </Tab>
   <Tab title="TypeScript">
@@ -692,16 +693,36 @@ Investigate problematic samples:
   All column headers are normalized to lowercase with spaces replaced by underscores for consistency and compatibility with data analysis tools.
 </Info>
 
+## Running in CI/CD
+
+You can run code-first experiments in your CI/CD pipeline. The `print_summary()` method outputs a structured summary and exits with code 1 if any evaluations fail:
+
+```python
+import langwatch
+
+experiment = langwatch.evaluation.init("ci-quality-check")
+
+for idx, row in experiment.loop(dataset.iterrows()):
+    response = my_llm(row["input"])
+    experiment.evaluate("ragas/faithfulness", index=idx, data={...})
+
+# This will exit with code 1 if any evaluations failed
+experiment.print_summary()
+```
+
+See [CI/CD Integration](/evaluations/experiments/ci-cd) for complete examples with GitHub Actions, GitLab CI, and more.
+
 ## What's Next?
 
-- **[View Evaluators](/llm-evaluation/list)** - Explore all available evaluation metrics
-- **[Python Integration](/integration/python/guide)** - Set up comprehensive tracing for Python
-- **[TypeScript Integration](/integration/typescript/guide)** - Set up comprehensive tracing for TypeScript
-- **[Datasets](/datasets/overview)** - Learn about dataset management
-
 <CardGroup cols={2}>
-  <Card title="Join our Community" icon="discord" href="https://discord.gg/kT4PhDS2gH">
-    Get help and share feedback
+  <Card title="CI/CD Integration" icon="code-branch" href="/evaluations/experiments/ci-cd">
+    Run experiments in your CI/CD pipeline
+  </Card>
+  <Card title="View Evaluators" icon="list" href="/evaluations/evaluators/list">
+    Explore all available evaluation metrics
+  </Card>
+  <Card title="Datasets" icon="table" href="/datasets/overview">
+    Learn about dataset management
   </Card>
   <Card title="View Examples" icon="github" href="/cookbooks/build-a-simple-rag-app">
     Check out example notebooks

@@ -1,0 +1,223 @@
+---
+title: Evaluators Overview
+sidebarTitle: Overview
+description: Understand evaluators - the scoring functions that assess your LLM outputs for quality, safety, and correctness.
+---
+
+Evaluators are scoring functions that assess the quality of your LLM's outputs. They're the building blocks for [experiments](/evaluations/experiments/overview), [online evaluation](/evaluations/online-evaluation/overview), and [guardrails](/evaluations/guardrails/overview).
+
+## What is an Evaluator?
+
+An evaluator takes inputs (like the user question, LLM response, and optionally context or expected output) and returns a score indicating quality along some dimension.
+
+```
+Input + Output + Context → Evaluator → Score
+                                        ↓
+                              passed: true/false
+                              score: 0.0 - 1.0
+                              details: "explanation"
+```
+
+## Types of Evaluators
+
+### Built-in Evaluators
+
+LangWatch provides a library of ready-to-use evaluators:
+
+| Category | Examples |
+|----------|----------|
+| **RAG Quality** | Faithfulness, Context Precision, Context Recall, Answer Relevancy |
+| **Safety** | PII Detection, Jailbreak Detection, Content Moderation |
+| **Correctness** | Exact Match, LLM Answer Match, Factual Match |
+| **Format** | Valid JSON, Valid Format, SQL Query Equivalence |
+| **Custom Criteria** | LLM-as-Judge (Boolean, Score, Category) |
+
+[Browse all evaluators →](/evaluations/evaluators/list)
+
+### Your Evaluators
+
+When you configure a built-in evaluator with specific settings and save it, you create **your evaluator** - a reusable configuration you can use across experiments, monitors, and guardrails.
+
+For example:
+- Built-in: `langevals/llm_category` (generic LLM-as-Judge category evaluator)
+- Your evaluator: "Tone Checker" (configured with your specific categories and prompt)
+
+## Using Evaluators
+
+### In Experiments
+
+Run evaluators on each row of your test dataset:
+
+```python
+evaluation = langwatch.evaluation.init("my-experiment")
+
+for idx, row in evaluation.loop(df.iterrows()):
+    response = my_llm(row["input"])
+    
+    # Use built-in evaluator
+    evaluation.evaluate(
+        "ragas/faithfulness",
+        index=idx,
+        data={
+            "input": row["input"],
+            "output": response,
+            "contexts": row["contexts"],
+        },
+    )
+```
+
+### In Online Evaluation (Monitors)
+
+Evaluators run automatically on production traces:
+
+1. Create a monitor in LangWatch
+2. Select evaluators to run
+3. Configure when to trigger (all traces, sampled, filtered)
+4. Scores appear on traces and dashboards
+
+### As Guardrails
+
+Evaluators can block harmful content in real-time:
+
+```python
+guardrail = langwatch.get_current_span().evaluate(
+    "azure/jailbreak",
+    name="Jailbreak Detection",
+    as_guardrail=True,
+    input=user_input,
+)
+
+if not guardrail.passed:
+    return "I can't help with that request."
+```
+
+## Evaluator Inputs
+
+Different evaluators require different inputs:
+
+| Input | Description | Example Evaluators |
+|-------|-------------|-------------------|
+| `input` | User question/prompt | Jailbreak Detection, Off-Topic |
+| `output` | LLM response | PII Detection, Valid Format |
+| `contexts` | Retrieved documents | Faithfulness, Context Precision |
+| `expected_output` | Ground truth answer | Answer Correctness, Exact Match |
+| `conversation` | Full conversation history | Conversation Relevancy |
+
+Check each evaluator's documentation for required and optional inputs.
+
+## Custom Evaluators
+
+### LLM-as-Judge
+
+Create custom evaluators using an LLM to judge outputs:
+
+```python
+evaluation.evaluate(
+    "langevals/llm_boolean",
+    index=idx,
+    data={"input": question, "output": response},
+    settings={
+        "prompt": "Does this response answer the question helpfully? Answer true or false.",
+        "model": "openai/gpt-4o-mini",
+    },
+)
+```
+
+Three LLM-as-Judge variants:
+- **Boolean** - Returns pass/fail
+- **Score** - Returns 0-1 numeric score
+- **Category** - Returns one of predefined categories
+
+### Code-Based Custom Evaluators
+
+Run your own evaluation logic and report results:
+
+```python
+# Your custom evaluation logic
+score = my_custom_scoring_function(input, output)
+
+# Report to LangWatch
+langwatch.get_current_span().add_evaluation(
+    name="my_custom_metric",
+    passed=score > 0.7,
+    score=score,
+    details="Custom evaluation result"
+)
+```
+
+[Learn more about custom evaluators →](/evaluations/evaluators/custom-evaluators)
+
+## Evaluator Settings
+
+Many evaluators accept configuration settings:
+
+```python
+evaluation.evaluate(
+    "ragas/faithfulness",
+    index=idx,
+    data={...},
+    settings={
+        "model": "openai/gpt-4o",  # LLM to use for evaluation
+        "max_tokens": 2048,         # Token limit
+    },
+)
+```
+
+Common settings:
+- `model` - Which LLM to use for evaluation
+- `max_tokens` - Token limit for LLM-based evaluators
+- Custom settings specific to each evaluator
+
+## Naming Your Evaluators
+
+When using evaluators in code, always provide a descriptive `name`:
+
+```python
+# Good - descriptive name
+langwatch.get_current_span().evaluate(
+    "langevals/llm_category",
+    name="Answer Completeness Check",  # Descriptive!
+    data={...},
+)
+
+# Bad - no name, hard to track in analytics
+langwatch.get_current_span().evaluate(
+    "langevals/llm_category",
+    data={...},
+)
+```
+
+The name appears in:
+- Trace details
+- Analytics dashboards
+- Experiment results
+- Alert messages
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Evaluators List"
+    description="Browse all available evaluators with documentation."
+    icon="list"
+    href="/evaluations/evaluators/list"
+  />
+  <Card
+    title="Custom Evaluators"
+    description="Build and integrate your own evaluators."
+    icon="code"
+    href="/evaluations/evaluators/custom-evaluators"
+  />
+  <Card
+    title="API Reference"
+    description="Full API documentation for evaluators."
+    icon="book"
+    href="/api-reference/evaluators/overview"
+  />
+  <Card
+    title="Experiments"
+    description="Use evaluators in batch testing."
+    icon="flask"
+    href="/evaluations/experiments/overview"
+  />
+</CardGroup>

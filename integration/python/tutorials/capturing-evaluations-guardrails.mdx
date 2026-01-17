@@ -83,9 +83,9 @@ The `add_evaluation()` method is available on both `LangWatchSpan` and `LangWatc
 
 ## 2. Server-Side Managed Evaluations (`evaluate` & `async_evaluate`)
 
-LangWatch allows you to trigger evaluations that are performed by the LangWatch backend. These can be [built-in evaluators](/llm-evaluation/list) (e.g., for faithfulness, relevance) or [custom evaluators you define](/evaluations/custom-evaluator-integration) in your LangWatch project settings.
+LangWatch allows you to trigger evaluations that are performed by the LangWatch backend. These can be [built-in evaluators](/evaluations/evaluators/list) (e.g., for faithfulness, relevance) or [custom evaluators you define](/evaluations/evaluators/custom-evaluators) in your LangWatch project settings.
 
-You use the `evaluate()` (synchronous) or `async_evaluate()` (asynchronous) functions for this. These functions send the necessary data to the LangWatch API, which then processes the evaluation. These server-side evaluations are a core part of setting up [real-time monitoring and evaluations in production](/llm-evaluation/realtime/setup).
+You use the `evaluate()` (synchronous) or `async_evaluate()` (asynchronous) functions for this. These functions send the necessary data to the LangWatch API, which then processes the evaluation. These server-side evaluations are a core part of setting up [real-time monitoring and evaluations in production](/evaluations/online-evaluation/setup-monitors).
 
 ```python
 import langwatch
@@ -162,10 +162,10 @@ The `evaluate()` and `async_evaluate()` methods are available on both `LangWatch
   **Understanding the `data` Parameter:**
 
   The core parameters like `slug`, `data`, `settings`, `as_guardrail`, `span`, and `trace` are generally consistent.
-  For the `data` parameter specifically: while `BasicEvaluateData` is commonly used to provide a standardized structure for `input`, `output`, and `contexts` (which many built-in or common evaluators expect), it's important to know that `data` can be **any dictionary**. This flexibility allows you to pass arbitrary data structures tailored to custom server-side evaluators you might define. Using `BasicEvaluateData` with fields like `expected_output` is particularly useful when [evaluating if the LLM is generating the right answers](/llm-evaluation/offline/platform/answer-correctness) against a set of expected outputs. For scenarios where a golden answer isn't available, LangWatch also supports more open-ended evaluations, such as using an [LLM-as-a-judge](/llm-evaluation/offline/platform/llm-as-a-judge).
+  For the `data` parameter specifically: while `BasicEvaluateData` is commonly used to provide a standardized structure for `input`, `output`, and `contexts` (which many built-in or common evaluators expect), it's important to know that `data` can be **any dictionary**. This flexibility allows you to pass arbitrary data structures tailored to custom server-side evaluators you might define. Using `BasicEvaluateData` with fields like `expected_output` is particularly useful when [evaluating if the LLM is generating the right answers](/evaluations/experiments/workbench/answer-correctness) against a set of expected outputs. For scenarios where a golden answer isn't available, LangWatch also supports more open-ended evaluations, such as using an [LLM-as-a-judge](/evaluations/experiments/workbench/llm-as-a-judge).
 </Tip>
 
-The `slug` parameter refers to the unique identifier of the evaluator configured in your LangWatch project settings. You can find a list of available evaluator types and learn how to configure them in our [LLM Evaluation documentation](/llm-evaluation/list).
+The `slug` parameter refers to the unique identifier of the evaluator configured in your LangWatch project settings. You can find a list of available evaluator types and learn how to configure them in our [LLM Evaluation documentation](/evaluations/evaluators/list).
 
 The functions return an `EvaluationResultModel` containing `status`, `passed`, `score`, `details`, `label`, and `cost`.
 
@@ -190,7 +190,7 @@ if pii_check_result.passed is False:
     # Take action: sanitize response, return a canned message, etc.
     return "Response redacted due to PII."
 ```
-A key behavior of `as_guardrail=True` for server-side evaluations is that if the *evaluation process itself* encounters an error (e.g., the evaluator service is down), the result will have `status="error"` but `passed` will default to `True`. This is a fail-safe to prevent your application from breaking due to an issue in the guardrail execution itself, assuming a "pass by default on error" stance is desired. For more on setting up safety-focused real-time evaluations like PII detection or prompt injection monitors, see our guide on [Setting up Real-Time Evaluations](/llm-evaluation/realtime/setup).
+A key behavior of `as_guardrail=True` for server-side evaluations is that if the *evaluation process itself* encounters an error (e.g., the evaluator service is down), the result will have `status="error"` but `passed` will default to `True`. This is a fail-safe to prevent your application from breaking due to an issue in the guardrail execution itself, assuming a "pass by default on error" stance is desired. For more on setting up safety-focused real-time evaluations like PII detection or prompt injection monitors, see our guide on [Setting up Real-Time Evaluations](/evaluations/online-evaluation/setup-monitors).
 
 **Using Client-Side `add_evaluation` as Guardrails:**
 Set `is_guardrail=True` when calling `add_evaluation`.
@@ -226,13 +226,13 @@ These spans will contain the evaluation's name, result (score, passed, label), d
 
 - **Quality Assurance**:
     - **Client-Side**: Log scores from a custom heuristic checking for politeness in responses.
-    - **Server-Side**: Trigger a managed ["Toxicity" evaluator](/llm-evaluation/list) on LLM outputs, or use more open-ended approaches like an [LLM-as-a-judge](/llm-evaluation/offline/platform/llm-as-a-judge) for tasks without predefined correct answers.
+    - **Server-Side**: Trigger a managed ["Toxicity" evaluator](/evaluations/evaluators/list) on LLM outputs, or use more open-ended approaches like an [LLM-as-a-judge](/evaluations/experiments/workbench/llm-as-a-judge) for tasks without predefined correct answers.
 - **Compliance & Safety**:
     - **Client-Side Guardrail**: Perform a regex check for forbidden words and log it with `is_guardrail=True`.
-    - **Server-Side Guardrail**: Use a managed ["PII Detection" evaluator](/llm-evaluation/list) with `as_guardrail=True` to decide if a response can be shown.
+    - **Server-Side Guardrail**: Use a managed ["PII Detection" evaluator](/evaluations/evaluators/list) with `as_guardrail=True` to decide if a response can be shown.
 - **Performance Monitoring**:
     - **Client-Side**: Log human feedback scores (`add_evaluation`) for helpfulness.
-    - **Server-Side**: Evaluate RAG system outputs for ["Context Relevancy" and "Faithfulness"](/llm-evaluation/list) using managed evaluators.
+    - **Server-Side**: Evaluate RAG system outputs for ["Context Relevancy" and "Faithfulness"](/evaluations/evaluators/list) using managed evaluators.
 - **A/B Testing**: Log custom metrics or trigger standard evaluations for different model versions or prompts to compare their performance.
 - **Feedback Integration**: `add_evaluation` can be used to pipe scores from an external human review platform directly into the relevant trace.
 

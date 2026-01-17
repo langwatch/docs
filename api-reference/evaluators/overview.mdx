@@ -7,7 +7,7 @@ description: 'Browse all available evaluators in LangWatch to find the right sco
 
 LangWatch offers an extensive library of evaluators to help you evaluate the quality and guarantee the safety of your LLM apps.
 
-While here you can find a reference list, to get the execution code you can use the [Evaluation Wizard](https://app.langwatch.ai/@project/evaluations) on LangWatch platform.
+While here you can find a reference list, to get the execution code you can use the [Experiments Workbench](https://app.langwatch.ai/@project/evaluations) on LangWatch platform.
 
 ## Authentication
 
@@ -25,7 +25,7 @@ import EvaluatorsList from "/snippets/evaluators-list.mdx"
 
 ## Running Evaluations
 
-Set up your first evaluation using the [Evaluation Wizard](https://app.langwatch.ai/@project/evaluations):
+Set up your first evaluation using the [Experiments Workbench](https://app.langwatch.ai/@project/evaluations):
 
 <a href="https://app.langwatch.ai/@project/evaluations" target="_blank">
 <Frame>
@@ -41,9 +41,64 @@ If you have a custom evaluator built in-house, you can follow the guide below to
   <Card
     title="Instrumenting Custom Evaluator"
     icon="link"
-    href="/evaluations/custom-evaluator-integration"
+    href="/evaluations/evaluators/custom-evaluators"
   />
 </CardGroup>
+
+## The `name` Parameter
+
+<Warning>
+**Important for Analytics:** When calling evaluators from code (Real-Time Evaluations), always provide a descriptive `name` parameter to distinguish between different evaluation checks in Analytics.
+</Warning>
+
+When running the same evaluator type multiple times for different purposes, you must use unique `name` values to:
+- Track results separately in the Analytics dashboard
+- Filter and group evaluation results by purpose
+- Avoid confusion when multiple evaluations use the same evaluator type
+
+**Example: Running multiple category checks**
+
+If you're using the LLM Category evaluator to check different aspects of your output:
+
+<CodeGroup>
+```python Python
+# Check 1: Is the answer complete?
+langwatch.get_current_span().evaluate(
+    "langevals/llm_category",
+    name="Answer Completeness Check",  # Unique name for this check
+    data={"input": user_input, "output": response},
+    settings={"categories": [{"name": "complete"}, {"name": "incomplete"}]}
+)
+
+# Check 2: Is the tone appropriate?
+langwatch.get_current_span().evaluate(
+    "langevals/llm_category",
+    name="Tone Appropriateness Check",  # Different name for this check
+    data={"input": user_input, "output": response},
+    settings={"categories": [{"name": "professional"}, {"name": "casual"}, {"name": "inappropriate"}]}
+)
+```
+
+```typescript TypeScript
+// Check 1: Is the answer complete?
+await span.evaluate({
+    evaluator: "langevals/llm_category",
+    name: "Answer Completeness Check",  // Unique name for this check
+    data: { input: userInput, output: response },
+    settings: { categories: [{ name: "complete" }, { name: "incomplete" }] }
+});
+
+// Check 2: Is the tone appropriate?
+await span.evaluate({
+    evaluator: "langevals/llm_category",
+    name: "Tone Appropriateness Check",  // Different name for this check
+    data: { input: userInput, output: response },
+    settings: { categories: [{ name: "professional" }, { name: "casual" }, { name: "inappropriate" }] }
+});
+```
+</CodeGroup>
+
+Without unique names, all results would be grouped under the same auto-generated identifier (e.g., `custom_eval_langevalsllm_category`), making it impossible to analyze them separately.
 
 ## Common Request Format
 

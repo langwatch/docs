@@ -1,0 +1,499 @@
+---
+title: Run Evaluations from CI/CD
+sidebarTitle: CI/CD Execution
+description: Execute platform-configured evaluations from your CI/CD pipelines using the LangWatch SDKs or REST API.
+---
+
+Run evaluations that you've configured in the LangWatch platform directly from your CI/CD pipelines. This enables automated quality gates for your LLM applications.
+
+## Overview
+
+After configuring an evaluation in LangWatch (setting up targets, evaluators, and datasets), you can trigger it programmatically using:
+
+- **Python SDK**: `langwatch.evaluation.run("your-slug")`
+- **TypeScript SDK**: `langwatch.evaluation.run("your-slug")`
+- **REST API**: `POST /api/evaluations/v3/{slug}/run`
+
+The execution uses the configuration saved in LangWatch, so you don't need to specify targets, evaluators, or datasets in your CI/CD script.
+
+## Quickstart
+
+### 1. Find Your Evaluation Slug
+
+Your evaluation slug is visible in the URL when viewing your evaluation:
+```
+https://app.langwatch.ai/your-project/evaluations/v3/your-evaluation-slug
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+```
+
+You can also find it by clicking the **CI/CD** button in the evaluation toolbar.
+
+### 2. Run from Your Pipeline
+
+<Tabs>
+  <Tab title="Python">
+```python
+import langwatch
+
+result = langwatch.evaluation.run("your-evaluation-slug")
+result.print_summary()
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch();
+
+const result = await langwatch.evaluation.run("your-evaluation-slug");
+result.printSummary();
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+# Start the evaluation run
+RUN_RESPONSE=$(curl -s -X POST "https://app.langwatch.ai/api/evaluations/v3/your-evaluation-slug/run" \
+  -H "X-Auth-Token: ${LANGWATCH_API_KEY}")
+
+RUN_ID=$(echo $RUN_RESPONSE | jq -r '.runId')
+echo "Started run: $RUN_ID"
+
+# Poll for completion
+while true; do
+  STATUS_RESPONSE=$(curl -s "https://app.langwatch.ai/api/evaluations/v3/runs/$RUN_ID" \
+    -H "X-Auth-Token: ${LANGWATCH_API_KEY}")
+
+  STATUS=$(echo $STATUS_RESPONSE | jq -r '.status')
+  PROGRESS=$(echo $STATUS_RESPONSE | jq -r '.progress')
+  TOTAL=$(echo $STATUS_RESPONSE | jq -r '.total')
+
+  echo "Progress: $PROGRESS/$TOTAL"
+
+  if [ "$STATUS" = "completed" ] || [ "$STATUS" = "failed" ]; then
+    break
+  fi
+
+  sleep 2
+done
+
+# Show summary and exit
+echo $STATUS_RESPONSE | jq '.summary'
+
+if [ "$STATUS" = "failed" ]; then
+  exit 1
+fi
+```
+  </Tab>
+</Tabs>
+
+<Info>
+Set the `LANGWATCH_API_KEY` environment variable with your project API key.
+You can find it in your [project settings](/project/setup).
+</Info>
+
+## CI/CD Integration Examples
+
+### GitHub Actions
+
+```yaml
+name: LLM Evaluation
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install langwatch
+
+      - name: Run evaluation
+        env:
+          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
+        run: |
+          python -c "
+          import langwatch
+
+          result = langwatch.evaluation.run('my-evaluation')
+          result.print_summary()
+          "
+```
+
+### GitLab CI
+
+```yaml
+evaluate:
+  stage: test
+  image: python:3.11
+  script:
+    - pip install langwatch
+    - |
+      python -c "
+      import langwatch
+
+      result = langwatch.evaluation.run('my-evaluation')
+      result.print_summary()
+      "
+  variables:
+    LANGWATCH_API_KEY: $LANGWATCH_API_KEY
+```
+
+### CircleCI
+
+```yaml
+version: 2.1
+
+jobs:
+  evaluate:
+    docker:
+      - image: python:3.11
+    steps:
+      - checkout
+      - run:
+          name: Run evaluation
+          command: |
+            pip install langwatch
+            python -c "
+            import langwatch
+
+            result = langwatch.evaluation.run('my-evaluation')
+            result.print_summary()
+            "
+```
+
+## Options
+
+### Progress Callback
+
+Track progress during long-running evaluations:
+
+<Tabs>
+  <Tab title="Python">
+```python
+result = langwatch.evaluation.run(
+    "my-evaluation",
+    on_progress=lambda completed, total: print(f"Progress: {completed}/{total}")
+)
+result.print_summary()
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+const result = await langwatch.evaluation.run("my-evaluation", {
+  onProgress: (completed, total) => {
+    console.log(`Progress: ${completed}/${total}`);
+  }
+});
+result.printSummary();
+```
+  </Tab>
+</Tabs>
+
+### Timeout
+
+Set a maximum time to wait for completion:
+
+<Tabs>
+  <Tab title="Python">
+```python
+result = langwatch.evaluation.run(
+    "my-evaluation",
+    timeout=300.0  # 5 minutes (default: 600 seconds)
+)
+result.print_summary()
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+const result = await langwatch.evaluation.run("my-evaluation", {
+  timeout: 300000  // 5 minutes in ms (default: 600000)
+});
+result.printSummary();
+```
+  </Tab>
+</Tabs>
+
+### Poll Interval
+
+Adjust how frequently to check for completion:
+
+<Tabs>
+  <Tab title="Python">
+```python
+result = langwatch.evaluation.run(
+    "my-evaluation",
+    poll_interval=5.0  # Check every 5 seconds (default: 2 seconds)
+)
+result.print_summary()
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+const result = await langwatch.evaluation.run("my-evaluation", {
+  pollInterval: 5000  // Check every 5 seconds in ms (default: 2000)
+});
+result.printSummary();
+```
+  </Tab>
+</Tabs>
+
+### Exit on Failure
+
+By default, `print_summary()` / `printSummary()` exits with code 1 when there are failures. You can disable this:
+
+<Tabs>
+  <Tab title="Python">
+```python
+result = langwatch.evaluation.run("my-evaluation")
+result.print_summary(exit_on_failure=False)  # Don't exit automatically
+
+# Handle failures manually
+if result.failed > 0:
+    print(f"Warning: {result.failed} failures, but continuing...")
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+const result = await langwatch.evaluation.run("my-evaluation");
+result.printSummary(false);  // Don't exit automatically
+
+// Handle failures manually
+if (result.failed > 0) {
+  console.log(`Warning: ${result.failed} failures, but continuing...`);
+}
+```
+  </Tab>
+</Tabs>
+
+## Results Summary
+
+The `print_summary()` / `printSummary()` method outputs a CI-friendly summary:
+
+```
+════════════════════════════════════════════════════════════
+  EVALUATION RESULTS
+════════════════════════════════════════════════════════════
+  Run ID:     run_abc123
+  Status:     COMPLETED
+  Duration:   45.2s
+────────────────────────────────────────────────────────────
+  Passed:     42
+  Failed:     3
+  Pass Rate:  93.3%
+────────────────────────────────────────────────────────────
+  TARGETS:
+    GPT-4o: 20 passed, 2 failed
+      Avg latency: 1250ms
+      Total cost: $0.0125
+    Claude 3.5: 22 passed, 1 failed
+      Avg latency: 980ms
+      Total cost: $0.0098
+────────────────────────────────────────────────────────────
+  EVALUATORS:
+    Exact Match: 85.0% pass rate
+    Faithfulness: 95.0% pass rate
+      Avg score: 0.87
+────────────────────────────────────────────────────────────
+  View details: https://app.langwatch.ai/project/experiments/my-eval?runId=run_abc123
+════════════════════════════════════════════════════════════
+```
+
+## Result Object
+
+The result object contains detailed information about the run:
+
+<Tabs>
+  <Tab title="Python">
+```python
+result = langwatch.evaluation.run("my-evaluation")
+
+# Basic metrics
+result.run_id        # Unique run identifier
+result.status        # "completed", "failed", or "stopped"
+result.passed        # Number of passed evaluations
+result.failed        # Number of failed evaluations
+result.pass_rate     # Percentage passed (0-100)
+result.duration      # Total duration in milliseconds
+result.run_url       # URL to view in LangWatch
+
+# Detailed summary
+result.summary.total_cells      # Total cells executed
+result.summary.completed_cells  # Successfully completed
+result.summary.failed_cells     # Failed executions
+result.summary.targets          # Per-target statistics
+result.summary.evaluators       # Per-evaluator statistics
+
+# Print and exit on failure
+result.print_summary()
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+const result = await langwatch.evaluation.run("my-evaluation");
+
+// Basic metrics
+result.runId        // Unique run identifier
+result.status       // "completed" | "failed" | "stopped"
+result.passed       // Number of passed evaluations
+result.failed       // Number of failed evaluations
+result.passRate     // Percentage passed (0-100)
+result.duration     // Total duration in milliseconds
+result.runUrl       // URL to view in LangWatch
+
+// Detailed summary
+result.summary.totalCells      // Total cells executed
+result.summary.completedCells  // Successfully completed
+result.summary.failedCells     // Failed executions
+result.summary.targets         // Per-target statistics
+result.summary.evaluators      // Per-evaluator statistics
+
+// Print and exit on failure
+result.printSummary();
+```
+  </Tab>
+</Tabs>
+
+## Error Handling
+
+<Tabs>
+  <Tab title="Python">
+```python
+from langwatch.evaluation import (
+    EvaluationNotFoundError,
+    EvaluationTimeoutError,
+    EvaluationRunFailedError,
+    EvaluationsApiError,
+)
+
+try:
+    result = langwatch.evaluation.run("my-evaluation", timeout=300)
+    result.print_summary()
+except EvaluationNotFoundError:
+    print("Evaluation slug not found")
+    exit(1)
+except EvaluationTimeoutError as e:
+    print(f"Timeout: {e.progress}/{e.total} completed")
+    exit(1)
+except EvaluationRunFailedError as e:
+    print(f"Run failed: {e.error_message}")
+    exit(1)
+except EvaluationsApiError as e:
+    print(f"API error: {e} (status: {e.status_code})")
+    exit(1)
+```
+  </Tab>
+  <Tab title="TypeScript">
+```typescript
+import {
+  EvaluationNotFoundError,
+  EvaluationTimeoutError,
+  EvaluationRunFailedError,
+  EvaluationsApiError,
+} from "langwatch";
+
+try {
+  const result = await langwatch.evaluation.run("my-evaluation", { timeout: 300000 });
+  result.printSummary();
+} catch (error) {
+  if (error instanceof EvaluationNotFoundError) {
+    console.error("Evaluation slug not found");
+  } else if (error instanceof EvaluationTimeoutError) {
+    console.error(`Timeout: ${error.progress}/${error.total} completed`);
+  } else if (error instanceof EvaluationRunFailedError) {
+    console.error(`Run failed: ${error.errorMessage}`);
+  } else if (error instanceof EvaluationsApiError) {
+    console.error(`API error: ${error.message} (status: ${error.statusCode})`);
+  }
+  process.exit(1);
+}
+```
+  </Tab>
+</Tabs>
+
+## REST API Reference
+
+### Start a Run
+
+```
+POST /api/evaluations/v3/{slug}/run
+```
+
+**Headers:**
+- `X-Auth-Token: your-api-key` or `Authorization: Bearer your-api-key`
+
+**Response:**
+```json
+{
+  "runId": "run_abc123",
+  "status": "running",
+  "total": 45,
+  "runUrl": "https://app.langwatch.ai/project/experiments/my-eval?runId=run_abc123"
+}
+```
+
+### Get Run Status
+
+```
+GET /api/evaluations/v3/runs/{runId}
+```
+
+**Headers:**
+- `X-Auth-Token: your-api-key` or `Authorization: Bearer your-api-key`
+
+**Response (running):**
+```json
+{
+  "runId": "run_abc123",
+  "status": "running",
+  "progress": 20,
+  "total": 45,
+  "startedAt": 1702500000000
+}
+```
+
+**Response (completed):**
+```json
+{
+  "runId": "run_abc123",
+  "status": "completed",
+  "progress": 45,
+  "total": 45,
+  "startedAt": 1702500000000,
+  "finishedAt": 1702500045000,
+  "summary": {
+    "runId": "run_abc123",
+    "totalCells": 45,
+    "completedCells": 45,
+    "failedCells": 3,
+    "duration": 45000,
+    "runUrl": "https://app.langwatch.ai/project/experiments/my-eval?runId=run_abc123"
+  }
+}
+```
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create an Evaluation" icon="flask" href="/llm-evaluation/offline/platform/answer-correctness">
+    Configure your first evaluation in LangWatch
+  </Card>
+  <Card title="SDK Evaluations" icon="code" href="/llm-evaluation/offline/code/evaluation-api">
+    Write evaluations directly in code
+  </Card>
+  <Card title="Built-in Evaluators" icon="list" href="/llm-evaluation/list">
+    Browse available evaluation metrics
+  </Card>
+  <Card title="Datasets" icon="table" href="/datasets/overview">
+    Learn about dataset management
+  </Card>
+</CardGroup>

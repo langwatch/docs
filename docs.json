@@ -94,35 +94,52 @@
             ]
           },
           {
-            "group": "Evaluation",
+            "group": "Evaluations",
             "pages": [
-              "llm-evaluation/overview",
-              "llm-evaluation/offline/code/evaluation-api",
+              "evaluations/overview",
               {
-                "group": "Offline Evaluation",
+                "group": "Experiments",
                 "pages": [
-                  "llm-evaluation/offline/platform/answer-correctness",
-                  "llm-evaluation/offline/platform/llm-as-a-judge"
+                  "evaluations/experiments/overview",
+                  "evaluations/experiments/code-first",
+                  {
+                    "group": "Experiments Workbench",
+                    "pages": [
+                      "evaluations/experiments/workbench/answer-correctness",
+                      "evaluations/experiments/workbench/llm-as-a-judge"
+                    ]
+                  },
+                  "evaluations/experiments/ci-cd"
                 ]
               },
               {
-                "group": "Real-Time Evaluation",
+                "group": "Online Evaluation",
                 "pages": [
-                  "llm-evaluation/realtime/setup",
-                  "evaluations/custom-evaluator-integration",
-                  "evaluations/evaluation-by-thread"
+                  "evaluations/online-evaluation/overview",
+                  "evaluations/online-evaluation/setup-monitors",
+                  "evaluations/online-evaluation/by-thread"
                 ]
               },
               {
-                "group": "Built-in Evaluators",
+                "group": "Guardrails",
                 "pages": [
-              "llm-evaluation/list"
+                  "evaluations/guardrails/overview",
+                  "evaluations/guardrails/code-integration"
+                ]
+              },
+              {
+                "group": "Evaluators",
+                "pages": [
+                  "evaluations/evaluators/overview",
+                  "evaluations/evaluators/list",
+                  "evaluations/evaluators/custom-evaluators"
                 ]
               },
               {
                 "group": "Datasets",
                 "pages": [
                   "datasets/overview",
+                  "datasets/programmatic-access",
                   "datasets/ai-dataset-generation",
                   "datasets/automatically-from-traces",
                   "datasets/dataset-threads",
@@ -601,19 +618,63 @@
     },
     {
       "source": "/guardrails/:path*",
-      "destination": "/llm-evaluation/real-time-evaluation"
+      "destination": "/evaluations/guardrails/overview"
     },
     {
       "source": "/evaluations/overview",
-      "destination": "/llm-evaluation/list"
+      "destination": "/evaluations/evaluators/list"
+    },
+    {
+      "source": "/evaluations/custom-evaluator-integration",
+      "destination": "/evaluations/evaluators/custom-evaluators"
+    },
+    {
+      "source": "/evaluations/evaluation-by-thread",
+      "destination": "/evaluations/online-evaluation/by-thread"
+    },
+    {
+      "source": "/llm-evaluation/overview",
+      "destination": "/evaluations/overview"
+    },
+    {
+      "source": "/llm-evaluation/offline/code/evaluation-api",
+      "destination": "/evaluations/experiments/code-first"
+    },
+    {
+      "source": "/llm-evaluation/offline/platform/answer-correctness",
+      "destination": "/evaluations/experiments/workbench/answer-correctness"
+    },
+    {
+      "source": "/llm-evaluation/offline/platform/llm-as-a-judge",
+      "destination": "/evaluations/experiments/workbench/llm-as-a-judge"
+    },
+    {
+      "source": "/llm-evaluation/offline/platform/ci-cd-execution",
+      "destination": "/evaluations/experiments/ci-cd"
+    },
+    {
+      "source": "/llm-evaluation/realtime/setup",
+      "destination": "/evaluations/online-evaluation/setup-monitors"
+    },
+    {
+      "source": "/llm-evaluation/list",
+      "destination": "/evaluations/evaluators/list"
     },
     {
       "source": "/llm-evaluation/offline-evaluation",
-      "destination": "/llm-evaluation/offline-evaluation/platform/answer-correctness"
+      "destination": "/evaluations/experiments/overview"
     },
     {
       "source": "/llm-evaluation/real-time-evaluation",
-      "destination": "/llm-evaluation/realtime/setup"
+      "destination": "/evaluations/online-evaluation/overview"
+    },
+    {
+      "source": "/llm-evaluation/:path*",
+      "destination": "/evaluations/overview"
+    },
+    {
+      "source": "/evaluations/:path*",
+      "destination": "/evaluations/overview"
     },
     {
       "source": "/features/datasets",
