@@ -162,7 +162,7 @@ The `evaluate()` and `async_evaluate()` methods are available on both `LangWatch
   **Understanding the `data` Parameter:**
 
   The core parameters like `slug`, `data`, `settings`, `as_guardrail`, `span`, and `trace` are generally consistent.
-  For the `data` parameter specifically: while `BasicEvaluateData` is commonly used to provide a standardized structure for `input`, `output`, and `contexts` (which many built-in or common evaluators expect), it's important to know that `data` can be **any dictionary**. This flexibility allows you to pass arbitrary data structures tailored to custom server-side evaluators you might define. Using `BasicEvaluateData` with fields like `expected_output` is particularly useful when [evaluating if the LLM is generating the right answers](/evaluations/experiments/workbench/answer-correctness) against a set of expected outputs. For scenarios where a golden answer isn't available, LangWatch also supports more open-ended evaluations, such as using an [LLM-as-a-judge](/evaluations/experiments/workbench/llm-as-a-judge).
+  For the `data` parameter specifically: while `BasicEvaluateData` is commonly used to provide a standardized structure for `input`, `output`, and `contexts` (which many built-in or common evaluators expect), it's important to know that `data` can be **any dictionary**. This flexibility allows you to pass arbitrary data structures tailored to custom server-side evaluators you might define. Using `BasicEvaluateData` with fields like `expected_output` is particularly useful when [evaluating if the LLM is generating the right answers](/evaluations/experiments/ui/answer-correctness) against a set of expected outputs. For scenarios where a golden answer isn't available, LangWatch also supports more open-ended evaluations, such as using an [LLM-as-a-judge](/evaluations/experiments/ui/llm-as-a-judge).
 </Tip>
 
 The `slug` parameter refers to the unique identifier of the evaluator configured in your LangWatch project settings. You can find a list of available evaluator types and learn how to configure them in our [LLM Evaluation documentation](/evaluations/evaluators/list).
@@ -226,7 +226,7 @@ These spans will contain the evaluation's name, result (score, passed, label), d
 
 - **Quality Assurance**:
     - **Client-Side**: Log scores from a custom heuristic checking for politeness in responses.
-    - **Server-Side**: Trigger a managed ["Toxicity" evaluator](/evaluations/evaluators/list) on LLM outputs, or use more open-ended approaches like an [LLM-as-a-judge](/evaluations/experiments/workbench/llm-as-a-judge) for tasks without predefined correct answers.
+    - **Server-Side**: Trigger a managed ["Toxicity" evaluator](/evaluations/evaluators/list) on LLM outputs, or use more open-ended approaches like an [LLM-as-a-judge](/evaluations/experiments/ui/llm-as-a-judge) for tasks without predefined correct answers.
 - **Compliance & Safety**:
     - **Client-Side Guardrail**: Perform a regex check for forbidden words and log it with `is_guardrail=True`.
     - **Server-Side Guardrail**: Use a managed ["PII Detection" evaluator](/evaluations/evaluators/list) with `as_guardrail=True` to decide if a response can be shown.

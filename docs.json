@@ -101,12 +101,12 @@
                 "group": "Experiments",
                 "pages": [
                   "evaluations/experiments/overview",
-                  "evaluations/experiments/code-first",
+                  "evaluations/experiments/sdk",
                   {
-                    "group": "Experiments Workbench",
+                    "group": "via UI",
                     "pages": [
-                      "evaluations/experiments/workbench/answer-correctness",
-                      "evaluations/experiments/workbench/llm-as-a-judge"
+                      "evaluations/experiments/ui/answer-correctness",
+                      "evaluations/experiments/ui/llm-as-a-judge"
                     ]
                   },
                   "evaluations/experiments/ci-cd"
@@ -638,15 +638,23 @@
     },
     {
       "source": "/llm-evaluation/offline/code/evaluation-api",
-      "destination": "/evaluations/experiments/code-first"
+      "destination": "/evaluations/experiments/sdk"
+    },
+    {
+      "source": "/evaluations/experiments/code-first",
+      "destination": "/evaluations/experiments/sdk"
     },
     {
       "source": "/llm-evaluation/offline/platform/answer-correctness",
-      "destination": "/evaluations/experiments/workbench/answer-correctness"
+      "destination": "/evaluations/experiments/ui/answer-correctness"
+    },
+    {
+      "source": "/evaluations/experiments/workbench/:path*",
+      "destination": "/evaluations/experiments/ui/:path*"
     },
     {
       "source": "/llm-evaluation/offline/platform/llm-as-a-judge",
-      "destination": "/evaluations/experiments/workbench/llm-as-a-judge"
+      "destination": "/evaluations/experiments/ui/llm-as-a-judge"
     },
     {
       "source": "/llm-evaluation/offline/platform/ci-cd-execution",
