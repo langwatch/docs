@@ -103,7 +103,7 @@
                   "evaluations/experiments/overview",
                   "evaluations/experiments/sdk",
                   {
-                    "group": "via UI",
+                    "group": "Via UI",
                     "pages": [
                       "evaluations/experiments/ui/answer-correctness",
                       "evaluations/experiments/ui/llm-as-a-judge"
@@ -621,10 +621,6 @@
       "destination": "/evaluations/guardrails/overview"
     },
     {
-      "source": "/evaluations/overview",
-      "destination": "/evaluations/evaluators/list"
-    },
-    {
       "source": "/evaluations/custom-evaluator-integration",
       "destination": "/evaluations/evaluators/custom-evaluators"
     },
@@ -678,10 +674,6 @@
     },
     {
       "source": "/llm-evaluation/:path*",
-      "destination": "/evaluations/overview"
-    },
-    {
-      "source": "/evaluations/:path*",
       "destination": "/evaluations/overview"
     },
     {
