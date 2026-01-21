@@ -44,7 +44,7 @@ Configure your experiment once in the LangWatch Experiments via UI, then trigger
 ```python
 import langwatch
 
-result = langwatch.evaluation.evaluate("your-experiment-slug")
+result = langwatch.experiment.run("your-experiment-slug")
 result.print_summary()
 ```
   </Tab>
@@ -53,7 +53,7 @@ result.print_summary()
 import { LangWatch } from "langwatch";
 
 const langwatch = new LangWatch();
-const result = await langwatch.evaluation.run("your-experiment-slug");
+const result = await langwatch.experiments.run("your-experiment-slug");
 result.printSummary();
 ```
   </Tab>
@@ -90,7 +90,7 @@ jobs:
         run: |
           python -c "
           import langwatch
-          result = langwatch.evaluation.evaluate('my-experiment')
+          result = langwatch.experiment.run('my-experiment')
           result.print_summary()
           "
 ```
@@ -98,7 +98,7 @@ jobs:
 ### Options
 
 ```python
-result = langwatch.evaluation.evaluate(
+result = langwatch.experiment.run(
     "my-experiment",
     timeout=300.0,           # Max wait time (seconds)
     poll_interval=5.0,       # How often to check status
@@ -124,7 +124,7 @@ import langwatch
 dataset = langwatch.dataset.get_dataset("my-dataset").to_pandas()
 
 # Initialize experiment
-experiment = langwatch.evaluation.init("ci-quality-check")
+experiment = langwatch.experiment.init("ci-quality-check")
 
 # Run through each test case
 for idx, row in experiment.loop(dataset.iterrows()):
@@ -156,7 +156,7 @@ const langwatch = new LangWatch();
 const dataset = await langwatch.datasets.get("my-dataset");
 
 // Initialize experiment
-const experiment = await langwatch.evaluation.init("ci-quality-check");
+const experiment = await langwatch.experiments.init("ci-quality-check");
 
 // Run through each test case
 await experiment.run(
@@ -225,7 +225,7 @@ SDK experiments shine when comparing different configurations:
 import langwatch
 
 dataset = langwatch.dataset.get_dataset("qa-dataset").to_pandas()
-experiment = langwatch.evaluation.init("model-comparison-ci")
+experiment = langwatch.experiment.init("model-comparison-ci")
 
 for idx, row in experiment.loop(dataset.iterrows()):
     def compare(idx, row):
@@ -309,7 +309,7 @@ evaluate:
     - pip install langwatch
     - python -c "
       import langwatch
-      result = langwatch.evaluation.evaluate('my-experiment')
+      result = langwatch.experiment.run('my-experiment')
       result.print_summary()
       "
   variables:
@@ -350,7 +350,7 @@ jobs:
             pip install langwatch
             python -c "
             import langwatch
-            result = langwatch.evaluation.evaluate('my-experiment')
+            result = langwatch.experiment.run('my-experiment')
             result.print_summary()
             "
 ```
@@ -389,7 +389,7 @@ from langwatch.evaluation import (
 )
 
 try:
-    result = langwatch.evaluation.evaluate("my-experiment", timeout=300)
+    result = langwatch.experiment.run("my-experiment", timeout=300)
     result.print_summary()
 except EvaluationNotFoundError:
     print("Experiment not found - check the slug")
@@ -411,7 +411,7 @@ import {
 } from "langwatch";
 
 try {
-  const result = await langwatch.evaluation.run("my-experiment", { timeout: 300000 });
+  const result = await langwatch.experiments.run("my-experiment", { timeout: 300000 });
   result.printSummary();
 } catch (error) {
   if (error instanceof EvaluationNotFoundError) {

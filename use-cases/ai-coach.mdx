@@ -104,7 +104,7 @@ Now we'll use LangWatch to run our judges against the dataset and log the result
 
 ```python
 # Initialize a new evaluation run in LangWatch
-evaluation = langwatch.evaluation.init("ai-coach-quality-v3-run-001")
+evaluation = langwatch.experiment.init("ai-coach-quality-v3-run-001")
 
 # Use evaluation.loop() with evaluation.submit() for parallel execution.
 # This speeds things up, as each judge can run independently.

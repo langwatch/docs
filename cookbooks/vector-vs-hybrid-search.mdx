@@ -379,7 +379,7 @@ def mrr(retrieved, expected):
 
 def evaluate_search(tbl, queries, expected_ids, embeddings, k=5):
     # Initialize a new LangWatch evaluation experiment
-    evaluation = langwatch.evaluation.init("search-methods-comparison")
+    evaluation = langwatch.experiment.init("search-methods-comparison")
 
     metrics = dict(semantic=[], lexical=[], hybrid=[])
 
@@ -491,7 +491,7 @@ k_values = [3, 5, 10]
 results = []
 
 # Initialize a new LangWatch evaluation for the overall comparison
-comparison_eval = langwatch.evaluation.init("search-methods-comparison-summary")
+comparison_eval = langwatch.experiment.init("search-methods-comparison-summary")
 
 for k in k_values:
     metrics = evaluate_search(tbl, queries, expected_ids, query_embeddings, k=k)

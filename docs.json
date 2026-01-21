@@ -637,24 +637,12 @@
       "destination": "/evaluations/experiments/sdk"
     },
     {
-      "source": "/evaluations/experiments/code-first",
-      "destination": "/evaluations/experiments/sdk"
-    },
-    {
       "source": "/llm-evaluation/offline/platform/answer-correctness",
       "destination": "/evaluations/experiments/ui/answer-correctness"
     },
     {
-      "source": "/evaluations/experiments/workbench/:path*",
-      "destination": "/evaluations/experiments/ui/:path*"
-    },
-    {
       "source": "/llm-evaluation/offline/platform/llm-as-a-judge",
       "destination": "/evaluations/experiments/ui/llm-as-a-judge"
-    },
-    {
-      "source": "/llm-evaluation/offline/platform/ci-cd-execution",
-      "destination": "/evaluations/experiments/ci-cd"
     },
     {
       "source": "/llm-evaluation/realtime/setup",

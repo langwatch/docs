@@ -208,7 +208,7 @@ def extract_tool_calls(response):
     return tool_calls
 
 # Initialize a new experiment
-evaluation = langwatch.evaluation.init("tool-calling-evaluation")
+evaluation = langwatch.experiment.init("tool-calling-evaluation")
 
 # Create a DataFrame from the test data for easier processing
 test_df = pd.DataFrame([

@@ -53,7 +53,7 @@ import langwatch
 df = langwatch.dataset.get_dataset("my-dataset").to_pandas()
 
 # Initialize experiment
-evaluation = langwatch.evaluation.init("prompt-v2-test")
+evaluation = langwatch.experiment.init("prompt-v2-test")
 
 # Run through dataset
 for idx, row in evaluation.loop(df.iterrows()):
@@ -82,7 +82,7 @@ const langwatch = new LangWatch();
 const dataset = await langwatch.datasets.get("my-dataset");
 
 // Initialize experiment
-const evaluation = await langwatch.evaluation.init("prompt-v2-test");
+const evaluation = await langwatch.experiments.init("prompt-v2-test");
 
 // Run through dataset
 await evaluation.run(
@@ -130,7 +130,7 @@ Run experiments automatically in your deployment pipeline:
   run: |
     python -c "
     import langwatch
-    result = langwatch.evaluation.evaluate('my-experiment')
+    result = langwatch.experiment.run('my-experiment')
     result.print_summary()
     "
   env:

@@ -69,11 +69,11 @@ import langwatch
 @langwatch.trace()
 def my_chatbot(user_input):
     # Input guardrail - check for jailbreak attempts
-    jailbreak_check = langwatch.get_current_span().evaluate(
+    jailbreak_check = langwatch.evaluation.evaluate(
         "azure/jailbreak",
         name="Jailbreak Detection",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
     
     if not jailbreak_check.passed:
@@ -83,11 +83,11 @@ def my_chatbot(user_input):
     response = call_llm(user_input)
     
     # Output guardrail - check for PII
-    pii_check = langwatch.get_current_span().evaluate(
+    pii_check = langwatch.evaluation.evaluate(
         "presidio/pii_detection",
         name="PII Check",
         as_guardrail=True,
-        output=response,
+        data={"output": response},
     )
     
     if not pii_check.passed:
@@ -103,19 +103,14 @@ import { LangWatch } from "langwatch";
 const langwatch = new LangWatch();
 
 async function myChatbot(userInput: string): Promise<string> {
-  const trace = langwatch.getTrace();
-  const span = trace.startSpan({ name: "chatbot" });
-  
   // Input guardrail - check for jailbreak attempts
-  const jailbreakCheck = await span.evaluate({
-    evaluator: "azure/jailbreak",
+  const jailbreakCheck = await langwatch.evaluations.evaluate("azure/jailbreak", {
     name: "Jailbreak Detection",
     asGuardrail: true,
-    input: userInput,
+    data: { input: userInput },
   });
   
   if (!jailbreakCheck.passed) {
-    span.end();
     return "I'm sorry, I can't help with that request.";
   }
   
@@ -123,19 +118,16 @@ async function myChatbot(userInput: string): Promise<string> {
   const response = await callLLM(userInput);
   
   // Output guardrail - check for PII
-  const piiCheck = await span.evaluate({
-    evaluator: "presidio/pii_detection",
+  const piiCheck = await langwatch.evaluations.evaluate("presidio/pii_detection", {
     name: "PII Check",
     asGuardrail: true,
-    output: response,
+    data: { output: response },
   });
   
   if (!piiCheck.passed) {
-    span.end();
     return "I apologize, but I cannot share that information.";
   }
   
-  span.end();
   return response;
 }
 ```

@@ -70,7 +70,7 @@ Test your LLM on a dataset using the Experiments via UI or via code:
 ```python
 import langwatch
 
-evaluation = langwatch.evaluation.init("my-first-experiment")
+evaluation = langwatch.experiment.init("my-first-experiment")
 
 for idx, row in evaluation.loop(dataset.iterrows()):
     response = my_llm(row["input"])
@@ -82,7 +82,7 @@ for idx, row in evaluation.loop(dataset.iterrows()):
 import { LangWatch } from "langwatch";
 
 const langwatch = new LangWatch();
-const evaluation = await langwatch.evaluation.init("my-first-experiment");
+const evaluation = await langwatch.experiments.init("my-first-experiment");
 
 await evaluation.run(dataset, async ({ item, index }) => {
   const response = await myLLM(item.input);
@@ -111,11 +111,11 @@ import langwatch
 @langwatch.trace()
 def my_llm_call(user_input):
     # Check input before processing
-    guardrail = langwatch.get_current_span().evaluate(
+    guardrail = langwatch.evaluation.evaluate(
         "azure/jailbreak",
         name="Jailbreak Detection",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
 
     if not guardrail.passed:

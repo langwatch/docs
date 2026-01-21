@@ -87,7 +87,7 @@ This script gives us a precise, field-by-field view of our model's performance.
 
 ```python
 # Initialize a new evaluation run in LangWatch
-evaluation = langwatch.evaluation.init("taxi-bot-extraction-v2")
+evaluation = langwatch.experiment.init("taxi-bot-extraction-v2")
 
 # Use evaluation.loop() to iterate over our dataset
 for idx, row in evaluation.loop(df.iterrows()):

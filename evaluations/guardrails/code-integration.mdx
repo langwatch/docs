@@ -18,11 +18,11 @@ import langwatch
 @langwatch.trace()
 def my_llm_app(user_input):
     # Run guardrail check
-    guardrail = langwatch.get_current_span().evaluate(
+    guardrail = langwatch.evaluation.evaluate(
         "azure/jailbreak",
         name="Jailbreak Detection",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
     
     # Check result and handle failure
@@ -36,33 +36,25 @@ def my_llm_app(user_input):
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-import { LangWatch, type LangWatchTrace } from "langwatch";
+import { LangWatch } from "langwatch";
 
 const langwatch = new LangWatch();
 
-async function myLLMApp(
-  userInput: string,
-  trace: LangWatchTrace
-): Promise<string> {
-  const span = trace.startSpan({ name: "llm-call" });
-  
+async function myLLMApp(userInput: string): Promise<string> {
   // Run guardrail check
-  const guardrail = await span.evaluate({
-    evaluator: "azure/jailbreak",
+  const guardrail = await langwatch.evaluations.evaluate("azure/jailbreak", {
     name: "Jailbreak Detection",
     asGuardrail: true,
-    input: userInput,
+    data: { input: userInput },
   });
   
   // Check result and handle failure
   if (!guardrail.passed) {
-    span.end();
     return "I'm sorry, I can't help with that request.";
   }
   
   // Continue with normal processing
   const response = await callLLM(userInput);
-  span.end();
   return response;
 }
 ```
@@ -81,11 +73,13 @@ When you run a guardrail, you get back a result object with these fields:
 | `details` | string | Explanation of the result |
 
 ```python
-guardrail = langwatch.get_current_span().evaluate(
+import langwatch
+
+guardrail = langwatch.evaluation.evaluate(
     "presidio/pii_detection",
     name="PII Check",
     as_guardrail=True,
-    output=response,
+    data={"output": response},
 )
 
 print(f"Passed: {guardrail.passed}")
@@ -100,14 +94,16 @@ print(f"Details: {guardrail.details}")
 Check user input **before** calling your LLM:
 
 ```python
+import langwatch
+
 @langwatch.trace()
 def chatbot(user_input):
     # Check input for jailbreak attempts
-    input_check = langwatch.get_current_span().evaluate(
+    input_check = langwatch.evaluation.evaluate(
         "azure/jailbreak",
         name="Input Safety Check",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
     
     if not input_check.passed:
@@ -122,16 +118,18 @@ def chatbot(user_input):
 Check LLM response **before** returning to user:
 
 ```python
+import langwatch
+
 @langwatch.trace()
 def chatbot(user_input):
     response = call_llm(user_input)
     
     # Check output for PII before returning
-    output_check = langwatch.get_current_span().evaluate(
+    output_check = langwatch.evaluation.evaluate(
         "presidio/pii_detection",
         name="Output PII Check",
         as_guardrail=True,
-        output=response,
+        data={"output": response},
     )
     
     if not output_check.passed:
@@ -145,23 +143,25 @@ def chatbot(user_input):
 Use both for comprehensive protection:
 
 ```python
+import langwatch
+
 @langwatch.trace()
 def chatbot(user_input):
     # Input guardrails
-    jailbreak = langwatch.get_current_span().evaluate(
+    jailbreak = langwatch.evaluation.evaluate(
         "azure/jailbreak",
         name="Jailbreak Detection",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
     if not jailbreak.passed:
         return "I can't help with that request."
     
-    moderation = langwatch.get_current_span().evaluate(
+    moderation = langwatch.evaluation.evaluate(
         "openai/moderation",
         name="Content Moderation",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
     if not moderation.passed:
         return "Please keep our conversation appropriate."
@@ -170,11 +170,11 @@ def chatbot(user_input):
     response = call_llm(user_input)
     
     # Output guardrails
-    pii = langwatch.get_current_span().evaluate(
+    pii = langwatch.evaluation.evaluate(
         "presidio/pii_detection",
         name="PII Check",
         as_guardrail=True,
-        output=response,
+        data={"output": response},
     )
     if not pii.passed:
         return "I cannot share personal information."
@@ -194,11 +194,11 @@ import langwatch
 @langwatch.trace()
 async def async_chatbot(user_input):
     # Async guardrail check
-    guardrail = await langwatch.get_current_span().async_evaluate(
+    guardrail = await langwatch.evaluation.async_evaluate(
         "azure/jailbreak",
         name="Jailbreak Detection",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
     )
     
     if not guardrail.passed:
@@ -210,12 +210,15 @@ async def async_chatbot(user_input):
   </Tab>
   <Tab title="TypeScript">
 ```typescript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch();
+
 // TypeScript is async by default
-const guardrail = await span.evaluate({
-  evaluator: "azure/jailbreak",
+const guardrail = await langwatch.evaluations.evaluate("azure/jailbreak", {
   name: "Jailbreak Detection",
   asGuardrail: true,
-  input: userInput,
+  data: { input: userInput },
 });
 ```
   </Tab>
@@ -233,27 +236,25 @@ import langwatch
 
 @langwatch.trace()
 async def chatbot_with_parallel_guards(user_input):
-    span = langwatch.get_current_span()
-    
     # Run multiple guardrails in parallel
     jailbreak, moderation, off_topic = await asyncio.gather(
-        span.async_evaluate(
+        langwatch.evaluation.async_evaluate(
             "azure/jailbreak",
             name="Jailbreak Detection",
             as_guardrail=True,
-            input=user_input,
+            data={"input": user_input},
         ),
-        span.async_evaluate(
+        langwatch.evaluation.async_evaluate(
             "openai/moderation",
             name="Content Moderation",
             as_guardrail=True,
-            input=user_input,
+            data={"input": user_input},
         ),
-        span.async_evaluate(
+        langwatch.evaluation.async_evaluate(
             "langevals/off_topic",
             name="Off Topic Check",
             as_guardrail=True,
-            input=user_input,
+            data={"input": user_input},
             settings={"allowed_topics": ["customer support", "product questions"]},
         ),
     )
@@ -271,52 +272,43 @@ async def chatbot_with_parallel_guards(user_input):
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-async function chatbotWithParallelGuards(
-  userInput: string,
-  trace: LangWatchTrace
-): Promise<string> {
-  const span = trace.startSpan({ name: "chatbot" });
-  
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch();
+
+async function chatbotWithParallelGuards(userInput: string): Promise<string> {
   // Run multiple guardrails in parallel
   const [jailbreak, moderation, offTopic] = await Promise.all([
-    span.evaluate({
-      evaluator: "azure/jailbreak",
+    langwatch.evaluations.evaluate("azure/jailbreak", {
       name: "Jailbreak Detection",
       asGuardrail: true,
-      input: userInput,
+      data: { input: userInput },
     }),
-    span.evaluate({
-      evaluator: "openai/moderation",
+    langwatch.evaluations.evaluate("openai/moderation", {
       name: "Content Moderation",
       asGuardrail: true,
-      input: userInput,
+      data: { input: userInput },
     }),
-    span.evaluate({
-      evaluator: "langevals/off_topic",
+    langwatch.evaluations.evaluate("langevals/off_topic", {
       name: "Off Topic Check",
       asGuardrail: true,
-      input: userInput,
+      data: { input: userInput },
       settings: { allowed_topics: ["customer support", "product questions"] },
     }),
   ]);
   
   // Check all results
   if (!jailbreak.passed) {
-    span.end();
     return "I can't process that request.";
   }
   if (!moderation.passed) {
-    span.end();
     return "Please keep our conversation appropriate.";
   }
   if (!offTopic.passed) {
-    span.end();
     return "I can only help with customer support questions.";
   }
   
-  const response = await callLLM(userInput);
-  span.end();
-  return response;
+  return await callLLM(userInput);
 }
 ```
   </Tab>
@@ -327,14 +319,16 @@ async function chatbotWithParallelGuards(
 Create custom guardrails using LLM-as-Judge evaluators:
 
 ```python
+import langwatch
+
 @langwatch.trace()
 def chatbot_with_custom_guardrail(user_input):
     # Custom policy check using LLM-as-Judge
-    policy_check = langwatch.get_current_span().evaluate(
+    policy_check = langwatch.evaluation.evaluate(
         "langevals/llm_boolean",
         name="Company Policy Check",
         as_guardrail=True,
-        input=user_input,
+        data={"input": user_input},
         settings={
             "prompt": """Evaluate if this user message violates our company policy.
             
@@ -361,14 +355,16 @@ Does this message violate our policy? Answer only 'true' or 'false'.""",
 Always handle potential errors in guardrail execution:
 
 ```python
+import langwatch
+
 @langwatch.trace()
 def robust_chatbot(user_input):
     try:
-        guardrail = langwatch.get_current_span().evaluate(
+        guardrail = langwatch.evaluation.evaluate(
             "azure/jailbreak",
             name="Jailbreak Detection",
             as_guardrail=True,
-            input=user_input,
+            data={"input": user_input},
         )
         
         if not guardrail.passed:
@@ -389,12 +385,14 @@ def robust_chatbot(user_input):
 Many evaluators accept custom settings:
 
 ```python
+import langwatch
+
 # Configure PII detection to only flag specific entity types
-pii_check = langwatch.get_current_span().evaluate(
+pii_check = langwatch.evaluation.evaluate(
     "presidio/pii_detection",
     name="PII Check",
     as_guardrail=True,
-    output=response,
+    data={"output": response},
     settings={
         "entities_to_detect": ["PERSON", "EMAIL_ADDRESS", "PHONE_NUMBER"],
         "score_threshold": 0.7,
@@ -402,11 +400,11 @@ pii_check = langwatch.get_current_span().evaluate(
 )
 
 # Configure competitor blocklist
-competitor_check = langwatch.get_current_span().evaluate(
+competitor_check = langwatch.evaluation.evaluate(
     "langevals/competitor_blocklist",
     name="Competitor Check",
     as_guardrail=True,
-    output=response,
+    data={"output": response},
     settings={
         "competitors": ["CompetitorA", "CompetitorB", "CompetitorC"],
     },

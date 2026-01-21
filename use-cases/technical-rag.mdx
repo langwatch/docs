@@ -86,7 +86,7 @@ This script can be triggered automatically in a CI workflow whenever the RAG pip
 
 ```python
 # Initialize a new evaluation run. Use descriptive names to track experiments.
-evaluation = langwatch.evaluation.init("model-a-rag-evaluation-v2")
+evaluation = langwatch.experiment.init("model-a-rag-evaluation-v2")
 
 # Use evaluation.loop() to iterate over our dataset
 for idx, row in evaluation.loop(df.iterrows()):

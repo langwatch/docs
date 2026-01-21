@@ -62,8 +62,10 @@ If you're using the LLM Category evaluator to check different aspects of your ou
 
 <CodeGroup>
 ```python Python
+import langwatch
+
 # Check 1: Is the answer complete?
-langwatch.get_current_span().evaluate(
+langwatch.evaluation.evaluate(
     "langevals/llm_category",
     name="Answer Completeness Check",  # Unique name for this check
     data={"input": user_input, "output": response},
@@ -71,7 +73,7 @@ langwatch.get_current_span().evaluate(
 )
 
 # Check 2: Is the tone appropriate?
-langwatch.get_current_span().evaluate(
+langwatch.evaluation.evaluate(
     "langevals/llm_category",
     name="Tone Appropriateness Check",  # Different name for this check
     data={"input": user_input, "output": response},
@@ -80,17 +82,19 @@ langwatch.get_current_span().evaluate(
 ```
 
 ```typescript TypeScript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch();
+
 // Check 1: Is the answer complete?
-await span.evaluate({
-    evaluator: "langevals/llm_category",
+await langwatch.evaluations.evaluate("langevals/llm_category", {
     name: "Answer Completeness Check",  // Unique name for this check
     data: { input: userInput, output: response },
     settings: { categories: [{ name: "complete" }, { name: "incomplete" }] }
 });
 
 // Check 2: Is the tone appropriate?
-await span.evaluate({
-    evaluator: "langevals/llm_category",
+await langwatch.evaluations.evaluate("langevals/llm_category", {
     name: "Tone Appropriateness Check",  // Different name for this check
     data: { input: userInput, output: response },
     settings: { categories: [{ name: "professional" }, { name: "casual" }, { name: "inappropriate" }] }

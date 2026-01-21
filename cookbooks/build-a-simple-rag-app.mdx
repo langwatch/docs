@@ -160,7 +160,7 @@ import pandas as pd
 import langwatch
 
 # Initialize a new evaluation experiment
-evaluation = langwatch.evaluation.init("rag-retrieval-evaluation")
+evaluation = langwatch.experiment.init("rag-retrieval-evaluation")
 
 def retrieve(query, collection, k=5):
     """Retrieve documents from a collection based on a query"""

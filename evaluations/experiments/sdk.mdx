@@ -57,7 +57,7 @@ import pandas as pd
 df = pd.read_csv("my_dataset.csv")
 
 # Initialize a new experiment
-evaluation = langwatch.evaluation.init("my-experiment")
+evaluation = langwatch.experiment.init("my-experiment")
 
 # Wrap your loop with evaluation.loop(), and iterate as usual
 for idx, row in evaluation.loop(df.iterrows()):
@@ -82,7 +82,7 @@ const dataset = [
 ];
 
 // Initialize evaluation
-const evaluation = await langwatch.evaluation.init("my-experiment");
+const evaluation = await langwatch.experiments.init("my-experiment");
 
 // Run evaluation with a callback
 await evaluation.run(dataset, async ({ item, index }) => {
@@ -111,12 +111,12 @@ The evaluation is started by creating an evaluation session with a descriptive n
 <Tabs>
   <Tab title="Python">
 ```python
-evaluation = langwatch.evaluation.init("rag-pipeline-openai-vs-claude")
+evaluation = langwatch.experiment.init("rag-pipeline-openai-vs-claude")
 ```
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-const evaluation = await langwatch.evaluation.init("rag-pipeline-openai-vs-claude");
+const evaluation = await langwatch.experiments.init("rag-pipeline-openai-vs-claude");
 ```
   </Tab>
 </Tabs>
@@ -191,7 +191,7 @@ Both SDKs provide a `target()` / `withTarget()` context that automatically captu
 Use `evaluation.target()` for automatic latency capture and context inference:
 
 ```python
-evaluation = langwatch.evaluation.init("model-comparison")
+evaluation = langwatch.experiment.init("model-comparison")
 
 for index, row in evaluation.loop(df.iterrows()):
     def compare_models(index, row):
@@ -233,7 +233,7 @@ evaluation.log(
 Use `withTarget()` for automatic latency capture and context inference:
 
 ```typescript
-const evaluation = await langwatch.evaluation.init("model-comparison");
+const evaluation = await langwatch.experiments.init("model-comparison");
 
 await evaluation.run(dataset, async ({ item, index }) => {
   // Run targets in parallel with automatic tracing
@@ -353,7 +353,7 @@ LLM calls can be slow. Both SDKs support parallel execution to speed up your eva
 Use the built-in parallelization by putting the content of the loop in a function and submitting it:
 
 ```python {4,8}
-evaluation = langwatch.evaluation.init("parallel-eval-example")
+evaluation = langwatch.experiment.init("parallel-eval-example")
 
 for index, row in evaluation.loop(df.iterrows(), threads=4):
     def task(index, row):
@@ -460,7 +460,7 @@ import langwatch
 df = langwatch.dataset.get_dataset("your-dataset-id").to_pandas()
 
 # Initialize evaluation
-evaluation = langwatch.evaluation.init("rag-pipeline-evaluation-v2")
+evaluation = langwatch.experiment.init("rag-pipeline-evaluation-v2")
 
 # Run evaluation with parallelization
 for index, row in evaluation.loop(df.iterrows(), threads=8):
@@ -507,7 +507,7 @@ const langwatch = new LangWatch();
 const dataset = await loadDataset();
 
 // Initialize evaluation
-const evaluation = await langwatch.evaluation.init("rag-pipeline-evaluation-v2");
+const evaluation = await langwatch.experiments.init("rag-pipeline-evaluation-v2");
 
 // Run evaluation with parallelization
 await evaluation.run(dataset, async ({ item, index }) => {
@@ -700,7 +700,7 @@ You can run SDK experiments in your CI/CD pipeline. The `print_summary()` method
 ```python
 import langwatch
 
-experiment = langwatch.evaluation.init("ci-quality-check")
+experiment = langwatch.experiment.init("ci-quality-check")
 
 for idx, row in experiment.loop(dataset.iterrows()):
     response = my_llm(row["input"])

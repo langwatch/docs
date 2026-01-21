@@ -11,6 +11,12 @@ sync-api-spec:
 	@curl -s $(GITHUB_RAW_URL) > $(DOCS_DIR)/$(API_SPEC_FILE)
 	@echo "✅ API specification synced successfully to $(DOCS_DIR)/$(API_SPEC_FILE)"
 
+.PHONY: generate-openapi-evals
+generate-openapi-evals:
+	@echo "Generating OpenAPI spec for evaluators from langevals..."
+	@npx tsx scripts/generate-openapi-evals.ts
+	@echo "✅ Evaluators OpenAPI spec generated successfully"
+
 .PHONY: view-docs
 preview:
 	@echo "Viewing docs..."

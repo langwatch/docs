@@ -49,7 +49,7 @@ For example:
 Run evaluators on each row of your test dataset:
 
 ```python
-evaluation = langwatch.evaluation.init("my-experiment")
+evaluation = langwatch.experiment.init("my-experiment")
 
 for idx, row in evaluation.loop(df.iterrows()):
     response = my_llm(row["input"])
@@ -80,11 +80,13 @@ Evaluators run automatically on production traces:
 Evaluators can block harmful content in real-time:
 
 ```python
-guardrail = langwatch.get_current_span().evaluate(
+import langwatch
+
+guardrail = langwatch.evaluation.evaluate(
     "azure/jailbreak",
     name="Jailbreak Detection",
     as_guardrail=True,
-    input=user_input,
+    data={"input": user_input},
 )
 
 if not guardrail.passed:
@@ -133,6 +135,8 @@ Three LLM-as-Judge variants:
 Run your own evaluation logic and report results:
 
 ```python
+import langwatch
+
 # Your custom evaluation logic
 score = my_custom_scoring_function(input, output)
 
@@ -173,15 +177,17 @@ Common settings:
 When using evaluators in code, always provide a descriptive `name`:
 
 ```python
+import langwatch
+
 # Good - descriptive name
-langwatch.get_current_span().evaluate(
+langwatch.evaluation.evaluate(
     "langevals/llm_category",
     name="Answer Completeness Check",  # Descriptive!
     data={...},
 )
 
 # Bad - no name, hard to track in analytics
-langwatch.get_current_span().evaluate(
+langwatch.evaluation.evaluate(
     "langevals/llm_category",
     data={...},
 )

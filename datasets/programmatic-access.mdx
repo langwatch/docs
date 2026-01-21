@@ -57,7 +57,7 @@ langwatch.setup()
 df = langwatch.dataset.get_dataset("your-dataset-slug").to_pandas()
 
 # Initialize evaluation
-evaluation = langwatch.evaluation.init("my-evaluation")
+evaluation = langwatch.experiment.init("my-evaluation")
 
 for index, row in evaluation.loop(df.iterrows()):
     # Run your LLM/agent
@@ -77,7 +77,7 @@ const langwatch = new LangWatch();
 const dataset = await langwatch.datasets.get("your-dataset-slug");
 
 // Initialize evaluation
-const evaluation = await langwatch.evaluation.init("my-evaluation");
+const evaluation = await langwatch.experiments.init("my-evaluation");
 
 await evaluation.run(
   dataset.entries.map((e) => e.entry),

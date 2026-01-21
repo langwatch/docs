@@ -294,7 +294,7 @@ Now we can set up our parametrized retrieval pipeline. I'll vary the number of r
 def run_evaluation(collections=None, transactions=None, k_values=[1, 3, 5]):
     """Run evaluation across different k values using LangWatch tracking"""
     # Initialize a new LangWatch evaluation experiment
-    evaluation = langwatch.evaluation.init("embedding-model-evaluation")
+    evaluation = langwatch.experiment.init("embedding-model-evaluation")
 
     results = []
 

@@ -10,8 +10,8 @@ Run evaluations that you've configured in the LangWatch platform directly from y
 
 After configuring an evaluation in LangWatch (setting up targets, evaluators, and datasets), you can trigger it programmatically using:
 
-- **Python SDK**: `langwatch.evaluation.run("your-slug")`
-- **TypeScript SDK**: `langwatch.evaluation.run("your-slug")`
+- **Python SDK**: `langwatch.experiment.run("your-slug")`
+- **TypeScript SDK**: `langwatch.experiments.run("your-slug")`
 - **REST API**: `POST /api/evaluations/v3/{slug}/run`
 
 The execution uses the configuration saved in LangWatch, so you don't need to specify targets, evaluators, or datasets in your CI/CD script.
@@ -35,7 +35,7 @@ You can also find it by clicking the **CI/CD** button in the evaluation toolbar.
 ```python
 import langwatch
 
-result = langwatch.evaluation.run("your-evaluation-slug")
+result = langwatch.experiment.run("your-evaluation-slug")
 result.print_summary()
 ```
   </Tab>
@@ -45,7 +45,7 @@ import { LangWatch } from "langwatch";
 
 const langwatch = new LangWatch();
 
-const result = await langwatch.evaluation.run("your-evaluation-slug");
+const result = await langwatch.experiments.run("your-evaluation-slug");
 result.printSummary();
 ```
   </Tab>
@@ -124,7 +124,7 @@ jobs:
           python -c "
           import langwatch
 
-          result = langwatch.evaluation.run('my-evaluation')
+          result = langwatch.experiment.run('my-evaluation')
           result.print_summary()
           "
 ```
@@ -141,7 +141,7 @@ evaluate:
       python -c "
       import langwatch
 
-      result = langwatch.evaluation.run('my-evaluation')
+      result = langwatch.experiment.run('my-evaluation')
       result.print_summary()
       "
   variables:
@@ -166,7 +166,7 @@ jobs:
             python -c "
             import langwatch
 
-            result = langwatch.evaluation.run('my-evaluation')
+            result = langwatch.experiment.run('my-evaluation')
             result.print_summary()
             "
 ```
@@ -180,7 +180,7 @@ Track progress during long-running evaluations:
 <Tabs>
   <Tab title="Python">
 ```python
-result = langwatch.evaluation.run(
+result = langwatch.experiment.run(
     "my-evaluation",
     on_progress=lambda completed, total: print(f"Progress: {completed}/{total}")
 )
@@ -189,7 +189,7 @@ result.print_summary()
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-const result = await langwatch.evaluation.run("my-evaluation", {
+const result = await langwatch.experiments.run("my-evaluation", {
   onProgress: (completed, total) => {
     console.log(`Progress: ${completed}/${total}`);
   }
@@ -206,7 +206,7 @@ Set a maximum time to wait for completion:
 <Tabs>
   <Tab title="Python">
 ```python
-result = langwatch.evaluation.run(
+result = langwatch.experiment.run(
     "my-evaluation",
     timeout=300.0  # 5 minutes (default: 600 seconds)
 )
@@ -215,7 +215,7 @@ result.print_summary()
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-const result = await langwatch.evaluation.run("my-evaluation", {
+const result = await langwatch.experiments.run("my-evaluation", {
   timeout: 300000  // 5 minutes in ms (default: 600000)
 });
 result.printSummary();
@@ -230,7 +230,7 @@ Adjust how frequently to check for completion:
 <Tabs>
   <Tab title="Python">
 ```python
-result = langwatch.evaluation.run(
+result = langwatch.experiment.run(
     "my-evaluation",
     poll_interval=5.0  # Check every 5 seconds (default: 2 seconds)
 )
@@ -239,7 +239,7 @@ result.print_summary()
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-const result = await langwatch.evaluation.run("my-evaluation", {
+const result = await langwatch.experiments.run("my-evaluation", {
   pollInterval: 5000  // Check every 5 seconds in ms (default: 2000)
 });
 result.printSummary();
@@ -254,7 +254,7 @@ By default, `print_summary()` / `printSummary()` exits with code 1 when there ar
 <Tabs>
   <Tab title="Python">
 ```python
-result = langwatch.evaluation.run("my-evaluation")
+result = langwatch.experiment.run("my-evaluation")
 result.print_summary(exit_on_failure=False)  # Don't exit automatically
 
 # Handle failures manually
@@ -264,7 +264,7 @@ if result.failed > 0:
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-const result = await langwatch.evaluation.run("my-evaluation");
+const result = await langwatch.experiments.run("my-evaluation");
 result.printSummary(false);  // Don't exit automatically
 
 // Handle failures manually
@@ -315,7 +315,7 @@ The result object contains detailed information about the run:
 <Tabs>
   <Tab title="Python">
 ```python
-result = langwatch.evaluation.run("my-evaluation")
+result = langwatch.experiment.run("my-evaluation")
 
 # Basic metrics
 result.run_id        # Unique run identifier
@@ -339,7 +339,7 @@ result.print_summary()
   </Tab>
   <Tab title="TypeScript">
 ```typescript
-const result = await langwatch.evaluation.run("my-evaluation");
+const result = await langwatch.experiments.run("my-evaluation");
 
 // Basic metrics
 result.runId        // Unique run identifier
@@ -376,7 +376,7 @@ from langwatch.evaluation import (
 )
 
 try:
-    result = langwatch.evaluation.run("my-evaluation", timeout=300)
+    result = langwatch.experiment.run("my-evaluation", timeout=300)
     result.print_summary()
 except EvaluationNotFoundError:
     print("Evaluation slug not found")
@@ -402,7 +402,7 @@ import {
 } from "langwatch";
 
 try {
-  const result = await langwatch.evaluation.run("my-evaluation", { timeout: 300000 });
+  const result = await langwatch.experiments.run("my-evaluation", { timeout: 300000 });
   result.printSummary();
 } catch (error) {
   if (error instanceof EvaluationNotFoundError) {

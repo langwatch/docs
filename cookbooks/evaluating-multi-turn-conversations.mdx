@@ -386,7 +386,7 @@ Below we define a method to simulate conversations between our agent and a user.
 async def simulate_conversation(ticket: Dict[str, Any], criteria: List[str], max_turns: int = 5):
     """Simulate a conversation with a customer and evaluate against criteria"""
     # Initialize LangWatch evaluation
-    evaluation = langwatch.evaluation.init("multi-turn-agent-evaluation")
+    evaluation = langwatch.experiment.init("multi-turn-agent-evaluation")
 
     # Initialize agents
     planner = PlannerAgent()
