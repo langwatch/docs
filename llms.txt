@@ -169,30 +169,45 @@ Always navigate to docs links using the .md extension for better readability.
 - [OpenTelemetry Integration Guide](https://langwatch.ai/docs/integration/opentelemetry/guide.md): Integrate OpenTelemetry with LangWatch to collect LLM spans from any language for unified AI agent evaluation data.
 - [REST API](https://langwatch.ai/docs/integration/rest-api.md): Use the LangWatch REST API to send traces, evaluations, and interactions from any stack, enabling unified agent testing data flows.
 
-## Evaluation
+## Evaluations
 
-- [LLM Evaluation Overview](https://langwatch.ai/docs/llm-evaluation/overview.md): Get a full overview of LangWatch’s LLM evaluation features, including offline checks, real-time scoring, and agent testing workflows.
-- [Evaluating via Code](https://langwatch.ai/docs/llm-evaluation/offline/code/evaluation-api.md): Evaluate LLM behavior using LangWatch’s Evaluation API to run batch tests, visualize metrics, and automate AI agent evaluations.
+- [Evaluations Overview](https://langwatch.ai/docs/evaluations/overview.md): Ensure quality and safety for your LLM applications with experiments, online evaluation, guardrails, and evaluators.
 
-### Offline Evaluation
+### Experiments
 
-- [How to evaluate that your LLM answers correctly](https://langwatch.ai/docs/llm-evaluation/offline/platform/answer-correctness.md): Measure correctness in LLM answers using LangWatch’s Offline Evaluations to compare outputs and support AI agent evaluations.
-- [How to evaluate an LLM when you don't have defined answers](https://langwatch.ai/docs/llm-evaluation/offline/platform/llm-as-a-judge.md): Measure LLM performance using LLM-as-a-Judge when no ground-truth answers exist to support scalable AI agent evaluations.
+- [Experiments Overview](https://langwatch.ai/docs/evaluations/experiments/overview.md): Run batch tests on your LLM applications to measure quality, compare configurations, and catch regressions before production.
+- [Experiments via SDK](https://langwatch.ai/docs/evaluations/experiments/sdk.md): Run experiments programmatically from notebooks or scripts to batch test your LLM applications.
 
-### Real-Time Evaluation
+#### Via UI
 
-- [Setting up Real-Time Evaluations](https://langwatch.ai/docs/llm-evaluation/realtime/setup.md): Set up real-time LLM evaluations in LangWatch to score outputs instantly and support continuous AI agent testing.
-- [Instrumenting Custom Evaluator](https://langwatch.ai/docs/evaluations/custom-evaluator-integration.md): Integrate custom evaluator results into LangWatch to extend scoring logic for advanced AI agent evaluations.
-- [Evaluation by Thread](https://langwatch.ai/docs/evaluations/evaluation-by-thread.md): Evaluate LLM applications by thread in LangWatch to analyze conversation-level performance in agent testing setups.
+- [How to evaluate that your LLM answers correctly](https://langwatch.ai/docs/evaluations/experiments/ui/answer-correctness.md): Measure correctness in LLM answers using LangWatch’s Experiments to compare outputs and support AI agent evaluations.
+- [How to evaluate an LLM when you don't have defined answers](https://langwatch.ai/docs/evaluations/experiments/ui/llm-as-a-judge.md): Measure LLM performance using LLM-as-a-Judge when no ground-truth answers exist to support scalable AI agent evaluations.
 
-### Built-in Evaluators
+- [Running Experiments in CI/CD](https://langwatch.ai/docs/evaluations/experiments/ci-cd.md): Automate LLM quality gates by running experiments in your CI/CD pipelines.
 
-- [List of Evaluators](https://langwatch.ai/docs/llm-evaluation/list.md): Browse all available evaluators in LangWatch to find the right scoring method for your AI agent evaluation use case.
+### Online Evaluation
 
+- [Online Evaluation Overview](https://langwatch.ai/docs/evaluations/online-evaluation/overview.md): Continuously score and monitor your LLM's production traffic for quality and safety with online evaluation.
+- [Setting up Monitors](https://langwatch.ai/docs/evaluations/online-evaluation/setup-monitors.md): Set up online evaluation monitors in LangWatch to score outputs instantly and support continuous AI agent testing.
+- [Evaluation by Thread](https://langwatch.ai/docs/evaluations/online-evaluation/by-thread.md): Evaluate LLM applications by thread in LangWatch to analyze conversation-level performance in agent testing setups.
+
+### Guardrails
+
+- [Guardrails Overview](https://langwatch.ai/docs/evaluations/guardrails/overview.md): Block or modify harmful LLM responses in real-time to enforce safety and policy constraints.
+- [Guardrails Code Integration](https://langwatch.ai/docs/evaluations/guardrails/code-integration.md): Add guardrails to your LLM application to block harmful content in real-time.
+
+### Evaluators
+
+- [Evaluators Overview](https://langwatch.ai/docs/evaluations/evaluators/overview.md): Understand evaluators - the scoring functions that assess your LLM outputs for quality, safety, and correctness.
+- [Using Built-in Evaluators](https://langwatch.ai/docs/evaluations/evaluators/built-in-evaluators.md): Run LangWatch's library of evaluators directly from your code for experiments, online evaluation, and guardrails.
+- [Saved Evaluators](https://langwatch.ai/docs/evaluations/evaluators/saved-evaluators.md): Create reusable evaluator configurations on the platform and use them across experiments, monitors, and guardrails.
+- [Custom Scoring](https://langwatch.ai/docs/evaluations/evaluators/custom-scoring.md): Send evaluation scores from your own custom logic to LangWatch for tracking and analysis.
+- [List of Evaluators](https://langwatch.ai/docs/evaluations/evaluators/list.md): Browse all available evaluators in LangWatch to find the right scoring method for your AI agent evaluation use case.
 
 ### Datasets
 
 - [Datasets](https://langwatch.ai/docs/datasets/overview.md): Create and manage datasets in LangWatch to build evaluation sets for LLMs and structured AI agent testing.
+- [Programmatic Access](https://langwatch.ai/docs/datasets/programmatic-access.md): Fetch datasets from LangWatch using the SDK for offline evaluations and automated workflows.
 - [Generating a dataset with AI](https://langwatch.ai/docs/datasets/ai-dataset-generation.md): Generate datasets with AI to bootstrap LLM evaluations, regression tests, and simulation-based agent testing.
 - [Automatically build datasets from real-time traces](https://langwatch.ai/docs/datasets/automatically-from-traces.md): Automatically build datasets from real-time traces to power LLM evaluations, regression tests, and AI agent testing workflows.
 - [Add trace threads to datasets](https://langwatch.ai/docs/datasets/dataset-threads.md): Add full conversation threads to datasets in LangWatch to generate richer evaluation inputs for AI agent testing.
@@ -325,3 +340,46 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [Overview](https://langwatch.ai/docs/api-reference/scenarios/overview.md)
 - [Create Event](https://langwatch.ai/docs/api-reference/scenarios/create-event.md)
+
+## Evaluators
+
+- [Overview](https://langwatch.ai/docs/api-reference/evaluators/overview.md): Browse all available evaluators in LangWatch to find the right scoring method for your AI agent evaluation use case.
+- [Exact Match Evaluator](https://langwatch.ai/docs/api-reference/evaluators/exact-match-evaluator.md)
+- [Llm Answer Match](https://langwatch.ai/docs/api-reference/evaluators/llm-answer-match.md)
+- [Bleu Score](https://langwatch.ai/docs/api-reference/evaluators/bleu-score.md)
+- [Llm Factual Match](https://langwatch.ai/docs/api-reference/evaluators/llm-factual-match.md)
+- [Rouge Score](https://langwatch.ai/docs/api-reference/evaluators/rouge-score.md)
+- [Sql Query Equivalence](https://langwatch.ai/docs/api-reference/evaluators/sql-query-equivalence.md)
+- [Llm As A Judge Boolean Evaluator](https://langwatch.ai/docs/api-reference/evaluators/llm-as-a-judge-boolean-evaluator.md)
+- [Llm As A Judge Category Evaluator](https://langwatch.ai/docs/api-reference/evaluators/llm-as-a-judge-category-evaluator.md)
+- [Llm As A Judge Score Evaluator](https://langwatch.ai/docs/api-reference/evaluators/llm-as-a-judge-score-evaluator.md)
+- [Rubrics Based Scoring](https://langwatch.ai/docs/api-reference/evaluators/rubrics-based-scoring.md)
+- [Ragas Answer Correctness](https://langwatch.ai/docs/api-reference/evaluators/ragas-answer-correctness.md)
+- [Ragas Answer Relevancy](https://langwatch.ai/docs/api-reference/evaluators/ragas-answer-relevancy.md)
+- [Ragas Context Precision](https://langwatch.ai/docs/api-reference/evaluators/ragas-context-precision.md)
+- [Ragas Context Recall](https://langwatch.ai/docs/api-reference/evaluators/ragas-context-recall.md)
+- [Ragas Context Relevancy](https://langwatch.ai/docs/api-reference/evaluators/ragas-context-relevancy.md)
+- [Ragas Context Utilization](https://langwatch.ai/docs/api-reference/evaluators/ragas-context-utilization.md)
+- [Ragas Faithfulness](https://langwatch.ai/docs/api-reference/evaluators/ragas-faithfulness.md)
+- [Ragas Faithfulness 1](https://langwatch.ai/docs/api-reference/evaluators/ragas-faithfulness-1.md)
+- [Ragas Response Context Precision](https://langwatch.ai/docs/api-reference/evaluators/ragas-response-context-precision.md)
+- [Ragas Response Context Recall](https://langwatch.ai/docs/api-reference/evaluators/ragas-response-context-recall.md)
+- [Ragas Response Relevancy](https://langwatch.ai/docs/api-reference/evaluators/ragas-response-relevancy.md)
+- [Context F1](https://langwatch.ai/docs/api-reference/evaluators/context-f1.md)
+- [Context Precision](https://langwatch.ai/docs/api-reference/evaluators/context-precision.md)
+- [Context Recall](https://langwatch.ai/docs/api-reference/evaluators/context-recall.md)
+- [Azure Content Safety](https://langwatch.ai/docs/api-reference/evaluators/azure-content-safety.md)
+- [Azure Jailbreak Detection](https://langwatch.ai/docs/api-reference/evaluators/azure-jailbreak-detection.md)
+- [Azure Prompt Shield](https://langwatch.ai/docs/api-reference/evaluators/azure-prompt-shield.md)
+- [Openai Moderation](https://langwatch.ai/docs/api-reference/evaluators/openai-moderation.md)
+- [Presidio Pii Detection](https://langwatch.ai/docs/api-reference/evaluators/presidio-pii-detection.md)
+- [Custom Basic Evaluator](https://langwatch.ai/docs/api-reference/evaluators/custom-basic-evaluator.md)
+- [Competitor Blocklist](https://langwatch.ai/docs/api-reference/evaluators/competitor-blocklist.md)
+- [Competitor Allowlist Check](https://langwatch.ai/docs/api-reference/evaluators/competitor-allowlist-check.md)
+- [Competitor Llm Check](https://langwatch.ai/docs/api-reference/evaluators/competitor-llm-check.md)
+- [Off Topic Evaluator](https://langwatch.ai/docs/api-reference/evaluators/off-topic-evaluator.md)
+- [Query Resolution](https://langwatch.ai/docs/api-reference/evaluators/query-resolution.md)
+- [Semantic Similarity Evaluator](https://langwatch.ai/docs/api-reference/evaluators/semantic-similarity-evaluator.md)
+- [Summarization Score](https://langwatch.ai/docs/api-reference/evaluators/summarization-score.md)
+- [Valid Format Evaluator](https://langwatch.ai/docs/api-reference/evaluators/valid-format-evaluator.md)
+- [Lingua Language Detection](https://langwatch.ai/docs/api-reference/evaluators/lingua-language-detection.md)

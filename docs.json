@@ -131,8 +131,10 @@
                 "group": "Evaluators",
                 "pages": [
                   "evaluations/evaluators/overview",
-                  "evaluations/evaluators/list",
-                  "evaluations/evaluators/custom-evaluators"
+                  "evaluations/evaluators/built-in-evaluators",
+                  "evaluations/evaluators/saved-evaluators",
+                  "evaluations/evaluators/custom-scoring",
+                  "evaluations/evaluators/list"
                 ]
               },
               {
@@ -622,7 +624,11 @@
     },
     {
       "source": "/evaluations/custom-evaluator-integration",
-      "destination": "/evaluations/evaluators/custom-evaluators"
+      "destination": "/evaluations/evaluators/custom-scoring"
+    },
+    {
+      "source": "/evaluations/evaluators/custom-evaluators",
+      "destination": "/evaluations/evaluators/custom-scoring"
     },
     {
       "source": "/evaluations/evaluation-by-thread",
