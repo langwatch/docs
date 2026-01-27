@@ -21,35 +21,49 @@ For a quick start guide with step-by-step instructions, see the [Go Integration 
 
 ## Core SDK (`langwatch`)
 
-This package contains the primary functions for setting up LangWatch and creating traces and spans.
-
 ### Setup
 
-`Setup()` initializes the LangWatch OpenTelemetry exporter and sets it as the global tracer provider. It should be called once when your application starts.
+Create a LangWatch exporter and configure it as your tracer provider:
 
 ```go
-func Setup(ctx context.Context) (shutdown func(context.Context))
+func setupLangWatch(ctx context.Context) func(context.Context) {
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+
+	return func(ctx context.Context) {
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down: %v", err)
+		}
+	}
+}
 ```
 
-**Parameters:**
-- `ctx` - Context for the setup operation
-
-**Returns:**
-- `shutdown` - Function that should be deferred to ensure traces are flushed on exit
-
-**Example:**
-```go
-shutdown := langwatch.Setup(context.Background())
-defer shutdown(context.Background())
-```
+The exporter reads `LANGWATCH_API_KEY` from your environment automatically.
 
 <Warning>
-Always call the shutdown function to ensure traces are properly flushed when your application exits.
+**Always call shutdown!** Traces are buffered in memory before being sent. Without `defer shutdown(ctx)`, your traces will be lost when the application exits. This is critical for CLI tools, serverless functions, and any short-lived process.
 </Warning>
 
-<Tip>
-For a complete setup example with environment variables and error handling, see the [Setup section](/integration/go/guide#setup) in the integration guide.
-</Tip>
+For custom configuration, use `NewExporter` with options:
+
+```go
+exporter, err := langwatch.NewExporter(ctx,
+	langwatch.WithAPIKey("your-api-key"),
+	langwatch.WithEndpoint("https://custom.endpoint.ai"),
+	langwatch.WithFilters(langwatch.LangWatchOnly()),
+)
+```
+
+| Option | Description |
+| --- | --- |
+| `WithAPIKey(key)` | Set API key (defaults to `LANGWATCH_API_KEY` env var) |
+| `WithEndpoint(url)` | Set endpoint (defaults to `https://app.langwatch.ai`) |
+| `WithFilters(...)` | Apply span filters (see [Filtering](#filtering)) |
 
 ### Tracer
 
@@ -316,6 +330,68 @@ func Middleware(instrumentationName string, opts ...Option) openai.Middleware
   ```
 </ParamField>
 
+## Filtering
+
+Control which spans are exported to reduce noise and focus on what matters.
+
+### Preset Filters
+
+```go
+// NewDefaultExporter automatically uses ExcludeHTTPRequests
+exporter, err := langwatch.NewDefaultExporter(ctx)
+
+// Or choose your own filters
+exporter, err := langwatch.NewExporter(ctx,
+	langwatch.WithFilters(
+		langwatch.ExcludeHTTPRequests(), // Remove GET, POST, etc. spans
+		langwatch.LangWatchOnly(),       // Keep only LangWatch instrumentation
+	),
+)
+```
+
+| Filter | Description |
+| --- | --- |
+| `ExcludeHTTPRequests()` | Removes HTTP verb spans (GET, POST, etc.) |
+| `LangWatchOnly()` | Keeps only spans from LangWatch instrumentation |
+
+### Custom Filters
+
+Use `Include()` to keep matching spans or `Exclude()` to remove them:
+
+```go
+exporter, err := langwatch.NewExporter(ctx,
+	langwatch.WithFilters(
+		// Keep only spans from specific scopes
+		langwatch.Include(langwatch.Criteria{
+			ScopeName: []langwatch.Matcher{
+				langwatch.StartsWith("github.com/langwatch/"),
+				langwatch.StartsWith("my-app/"),
+			},
+		}),
+		// Remove database spans
+		langwatch.Exclude(langwatch.Criteria{
+			SpanName: []langwatch.Matcher{
+				langwatch.StartsWith("database."),
+			},
+		}),
+	),
+)
+```
+
+### Matchers
+
+| Matcher | Description |
+| --- | --- |
+| `Equals(s)` | Exact match |
+| `EqualsIgnoreCase(s)` | Case-insensitive exact match |
+| `StartsWith(prefix)` | Prefix match |
+| `StartsWithIgnoreCase(prefix)` | Case-insensitive prefix match |
+| `MustMatchRegex(pattern)` | Regex match |
+
+<Note>
+Multiple filters use AND semantics (span must pass all). Within a `Criteria`, matchers use OR semantics (span matches if any matcher matches).
+</Note>
+
 ## LangWatch Span Types
 
 `SpanType` is a string constant used with `span.SetType()` to categorize spans in LangWatch for specialized UI treatment and analytics.
@@ -477,11 +553,10 @@ func safeRecordInput(span langwatch.LangWatchSpan, input any) {
 
 ## Environment Variables
 
-The SDK respects these environment variables:
-
-- `LANGWATCH_API_KEY` - Your LangWatch API key (required)
-- `LANGWATCH_ENDPOINT` - Custom LangWatch endpoint (optional)
-- `OTEL_*` - Standard OpenTelemetry environment variables
+| Variable | Description |
+| --- | --- |
+| `LANGWATCH_API_KEY` | Your LangWatch API key (required) |
+| `LANGWATCH_ENDPOINT` | Custom endpoint (defaults to `https://app.langwatch.ai`) |
 
 ## Complete Example
 
@@ -491,150 +566,142 @@ Here's a comprehensive example showing a complete RAG application with proper er
 package main
 
 import (
-    "context"
-    "log"
-    "os"
-    "time"
+	"context"
+	"log"
+	"os"
+	"time"
 
-    langwatch "github.com/langwatch/langwatch/sdk-go"
-    otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
+	langwatch "github.com/langwatch/langwatch/sdk-go"
+	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 
-    "github.com/openai/openai-go"
-    "github.com/openai/openai-go/option"
-    "go.opentelemetry.io/otel"
-    "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-    sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
-    ctx := context.Background()
-    
-    // Setup OpenTelemetry with timeout
-    setupCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-    defer cancel()
-    
-    shutdown := setupLangWatch(setupCtx)
-    defer shutdown(ctx)
+	ctx := context.Background()
 
-    // Create instrumented OpenAI client
-    client := openai.NewClient(
-        option.WithAPIKey(os.Getenv("OPENAI_API_KEY")),
-        option.WithMiddleware(otelopenai.Middleware("rag-app",
-            otelopenai.WithCaptureInput(),
-            otelopenai.WithCaptureOutput(),
-        )),
-    )
+	// Setup LangWatch tracing
+	shutdown := setupLangWatch(ctx)
+	// Critical: defer shutdown immediately to ensure traces are flushed
+	// Without this, buffered traces will be lost when the application exits
+	defer shutdown(ctx)
 
-    // Process user query
-    if err := processQuery(ctx, client, "How do I implement JWT authentication in Go?"); err != nil {
-        log.Fatalf("Failed to process query: %v", err)
-    }
+	// Create instrumented OpenAI client
+	client := openai.NewClient(
+		option.WithAPIKey(os.Getenv("OPENAI_API_KEY")),
+		option.WithMiddleware(otelopenai.Middleware("rag-app",
+			otelopenai.WithCaptureInput(),
+			otelopenai.WithCaptureOutput(),
+		)),
+	)
+
+	// Process user query
+	if err := processQuery(ctx, client, "How do I implement JWT authentication in Go?"); err != nil {
+		log.Fatalf("Failed to process query: %v", err)
+	}
 }
 
 func processQuery(ctx context.Context, client *openai.Client, query string) error {
-    tracer := langwatch.Tracer("rag-app")
-    ctx, span := tracer.Start(ctx, "ProcessUserQuery")
-    defer span.End()
+	tracer := langwatch.Tracer("rag-app")
+	ctx, span := tracer.Start(ctx, "ProcessUserQuery")
+	defer span.End()
 
-    span.SetType(langwatch.SpanTypeRAG)
-    span.SetThreadID("user-session-" + time.Now().Format("20060102"))
-    span.SetUserID("user-123")
-    span.RecordInputString(query)
+	span.SetType(langwatch.SpanTypeRAG)
+	span.SetThreadID("user-session-" + time.Now().Format("20060102"))
+	span.SetUserID("user-123")
+	span.RecordInputString(query)
 
-    // Step 1: Retrieve relevant documents
-    documents, err := retrieveDocuments(ctx, query)
-    if err != nil {
-        span.RecordError(err)
-        return err
-    }
+	// Step 1: Retrieve relevant documents
+	documents, err := retrieveDocuments(ctx, query)
+	if err != nil {
+		span.RecordError(err)
+		return err
+	}
 
-    // Step 2: Generate response with context
-    response, err := generateResponse(ctx, client, query, documents)
-    if err != nil {
-        span.RecordError(err)
-        return err
-    }
+	// Step 2: Generate response with context
+	response, err := generateResponse(ctx, client, query, documents)
+	if err != nil {
+		span.RecordError(err)
+		return err
+	}
 
-    span.RecordOutputString(response)
-    return nil
+	span.RecordOutputString(response)
+	return nil
 }
 
 func retrieveDocuments(ctx context.Context, query string) ([]string, error) {
-    tracer := langwatch.Tracer("retrieval")
-    ctx, span := tracer.Start(ctx, "RetrieveDocuments")
-    defer span.End()
+	tracer := langwatch.Tracer("retrieval")
+	ctx, span := tracer.Start(ctx, "RetrieveDocuments")
+	defer span.End()
 
-    span.SetType(langwatch.SpanTypeRetrieval)
-    span.RecordInputString(query)
+	span.SetType(langwatch.SpanTypeRetrieval)
+	span.RecordInputString(query)
 
-    // Simulate document retrieval
-    documents := []string{
-        "JWT tokens are commonly used for authentication...",
-        "Use the crypto/bcrypt package for password hashing...",
-    }
+	// Simulate document retrieval
+	documents := []string{
+		"JWT tokens are commonly used for authentication...",
+		"Use the crypto/bcrypt package for password hashing...",
+	}
 
-    chunks := []langwatch.SpanRAGContextChunk{
-        {Content: documents[0], Source: "auth-guide", Score: 0.92},
-        {Content: documents[1], Source: "go-docs", Score: 0.88},
-    }
-    span.SetRAGContextChunks(chunks)
+	chunks := []langwatch.SpanRAGContextChunk{
+		{Content: documents[0], Source: "auth-guide", Score: 0.92},
+		{Content: documents[1], Source: "go-docs", Score: 0.88},
+	}
+	span.SetRAGContextChunks(chunks)
 
-    return documents, nil
+	return documents, nil
 }
 
 func generateResponse(ctx context.Context, client *openai.Client, query string, documents []string) (string, error) {
-    tracer := langwatch.Tracer("llm")
-    ctx, span := tracer.Start(ctx, "GenerateResponse")
-    defer span.End()
+	tracer := langwatch.Tracer("llm")
+	ctx, span := tracer.Start(ctx, "GenerateResponse")
+	defer span.End()
 
-    span.SetType(langwatch.SpanTypeLLM)
-    span.SetRequestModel("gpt-4o-mini")
+	span.SetType(langwatch.SpanTypeLLM)
+	span.SetRequestModel("gpt-4o-mini")
 
-    // Prepare context for LLM
-    context := "Context:\n" + documents[0] + "\n" + documents[1]
-    
-    response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
-        Model: openai.ChatModelGPT4oMini,
-        Messages: []openai.ChatCompletionMessageParamUnion{
-            openai.SystemMessage("You are a helpful assistant. Use the provided context to answer questions."),
-            openai.UserMessage(context + "\n\nQuestion: " + query),
-        },
-    })
-    if err != nil {
-        return "", err
-    }
+	// Prepare context for LLM
+	ragContext := "Context:\n" + documents[0] + "\n" + documents[1]
 
-    content := response.Choices[0].Message.Content
-    span.RecordOutputString(content)
-    span.SetResponseModel(response.Model)
+	response, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Model: openai.ChatModelGPT4oMini,
+		Messages: []openai.ChatCompletionMessageParamUnion{
+			openai.SystemMessage("You are a helpful assistant. Use the provided context to answer questions."),
+			openai.UserMessage(ragContext + "\n\nQuestion: " + query),
+		},
+	})
+	if err != nil {
+		return "", err
+	}
 
-    return content, nil
+	content := response.Choices[0].Message.Content
+	span.RecordOutputString(content)
+	span.SetResponseModel(response.Model)
+
+	return content, nil
 }
 
 func setupLangWatch(ctx context.Context) func(context.Context) {
-    apiKey := os.Getenv("LANGWATCH_API_KEY")
-    if apiKey == "" {
-        log.Fatal("LANGWATCH_API_KEY environment variable not set")
-    }
+	// NewDefaultExporter reads LANGWATCH_API_KEY from environment
+	// and automatically applies the ExcludeHTTPRequests filter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create LangWatch exporter: %v", err)
+	}
 
-    exporter, err := otlptracehttp.New(ctx,
-        otlptracehttp.WithEndpointURL("https://app.langwatch.ai/api/otel/v1/traces"),
-        otlptracehttp.WithHeaders(map[string]string{
-            "Authorization": "Bearer " + apiKey,
-        }),
-    )
-    if err != nil {
-        log.Fatalf("failed to create OTLP exporter: %v", err)
-    }
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
 
-    tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
-    otel.SetTracerProvider(tp)
-    
-    return func(ctx context.Context) {
-        if err := tp.Shutdown(ctx); err != nil {
-            log.Printf("Error shutting down tracer provider: %v", err)
-        }
-    }
+	return func(ctx context.Context) {
+		// Shutdown flushes all pending traces to LangWatch
+		// This is critical - without it, traces may be lost!
+		if err := tp.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}
 }
 ```
 

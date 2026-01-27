@@ -61,8 +61,6 @@ Get started in just a few minutes by installing the SDK and instrumenting your a
   ```bash
   go get github.com/langwatch/langwatch/sdk-go
   go get github.com/langwatch/langwatch/sdk-go/instrumentation/openai
-  go get go.opentelemetry.io/otel
-  go get go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp
   ```
 
   <Check>
@@ -70,29 +68,20 @@ Get started in just a few minutes by installing the SDK and instrumenting your a
   </Check>
 </Step>
 
-<Step title="Configure OpenTelemetry">
+<Step title="Configure the LangWatch Exporter">
   Set up the LangWatch exporter in your application initialization:
 
   ```go
   func setupLangWatch(ctx context.Context) func(context.Context) {
-  	apiKey := os.Getenv("LANGWATCH_API_KEY")
-  	if apiKey == "" {
-  		log.Fatal("LANGWATCH_API_KEY environment variable not set")
-  	}
-
-  	exporter, err := otlptracehttp.New(ctx,
-  		otlptracehttp.WithEndpointURL("https://app.langwatch.ai/api/otel/v1/traces"),
-  		otlptracehttp.WithHeaders(map[string]string{
-  			"Authorization": "Bearer " + apiKey,
-  		}),
-  	)
+  	// Create LangWatch exporter - reads LANGWATCH_API_KEY from environment
+  	exporter, err := langwatch.NewDefaultExporter(ctx)
   	if err != nil {
-  		log.Fatalf("failed to create OTLP exporter: %v", err)
+  		log.Fatalf("failed to create LangWatch exporter: %v", err)
   	}
 
   	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
   	otel.SetTracerProvider(tp)
-  	
+
   	return func(ctx context.Context) {
   		if err := tp.Shutdown(ctx); err != nil {
   			log.Printf("Error shutting down tracer provider: %v", err)
@@ -102,7 +91,7 @@ Get started in just a few minutes by installing the SDK and instrumenting your a
   ```
 
   <Warning>
-  Always call the shutdown function to ensure traces are flushed when your application exits.
+  **Critical: Always call the shutdown function!** The `defer shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits. The shutdown function flushes all pending traces to LangWatch and releases resources. Never skip this step, especially in short-lived applications like CLI tools or serverless functions.
   </Warning>
 </Step>
 
@@ -162,21 +151,20 @@ import (
 	"log"
 	"os"
 
-	"github.com/langwatch/langwatch/sdk-go"
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
-	
+
 	// 1. Set up LangWatch tracing (just once in your app)
 	shutdown := setupLangWatch(ctx)
-	defer shutdown(ctx)
+	defer shutdown(ctx) // Critical: ensures traces are flushed before exit
 
 	// 2. Add the middleware to your OpenAI client
 	client := openai.NewClient(
@@ -204,30 +192,22 @@ func main() {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	// 🎉 View your traces at https://app.langwatch.ai
 	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 
 func setupLangWatch(ctx context.Context) func(context.Context) {
-	apiKey := os.Getenv("LANGWATCH_API_KEY")
-	if apiKey == "" {
-		log.Fatal("LANGWATCH_API_KEY environment variable not set")
-	}
-
-	exporter, err := otlptracehttp.New(ctx,
-		otlptracehttp.WithEndpointURL("https://app.langwatch.ai/api/otel/v1/traces"),
-		otlptracehttp.WithHeaders(map[string]string{
-			"Authorization": "Bearer " + apiKey,
-		}),
-	)
+	// NewDefaultExporter reads LANGWATCH_API_KEY from environment
+	// and automatically excludes HTTP request spans
+	exporter, err := langwatch.NewDefaultExporter(ctx)
 	if err != nil {
-		log.Fatalf("failed to create OTLP exporter: %v", err)
+		log.Fatalf("failed to create LangWatch exporter: %v", err)
 	}
 
 	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
 	otel.SetTracerProvider(tp)
-	
+
 	return func(ctx context.Context) {
+		// This flushes all pending traces - never skip this!
 		if err := tp.Shutdown(ctx); err != nil {
 			log.Printf("Error shutting down tracer provider: %v", err)
 		}
@@ -341,7 +321,72 @@ The SDK respects these environment variables for configuration:
 | --- | --- |
 | `LANGWATCH_API_KEY` | **Required.** Your LangWatch project API key. |
 | `LANGWATCH_ENDPOINT` | The LangWatch collector endpoint. Defaults to `https://app.langwatch.ai`. |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | A standard OpenTelemetry variable that can also be used to set the endpoint URL. If set, it overrides `LANGWATCH_ENDPOINT`. This must be set to the trace-specific endpoint `https://app.langwatch.ai/api/otel/v1/traces` |
+
+## Filtering Spans
+
+The LangWatch SDK provides powerful filtering capabilities to control which spans are exported. This is useful for reducing noise, excluding sensitive data, or focusing on specific instrumentation.
+
+### Using Preset Filters
+
+The SDK includes convenient preset filters for common use cases:
+
+```go
+// NewDefaultExporter automatically excludes HTTP request spans
+exporter, err := langwatch.NewDefaultExporter(ctx)
+
+// Or use NewExporter with explicit filters
+exporter, err := langwatch.NewExporter(ctx,
+	langwatch.WithFilters(
+		langwatch.ExcludeHTTPRequests(), // Exclude GET, POST, etc. spans
+		langwatch.LangWatchOnly(),       // Keep only LangWatch instrumentation
+	),
+)
+```
+
+### Custom Filtering
+
+Create custom filters using `Include()` or `Exclude()` with matching criteria:
+
+```go
+exporter, err := langwatch.NewExporter(ctx,
+	langwatch.WithFilters(
+		// Only include spans from specific scopes
+		langwatch.Include(langwatch.Criteria{
+			ScopeName: []langwatch.Matcher{
+				langwatch.StartsWith("github.com/langwatch/"),
+				langwatch.StartsWith("my-app/"),
+			},
+		}),
+		// Exclude database spans
+		langwatch.Exclude(langwatch.Criteria{
+			SpanName: []langwatch.Matcher{
+				langwatch.StartsWith("database."),
+			},
+		}),
+	),
+)
+```
+
+### Matcher Types
+
+The SDK provides several matcher types:
+
+| Matcher | Description |
+| --- | --- |
+| `Equals(s)` | Exact string match |
+| `EqualsIgnoreCase(s)` | Case-insensitive exact match |
+| `StartsWith(prefix)` | Prefix match |
+| `StartsWithIgnoreCase(prefix)` | Case-insensitive prefix match |
+| `MatchRegex(re)` | Regular expression match |
+| `MustMatchRegex(pattern)` | Regex match (panics on invalid pattern) |
+
+<Note>
+Filters use AND semantics when combined - a span must pass all filters to be exported. Within a `Criteria`, matchers use OR semantics - a span matches if it matches any of the matchers in the list.
+</Note>
+
+<Tip>
+For detailed filter API documentation and more examples, see the [Filtering section](/integration/go/reference#filtering) in the API reference.
+</Tip>
 
 ## Features
 

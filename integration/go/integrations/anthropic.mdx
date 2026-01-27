@@ -17,10 +17,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` and `ANTHROPIC_API_KEY` environment variables before running.
 </Info>
-
-Configure the OpenAI client with Anthropic's base URL and API key:
 
 ```go
 package main
@@ -30,20 +28,34 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Anthropic client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("ANTHROPIC_API_KEY")),
 		oaioption.WithBaseURL(os.Getenv("ANTHROPIC_BASE_URL")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("anthropic"),
 		)),
 	)
 
@@ -51,18 +63,20 @@ func main() {
 		Model: "claude-4-5-sonnet",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, Anthropic!"),
+			openai.UserMessage("Hello, Claude!"),
 		},
 	})
 	if err != nil {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-Set `ANTHROPIC_BASE_URL` to `https://api.anthropic.com/v1` and use your Anthropic API key.
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
