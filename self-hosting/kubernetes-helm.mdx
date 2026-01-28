@@ -213,13 +213,14 @@ app:
       enabled: false
     sentry:
       enabled: false
+  # Development mode requires more memory for Turbopack compilation
   resources:
     requests:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 500m
+      memory: 2Gi
     limits:
-      cpu: 1000m
-      memory: 1Gi
+      cpu: 2000m
+      memory: 4Gi
 
 langwatch_nlp:
   resources:
@@ -476,5 +477,20 @@ postgresql:
 ```
 
 See [issue #1232](https://github.com/langwatch/langwatch/issues/1232) for details.
+</Accordion>
+
+<Accordion title="App crashes with exit code 137 (OOMKilled) in development mode">
+Development mode uses Turbopack for on-demand compilation which requires more memory than production mode. If the app crashes with exit code 137, increase the memory limits:
+
+```yaml
+app:
+  resources:
+    requests:
+      memory: 2Gi
+    limits:
+      memory: 4Gi
+```
+
+For production deployments, the default 1Gi limit is usually sufficient.
 </Accordion>
 </AccordionGroup>
