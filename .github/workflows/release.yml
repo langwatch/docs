@@ -44,8 +44,8 @@ jobs:
         run: |
           git add docs.json
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            git commit -m "Release docs (${{ github.event.inputs.release_reason }})"
+            git commit -m "Release docs (${{ github.event.inputs.release_reason }}) [skip ci]"
           else
-            git commit -m "Release docs (auto-release on merge to main)"
+            git commit -m "Release docs (auto-release on merge to main) [skip ci]"
           fi
           git push origin HEAD:main
