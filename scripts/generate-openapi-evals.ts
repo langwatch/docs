@@ -267,8 +267,18 @@ const generateRequestSchema = (
 
   return {
     type: "object",
-    properties,
-    required: requiredFields,
+    properties: {
+      trace_id: {
+        type: "string",
+        description: "Optional trace ID to associate this evaluation with a trace",
+      },
+      data: {
+        type: "object",
+        properties,
+        required: requiredFields,
+      },
+    },
+    required: ["data"],
   };
 };
 
