@@ -74,14 +74,21 @@ langevals:
 
 postgresql:
   chartManaged: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "16"
   auth:
     password: "rtfyg6j8iu"
+  volumePermissions:
+    enabled: false
 
 redis:
   chartManaged: true
 
 opensearch:
   chartManaged: true
+  singleNode: true
   clusterName: "langwatch-test-opensearch"
 ```
 
@@ -206,13 +213,14 @@ app:
       enabled: false
     sentry:
       enabled: false
+  # Development mode requires more memory for Turbopack compilation
   resources:
     requests:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 500m
+      memory: 2Gi
     limits:
-      cpu: 1000m
-      memory: 1Gi
+      cpu: 2000m
+      memory: 4Gi
 
 langwatch_nlp:
   resources:
@@ -234,10 +242,16 @@ langevals:
 
 postgresql:
   chartManaged: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "16"
   auth:
     username: postgres
     password: dev-postgres-password
     database: langwatch
+  volumePermissions:
+    enabled: false
   primary:
     persistence:
       enabled: false
@@ -253,6 +267,7 @@ redis:
 opensearch:
   chartManaged: true
   replicas: 1
+  singleNode: true
   persistence:
     enabled: false
 
@@ -425,5 +440,57 @@ metadata:
 ```
 
 Alternatively, configure an Istio `ServiceEntry`/egress policy for your OpenSearch endpoint.
+</Accordion>
+
+<Accordion title="OpenSearch: duplicate env var error (cluster.initial_master_nodes)">
+If you see an error like:
+
+```
+Error: INSTALLATION FAILED: failed to create typed patch object ... duplicate entries for key [name="cluster.initial_master_nodes"]
+```
+
+Add `singleNode: true` to your opensearch configuration:
+
+```yaml
+opensearch:
+  chartManaged: true
+  singleNode: true
+```
+
+See [issue #1232](https://github.com/langwatch/langwatch/issues/1232) for details.
+</Accordion>
+
+<Accordion title="PostgreSQL: image pull errors (bitnami/postgresql or bitnami/os-shell not found)">
+If PostgreSQL pods fail with `ImagePullBackOff` or `ErrImagePull` for images like `bitnami/postgresql:16.x.x-debian-...` or `bitnami/os-shell:...`, the Bitnami images may have been removed from Docker Hub.
+
+Use the legacy Bitnami image and disable the volumePermissions init container:
+
+```yaml
+postgresql:
+  chartManaged: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "16"
+  volumePermissions:
+    enabled: false
+```
+
+See [issue #1232](https://github.com/langwatch/langwatch/issues/1232) for details.
+</Accordion>
+
+<Accordion title="App crashes with exit code 137 (OOMKilled) in development mode">
+Development mode uses Turbopack for on-demand compilation which requires more memory than production mode. If the app crashes with exit code 137, increase the memory limits:
+
+```yaml
+app:
+  resources:
+    requests:
+      memory: 2Gi
+    limits:
+      memory: 4Gi
+```
+
+For production deployments, the default 1Gi limit is usually sufficient.
 </Accordion>
 </AccordionGroup>
