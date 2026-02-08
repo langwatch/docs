@@ -20,118 +20,72 @@ This tutorial will guide you through capturing both types using the Python SDK.
 Trace metadata provides context for the entire trace. It's ideal for information that remains constant throughout the execution of a traced operation, such as:
 
 *   User identifiers (`user_id`)
-*   Session or conversation identifiers (`session_id`, `thread_id`)
+*   Session or conversation identifiers (`thread_id`) - see [Tracking Conversations](/integration/python/tutorials/tracking-conversations)
 *   Application version (`app_version`)
 *   Environment (`env: "production"`)
 *   A/B testing flags or variant names
+*   Labels for filtering and categorization
 
-You can set trace metadata when a trace is initiated or update it at any point while the trace is active.
+### Setting Trace Metadata
 
-### Setting Trace Metadata at Initialization
-
-The easiest way to add metadata to a trace is by passing a `metadata` dictionary to the `langwatch.trace()` decorator or context manager.
+Inside any function decorated with `@langwatch.trace()`, use `langwatch.get_current_trace().update()` to attach metadata:
 
 ```python
 import langwatch
-import os
+from openai import OpenAI
 
-# Initialize LangWatch (ensure this is done once in your application)
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+client = OpenAI()
 
-@langwatch.trace(name="UserQueryHandler", metadata={"user_id": "user_123", "session_id": "session_abc"})
-def handle_user_query(query: str):
-    # Your application logic here
-    # For example, process the query and interact with an LLM
-    processed_query = f"Query processed: {query}"
+@langwatch.trace()
+def handle_message(user_id: str, message: str):
+    langwatch.get_current_trace().update(metadata={
+        "user_id": user_id,
+        "environment": "production",
+    })
 
-    # You can also update trace metadata from within the trace
-    current_trace = langwatch.get_current_trace()
-    if current_trace:
-        current_trace.update(metadata={"query_language": "en"})
-
-    return processed_query
-
-handle_user_query("Hello, LangWatch!")
+    # your LLM pipeline logic here...
 ```
 
-In this example, `user_id` and `session_id` are attached to the "UserQueryHandler" trace from the start. Later, `query_language` is added.
-
-<Note>
-  Refer to the [`langwatch.trace()` API reference](/integration/python/reference#langwatchtrace) for more details on its parameters.
-</Note>
-
-### Updating Trace Metadata Dynamically
-
-If you need to add or modify trace metadata after the trace has started (e.g., based on some intermediate result), you can use the `update()` method on the `LangWatchTrace` object.
-
-You can get the current trace object using `langwatch.get_current_trace()` or from the `langwatch.trace()` context manager.
+You can call `.update()` multiple times throughout your function as more context becomes available:
 
 ```python
-import langwatch
-import os
-import uuid
+@langwatch.trace()
+def handle_message(user_id: str, message: str):
+    trace = langwatch.get_current_trace()
 
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+    trace.update(metadata={"user_id": user_id})
 
-def process_customer_request(customer_id: str, request_details: dict):
-    trace_metadata = {
-        "customer_id": customer_id,
-        "initial_request_type": request_details.get("type")
-    }
-    with langwatch.trace(name="CustomerRequestFlow", metadata=trace_metadata) as current_trace:
-        # Simulate some processing
-        print(f"Processing request for customer {customer_id}")
+    # After detecting the language
+    detected_language = detect_language(message)
+    trace.update(metadata={"language": detected_language})
 
-        # Update metadata based on some condition or result
-        is_priority_customer = customer_id.startswith("vip_")
-        current_trace.update(metadata={"priority_customer": is_priority_customer})
+    # After classifying intent
+    intent = classify_intent(message)
+    trace.update(metadata={"intent": intent})
 
-        # ... further processing ...
-
-        if request_details.get("type") == "complaint":
-            current_trace.update(metadata={"escalation_needed": True})
-
-        print(f"Trace ID: {current_trace.id}") # Example of accessing trace properties
-
-process_customer_request(f"vip_{uuid.uuid4()}", {"type": "complaint", "content": "Service issue"})
-process_customer_request(f"user_{uuid.uuid4()}", {"type": "inquiry", "content": "Product question"})
+    # process the message...
 ```
 
 ### Adding Labels to Traces
 
-Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically inside your traced functions:
+Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard:
 
 ```python
-import langwatch
-import os
-
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
-
 @langwatch.trace()
-def handle_user_request(user_id: str, request_type: str):
+def handle_message(user_id: str, request_type: str):
     trace = langwatch.get_current_trace()
 
-    # Set initial labels based on request type
     if request_type == "support":
         trace.update(metadata={"labels": ["customer_support", "high_priority"]})
     elif request_type == "sales":
         trace.update(metadata={"labels": ["sales_inquiry"]})
 
-    # Process the request
-    result = f"Processed {request_type} request for user {user_id}"
-
-    # Add additional labels based on processing results
-    if "urgent" in result.lower():
-        trace.update(metadata={"labels": ["urgent_escalation"]})
-
-    return result
-
-handle_user_request("user_123", "support")
+    # process the request...
 ```
 
 ## Span Attributes
 
-Span attributes (often referred to simply as "attributes") provide context for a specific operation or unit of work *within* a trace. They are useful for details that are relevant only to that particular step. Examples include:
+Span attributes provide context for a specific operation or unit of work *within* a trace. They are useful for details that are relevant only to that particular step. Examples include:
 
 *   For an LLM call span: `model_name`, `prompt_template_version`, `temperature`
 *   For a tool call span: `tool_name`, `api_endpoint`, specific input parameters
@@ -140,65 +94,28 @@ Span attributes (often referred to simply as "attributes") provide context for a
 
 ### Setting Span Attributes
 
-You can set attributes on a span when it's created using the `attributes` parameter (less common for dynamic values) or, more typically, by calling the `update()` method on the `LangWatchSpan` object.
+Use `langwatch.get_current_span().update()` or the span context manager to set attributes on a specific span:
 
-The `update()` method is flexible and allows you to pass attributes as keyword arguments.
-
-<CodeGroup>
-```python Using update() method
+```python
 import langwatch
-import os
-
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
 
 @langwatch.trace(name="ArticleGenerator")
 def generate_article(topic: str):
     with langwatch.span(name="FetchResearchData", type="tool") as research_span:
-        # Simulate fetching data
-        research_data = f"Data about {topic}"
+        research_data = fetch_data(topic)
         research_span.update(
             source="internal_db",
             query_complexity="medium",
             items_retrieved=10
         )
-        # research_span.set_attributes({"source": "internal_db"}) # Also works
 
     with langwatch.span(name="GenerateText", type="llm") as llm_span:
         llm_span.update(model="gpt-5", prompt_length=len(topic))
-        # Simulate LLM call
-        article_text = f"Here's an article about {topic} based on {research_data}."
+        article_text = generate(topic, research_data)
         llm_span.update(output_length=len(article_text), tokens_used=150)
 
     return article_text
-
-generate_article("AI in Healthcare")
 ```
-```python Using attributes parameter (for static attributes)
-import langwatch
-import os
-
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
-
-@langwatch.trace(name="StaticAttributeDemo")
-def process_with_static_info():
-    # 'version' is a static attribute for this span's definition
-    with langwatch.span(name="ComponentX", attributes={"version": "1.0.2", "region": "us-east-1"}):
-        # ... logic for ComponentX ...
-        print("ComponentX with static attributes executed.")
-        # Dynamic attributes can still be added via update()
-        langwatch.get_current_span().update(status_code=200)
-
-process_with_static_info()
-```
-</CodeGroup>
-
-In the first example, `source`, `query_complexity`, and `items_retrieved` are added to the "FetchResearchData" span. Similarly, `model`, `prompt_length`, `output_length`, and `tokens_used` contextualize the "GenerateText" LLM span.
-
-The `LangWatchSpan` object also has a `set_attributes()` method which takes a dictionary, similar to OpenTelemetry's underlying span API.
-
-<Note>
-  For more details on span parameters and methods, see the [`langwatch.span()` API reference](/integration/python/reference#langwatchspan) and the [`LangWatchSpan` object methods](/integration/python/reference#langwatchspan-object-methods).
-</Note>
 
 ## Key Differences: Trace Metadata vs. Span Attributes
 
@@ -207,8 +124,8 @@ The `LangWatchSpan` object also has a `set_attributes()` method which takes a di
 | **Scope**       | Entire trace (e.g., a whole user request)       | Specific span (e.g., one LLM call, one tool use)       |
 | **Granularity** | Coarse-grained, applies to the overall operation | Fine-grained, applies to a specific part of the operation |
 | **Purpose**     | General context for the entire operation        | Specific details about a particular step or action     |
-| **Examples**    | `user_id`, `session_id`, `app_version`          | `model_name`, `tool_parameters`, `retrieved_chunk_id`    |
-| **SDK Access**  | `langwatch.trace(metadata={...})` <br/> `trace.update(metadata={...})` | `langwatch.span(attributes={...})` <br/> `span.update(key=value, ...)` <br/> `span.set_attributes({...})` |
+| **Examples**    | `user_id`, `thread_id`, `app_version`           | `model_name`, `tool_parameters`, `retrieved_chunk_id`    |
+| **SDK Access**  | `langwatch.get_current_trace().update(metadata={...})` | `span.update(key=value, ...)` or `span.set_attributes({...})` |
 
 **When to use which:**
 
@@ -225,9 +142,3 @@ This rich contextual data allows you to:
 - **Filter and search** for traces and spans based on specific metadata or attribute values.
 - **Analyze performance** by correlating metrics with different metadata/attributes (e.g., comparing latencies for different `user_id`s or `model_name`s).
 - **Debug issues** by quickly understanding the context and parameters of a failed or slow operation.
-
-## Conclusion
-
-Effectively using trace metadata and span attributes is crucial for maximizing the observability of your LLM applications. By enriching your traces with relevant contextual information, you empower yourself to better understand, debug, and optimize your systems with LangWatch.
-
-Remember to instrument your code thoughtfully, adding data that provides meaningful insights without being overly verbose.

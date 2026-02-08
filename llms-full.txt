@@ -3857,118 +3857,72 @@ This tutorial will guide you through capturing both types using the Python SDK.
 Trace metadata provides context for the entire trace. It's ideal for information that remains constant throughout the execution of a traced operation, such as:
 
 *   User identifiers (`user_id`)
-*   Session or conversation identifiers (`session_id`, `thread_id`)
+*   Session or conversation identifiers (`thread_id`) - see [Tracking Conversations](/integration/python/tutorials/tracking-conversations)
 *   Application version (`app_version`)
 *   Environment (`env: "production"`)
 *   A/B testing flags or variant names
+*   Labels for filtering and categorization
 
-You can set trace metadata when a trace is initiated or update it at any point while the trace is active.
+### Setting Trace Metadata
 
-### Setting Trace Metadata at Initialization
-
-The easiest way to add metadata to a trace is by passing a `metadata` dictionary to the `langwatch.trace()` decorator or context manager.
+Inside any function decorated with `@langwatch.trace()`, use `langwatch.get_current_trace().update()` to attach metadata:
 
 ```python
 import langwatch
-import os
+from openai import OpenAI
 
-# Initialize LangWatch (ensure this is done once in your application)
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+client = OpenAI()
 
-@langwatch.trace(name="UserQueryHandler", metadata={"user_id": "user_123", "session_id": "session_abc"})
-def handle_user_query(query: str):
-    # Your application logic here
-    # For example, process the query and interact with an LLM
-    processed_query = f"Query processed: {query}"
+@langwatch.trace()
+def handle_message(user_id: str, message: str):
+    langwatch.get_current_trace().update(metadata={
+        "user_id": user_id,
+        "environment": "production",
+    })
 
-    # You can also update trace metadata from within the trace
-    current_trace = langwatch.get_current_trace()
-    if current_trace:
-        current_trace.update(metadata={"query_language": "en"})
-
-    return processed_query
-
-handle_user_query("Hello, LangWatch!")
+    # your LLM pipeline logic here...
 ```
 
-In this example, `user_id` and `session_id` are attached to the "UserQueryHandler" trace from the start. Later, `query_language` is added.
-
-<Note>
-  Refer to the [`langwatch.trace()` API reference](/integration/python/reference#langwatchtrace) for more details on its parameters.
-</Note>
-
-### Updating Trace Metadata Dynamically
-
-If you need to add or modify trace metadata after the trace has started (e.g., based on some intermediate result), you can use the `update()` method on the `LangWatchTrace` object.
-
-You can get the current trace object using `langwatch.get_current_trace()` or from the `langwatch.trace()` context manager.
+You can call `.update()` multiple times throughout your function as more context becomes available:
 
 ```python
-import langwatch
-import os
-import uuid
+@langwatch.trace()
+def handle_message(user_id: str, message: str):
+    trace = langwatch.get_current_trace()
 
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
+    trace.update(metadata={"user_id": user_id})
 
-def process_customer_request(customer_id: str, request_details: dict):
-    trace_metadata = {
-        "customer_id": customer_id,
-        "initial_request_type": request_details.get("type")
-    }
-    with langwatch.trace(name="CustomerRequestFlow", metadata=trace_metadata) as current_trace:
-        # Simulate some processing
-        print(f"Processing request for customer {customer_id}")
+    # After detecting the language
+    detected_language = detect_language(message)
+    trace.update(metadata={"language": detected_language})
 
-        # Update metadata based on some condition or result
-        is_priority_customer = customer_id.startswith("vip_")
-        current_trace.update(metadata={"priority_customer": is_priority_customer})
+    # After classifying intent
+    intent = classify_intent(message)
+    trace.update(metadata={"intent": intent})
 
-        # ... further processing ...
-
-        if request_details.get("type") == "complaint":
-            current_trace.update(metadata={"escalation_needed": True})
-
-        print(f"Trace ID: {current_trace.id}") # Example of accessing trace properties
-
-process_customer_request(f"vip_{uuid.uuid4()}", {"type": "complaint", "content": "Service issue"})
-process_customer_request(f"user_{uuid.uuid4()}", {"type": "inquiry", "content": "Product question"})
+    # process the message...
 ```
 
 ### Adding Labels to Traces
 
-Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically inside your traced functions:
+Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard:
 
 ```python
-import langwatch
-import os
-
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
-
 @langwatch.trace()
-def handle_user_request(user_id: str, request_type: str):
+def handle_message(user_id: str, request_type: str):
     trace = langwatch.get_current_trace()
 
-    # Set initial labels based on request type
     if request_type == "support":
         trace.update(metadata={"labels": ["customer_support", "high_priority"]})
     elif request_type == "sales":
         trace.update(metadata={"labels": ["sales_inquiry"]})
 
-    # Process the request
-    result = f"Processed {request_type} request for user {user_id}"
-
-    # Add additional labels based on processing results
-    if "urgent" in result.lower():
-        trace.update(metadata={"labels": ["urgent_escalation"]})
-
-    return result
-
-handle_user_request("user_123", "support")
+    # process the request...
 ```
 
 ## Span Attributes
 
-Span attributes (often referred to simply as "attributes") provide context for a specific operation or unit of work *within* a trace. They are useful for details that are relevant only to that particular step. Examples include:
+Span attributes provide context for a specific operation or unit of work *within* a trace. They are useful for details that are relevant only to that particular step. Examples include:
 
 *   For an LLM call span: `model_name`, `prompt_template_version`, `temperature`
 *   For a tool call span: `tool_name`, `api_endpoint`, specific input parameters
@@ -3977,65 +3931,28 @@ Span attributes (often referred to simply as "attributes") provide context for a
 
 ### Setting Span Attributes
 
-You can set attributes on a span when it's created using the `attributes` parameter (less common for dynamic values) or, more typically, by calling the `update()` method on the `LangWatchSpan` object.
+Use `langwatch.get_current_span().update()` or the span context manager to set attributes on a specific span:
 
-The `update()` method is flexible and allows you to pass attributes as keyword arguments.
-
-<CodeGroup>
-```python Using update() method
+```python
 import langwatch
-import os
-
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
 
 @langwatch.trace(name="ArticleGenerator")
 def generate_article(topic: str):
     with langwatch.span(name="FetchResearchData", type="tool") as research_span:
-        # Simulate fetching data
-        research_data = f"Data about {topic}"
+        research_data = fetch_data(topic)
         research_span.update(
             source="internal_db",
             query_complexity="medium",
             items_retrieved=10
         )
-        # research_span.set_attributes({"source": "internal_db"}) # Also works
 
     with langwatch.span(name="GenerateText", type="llm") as llm_span:
         llm_span.update(model="gpt-5", prompt_length=len(topic))
-        # Simulate LLM call
-        article_text = f"Here's an article about {topic} based on {research_data}."
+        article_text = generate(topic, research_data)
         llm_span.update(output_length=len(article_text), tokens_used=150)
 
     return article_text
-
-generate_article("AI in Healthcare")
 ```
-```python Using attributes parameter (for static attributes)
-import langwatch
-import os
-
-langwatch.setup(api_key=os.getenv("LANGWATCH_API_KEY"))
-
-@langwatch.trace(name="StaticAttributeDemo")
-def process_with_static_info():
-    # 'version' is a static attribute for this span's definition
-    with langwatch.span(name="ComponentX", attributes={"version": "1.0.2", "region": "us-east-1"}):
-        # ... logic for ComponentX ...
-        print("ComponentX with static attributes executed.")
-        # Dynamic attributes can still be added via update()
-        langwatch.get_current_span().update(status_code=200)
-
-process_with_static_info()
-```
-</CodeGroup>
-
-In the first example, `source`, `query_complexity`, and `items_retrieved` are added to the "FetchResearchData" span. Similarly, `model`, `prompt_length`, `output_length`, and `tokens_used` contextualize the "GenerateText" LLM span.
-
-The `LangWatchSpan` object also has a `set_attributes()` method which takes a dictionary, similar to OpenTelemetry's underlying span API.
-
-<Note>
-  For more details on span parameters and methods, see the [`langwatch.span()` API reference](/integration/python/reference#langwatchspan) and the [`LangWatchSpan` object methods](/integration/python/reference#langwatchspan-object-methods).
-</Note>
 
 ## Key Differences: Trace Metadata vs. Span Attributes
 
@@ -4044,8 +3961,8 @@ The `LangWatchSpan` object also has a `set_attributes()` method which takes a di
 | **Scope**       | Entire trace (e.g., a whole user request)       | Specific span (e.g., one LLM call, one tool use)       |
 | **Granularity** | Coarse-grained, applies to the overall operation | Fine-grained, applies to a specific part of the operation |
 | **Purpose**     | General context for the entire operation        | Specific details about a particular step or action     |
-| **Examples**    | `user_id`, `session_id`, `app_version`          | `model_name`, `tool_parameters`, `retrieved_chunk_id`    |
-| **SDK Access**  | `langwatch.trace(metadata={...})` <br/> `trace.update(metadata={...})` | `langwatch.span(attributes={...})` <br/> `span.update(key=value, ...)` <br/> `span.set_attributes({...})` |
+| **Examples**    | `user_id`, `thread_id`, `app_version`           | `model_name`, `tool_parameters`, `retrieved_chunk_id`    |
+| **SDK Access**  | `langwatch.get_current_trace().update(metadata={...})` | `span.update(key=value, ...)` or `span.set_attributes({...})` |
 
 **When to use which:**
 
@@ -4062,12 +3979,6 @@ This rich contextual data allows you to:
 - **Filter and search** for traces and spans based on specific metadata or attribute values.
 - **Analyze performance** by correlating metrics with different metadata/attributes (e.g., comparing latencies for different `user_id`s or `model_name`s).
 - **Debug issues** by quickly understanding the context and parameters of a failed or slow operation.
-
-## Conclusion
-
-Effectively using trace metadata and span attributes is crucial for maximizing the observability of your LLM applications. By enriching your traces with relevant contextual information, you empower yourself to better understand, debug, and optimize your systems with LangWatch.
-
-Remember to instrument your code thoughtfully, adding data that provides meaningful insights without being overly verbose.
 
 ---
 
@@ -4875,6 +4786,87 @@ handle_user_data({"id": "user_xyz", "email": "test@example.com", "name": "Sensit
 ## Conclusion
 
 Controlling how inputs and outputs are captured in LangWatch allows you to tailor the observability data to your specific needs. By using automatic capture flags, explicit parameters, dynamic updates, and appropriate data formatting (especially `ChatMessage` for conversations), you can ensure that your traces provide clear, relevant, and secure insights into your LLM application's behavior.
+
+---
+
+# FILE: ./integration/python/tutorials/tracking-conversations.mdx
+
+---
+title: Tracking Conversations
+sidebarTitle: Python
+description: Group related traces into conversations using thread_id so you can view and evaluate entire chat sessions in LangWatch.
+icon: python
+keywords: langwatch, python, thread_id, conversation, chat, session, multi-turn
+---
+
+When building chatbots or multi-turn agents, each user message creates a separate trace. To group these traces into a single conversation, set the `thread_id` metadata on each trace.
+
+## Setting the thread_id
+
+Inside any `@langwatch.trace()` function, use `langwatch.get_current_trace().update()`:
+
+```python
+import langwatch
+
+@langwatch.trace()
+def handle_message(thread_id: str, user_id: str, message: str):
+    langwatch.get_current_trace().update(metadata={
+        "thread_id": thread_id,
+        "user_id": user_id,
+    })
+
+    # your LLM pipeline logic here...
+```
+
+All traces that share the same `thread_id` will be grouped into a single conversation thread in the LangWatch dashboard.
+
+## Example: FastAPI Chatbot
+
+```python
+import langwatch
+from fastapi import FastAPI
+from openai import OpenAI
+from pydantic import BaseModel
+
+langwatch.setup()
+
+app = FastAPI()
+client = OpenAI()
+
+class ChatRequest(BaseModel):
+    thread_id: str
+    user_id: str
+    message: str
+
+@app.post("/chat")
+@langwatch.trace()
+async def chat(request: ChatRequest):
+    langwatch.get_current_trace().update(metadata={
+        "thread_id": request.thread_id,
+        "user_id": request.user_id,
+    })
+
+    # Fetch conversation history from your database using request.thread_id
+    history = get_conversation_history(request.thread_id)
+
+    response = client.chat.completions.create(
+        model="gpt-4.1",
+        messages=[*history, {"role": "user", "content": request.message}],
+    )
+
+    return {"reply": response.choices[0].message.content}
+```
+
+The `thread_id` is typically the conversation or session ID from your application. It can be any string, as long as it's consistent across all messages in the same conversation.
+
+## What You Get
+
+Once traces share a `thread_id`, you can:
+
+- **View the full conversation** in the LangWatch dashboard by clicking on any trace in the thread
+- **Run evaluations by thread** to assess conversation-level quality (see [Evaluation by Thread](/evaluations/online-evaluation/by-thread))
+- **Build datasets from threads** for testing multi-turn scenarios (see [Dataset Threads](/datasets/dataset-threads))
+- **Filter and search** traces by conversation in the messages view
 
 ---
 
@@ -6310,401 +6302,121 @@ Metadata and attributes are key-value pairs that allow you to add custom context
 
 In the TypeScript SDK, all metadata is captured through **span attributes**. You can set attributes on any span to provide context for that operation or the entire trace.
 
-This tutorial will guide you through capturing metadata using span attributes with the TypeScript SDK.
-
 <Note>
   For a comprehensive reference of all available attributes and semantic conventions, see the [Semantic Conventions guide](/integration/typescript/tutorials/semantic-conventions).
 </Note>
 
-## Understanding Span Attributes
-
-Span attributes provide contextual information for any span in your trace. They can be used to capture:
-
-*   **Trace-level context**: Information that applies to the entire trace (set on the root span)
-*   **Span-specific details**: Information relevant to a particular operation or step
-*   **Business logic metadata**: Custom flags, parameters, or results specific to your application
-
-### Common Use Cases
-
-*   **User and session information**: `langwatch.user.id`, `langwatch.thread.id`
-*   **Application context**: `app.version`, `environment`, `region`
-*   **LLM operation details**: `gen_ai.request.model`, `gen_ai.request.temperature`, `gen_ai.response.prompt_tokens`
-*   **Tool and API calls**: `tool.name`, `api.endpoint`, `response.status`
-*   **RAG operations**: `retrieved.document.ids`, `chunk.count`
-*   **Custom business logic**: `customer.tier`, `feature.flags`, `processing.stage`
-
 ## Setting Attributes
 
-You can set attributes on any span using the `setAttributes()` method. This method accepts an object with key-value pairs.
-
-### Basic Attribute Setting
+Use `setAttributes()` on any span to attach metadata. For trace-level context, set attributes on the root span:
 
 ```typescript
 import { setupObservability } from "langwatch/observability/node";
 import { getLangWatchTracer } from "langwatch";
 
-// Setup observability
 setupObservability();
 
-const tracer = getLangWatchTracer("metadata-example");
+const tracer = getLangWatchTracer("my-service");
 
-async function handleUserQuery(query: string): Promise<string> {
-  return await tracer.withActiveSpan("UserQueryHandler", async (span) => {
-    // Set attributes on the root span for trace-level context
+async function handleMessage(userId: string, message: string) {
+  return await tracer.withActiveSpan("HandleMessage", async (span) => {
     span.setAttributes({
-      "langwatch.user.id": "user_123",
-      "langwatch.thread.id": "session_abc",
-      "app.version": "1.0.0"
+      "langwatch.user.id": userId,
+      "app.version": "1.0.0",
     });
 
-    // Your application logic here
-    const processedQuery = `Query processed: ${query}`;
+    // your application logic here...
 
-    // Add more attributes based on processing
+    // add more attributes as context becomes available
     span.setAttributes({
       "query.language": "en",
-      "processing.completed": true
+      "processing.completed": true,
     });
 
-    return processedQuery;
+    return result;
   });
 }
-
-await handleUserQuery("Hello, LangWatch!");
 ```
+
+You can also use typed attribute constants:
+
+```typescript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_USER_ID]: userId,
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: threadId,
+});
+```
+
+### Common Attributes
+
+*   **User and session**: `langwatch.user.id`, `langwatch.thread.id` - see [Tracking Conversations](/integration/typescript/tutorials/tracking-conversations)
+*   **Application context**: `app.version`, `environment`, `region`
+*   **LLM operations**: `gen_ai.request.model`, `gen_ai.request.temperature`
+*   **Custom business logic**: `customer.tier`, `feature.flags`
 
 ### Setting Attributes on Child Spans
 
 You can set attributes on any span in your trace hierarchy:
 
 ```typescript
-async function processWithChildSpans(): Promise<void> {
+async function processWithChildSpans() {
   return await tracer.withActiveSpan("ParentOperation", async (parentSpan) => {
-    // Set attributes on the parent span
     parentSpan.setAttributes({
       "operation.type": "batch_processing",
-      "batch.size": 100
+      "batch.size": 100,
     });
 
     await tracer.withActiveSpan("ChildOperation", async (childSpan) => {
-      // Set attributes on the child span
       childSpan.setAttributes({
         "child.operation": "data_validation",
-        "validation.rules": 5
+        "validation.rules": 5,
       });
 
       // ... logic for child operation ...
 
-      // Add more attributes based on results
       childSpan.setAttributes({
         "validation.passed": true,
-        "items.processed": 95
+        "items.processed": 95,
       });
     });
-  });
-}
-```
-
-## Dynamic Attribute Updates
-
-You can update attributes at any point during span execution:
-
-```typescript
-async function dynamicAttributes(customerId: string, requestDetails: any): Promise<string> {
-  return await tracer.withActiveSpan("CustomerRequestFlow", async (span) => {
-    // Set initial attributes
-    span.setAttributes({
-      "langwatch.customer.id": customerId,
-      "request.type": requestDetails.type
-    });
-
-    // Simulate processing
-    console.log(`Processing request for customer ${customerId}`);
-
-    // Update attributes based on conditions
-    const isPriorityCustomer = customerId.startsWith("vip_");
-    span.setAttributes({
-      "customer.priority": isPriorityCustomer
-    });
-
-    // ... further processing ...
-
-    if (requestDetails.type === "complaint") {
-      span.setAttributes({
-        "escalation.needed": true
-      });
-    }
-
-    return "Request processed successfully";
   });
 }
 ```
 
 ## Adding Labels to Traces
 
-Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically by setting them on the span:
+Labels allow you to organize, filter, and categorize your traces in the LangWatch dashboard:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/node";
-import { getLangWatchTracer } from "langwatch";
-
-setupObservability();
-
-const tracer = getLangWatchTracer("user-service");
-
-const handleUserRequest = async (userId: string, requestType: string): Promise<string> => {
+async function handleRequest(userId: string, requestType: string) {
   return await tracer.withActiveSpan("UserRequest", async (span) => {
-    // Set initial labels based on request type
     if (requestType === "support") {
       span.setAttributes({
-        "langwatch.labels": JSON.stringify(["customer_support", "high_priority"])
+        "langwatch.labels": JSON.stringify(["customer_support", "high_priority"]),
       });
     } else if (requestType === "sales") {
       span.setAttributes({
-        "langwatch.labels": JSON.stringify(["sales_inquiry"])
+        "langwatch.labels": JSON.stringify(["sales_inquiry"]),
       });
     }
 
-    // Process the request
-    const result = `Processed ${requestType} request for user ${userId}`;
-
-    // Add additional labels based on processing results
-    if (result.toLowerCase().includes("urgent")) {
-      span.setAttributes({
-        "langwatch.labels": JSON.stringify(["urgent_escalation"])
-      });
-    }
-
-    return result;
-  });
-};
-
-await handleUserRequest("user_123", "support");
-```
-
-## Using Semantic Conventions
-
-LangWatch supports OpenTelemetry semantic conventions for consistent attribute naming. You can import semantic convention attributes for type-safe attribute setting:
-
-```typescript
-import { setupObservability } from "langwatch/observability/node";
-import { getLangWatchTracer } from "langwatch";
-import { attributes } from "langwatch";
-import * as semconv from "@opentelemetry/semantic-conventions";
-
-// Setup observability
-setupObservability();
-
-const tracer = getLangWatchTracer("semantic-conventions-example");
-
-async function exampleWithSemanticConventions(): Promise<void> {
-  return await tracer.withActiveSpan("SemanticConventionsExample", async (span) => {
-    // Use semantic convention attributes for consistency
-    span.setAttributes({
-      [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
-      [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
-      [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
-      [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
-      [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7
-    });
+    // process the request...
   });
 }
 ```
-
-<Note>
-  For a complete list of available semantic conventions and attributes, see the [Semantic Conventions guide](/integration/typescript/tutorials/semantic-conventions).
-</Note>
-
-## Advanced Attribute Patterns
-
-### Conditional Attributes
-
-Set attributes based on your application logic:
-
-```typescript
-async function conditionalAttributes(userId: string, isPremium: boolean): Promise<void> {
-  return await tracer.withActiveSpan("ConditionalAttributes", async (span) => {
-    // Always set these attributes
-    span.setAttributes({
-      "langwatch.user.id": userId,
-      "user.type": isPremium ? "premium" : "standard"
-    });
-
-    // Conditionally set additional attributes
-    if (isPremium) {
-      span.setAttributes({
-        "premium.features": ["priority_support", "advanced_analytics"],
-        "billing.tier": "premium"
-      });
-    }
-
-    // Set attributes based on processing results
-    const processingTime = Date.now();
-    if (processingTime > 5000) {
-      span.setAttributes({
-        "performance.slow": true,
-        "processing.time.ms": processingTime
-      });
-    }
-  });
-}
-```
-
-### Structured Data Attributes
-
-For complex data, you can serialize objects as JSON strings:
-
-```typescript
-async function structuredAttributes(): Promise<void> {
-  return await tracer.withActiveSpan("StructuredData", async (span) => {
-    const userPreferences = {
-      language: "en",
-      theme: "dark",
-      notifications: ["email", "push"]
-    };
-
-    const systemInfo = {
-      version: "1.2.3",
-      environment: "production",
-      region: "us-east-1"
-    };
-
-    span.setAttributes({
-      "user.preferences": JSON.stringify(userPreferences),
-      "system.info": JSON.stringify(systemInfo),
-      "feature.flags": JSON.stringify({
-        "new_ui": true,
-        "beta_features": false
-      })
-    });
-  });
-}
-```
-
-### LLM-Specific Attributes
-
-For LLM operations, you can use GenAI semantic convention attributes:
-
-```typescript
-import { setupObservability } from "langwatch/observability/node";
-import { getLangWatchTracer } from "langwatch";
-import * as semconv from "@opentelemetry/semantic-conventions";
-
-async function llmAttributes(): Promise<void> {
-  return await tracer.withActiveSpan("LLMOperation", async (span) => {
-    span.setType("llm");
-    span.setRequestModel("gpt-5");
-
-    span.setAttributes({
-      [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
-      [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7,
-      [semconv.ATTR_GEN_AI_REQUEST_MAX_TOKENS]: 1000,
-      [semconv.ATTR_GEN_AI_REQUEST_TOP_P]: 1.0,
-      [semconv.ATTR_GEN_AI_REQUEST_FREQUENCY_PENALTY]: 0.0,
-      [semconv.ATTR_GEN_AI_REQUEST_PRESENCE_PENALTY]: 0.0,
-      [semconv.ATTR_GEN_AI_REQUEST_STREAMING]: false
-    });
-
-    // Simulate LLM call
-    const response = "Generated response";
-
-    span.setAttributes({
-      [semconv.ATTR_GEN_AI_RESPONSE_MODEL]: "gpt-5",
-      [semconv.ATTR_GEN_AI_RESPONSE_PROMPT_TOKENS]: 150,
-      [semconv.ATTR_GEN_AI_RESPONSE_COMPLETION_TOKENS]: 75,
-      [semconv.ATTR_GEN_AI_RESPONSE_TOTAL_TOKENS]: 225,
-      [semconv.ATTR_GEN_AI_RESPONSE_USAGE_TOTAL_TOKENS]: 225
-    });
-  });
-}
-```
-
-## Best Practices
-
-### Attribute Naming
-
-Follow consistent naming conventions for your attributes:
-
-```typescript
-// ✅ Good: Use consistent naming patterns
-span.setAttributes({
-  "langwatch.user.id": "user-123",
-  "request.method": "POST",
-  "response.status": 200,
-  "processing.time.ms": 1500
-});
-
-// ❌ Avoid: Inconsistent naming
-span.setAttributes({
-  "user_id": "user-123", // Inconsistent with langwatch.user.id
-  "method": "POST", // Too generic
-  "status": 200, // Too generic
-  "time": 1500 // Missing units
-});
-```
-
-### Sensitive Data
-
-Never include sensitive information in attributes:
-
-```typescript
-// ✅ Good: Safe attributes
-span.setAttributes({
-  "langwatch.user.id": "user-123",
-  "request.type": "authentication",
-  "auth.method": "oauth"
-});
-
-// ❌ Avoid: Sensitive data in attributes
-span.setAttributes({
-  "api_key": "sk-...", // Never include API keys
-  "password": "secret123", // Never include passwords
-  "credit_card": "1234-5678-9012-3456", // Never include PII
-  "session_token": "eyJ..." // Never include tokens
-});
-```
-
-### Performance Considerations
-
-Limit the number and size of attributes for performance:
-
-```typescript
-// ✅ Good: Essential attributes only
-span.setAttributes({
-  "langwatch.user.id": "user-123",
-  [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
-  [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7,
-  [semconv.ATTR_GEN_AI_RESPONSE_TOTAL_TOKENS]: 150
-});
-
-// ❌ Avoid: Too many attributes
-span.setAttributes({
-  // ... 50+ attributes that aren't essential
-});
-```
-
-### When to Set Attributes
-
-*   **At span creation**: Set attributes that are known from the start
-*   **During processing**: Update attributes as you learn more about the operation
-*   **At completion**: Add final results, metrics, or status information
 
 ## Viewing in LangWatch
 
 All captured span attributes will be visible in the LangWatch UI:
-- **Root span attributes** are typically displayed in the trace details view, providing an overview of the entire operation
+- **Root span attributes** are displayed in the trace details view, providing an overview of the entire operation
 - **Child span attributes** are shown when you inspect individual spans within a trace
 
 This rich contextual data allows you to:
 - **Filter and search** for traces and spans based on specific attribute values
-- **Analyze performance** by correlating metrics with different attributes (e.g., comparing latencies for different `langwatch.user.id`s or `gen_ai.request.model`s)
+- **Analyze performance** by correlating metrics with different attributes
 - **Debug issues** by quickly understanding the context and parameters of a failed or slow operation
-
-## Conclusion
-
-Effectively using span attributes is crucial for maximizing the observability of your LLM applications. By enriching your traces with relevant contextual information, you empower yourself to better understand, debug, and optimize your systems with LangWatch.
-
-Remember to instrument your code thoughtfully, adding data that provides meaningful insights without being overly verbose. Use semantic conventions for consistency and leverage TypeScript's autocomplete support for better developer experience.
 
 ---
 
@@ -7029,6 +6741,106 @@ await agentCall("What's the weather?");
 ```
 
 This will display the tool call with a tool icon in the trace visualization and include it in tool call analytics in the LangWatch dashboard.
+
+---
+
+# FILE: ./integration/typescript/tutorials/tracking-conversations.mdx
+
+---
+title: Tracking Conversations
+sidebarTitle: TypeScript/JS
+description: Group related traces into conversations using thread_id so you can view and evaluate entire chat sessions in LangWatch.
+icon: square-js
+keywords: langwatch, typescript, javascript, thread_id, conversation, chat, session, multi-turn
+---
+
+When building chatbots or multi-turn agents, each user message creates a separate trace. To group these traces into a single conversation, set the `langwatch.thread.id` attribute on the root span.
+
+## Setting the thread_id
+
+Inside any traced operation, use `setAttributes()` on the span:
+
+```typescript
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
+
+setupObservability();
+
+const tracer = getLangWatchTracer("my-chatbot");
+
+async function handleMessage(threadId: string, userId: string, message: string) {
+  return await tracer.withActiveSpan("HandleMessage", async (span) => {
+    span.setAttributes({
+      "langwatch.thread.id": threadId,
+      "langwatch.user.id": userId,
+    });
+
+    // your LLM pipeline logic here...
+  });
+}
+```
+
+All traces that share the same `langwatch.thread.id` will be grouped into a single conversation thread in the LangWatch dashboard.
+
+You can also use the typed attribute constants:
+
+```typescript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: threadId,
+  [attributes.ATTR_LANGWATCH_USER_ID]: userId,
+});
+```
+
+## Example: Express Chatbot
+
+```typescript
+
+import { setupObservability } from "langwatch/observability/node";
+import { getLangWatchTracer } from "langwatch";
+
+
+setupObservability();
+
+const app = express();
+const tracer = getLangWatchTracer("my-chatbot");
+const openai = new OpenAI();
+
+app.post("/chat", async (req, res) => {
+  const { threadId, userId, message } = req.body;
+
+  const reply = await tracer.withActiveSpan("HandleMessage", async (span) => {
+    span.setAttributes({
+      "langwatch.thread.id": threadId,
+      "langwatch.user.id": userId,
+    });
+
+    // Fetch conversation history from your database using threadId
+    const history = await getConversationHistory(threadId);
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4.1",
+      messages: [...history, { role: "user", content: message }],
+    });
+
+    return response.choices[0]?.message?.content;
+  });
+
+  res.json({ reply });
+});
+```
+
+The `threadId` is typically the conversation or session ID from your application. It can be any string, as long as it's consistent across all messages in the same conversation.
+
+## What You Get
+
+Once traces share a `thread_id`, you can:
+
+- **View the full conversation** in the LangWatch dashboard by clicking on any trace in the thread
+- **Run evaluations by thread** to assess conversation-level quality (see [Evaluation by Thread](/evaluations/online-evaluation/by-thread))
+- **Build datasets from threads** for testing multi-turn scenarios (see [Dataset Threads](/datasets/dataset-threads))
+- **Filter and search** traces by conversation in the messages view
 
 ---
 
@@ -9327,10 +9139,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY`, `AZURE_OPENAI_API_KEY`, and `AZURE_OPENAI_ENDPOINT` environment variables before running.
 </Info>
-
-Configure the OpenAI client with your Azure endpoint and API key:
 
 ```go
 package main
@@ -9340,20 +9150,34 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Azure OpenAI client
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("AZURE_OPENAI_API_KEY")),
 		oaioption.WithBaseURL(os.Getenv("AZURE_OPENAI_ENDPOINT")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("azure"),
 		)),
 	)
 
@@ -9361,18 +9185,22 @@ func main() {
 		Model: openai.ChatModelGPT5,
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, OpenAI!"),
+			openai.UserMessage("Hello, Azure OpenAI!"),
 		},
 	})
 	if err != nil {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
 Set `AZURE_OPENAI_ENDPOINT` to your Azure OpenAI resource endpoint URL (e.g., `https://your-resource.openai.azure.com/openai/deployments/your-deployment`).
+
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -9402,16 +9230,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` and `GROQ_API_KEY` environment variables before running.
 </Info>
-
-Set your Groq API key as an environment variable:
-
-```bash
-export GROQ_API_KEY="your-groq-api-key"
-```
-
-Configure the OpenAI client to point at Groq's endpoint and enable the LangWatch middleware:
 
 ```go
 package main
@@ -9421,20 +9241,34 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Groq client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithBaseURL("https://api.groq.com/openai/v1"),
 		oaioption.WithAPIKey(os.Getenv("GROQ_API_KEY")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("groq"),
 		)),
 	)
 
@@ -9442,25 +9276,20 @@ func main() {
 		Model: "openai/gpt-oss-20b",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, Groq! Can you explain the concept of inference speed?"),
+			openai.UserMessage("Hello, Groq!"),
 		},
 	})
 	if err != nil {
 		log.Fatalf("Groq API call failed: %v", err)
 	}
 
-	log.Printf("Groq response: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-## Observability Metrics
-
-The middleware automatically captures:
-
-- Prompt and completion text (configurable)
-- Token usage (prompt, completion, total)
-- Full request/response metadata
-- Latency and error details
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -9490,10 +9319,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` and `XAI_API_KEY` environment variables before running.
 </Info>
-
-Configure the OpenAI client with Grok (xAI)'s base URL and API key:
 
 ```go
 package main
@@ -9503,20 +9330,34 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Grok client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("XAI_API_KEY")),
 		oaioption.WithBaseURL("https://api.grok.com/v1"),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("xai"),
 		)),
 	)
 
@@ -9531,11 +9372,13 @@ func main() {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-Set `GROK_BASE_URL` to the Grok (xAI) API endpoint and use your xAI API key.
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -9566,15 +9409,13 @@ Set your OpenRouter API key as an environment variable:
 export OPENROUTER_API_KEY="your-openrouter-api-key"
 ```
 
-## Example
+## Usage
 
-Configure your `openai.Client` to use the OpenRouter base URL and your API key. Set the `gen_ai.system` attribute to `"openrouter"` for clear identification in your LangWatch traces.
+<Info>
+Set `LANGWATCH_API_KEY` and `OPENROUTER_API_KEY` environment variables before running.
+</Info>
 
-The key difference with OpenRouter is the model name, which is typically prefixed with the original provider (e.g., `anthropic/claude-3.5-sonnet`).
-
-<Note>
-The following example assumes you have already configured the LangWatch SDK. See the [Go setup guide](/integration/go/guide#setup) for details.
-</Note>
+The key difference with OpenRouter is the model name, which is prefixed with the provider (e.g., `anthropic/claude-sonnet-4-20250514`).
 
 ```go
 package main
@@ -9584,21 +9425,34 @@ import (
 	"log"
 	"os"
 
-	"github.com/langwatch/langwatch/sdk-go"
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create OpenRouter client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithBaseURL("https://openrouter.ai/api/v1"),
 		oaioption.WithAPIKey(os.Getenv("OPENROUTER_API_KEY")),
-		oaioption.WithMiddleware(otelopenai.Middleware("my-openrouter-app",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("openrouter"),
 		)),
 	)
 
@@ -9608,14 +9462,17 @@ func main() {
 			openai.UserMessage("Hello via OpenRouter!"),
 		},
 	})
-
 	if err != nil {
 		log.Fatalf("OpenRouter API call failed: %v", err)
 	}
 
-	log.Printf("Response from OpenRouter: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
+
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 <Note>
 Using OpenRouter is a great way to experiment with different models without changing your core instrumentation logic. All calls will be traced by LangWatch, regardless of the underlying model you choose.
@@ -9644,10 +9501,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` and `ANTHROPIC_API_KEY` environment variables before running.
 </Info>
-
-Configure the OpenAI client with Anthropic's base URL and API key:
 
 ```go
 package main
@@ -9657,20 +9512,34 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Anthropic client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("ANTHROPIC_API_KEY")),
 		oaioption.WithBaseURL(os.Getenv("ANTHROPIC_BASE_URL")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("anthropic"),
 		)),
 	)
 
@@ -9678,18 +9547,20 @@ func main() {
 		Model: "claude-4-5-sonnet",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, Anthropic!"),
+			openai.UserMessage("Hello, Claude!"),
 		},
 	})
 	if err != nil {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-Set `ANTHROPIC_BASE_URL` to `https://api.anthropic.com/v1` and use your Anthropic API key.
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -9719,10 +9590,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` environment variable before running. Ollama runs locally so no API key is needed for the model.
 </Info>
-
-Configure the OpenAI client to point to your local Ollama endpoint:
 
 ```go
 package main
@@ -9730,21 +9599,35 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Ollama client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithBaseURL(os.Getenv("OLLAMA_BASE_URL")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithAPIKey("ollama"), // Ollama doesn't require a real key
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("ollama"),
 		)),
 	)
 
@@ -9752,18 +9635,20 @@ func main() {
 		Model: "openai/gpt-5",
 		Messages: []openai.ChatCompletionMessageParamUnion{
 			openai.SystemMessage("You are a helpful assistant."),
-			openai.UserMessage("Hello, OpenAI!"),
+			openai.UserMessage("Hello, Ollama!"),
 		},
 	})
 	if err != nil {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-Set `OLLAMA_BASE_URL` to your Ollama endpoint (default: `http://localhost:11434/v1`). Ollama doesn't require an API key, but you can set any non-empty string.
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -9794,10 +9679,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` and `GEMINI_API_KEY` environment variables before running.
 </Info>
-
-Configure the OpenAI client with your Gemini endpoint and API key:
 
 ```go
 package main
@@ -9807,20 +9690,34 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create Gemini client via OpenAI-compatible API
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("GEMINI_API_KEY")),
 		oaioption.WithBaseURL(os.Getenv("GEMINI_BASE_URL")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
+			otelopenai.WithGenAISystem("google"),
 		)),
 	)
 
@@ -9835,11 +9732,13 @@ func main() {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
-Set `GEMINI_BASE_URL` to your Vertex AI endpoint URL and use your Google Cloud access token as the API key.
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -9870,10 +9769,8 @@ go get github.com/langwatch/langwatch/sdk-go github.com/openai/openai-go
 ## Usage
 
 <Info>
-The LangWatch API key is configured by default via the `LANGWATCH_API_KEY` environment variable.
+Set `LANGWATCH_API_KEY` and `OPENAI_API_KEY` environment variables before running.
 </Info>
-
-Add the `otelopenai.Middleware` to your OpenAI client configuration. The middleware automatically creates detailed trace spans for each API call.
 
 ```go
 package main
@@ -9883,17 +9780,30 @@ import (
 	"log"
 	"os"
 
+	langwatch "github.com/langwatch/langwatch/sdk-go"
 	otelopenai "github.com/langwatch/langwatch/sdk-go/instrumentation/openai"
 	"github.com/openai/openai-go"
 	oaioption "github.com/openai/openai-go/option"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 func main() {
 	ctx := context.Background()
 
+	// Set up LangWatch exporter
+	exporter, err := langwatch.NewDefaultExporter(ctx)
+	if err != nil {
+		log.Fatalf("failed to create exporter: %v", err)
+	}
+	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
+	otel.SetTracerProvider(tp)
+	defer tp.Shutdown(ctx) // Critical: ensures traces are flushed
+
+	// Create OpenAI client with LangWatch middleware
 	client := openai.NewClient(
 		oaioption.WithAPIKey(os.Getenv("OPENAI_API_KEY")),
-		oaioption.WithMiddleware(otelopenai.Middleware("<project_name>",
+		oaioption.WithMiddleware(otelopenai.Middleware("my-app",
 			otelopenai.WithCaptureInput(),
 			otelopenai.WithCaptureOutput(),
 		)),
@@ -9910,11 +9820,15 @@ func main() {
 		log.Fatalf("Chat completion failed: %v", err)
 	}
 
-	log.Printf("Chat completion: %s", response.Choices[0].Message.Content)
+	log.Printf("Response: %s", response.Choices[0].Message.Content)
 }
 ```
 
 The middleware automatically captures request/response content, token usage, and model information. Streaming responses are fully supported and automatically accumulated.
+
+<Warning>
+The `defer tp.Shutdown(ctx)` call is essential. Without it, traces buffered in memory will be lost when your application exits.
+</Warning>
 
 ## Related
 
@@ -11264,15 +11178,20 @@ The [LangWatch MCP Server](https://www.npmjs.com/package/@langwatch/mcp-server) 
 
 - **Set up agent testing with [Scenario](https://langwatch.ai/scenario/)** to test agent behavior through user simulations and edge cases
 - **Automatically instrument your code** with LangWatch tracing for any framework (OpenAI, Agno, Mastra, DSPy, and more)
-- **Create and manage prompts** using LangWatch's prompt management system
 - **Set up evaluations** to test and monitor your LLM outputs
-- **Add labels, metadata, and custom tracking** following LangWatch best practices
+- **Search and inspect traces** from your LangWatch project directly in your editor
+- **Query analytics** to understand performance trends, costs, and error rates
+- **Manage prompts** — list, create, update, and version prompts without leaving your IDE
 
 Instead of manually reading docs and writing boilerplate code, just ask your AI assistant to instrument your codebase with LangWatch, and it will do it for you.
 
 ## Setup
 
 <Steps>
+
+<Step title="Get your API key">
+Go to your LangWatch project **Settings** page and copy your API key. The API key is required for observability and prompt tools. Documentation tools work without it.
+</Step>
 
 <Step title="Configure your MCP">
 
@@ -11288,10 +11207,10 @@ Instead of manually reading docs and writing boilerplate code, just ask your AI 
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@langwatch/mcp-server"
-      ]
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "your-api-key-here"
+      }
     }
   }
 }
@@ -11299,19 +11218,23 @@ Instead of manually reading docs and writing boilerplate code, just ask your AI 
 
 ### Claude Code
 
-1. Open Claude Code settings (press `Cmd/Ctrl + ,`)
-2. Search for "MCP" or navigate to the MCP configuration
-3. Add the LangWatch MCP server to your configuration:
+Run this command to add the MCP server:
+
+```bash
+claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey your-api-key-here
+```
+
+Or add it manually to your `~/.claude.json`:
 
 ```json
 {
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@langwatch/mcp-server"
-      ]
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "your-api-key-here"
+      }
     }
   }
 }
@@ -11328,10 +11251,10 @@ For other MCP-compatible editors, add the following configuration to your MCP se
   "mcpServers": {
     "langwatch": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@langwatch/mcp-server"
-      ]
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "your-api-key-here"
+      }
     }
   }
 }
@@ -11345,6 +11268,13 @@ Refer to your editor's MCP documentation for the specific configuration file loc
 Open your AI assistant chat (e.g., `Cmd/Ctrl + I` in Cursor, or `Cmd/Ctrl + Shift + P` > "Claude Code: Open Chat" in Claude Code) and ask it to help with LangWatch tasks.
 </Step>
 </Steps>
+
+### Configuration
+
+| Environment Variable | CLI Argument | Description |
+|---------------------|-------------|-------------|
+| `LANGWATCH_API_KEY` | `--apiKey` | API key for authentication |
+| `LANGWATCH_ENDPOINT` | `--endpoint` | API endpoint (default: `https://app.langwatch.ai`) |
 
 ## Usage Examples
 
@@ -11481,16 +11411,6 @@ def chat(message: str):
     return response.choices[0].message.content
 ```
 
-### Create Prompts with Prompt Management
-
-Ask your AI assistant to set up prompt management:
-
-```plaintext
-"Create a prompt for my agents to parse PDFs using the prompts CLI"
-```
-
-The AI assistant will guide you through creating, versioning, and using prompts from LangWatch's [Prompts CLI](/prompt-management/cli).
-
 ### Set Up Evaluations
 
 Ask your AI assistant to set up evaluation code for your LLM outputs:
@@ -11504,6 +11424,66 @@ The AI assistant will:
 2. Create evaluation notebooks or scripts with proper setup
 3. Add evaluation metrics and criteria for your use case
 4. Include code to run evaluations following [Evaluating via Code](/evaluations/experiments/sdk)
+
+### Search and Debug Traces
+
+Ask your AI assistant to find and analyze traces from your project:
+
+<CodeGroup>
+```plaintext Find recent errors
+"Search for traces with errors in the last 24 hours"
+```
+
+```plaintext Investigate a specific trace
+"Get the full details of trace abc123 and explain what happened"
+```
+
+```plaintext Analyze a conversation thread
+"Find all traces for thread thread_xyz and show me the full conversation flow"
+```
+</CodeGroup>
+
+The AI assistant will use `search_traces` to find matching traces and `get_trace` to drill into individual ones. Traces are returned as AI-readable digests by default, showing the full span hierarchy with timing, inputs, outputs, and errors.
+
+### Query Analytics
+
+Ask about performance trends, costs, and usage patterns:
+
+<CodeGroup>
+```plaintext Cost analysis
+"Show me the total LLM cost for the last 7 days"
+```
+
+```plaintext Performance monitoring
+"What's the p95 completion time for the last 30 days, broken down by model?"
+```
+
+```plaintext Usage trends
+"How many traces have we had per day this week?"
+```
+</CodeGroup>
+
+The assistant starts with `discover_schema` to understand available metrics and filters, then uses `get_analytics` to query timeseries data.
+
+### Manage Prompts
+
+Ask your AI assistant to work with prompts:
+
+<CodeGroup>
+```plaintext List prompts
+"List all prompts in my LangWatch project"
+```
+
+```plaintext Create a prompt
+"Create a new prompt called 'pdf-parser' with a system message for extracting structured data from PDFs"
+```
+
+```plaintext Update with versioning
+"Update the pdf-parser prompt to also handle images, and create a new version"
+```
+</CodeGroup>
+
+The AI assistant will guide you through creating, versioning, and using prompts from LangWatch's [Prompt Management](/prompt-management/overview).
 
 ## Advanced: Self-Building AI Agents
 
@@ -11523,16 +11503,120 @@ The LangWatch MCP is so powerful that it can help AI agents automatically instru
 
 ## MCP Tools Reference
 
-The MCP server provides the following tools that your AI assistant can use:
+The MCP server provides 10 tools organized into three categories. Your AI assistant automatically chooses the right tools based on your request.
 
-### `fetch_langwatch_docs`
+### Documentation
+
+| Tool | Description |
+|------|-------------|
+| `fetch_langwatch_docs` | Fetch LangWatch integration docs |
+| `fetch_scenario_docs` | Fetch Scenario agent testing docs |
+
+### Observability (requires API key)
+
+| Tool | Description |
+|------|-------------|
+| `discover_schema` | Explore available filter fields, metrics, aggregation types, and group-by options |
+| `search_traces` | Search traces with filters, text query, and date range. Returns AI-readable digests by default |
+| `get_trace` | Get full trace details by ID with span hierarchy, evaluations, and metadata |
+| `get_analytics` | Query timeseries analytics (costs, latency, token usage, etc.) |
+
+### Prompts (requires API key)
+
+| Tool | Description |
+|------|-------------|
+| `list_prompts` | List all prompts in the project |
+| `get_prompt` | Get a prompt with messages, model config, and version history |
+| `create_prompt` | Create a new prompt with messages and model configuration |
+| `update_prompt` | Update a prompt or create a new version |
+
+### Tool Details
+
+#### `discover_schema`
+
+Discover available filter fields, metrics, aggregation types, and group-by options for LangWatch queries. Call this before using `search_traces` or `get_analytics` to understand available options.
+
+**Parameters:**
+- `category` (required): One of `"filters"`, `"metrics"`, `"aggregations"`, `"groups"`, or `"all"`
+
+#### `search_traces`
+
+Search traces with filters, text query, and date range. Returns AI-readable trace digests by default.
+
+**Parameters:**
+- `query` (optional): Text search query
+- `startDate` (optional): Start date — ISO string or relative like `"24h"`, `"7d"`, `"30d"`. Default: 24h ago
+- `endDate` (optional): End date — ISO string or relative. Default: now
+- `filters` (optional): Filter object (e.g. `{"metadata.labels": ["production"]}`)
+- `pageSize` (optional): Results per page (default: 25, max: 1000)
+- `scrollId` (optional): Pagination token from previous search
+- `format` (optional): `"digest"` (default, AI-readable) or `"json"` (full raw data)
+
+#### `get_trace`
+
+Get full details of a single trace by ID. Returns AI-readable trace digest by default.
+
+**Parameters:**
+- `traceId` (required): The trace ID to retrieve
+- `format` (optional): `"digest"` (default, AI-readable) or `"json"` (full raw data)
+
+#### `get_analytics`
+
+Query analytics timeseries from LangWatch. Metrics use `"category.name"` format (e.g., `"performance.completion_time"`).
+
+**Parameters:**
+- `metric` (required): Metric in `"category.name"` format (e.g., `"metadata.trace_id"`, `"performance.total_cost"`)
+- `aggregation` (optional): `avg`, `sum`, `min`, `max`, `median`, `p90`, `p95`, `p99`, `cardinality`, `terms`. Default: `avg`
+- `startDate` (optional): Start date — ISO string or relative. Default: 7 days ago
+- `endDate` (optional): End date. Default: now
+- `groupBy` (optional): Group results by field
+- `filters` (optional): Filters to apply
+- `timeZone` (optional): Timezone. Default: UTC
+
+#### `list_prompts`
+
+List all prompts configured in the LangWatch project. No parameters required.
+
+#### `get_prompt`
+
+Get a specific prompt by ID or handle, including messages, model config, and version history.
+
+**Parameters:**
+- `idOrHandle` (required): Prompt ID or handle
+- `version` (optional): Specific version number (default: latest)
+
+#### `create_prompt`
+
+Create a new prompt in the LangWatch project.
+
+**Parameters:**
+- `name` (required): Prompt name
+- `messages` (required): Array of `{role, content}` messages
+- `model` (required): Model name (e.g., `"gpt-4o"`, `"claude-sonnet-4-5-20250929"`)
+- `modelProvider` (required): Provider name (e.g., `"openai"`, `"anthropic"`)
+- `handle` (optional): URL-friendly handle
+- `description` (optional): Prompt description
+
+#### `update_prompt`
+
+Update an existing prompt or create a new version.
+
+**Parameters:**
+- `idOrHandle` (required): Prompt ID or handle to update
+- `messages` (optional): Updated messages array
+- `model` (optional): Updated model name
+- `modelProvider` (optional): Updated provider
+- `createVersion` (optional): If `true`, creates a new version instead of updating in place
+- `commitMessage` (optional): Commit message for the change
+
+#### `fetch_langwatch_docs`
 
 Fetches LangWatch documentation pages to understand how to implement features.
 
 **Parameters:**
 - `url` (optional): The full URL of a specific doc page. If not provided, fetches the docs index.
 
-### `fetch_scenario_docs`
+#### `fetch_scenario_docs`
 
 Fetches Scenario documentation pages to understand how to write agent tests.
 
@@ -15765,58 +15849,6 @@ Ensure that you return the `output` as some evaluations may require it. As you c
 
 ---
 
-# FILE: ./features/triggers.mdx
-
----
-title: Alerts and Triggers
-description: Configure Alerts and Triggers in LangWatch to detect regressions, notify teams, and enforce automated guardrails for AI agent testing.
----
-
-## Create triggers based on LangWatch filters
-
-LangWatch offers you the possibility to create triggers based on your selected filters. You can use these triggers to send notifications to either Slack or selected team email addresses.
-
-#### Usage
-
-To create a trigger in the LangWatch dashboard, follow these steps:
-
-- Click the filter button located at the top right of the LangWatch dashboard.
-- After creating a filter, a trigger button will appear.
-- Click the trigger button to open a popout drawer.
-- In the drawer, you can configure your trigger with the desired settings.
-
-<Frame>
-<img
-  className="block"
-  src="/images/trigger-screenshot-button.png"
-  alt="LangWatch"
-/>
-</Frame>
-
-**Trigger actions**
-
-<Frame>
-<img
-  className="block"
-  src="/images/trigger-screenshot-drawer.png"
-  alt="LangWatch"
-/>
-</Frame>
-
-Once the trigger is created, you will receive an alert whenever a message meets the criteria of the trigger. These trigger checks are run on the minute but not instantaneously, as the data needs time to be processed. You can find the created triggers under the Settings section, where you can deactivate or delete a trigger to stop receiving notifications.
-
-**Trigger settings**
-
-<Frame>
-<img
-  className="block"
-  src="/images/trigger-screenshot-settings.png"
-  alt="LangWatch"
-/>
-</Frame>
-
----
-
 # FILE: ./features/embedded-analytics.mdx
 
 ---
@@ -15994,6 +16026,58 @@ When annotating a message, you will see the score options below the comment inpu
 
 Thats it! You can now annotate messages and add your custom score metrics to them.
 
+
+---
+
+# FILE: ./features/automations.mdx
+
+---
+title: Alerts and Automations
+description: Configure Alerts and Automations in LangWatch to detect regressions, notify teams, and enforce automated guardrails for AI agent testing.
+---
+
+## Create automations based on LangWatch filters
+
+LangWatch offers you the possibility to create automations based on your selected filters. You can use these automations to send notifications to either Slack or selected team email addresses.
+
+#### Usage
+
+To create an automation in the LangWatch dashboard, follow these steps:
+
+- Click the filter button located at the top right of the LangWatch dashboard.
+- After creating a filter, an automation button will appear.
+- Click the automation button to open a popout drawer.
+- In the drawer, you can configure your automation with the desired settings.
+
+<Frame>
+<img
+  className="block"
+  src="/images/automation-screenshot-button.png"
+  alt="LangWatch"
+/>
+</Frame>
+
+**Automation actions**
+
+<Frame>
+<img
+  className="block"
+  src="/images/trigger-screenshot-drawer.png"
+  alt="LangWatch"
+/>
+</Frame>
+
+Once the automation is created, you will receive an alert whenever a message meets the criteria of the automation. These automation checks are run on the minute but not instantaneously, as the data needs time to be processed. You can find the created automations under the Settings section, where you can deactivate or delete an automation to stop receiving notifications.
+
+**Automation settings**
+
+<Frame>
+<img
+  className="block"
+  src="/images/trigger-screenshot-settings.png"
+  alt="LangWatch"
+/>
+</Frame>
 
 ---
 
@@ -24786,11 +24870,20 @@ Once you have your credentials and endpoint:
 
 ---
 
-# FILE: ./api-reference/traces/get-trace-details.mdx
+# FILE: ./api-reference/traces/search.mdx
+
+---
+title: 'Search traces'
+openapi: 'POST /api/traces/search'
+---
+
+---
+
+# FILE: ./api-reference/traces/get-trace.mdx
 
 ---
 title: 'Get trace details'
-openapi: 'GET /api/trace/{id}'
+openapi: 'GET /api/traces/{traceId}'
 ---
 
 ---
@@ -24799,22 +24892,34 @@ openapi: 'GET /api/trace/{id}'
 
 ---
 title: 'Overview'
-description: 'Understand LangWatch Traces, how runs are grouped into a single operation, and how to use them for LLM observability and AI agent evaluations.'
+description: 'Search, retrieve, and share LangWatch traces via the REST API. Traces capture the full execution of your LLM pipelines including all spans, evaluations, and metadata.'
 ---
 
 ## Intro
 
-With the Traces API, you are able to create a public path for a trace. This is useful if you want to share a trace with a colleague.
+The Traces API lets you search and retrieve traces for your project. Each trace captures a complete LLM pipeline execution, including nested spans (LLM calls, tool calls, RAG retrievals), evaluations, and metadata.
+
+Both search and get-trace endpoints support a `format` parameter:
+- **`digest`** (default) — Returns an AI-readable formatted trace with hierarchical span tree, timing, inputs/outputs, and errors. Optimized for LLM consumption.
+- **`json`** — Returns the full raw trace data with all fields.
 
 ## Authentication
 
-To make a call to the Traces API, you will need to pass through your LangWatch API key in the header as `X-Auth-Token`. Your API key can be found on the setup page under settings.
+Pass your LangWatch API key in the `X-Auth-Token` header. Your API key can be found on the setup page under settings.
 
+## Endpoints
 
-#### Allowed Methods
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/traces/search` | Search traces with filters and pagination |
+| `GET` | `/api/traces/{traceId}` | Get full trace details by ID |
+| `GET` | `/api/thread/{id}` | Get all traces in a thread |
+| `POST` | `/api/trace/{id}/share` | Create a public share link |
+| `POST` | `/api/trace/{id}/unshare` | Remove a public share link |
 
-- `GET /api/trace/:id` - Get trace details
-- `POST /api/trace/:id/share` - Create a public path for a trace
+<Info>
+The older `/api/trace/search` and `/api/trace/{id}` endpoints still work but are deprecated. Migrate to `/api/traces/search` and `/api/traces/{traceId}` for the improved `format` parameter and AI-readable digests.
+</Info>
 
 ---
 
@@ -24841,24 +24946,6 @@ openapi: 'GET /api/thread/{id}'
 ---
 title: 'Delete an existing public path for a trace'
 openapi: 'POST /api/trace/{id}/unshare'
----
-
----
-
-# FILE: ./api-reference/traces/search-traces.mdx
-
----
-title: 'Search traces'
-openapi: 'POST /api/trace/search'
----
-
----
-
-# FILE: ./api-reference/triggers/create-slack-trigger.mdx
-
----
-title: 'Create Slack trigger'
-openapi: 'POST /api/trigger/slack'
 ---
 
 ---
@@ -25608,6 +25695,15 @@ openapi: "GET /api/prompts/{id}/versions"
 ---
 title: "Get prompt"
 openapi: "GET /api/prompts/{id}"
+---
+
+---
+
+# FILE: ./api-reference/automations/create-slack-automation.mdx
+
+---
+title: 'Create Slack automation'
+openapi: 'POST /api/trigger/slack'
 ---
 
 ---
