@@ -292,379 +292,101 @@
         }
       }
     },
-    "/api/trace/{id}": {
-      "get": {
-        "description": "Get detailed trace information via the API to analyze LLM behavior, debug workflows, and support agent testing.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of trace to share",
-            "required": true,
-            "schema": {
-              "type": "string"
+    "/api/traces/search": {
+      "post": {
+        "summary": "Search traces",
+        "description": "Search traces with filters, text query, and date range. Returns AI-readable trace digests by default, or raw JSON data. Supports pagination via scrollId.",
+        "tags": ["Traces"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["startDate", "endDate"],
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "description": "Text search query to match against trace content"
+                  },
+                  "startDate": {
+                    "oneOf": [
+                      { "type": "integer", "description": "Epoch timestamp in milliseconds" },
+                      { "type": "string", "format": "date-time", "description": "ISO 8601 date string" }
+                    ],
+                    "description": "Start of the time range"
+                  },
+                  "endDate": {
+                    "oneOf": [
+                      { "type": "integer", "description": "Epoch timestamp in milliseconds" },
+                      { "type": "string", "format": "date-time", "description": "ISO 8601 date string" }
+                    ],
+                    "description": "End of the time range"
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "default": 25,
+                    "maximum": 1000,
+                    "description": "Number of traces per page (max 1000)"
+                  },
+                  "scrollId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Pagination token from a previous search response to fetch the next page"
+                  },
+                  "filters": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "description": "Key-value filters (e.g. {\"metadata.labels\": [\"production\"]})"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": ["digest", "json"],
+                    "default": "digest",
+                    "description": "Output format: 'digest' returns AI-readable formatted traces with span hierarchy, 'json' returns full raw trace data"
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "Trace details with spans and evaluations",
+            "description": "Matching traces with pagination",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "trace_id": {
-                      "type": "string",
-                      "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
-                    },
-                    "project_id": {
-                      "type": "string",
-                      "example": "KAXYxPR8MUgTcP8CF193y"
-                    },
-                    "metadata": {
-                      "type": "object",
-                      "properties": {
-                        "sdk_version": {
-                          "type": "string",
-                          "example": "0.1.11"
-                        },
-                        "sdk_language": {
-                          "type": "string",
-                          "example": "python"
-                        }
-                      }
-                    },
-                    "timestamps": {
-                      "type": "object",
-                      "properties": {
-                        "started_at": {
-                          "type": "integer",
-                          "example": 1721382486868
-                        },
-                        "inserted_at": {
-                          "type": "integer",
-                          "example": 1721382492894
-                        },
-                        "updated_at": {
-                          "type": "integer",
-                          "example": 1721382492894
-                        }
-                      }
-                    },
-                    "input": {
-                      "type": "object",
-                      "properties": {
-                        "value": {
-                          "type": "string",
-                          "example": "hi"
-                        }
-                      }
-                    },
-                    "output": {
-                      "type": "object",
-                      "properties": {
-                        "value": {
-                          "type": "string",
-                          "example": "Hey there! 👋😊"
-                        }
-                      }
-                    },
-                    "metrics": {
-                      "type": "object",
-                      "properties": {
-                        "first_token_ms": {
-                          "type": "integer",
-                          "example": 1449
-                        },
-                        "total_time_ms": {
-                          "type": "integer",
-                          "example": 1543
-                        },
-                        "prompt_tokens": {
-                          "type": "integer",
-                          "example": 20
-                        },
-                        "completion_tokens": {
-                          "type": "integer",
-                          "example": 7
-                        },
-                        "tokens_estimated": {
-                          "type": "boolean",
-                          "example": true
-                        }
-                      }
-                    },
-                    "error": {
-                      "type": "object",
-                      "nullable": true,
-                      "properties": {
-                        "stacktrace": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "message": {
-                          "type": "string"
-                        },
-                        "has_error": {
-                          "type": "boolean"
-                        }
-                      },
-                      "example": null
-                    },
-                    "indexing_md5s": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "example": [
-                        "cccd21e0b70c706034dfd9f7772816a3"
-                      ]
-                    },
-                    "spans": {
+                    "traces": {
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "When format=digest: includes trace_id, formatted_trace, input, output, timestamps, metadata, error. When format=json: full raw trace object.",
                         "properties": {
-                          "trace_id": {
+                          "trace_id": { "type": "string" },
+                          "formatted_trace": {
                             "type": "string",
-                            "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
+                            "description": "AI-readable hierarchical span digest (only present when format=digest)"
                           },
-                          "span_id": {
-                            "type": "string",
-                            "example": "span_h1xUkcUJilhudDrLeQbR_"
-                          },
-                          "timestamps": {
-                            "type": "object",
-                            "properties": {
-                              "finished_at": {
-                                "type": "integer",
-                                "example": 1721382488392
-                              },
-                              "updated_at": {
-                                "type": "integer",
-                                "example": 1721382492027
-                              },
-                              "started_at": {
-                                "type": "integer",
-                                "example": 1721382486895
-                              },
-                              "first_token_at": {
-                                "type": "integer",
-                                "example": 1721382488317
-                              },
-                              "inserted_at": {
-                                "type": "integer",
-                                "example": 1721382492027
-                              }
-                            }
-                          },
-                          "type": {
-                            "type": "string",
-                            "example": "llm"
-                          },
-                          "error": {
-                            "type": "object",
-                            "nullable": true,
-                            "properties": {
-                              "stacktrace": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
-                              },
-                              "message": {
-                                "type": "string"
-                              },
-                              "has_error": {
-                                "type": "boolean"
-                              }
-                            },
-                            "example": null
-                          },
-                          "params": {
-                            "type": "object",
-                            "properties": {
-                              "stream": {
-                                "type": "boolean",
-                                "example": true
-                              },
-                              "temperature": {
-                                "type": "number",
-                                "example": 1
-                              }
-                            }
-                          },
-                          "project_id": {
-                            "type": "string",
-                            "example": "KAXYxPR8MUgTcP8CF193y"
-                          },
-                          "parent_id": {
-                            "type": "string",
-                            "nullable": true,
-                            "example": "span_ijZNjUMTz3ys0Z0YKwF_T"
-                          },
-                          "name": {
-                            "type": "string",
-                            "nullable": true,
-                            "example": null
-                          },
-                          "model": {
-                            "type": "string",
-                            "example": "openai/gpt-4o"
-                          },
-                          "metrics": {
-                            "type": "object",
-                            "properties": {
-                              "tokens_estimated": {
-                                "type": "boolean",
-                                "example": true
-                              },
-                              "completion_tokens": {
-                                "type": "integer",
-                                "example": 7
-                              },
-                              "prompt_tokens": {
-                                "type": "integer",
-                                "example": 20
-                              }
-                            }
-                          },
-                          "input": {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "example": "chat_messages"
-                              },
-                              "value": {
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "role": {
-                                      "type": "string",
-                                      "example": "system"
-                                    },
-                                    "content": {
-                                      "type": "string",
-                                      "example": "You are a helpful assistant that only reply in short tweet-like responses, using lots of emojis."
-                                    }
-                                  }
-                                },
-                                "example": [
-                                  {
-                                    "role": "system",
-                                    "content": "You are a helpful assistant that only reply in short tweet-like responses, using lots of emojis."
-                                  },
-                                  {
-                                    "role": "user",
-                                    "content": "hi"
-                                  }
-                                ]
-                              }
-                            }
-                          },
-                          "output": {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string",
-                                "example": "chat_messages"
-                              },
-                              "value": {
-                                "type": "array",
-                                "items": {
-                                  "type": "object",
-                                  "properties": {
-                                    "role": {
-                                      "type": "string",
-                                      "example": "assistant"
-                                    },
-                                    "content": {
-                                      "type": "string",
-                                      "example": "Hey there! 👋😊"
-                                    }
-                                  }
-                                },
-                                "example": [
-                                  {
-                                    "role": "assistant",
-                                    "content": "Hey there! 👋😊"
-                                  }
-                                ]
-                              }
-                            }
-                          }
+                          "input": { "type": "object", "properties": { "value": { "type": "string" } } },
+                          "output": { "type": "object", "properties": { "value": { "type": "string" } } },
+                          "timestamps": { "$ref": "#/components/schemas/Timestamps" },
+                          "metadata": { "$ref": "#/components/schemas/Metadata" },
+                          "error": { "type": "object", "nullable": true }
                         }
                       }
                     },
-                    "evaluations": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "evaluation_id": {
-                            "type": "string",
-                            "example": "check_VCagriZHNWICSOM09dXjM"
-                          },
-                          "name": {
-                            "type": "string",
-                            "example": "Ragas Answer Relevancy"
-                          },
-                          "type": {
-                            "type": "string",
-                            "example": "ragas/answer_relevancy"
-                          },
-                          "trace_id": {
-                            "type": "string",
-                            "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
-                          },
-                          "project_id": {
-                            "type": "string",
-                            "example": "KAXYxPR8MUgTcP8CF193y"
-                          },
-                          "status": {
-                            "type": "string",
-                            "example": "error"
-                          },
-                          "timestamps": {
-                            "type": "object",
-                            "properties": {
-                              "updated_at": {
-                                "type": "integer",
-                                "example": 1721383657788
-                              },
-                              "inserted_at": {
-                                "type": "integer",
-                                "example": 1721382493358
-                              }
-                            }
-                          },
-                          "error": {
-                            "type": "object",
-                            "properties": {
-                              "stacktrace": {
-                                "type": "array",
-                                "items": {
-                                  "type": "string"
-                                },
-                                "example": [
-                                  "TypeError: fetch failed"
-                                ]
-                              },
-                              "message": {
-                                "type": "string",
-                                "example": "fetch failed"
-                              },
-                              "has_error": {
-                                "type": "boolean",
-                                "example": true
-                              }
-                            }
-                          }
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "totalHits": { "type": "integer" },
+                        "scrollId": {
+                          "type": "string",
+                          "description": "Pass this value as scrollId in the next request to fetch the next page"
                         }
                       }
                     }
@@ -672,44 +394,74 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
           }
         }
       }
     },
-    "/api/trace/search": {
-      "post": {
-        "summary": "Search traces",
-        "description": "Search for traces using LangWatch APIs to filter performance issues, evaluation results, and agent testing data.",
-        "tags": [
-          "Traces"
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SearchRequest"
-              }
-            }
+    "/api/traces/{traceId}": {
+      "get": {
+        "summary": "Get trace details",
+        "description": "Get full details of a single trace by ID. Returns AI-readable trace digest by default with span hierarchy, evaluations, and metadata. Use format=json for full raw data including all spans.",
+        "tags": ["Traces"],
+        "parameters": [
+          {
+            "name": "traceId",
+            "in": "path",
+            "description": "The trace ID to retrieve",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Output format: 'digest' (default, AI-readable) or 'json' (full raw data)",
+            "required": false,
+            "schema": { "type": "string", "enum": ["digest", "json"], "default": "digest" }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "Trace details",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SearchResponse"
+                  "type": "object",
+                  "description": "When format=digest: includes trace_id, formatted_trace, timestamps, metadata, evaluations. When format=json: includes spans array, evaluations, ascii_tree, metadata.",
+                  "properties": {
+                    "trace_id": { "type": "string" },
+                    "formatted_trace": {
+                      "type": "string",
+                      "description": "AI-readable hierarchical span digest (only present when format=digest)"
+                    },
+                    "timestamps": { "$ref": "#/components/schemas/Timestamps" },
+                    "metadata": { "$ref": "#/components/schemas/Metadata" },
+                    "evaluations": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Evaluation" }
+                    },
+                    "spans": {
+                      "type": "array",
+                      "description": "Full span data (only present when format=json)",
+                      "items": { "type": "object" }
+                    },
+                    "ascii_tree": {
+                      "type": "string",
+                      "description": "ASCII tree representation (only present when format=json)"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trace not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" }
+                  }
                 }
               }
             }
