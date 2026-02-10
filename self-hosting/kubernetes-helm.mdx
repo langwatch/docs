@@ -126,8 +126,6 @@ app:
         secretKeyRef:
           name: langwatch-secrets
           key: metricsApiKey
-    sentry:
-      enabled: false
 
 workers:
   replicaCount: 2
@@ -213,8 +211,6 @@ app:
     skipEnvValidation: true
   telemetry:
     metrics:
-      enabled: false
-    sentry:
       enabled: false
   resources:
     requests:
