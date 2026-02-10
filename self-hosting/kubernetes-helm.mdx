@@ -129,6 +129,16 @@ app:
     sentry:
       enabled: false
 
+workers:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
 ingress:
   enabled: true
   className: nginx
@@ -298,6 +308,16 @@ app:
         secretKeyRef:
           name: langwatch-secrets
           key: metricsApiKey
+
+workers:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
 
 ingress:
   enabled: true
