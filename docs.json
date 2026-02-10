@@ -409,6 +409,7 @@
           {
             "group": "No-Code Platforms",
             "pages": [
+              "integration/openclaw",
               "integration/n8n",
               "integration/langflow",
               "integration/flowise"
