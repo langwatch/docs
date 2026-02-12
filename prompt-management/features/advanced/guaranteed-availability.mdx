@@ -56,7 +56,7 @@ This creates a `prompts.json` file:
 
 ```bash
 # Fetch and materialize all prompts locally
-langwatch prompt sync
+langwatch prompt pull
 ```
 
 This creates materialized YAML files:
@@ -191,7 +191,7 @@ For completely air-gapped environments:
 
 ```bash
 # On development machine with internet access
-langwatch prompt sync
+langwatch prompt pull
 
 # Verify all prompts are materialized
 ls prompts/.materialized/
@@ -312,7 +312,7 @@ jobs:
       - name: Materialize prompts
         env:
           LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
-        run: langwatch prompt sync
+        run: langwatch prompt pull
 
       - name: Build application
         run: npm run build
