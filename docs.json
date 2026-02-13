@@ -419,7 +419,8 @@
             "group": "Direct Integrations",
             "pages": [
               "integration/opentelemetry/guide",
-              "integration/rest-api"
+              "integration/rest-api",
+              "integration/metadata-and-labels"
             ]
           }
         ]
