@@ -18,7 +18,7 @@
   "paths": {
     "/api/annotations": {
       "get": {
-        "description": "Retrieve project-wide annotations for large-scale dataset building and AI agent evaluation workflows.",
+        "description": "Returns all annotations for project",
         "responses": {
           "200": {
             "description": "Annotation response",
@@ -48,7 +48,7 @@
     },
     "/api/annotations/trace/{id}": {
       "get": {
-        "description": "Retrieve all annotations for a trace to support systematic debugging and evaluation workflows in agent testing.",
+        "description": "Returns all annotations for single trace",
         "parameters": [
           {
             "name": "id",
@@ -87,7 +87,7 @@
         }
       },
       "post": {
-        "description": "Create annotations for traces to support domain labeling, evaluation scoring, and agent testing workflows.",
+        "description": "Create an annotation for a single trace",
         "parameters": [
           {
             "name": "id",
@@ -147,7 +147,7 @@
     },
     "/api/annotations/{id}": {
       "get": {
-        "description": "Retrieve single annotations to inspect evaluation inputs, domain labels, and agent testing context.",
+        "description": "Returns a single annotation based on the ID supplied",
         "parameters": [
           {
             "name": "id",
@@ -183,7 +183,7 @@
         }
       },
       "delete": {
-        "description": "Delete annotations as part of maintaining clean evaluation datasets and agent testing pipelines.",
+        "description": "Deletes a single annotation based on the ID supplied",
         "parameters": [
           {
             "name": "id",
@@ -227,7 +227,7 @@
         }
       },
       "patch": {
-        "description": "Patch annotations programmatically to refine trace labeling and support structured AI agent evaluation workflows.",
+        "description": "Updates a single annotation based on the ID supplied",
         "parameters": [
           {
             "name": "id",
@@ -292,105 +292,393 @@
         }
       }
     },
-    "/api/traces/search": {
-      "post": {
-        "summary": "Search traces",
-        "description": "Search traces with filters, text query, and date range. Returns AI-readable trace digests by default, or raw JSON data. Supports pagination via scrollId.",
-        "tags": ["Traces"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["startDate", "endDate"],
-                "properties": {
-                  "query": {
-                    "type": "string",
-                    "description": "Text search query to match against trace content"
-                  },
-                  "startDate": {
-                    "oneOf": [
-                      { "type": "integer", "description": "Epoch timestamp in milliseconds" },
-                      { "type": "string", "format": "date-time", "description": "ISO 8601 date string" }
-                    ],
-                    "description": "Start of the time range"
-                  },
-                  "endDate": {
-                    "oneOf": [
-                      { "type": "integer", "description": "Epoch timestamp in milliseconds" },
-                      { "type": "string", "format": "date-time", "description": "ISO 8601 date string" }
-                    ],
-                    "description": "End of the time range"
-                  },
-                  "pageSize": {
-                    "type": "integer",
-                    "default": 25,
-                    "maximum": 1000,
-                    "description": "Number of traces per page (max 1000)"
-                  },
-                  "scrollId": {
-                    "type": "string",
-                    "nullable": true,
-                    "description": "Pagination token from a previous search response to fetch the next page"
-                  },
-                  "filters": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": { "type": "string" }
-                    },
-                    "description": "Key-value filters (e.g. {\"metadata.labels\": [\"production\"]})"
-                  },
-                  "format": {
-                    "type": "string",
-                    "enum": ["digest", "json"],
-                    "default": "digest",
-                    "description": "Output format: 'digest' returns AI-readable formatted traces with span hierarchy, 'json' returns full raw trace data"
-                  }
-                }
-              }
+    "/api/trace/{id}": {
+      "get": {
+        "description": "Returns single trace details based on the ID supplied",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of trace to share",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Matching traces with pagination",
+            "description": "Trace details with spans and evaluations",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "traces": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "description": "When format=digest: includes trace_id, formatted_trace, input, output, timestamps, metadata, error. When format=json: full raw trace object.",
-                        "properties": {
-                          "trace_id": { "type": "string" },
-                          "formatted_trace": {
-                            "type": "string",
-                            "description": "AI-readable hierarchical span digest (only present when format=digest)"
-                          },
-                          "input": { "type": "object", "properties": { "value": { "type": "string" } } },
-                          "output": { "type": "object", "properties": { "value": { "type": "string" } } },
-                          "timestamps": { "$ref": "#/components/schemas/Timestamps" },
-                          "metadata": { "$ref": "#/components/schemas/Metadata" },
-                          "error": { "type": "object", "nullable": true }
+                    "trace_id": {
+                      "type": "string",
+                      "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
+                    },
+                    "project_id": {
+                      "type": "string",
+                      "example": "KAXYxPR8MUgTcP8CF193y"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "sdk_version": {
+                          "type": "string",
+                          "example": "0.1.11"
+                        },
+                        "sdk_language": {
+                          "type": "string",
+                          "example": "python"
                         }
                       }
                     },
-                    "pagination": {
+                    "timestamps": {
                       "type": "object",
                       "properties": {
-                        "totalHits": { "type": "integer" },
-                        "scrollId": {
+                        "started_at": {
+                          "type": "integer",
+                          "example": 1721382486868
+                        },
+                        "inserted_at": {
+                          "type": "integer",
+                          "example": 1721382492894
+                        },
+                        "updated_at": {
+                          "type": "integer",
+                          "example": 1721382492894
+                        }
+                      }
+                    },
+                    "input": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
                           "type": "string",
-                          "description": "Pass this value as scrollId in the next request to fetch the next page"
+                          "example": "hi"
+                        }
+                      }
+                    },
+                    "output": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "string",
+                          "example": "Hey there! 👋😊"
+                        }
+                      }
+                    },
+                    "metrics": {
+                      "type": "object",
+                      "properties": {
+                        "first_token_ms": {
+                          "type": "integer",
+                          "example": 1449
+                        },
+                        "total_time_ms": {
+                          "type": "integer",
+                          "example": 1543
+                        },
+                        "prompt_tokens": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "completion_tokens": {
+                          "type": "integer",
+                          "example": 7
+                        },
+                        "tokens_estimated": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "object",
+                      "nullable": true,
+                      "properties": {
+                        "stacktrace": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "has_error": {
+                          "type": "boolean"
+                        }
+                      },
+                      "example": null
+                    },
+                    "indexing_md5s": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "cccd21e0b70c706034dfd9f7772816a3"
+                      ]
+                    },
+                    "spans": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "trace_id": {
+                            "type": "string",
+                            "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
+                          },
+                          "span_id": {
+                            "type": "string",
+                            "example": "span_h1xUkcUJilhudDrLeQbR_"
+                          },
+                          "timestamps": {
+                            "type": "object",
+                            "properties": {
+                              "finished_at": {
+                                "type": "integer",
+                                "example": 1721382488392
+                              },
+                              "updated_at": {
+                                "type": "integer",
+                                "example": 1721382492027
+                              },
+                              "started_at": {
+                                "type": "integer",
+                                "example": 1721382486895
+                              },
+                              "first_token_at": {
+                                "type": "integer",
+                                "example": 1721382488317
+                              },
+                              "inserted_at": {
+                                "type": "integer",
+                                "example": 1721382492027
+                              }
+                            }
+                          },
+                          "type": {
+                            "type": "string",
+                            "example": "llm"
+                          },
+                          "error": {
+                            "type": "object",
+                            "nullable": true,
+                            "properties": {
+                              "stacktrace": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "message": {
+                                "type": "string"
+                              },
+                              "has_error": {
+                                "type": "boolean"
+                              }
+                            },
+                            "example": null
+                          },
+                          "params": {
+                            "type": "object",
+                            "properties": {
+                              "stream": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "temperature": {
+                                "type": "number",
+                                "example": 1
+                              }
+                            }
+                          },
+                          "project_id": {
+                            "type": "string",
+                            "example": "KAXYxPR8MUgTcP8CF193y"
+                          },
+                          "parent_id": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "span_ijZNjUMTz3ys0Z0YKwF_T"
+                          },
+                          "name": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": null
+                          },
+                          "model": {
+                            "type": "string",
+                            "example": "openai/gpt-4o"
+                          },
+                          "metrics": {
+                            "type": "object",
+                            "properties": {
+                              "tokens_estimated": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "completion_tokens": {
+                                "type": "integer",
+                                "example": 7
+                              },
+                              "prompt_tokens": {
+                                "type": "integer",
+                                "example": 20
+                              }
+                            }
+                          },
+                          "input": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "example": "chat_messages"
+                              },
+                              "value": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "role": {
+                                      "type": "string",
+                                      "example": "system"
+                                    },
+                                    "content": {
+                                      "type": "string",
+                                      "example": "You are a helpful assistant that only reply in short tweet-like responses, using lots of emojis."
+                                    }
+                                  }
+                                },
+                                "example": [
+                                  {
+                                    "role": "system",
+                                    "content": "You are a helpful assistant that only reply in short tweet-like responses, using lots of emojis."
+                                  },
+                                  {
+                                    "role": "user",
+                                    "content": "hi"
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "output": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "example": "chat_messages"
+                              },
+                              "value": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "role": {
+                                      "type": "string",
+                                      "example": "assistant"
+                                    },
+                                    "content": {
+                                      "type": "string",
+                                      "example": "Hey there! 👋😊"
+                                    }
+                                  }
+                                },
+                                "example": [
+                                  {
+                                    "role": "assistant",
+                                    "content": "Hey there! 👋😊"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "evaluations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "evaluation_id": {
+                            "type": "string",
+                            "example": "check_VCagriZHNWICSOM09dXjM"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Ragas Answer Relevancy"
+                          },
+                          "type": {
+                            "type": "string",
+                            "example": "ragas/answer_relevancy"
+                          },
+                          "trace_id": {
+                            "type": "string",
+                            "example": "trace_BKZL_X0TKSD4oa1aBJTc_"
+                          },
+                          "project_id": {
+                            "type": "string",
+                            "example": "KAXYxPR8MUgTcP8CF193y"
+                          },
+                          "status": {
+                            "type": "string",
+                            "example": "error"
+                          },
+                          "timestamps": {
+                            "type": "object",
+                            "properties": {
+                              "updated_at": {
+                                "type": "integer",
+                                "example": 1721383657788
+                              },
+                              "inserted_at": {
+                                "type": "integer",
+                                "example": 1721382493358
+                              }
+                            }
+                          },
+                          "error": {
+                            "type": "object",
+                            "properties": {
+                              "stacktrace": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "example": [
+                                  "TypeError: fetch failed"
+                                ]
+                              },
+                              "message": {
+                                "type": "string",
+                                "example": "fetch failed"
+                              },
+                              "has_error": {
+                                "type": "boolean",
+                                "example": true
+                              }
+                            }
+                          }
                         }
                       }
                     }
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -398,70 +686,30 @@
         }
       }
     },
-    "/api/traces/{traceId}": {
-      "get": {
-        "summary": "Get trace details",
-        "description": "Get full details of a single trace by ID. Returns AI-readable trace digest by default with span hierarchy, evaluations, and metadata. Use format=json for full raw data including all spans.",
-        "tags": ["Traces"],
-        "parameters": [
-          {
-            "name": "traceId",
-            "in": "path",
-            "description": "The trace ID to retrieve",
-            "required": true,
-            "schema": { "type": "string" }
-          },
-          {
-            "name": "format",
-            "in": "query",
-            "description": "Output format: 'digest' (default, AI-readable) or 'json' (full raw data)",
-            "required": false,
-            "schema": { "type": "string", "enum": ["digest", "json"], "default": "digest" }
-          }
+    "/api/trace/search": {
+      "post": {
+        "summary": "Search traces",
+        "description": "Search for traces based on given criteria",
+        "tags": [
+          "Traces"
         ],
-        "responses": {
-          "200": {
-            "description": "Trace details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "When format=digest: includes trace_id, formatted_trace, timestamps, metadata, evaluations. When format=json: includes spans array, evaluations, ascii_tree, metadata.",
-                  "properties": {
-                    "trace_id": { "type": "string" },
-                    "formatted_trace": {
-                      "type": "string",
-                      "description": "AI-readable hierarchical span digest (only present when format=digest)"
-                    },
-                    "timestamps": { "$ref": "#/components/schemas/Timestamps" },
-                    "metadata": { "$ref": "#/components/schemas/Metadata" },
-                    "evaluations": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/Evaluation" }
-                    },
-                    "spans": {
-                      "type": "array",
-                      "description": "Full span data (only present when format=json)",
-                      "items": { "type": "object" }
-                    },
-                    "ascii_tree": {
-                      "type": "string",
-                      "description": "ASCII tree representation (only present when format=json)"
-                    }
-                  }
-                }
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
               }
             }
-          },
-          "404": {
-            "description": "Trace not found",
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/SearchResponse"
                 }
               }
             }
@@ -471,7 +719,7 @@
     },
     "/api/trace/{id}/share": {
       "post": {
-        "description": "Generate public trace paths using LangWatch to share insights, evaluations, and agent testing results securely.",
+        "description": "Returns a public path for a trace",
         "parameters": [
           {
             "name": "id",
@@ -514,7 +762,7 @@
     },
     "/api/trace/{id}/unshare": {
       "post": {
-        "description": "Delete public trace paths using LangWatch’s API to maintain control over evaluation and agent testing data.",
+        "description": "Deletes a public path for a trace",
         "parameters": [
           {
             "name": "id",
@@ -670,7 +918,7 @@
                           "type"
                         ]
                       },
-                      "minItems": 1
+                      "default": []
                     },
                     "outputs": {
                       "type": "array",
@@ -737,9 +985,7 @@
                               "type": "object",
                               "additionalProperties": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
+                                "items": {}
                               }
                             },
                             "columnTypes": {
@@ -847,9 +1093,7 @@
                                   "type": "object",
                                   "additionalProperties": {
                                     "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    }
+                                    "items": {}
                                   }
                                 },
                                 "columnTypes": {
@@ -1117,7 +1361,7 @@
             "required": true
           }
         ],
-        "description": "Retrieve prompts via the API to support versioning, evaluation workflows, and agent testing pipelines."
+        "description": "Get a specific prompt"
       },
       "put": {
         "responses": {
@@ -1233,7 +1477,7 @@
                           "type"
                         ]
                       },
-                      "minItems": 1
+                      "default": []
                     },
                     "outputs": {
                       "type": "array",
@@ -1300,9 +1544,7 @@
                               "type": "object",
                               "additionalProperties": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
+                                "items": {}
                               }
                             },
                             "columnTypes": {
@@ -1410,9 +1652,7 @@
                                   "type": "object",
                                   "additionalProperties": {
                                     "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    }
+                                    "items": {}
                                   }
                                 },
                                 "columnTypes": {
@@ -1692,7 +1932,7 @@
             "required": true
           }
         ],
-        "description": "Update prompts to refine versions, run new evaluations, and test agent performance under changing configurations.",
+        "description": "Update a prompt",
         "requestBody": {
           "content": {
             "application/json": {
@@ -1972,7 +2212,7 @@
             "required": true
           }
         ],
-        "description": "Delete prompts programmatically using LangWatch to manage versioning and maintain clean evaluation pipelines."
+        "description": "Delete a prompt"
       }
     },
     "/api/prompts/{id}/versions": {
@@ -2092,7 +2332,7 @@
                             "type"
                           ]
                         },
-                        "minItems": 1
+                        "default": []
                       },
                       "outputs": {
                         "type": "array",
@@ -2159,9 +2399,7 @@
                                 "type": "object",
                                 "additionalProperties": {
                                   "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
+                                  "items": {}
                                 }
                               },
                               "columnTypes": {
@@ -2269,9 +2507,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                       "type": "array",
-                                      "items": {
-                                        "type": "string"
-                                      }
+                                      "items": {}
                                     }
                                   },
                                   "columnTypes": {
@@ -2530,7 +2766,7 @@
             "required": true
           }
         ],
-        "description": "Retrieve prompt versions for structured version control, evaluations, and automated AI agent testing workflows."
+        "description": "Get all versions for a prompt. Does not include base prompt data, only versioned data."
       }
     },
     "/api/prompts/{id}/sync": {
@@ -2660,7 +2896,7 @@
                               "type"
                             ]
                           },
-                          "minItems": 1
+                          "default": []
                         },
                         "outputs": {
                           "type": "array",
@@ -2727,9 +2963,7 @@
                                   "type": "object",
                                   "additionalProperties": {
                                     "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    }
+                                    "items": {}
                                   }
                                 },
                                 "columnTypes": {
@@ -2837,9 +3071,7 @@
                                       "type": "object",
                                       "additionalProperties": {
                                         "type": "array",
-                                        "items": {
-                                          "type": "string"
-                                        }
+                                        "items": {}
                                       }
                                     },
                                     "columnTypes": {
@@ -3051,7 +3283,7 @@
                                   "type"
                                 ]
                               },
-                              "minItems": 1
+                              "default": []
                             },
                             "outputs": {
                               "type": "array",
@@ -3102,6 +3334,42 @@
                             "max_tokens": {
                               "type": "number"
                             },
+                            "top_p": {
+                              "type": "number"
+                            },
+                            "frequency_penalty": {
+                              "type": "number"
+                            },
+                            "presence_penalty": {
+                              "type": "number"
+                            },
+                            "seed": {
+                              "type": "number"
+                            },
+                            "top_k": {
+                              "type": "number"
+                            },
+                            "min_p": {
+                              "type": "number"
+                            },
+                            "repetition_penalty": {
+                              "type": "number"
+                            },
+                            "reasoning": {
+                              "type": "string"
+                            },
+                            "reasoning_effort": {
+                              "type": "string"
+                            },
+                            "thinkingLevel": {
+                              "type": "string"
+                            },
+                            "effort": {
+                              "type": "string"
+                            },
+                            "verbosity": {
+                              "type": "string"
+                            },
                             "demonstrations": {
                               "type": "object",
                               "properties": {
@@ -3118,9 +3386,7 @@
                                       "type": "object",
                                       "additionalProperties": {
                                         "type": "array",
-                                        "items": {
-                                          "type": "string"
-                                        }
+                                        "items": {}
                                       }
                                     },
                                     "columnTypes": {
@@ -3228,9 +3494,7 @@
                                           "type": "object",
                                           "additionalProperties": {
                                             "type": "array",
-                                            "items": {
-                                              "type": "string"
-                                            }
+                                            "items": {}
                                           }
                                         },
                                         "columnTypes": {
@@ -3536,7 +3800,7 @@
                             "type"
                           ]
                         },
-                        "minItems": 1
+                        "default": []
                       },
                       "outputs": {
                         "type": "array",
@@ -3587,6 +3851,42 @@
                       "max_tokens": {
                         "type": "number"
                       },
+                      "top_p": {
+                        "type": "number"
+                      },
+                      "frequency_penalty": {
+                        "type": "number"
+                      },
+                      "presence_penalty": {
+                        "type": "number"
+                      },
+                      "seed": {
+                        "type": "number"
+                      },
+                      "top_k": {
+                        "type": "number"
+                      },
+                      "min_p": {
+                        "type": "number"
+                      },
+                      "repetition_penalty": {
+                        "type": "number"
+                      },
+                      "reasoning": {
+                        "type": "string"
+                      },
+                      "reasoning_effort": {
+                        "type": "string"
+                      },
+                      "thinkingLevel": {
+                        "type": "string"
+                      },
+                      "effort": {
+                        "type": "string"
+                      },
+                      "verbosity": {
+                        "type": "string"
+                      },
                       "demonstrations": {
                         "type": "object",
                         "properties": {
@@ -3603,9 +3903,7 @@
                                 "type": "object",
                                 "additionalProperties": {
                                   "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
+                                  "items": {}
                                 }
                               },
                               "columnTypes": {
@@ -3713,9 +4011,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                       "type": "array",
-                                      "items": {
-                                        "type": "string"
-                                      }
+                                      "items": {}
                                     }
                                   },
                                   "columnTypes": {
@@ -3837,7 +4133,6 @@
                     },
                     "required": [
                       "prompt",
-                      "inputs",
                       "outputs",
                       "model"
                     ]
@@ -3873,7 +4168,7 @@
             "required": true
           }
         ],
-        "description": "Add dataset entries programmatically using the LangWatch API to build evaluation sets for LLM testing and agent validation.",
+        "description": "Add entries to a dataset",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4175,7 +4470,7 @@
                             "type"
                           ]
                         },
-                        "minItems": 1
+                        "default": []
                       },
                       "outputs": {
                         "type": "array",
@@ -4242,9 +4537,7 @@
                                 "type": "object",
                                 "additionalProperties": {
                                   "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
+                                  "items": {}
                                 }
                               },
                               "columnTypes": {
@@ -4352,9 +4645,7 @@
                                     "type": "object",
                                     "additionalProperties": {
                                       "type": "array",
-                                      "items": {
-                                        "type": "string"
-                                      }
+                                      "items": {}
                                     }
                                   },
                                   "columnTypes": {
@@ -4583,7 +4874,7 @@
         },
         "operationId": "getApiPrompts",
         "parameters": [],
-        "description": "Retrieve all prompts for a project to manage prompt versioning, run comparisons, and support agent testing pipelines."
+        "description": "Get all prompts for a project"
       },
       "post": {
         "responses": {
@@ -4699,7 +4990,7 @@
                           "type"
                         ]
                       },
-                      "minItems": 1
+                      "default": []
                     },
                     "outputs": {
                       "type": "array",
@@ -4766,9 +5057,7 @@
                               "type": "object",
                               "additionalProperties": {
                                 "type": "array",
-                                "items": {
-                                  "type": "string"
-                                }
+                                "items": {}
                               }
                             },
                             "columnTypes": {
@@ -4876,9 +5165,7 @@
                                   "type": "object",
                                   "additionalProperties": {
                                     "type": "array",
-                                    "items": {
-                                      "type": "string"
-                                    }
+                                    "items": {}
                                   }
                                 },
                                 "columnTypes": {
@@ -5128,7 +5415,7 @@
         },
         "operationId": "postApiPrompts",
         "parameters": [],
-        "description": "Create new prompts with LangWatch’s API to manage versions, run evaluations, and support automated agent testing pipelines.",
+        "description": "Create a new prompt with default initial version",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5384,7 +5671,7 @@
         },
         "operationId": "postApiScenario-events",
         "parameters": [],
-        "description": "Create new scenario events for simulation-based agent testing using LangWatch’s API.",
+        "description": "Create a new scenario event",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5751,6 +6038,21 @@
                                               {
                                                 "type": "object",
                                                 "properties": {
+                                                  "type": {
+                                                    "type": "string",
+                                                    "const": "text"
+                                                  },
+                                                  "content": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                "required": [
+                                                  "type"
+                                                ]
+                                              },
+                                              {
+                                                "type": "object",
+                                                "properties": {
                                                   "text": {
                                                     "type": "string"
                                                   }
@@ -5846,6 +6148,133 @@
                                         }
                                       ]
                                     },
+                                    "parts": {
+                                      "type": "array",
+                                      "items": {
+                                        "anyOf": [
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "text"
+                                              },
+                                              "text": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "type"
+                                            ]
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "text"
+                                              },
+                                              "content": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "type"
+                                            ]
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "text": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "text"
+                                            ]
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "image_url"
+                                              },
+                                              "image_url": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "url": {
+                                                    "type": "string"
+                                                  },
+                                                  "detail": {
+                                                    "anyOf": [
+                                                      {
+                                                        "type": "string",
+                                                        "const": "auto"
+                                                      },
+                                                      {
+                                                        "type": "string",
+                                                        "const": "low"
+                                                      },
+                                                      {
+                                                        "type": "string",
+                                                        "const": "high"
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                "required": [
+                                                  "url"
+                                                ]
+                                              }
+                                            },
+                                            "required": [
+                                              "type"
+                                            ]
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "tool_call"
+                                              },
+                                              "toolName": {
+                                                "type": "string"
+                                              },
+                                              "toolCallId": {
+                                                "type": "string"
+                                              },
+                                              "args": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "type"
+                                            ]
+                                          },
+                                          {
+                                            "type": "object",
+                                            "properties": {
+                                              "type": {
+                                                "type": "string",
+                                                "const": "tool_result"
+                                              },
+                                              "toolName": {
+                                                "type": "string"
+                                              },
+                                              "toolCallId": {
+                                                "type": "string"
+                                              },
+                                              "result": {}
+                                            },
+                                            "required": [
+                                              "type"
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    },
                                     "function_call": {
                                       "type": [
                                         "object",
@@ -5900,6 +6329,12 @@
                                       ]
                                     },
                                     "name": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "reasoning_content": {
                                       "type": [
                                         "string",
                                         "null"
@@ -6258,7 +6693,7 @@
         },
         "operationId": "getIndex",
         "parameters": [],
-        "description": "Retrieve all prompts for a project to manage prompt versioning, run comparisons, and support agent testing pipelines."
+        "description": "Get all prompts for a project"
       },
       "post": {
         "responses": {
@@ -6446,7 +6881,7 @@
         },
         "operationId": "postIndex",
         "parameters": [],
-        "description": "Create new prompts with LangWatch’s API to manage versions, run evaluations, and support automated agent testing pipelines.",
+        "description": "Create a new prompt with default initial version",
         "requestBody": {
           "content": {
             "application/json": {
@@ -6570,6 +7005,3843 @@
             }
           }
         }
+      }
+    },
+    "/api/evaluations/v3/{slug}/run": {
+      "post": {
+        "description": "Start execution of a saved Evaluations V3 experiment by slug. Returns immediately with a runId for polling, or streams SSE events if Accept: text/event-stream header is provided.",
+        "operationId": "postEvaluationsV3Run",
+        "tags": [
+          "Evaluations V3"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "description": "The slug of the evaluation to run"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run started successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "runId": {
+                      "type": "string",
+                      "description": "Unique identifier for this run"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "running"
+                      ],
+                      "description": "Initial status of the run"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of cells to execute"
+                    },
+                    "runUrl": {
+                      "type": "string",
+                      "description": "URL to view the run in LangWatch"
+                    }
+                  },
+                  "required": [
+                    "runId",
+                    "status",
+                    "total"
+                  ]
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-sent events stream with execution progress"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Evaluation not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluations/v3/runs/{runId}": {
+      "get": {
+        "description": "Get the current status of an evaluation run for polling. Returns progress while running, and summary when completed.",
+        "operationId": "getEvaluationsV3RunStatus",
+        "tags": [
+          "Evaluations V3"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "runId",
+            "required": true,
+            "description": "The run ID returned from POST /api/evaluations/v3/{slug}/run"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Run status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "runId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "running",
+                        "completed",
+                        "failed",
+                        "stopped"
+                      ]
+                    },
+                    "progress": {
+                      "type": "integer",
+                      "description": "Number of cells completed"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of cells"
+                    },
+                    "startedAt": {
+                      "type": "integer",
+                      "description": "Unix timestamp when run started"
+                    },
+                    "finishedAt": {
+                      "type": "integer",
+                      "description": "Unix timestamp when run finished (only present when completed/failed/stopped)"
+                    },
+                    "summary": {
+                      "type": "object",
+                      "description": "Execution summary (only present when completed)",
+                      "properties": {
+                        "runId": {
+                          "type": "string"
+                        },
+                        "totalCells": {
+                          "type": "integer"
+                        },
+                        "completedCells": {
+                          "type": "integer"
+                        },
+                        "failedCells": {
+                          "type": "integer"
+                        },
+                        "duration": {
+                          "type": "integer",
+                          "description": "Total execution time in milliseconds"
+                        },
+                        "runUrl": {
+                          "type": "string",
+                          "description": "URL to view the run in LangWatch"
+                        }
+                      }
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Error message (only present when failed)"
+                    }
+                  },
+                  "required": [
+                    "runId",
+                    "status",
+                    "progress",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Run not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/analytics/timeseries": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Timeseries analytics data with current and previous periods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "currentPeriod": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      }
+                    },
+                    "previousPeriod": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "currentPeriod",
+                    "previousPeriod"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "postApiAnalyticsTimeseries",
+        "parameters": [],
+        "description": "Query analytics timeseries data with metrics, aggregations, and filters",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startDate": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "endDate": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "query": {
+                    "type": "string"
+                  },
+                  "filters": {
+                    "type": "object",
+                    "properties": {
+                      "topics.topics": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "topics.subtopics": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.user_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.thread_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.customer_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.labels": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.key": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.value": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.prompt_ids": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "traces.error": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "spans.type": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "spans.model": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.evaluator_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.evaluator_id.guardrails_only": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.passed": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.score": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.state": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.label": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.event_type": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.metrics.key": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.metrics.value": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.event_details.key": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "annotations.hasAnnotation": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "sentiment.input_sentiment": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "default": {}
+                  },
+                  "traceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "negateFilters": {
+                    "type": "boolean"
+                  },
+                  "series": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "metric": {
+                          "type": "string",
+                          "enum": [
+                            "metadata.trace_id",
+                            "metadata.user_id",
+                            "metadata.thread_id",
+                            "metadata.span_type",
+                            "sentiment.input_sentiment",
+                            "sentiment.thumbs_up_down",
+                            "performance.completion_time",
+                            "performance.first_token",
+                            "performance.total_cost",
+                            "performance.prompt_tokens",
+                            "performance.completion_tokens",
+                            "performance.total_tokens",
+                            "performance.tokens_per_second",
+                            "events.event_type",
+                            "events.event_score",
+                            "events.event_details",
+                            "evaluations.evaluation_score",
+                            "evaluations.evaluation_pass_rate",
+                            "evaluations.evaluation_runs",
+                            "threads.average_duration_per_thread"
+                          ]
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "subkey": {
+                          "type": "string"
+                        },
+                        "aggregation": {
+                          "type": "string",
+                          "enum": [
+                            "terms",
+                            "cardinality",
+                            "avg",
+                            "sum",
+                            "min",
+                            "max",
+                            "median",
+                            "p99",
+                            "p95",
+                            "p90"
+                          ]
+                        },
+                        "pipeline": {
+                          "type": "object",
+                          "properties": {
+                            "field": {
+                              "type": "string",
+                              "enum": [
+                                "trace_id",
+                                "user_id",
+                                "thread_id",
+                                "customer_id"
+                              ]
+                            },
+                            "aggregation": {
+                              "type": "string",
+                              "enum": [
+                                "sum",
+                                "avg",
+                                "min",
+                                "max"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "field",
+                            "aggregation"
+                          ]
+                        },
+                        "filters": {
+                          "type": "object",
+                          "properties": {
+                            "topics.topics": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "topics.subtopics": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.user_id": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.thread_id": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.customer_id": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.labels": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.key": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.value": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "metadata.prompt_ids": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "traces.error": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "spans.type": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "spans.model": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "evaluations.evaluator_id": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "evaluations.evaluator_id.guardrails_only": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "evaluations.passed": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "evaluations.score": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "evaluations.state": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "evaluations.label": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "events.event_type": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "events.metrics.key": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "events.metrics.value": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "events.event_details.key": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "annotations.hasAnnotation": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "sentiment.input_sentiment": {
+                              "anyOf": [
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  }
+                                },
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "asPercent": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "metric",
+                        "aggregation"
+                      ]
+                    }
+                  },
+                  "groupBy": {
+                    "type": "string",
+                    "enum": [
+                      "topics.topics",
+                      "metadata.user_id",
+                      "metadata.thread_id",
+                      "metadata.customer_id",
+                      "metadata.labels",
+                      "metadata.model",
+                      "metadata.span_type",
+                      "sentiment.input_sentiment",
+                      "sentiment.thumbs_up_down",
+                      "events.event_type",
+                      "evaluations.evaluation_passed",
+                      "evaluations.evaluation_label",
+                      "evaluations.evaluation_processing_state",
+                      "error.has_error"
+                    ]
+                  },
+                  "groupByKey": {
+                    "type": "string"
+                  },
+                  "timeScale": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": "full"
+                      },
+                      {
+                        "type": "integer"
+                      }
+                    ]
+                  },
+                  "timeZone": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "startDate",
+                  "endDate",
+                  "series",
+                  "timeZone"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluators": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "projectId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "slug": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "config": {
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {}
+                      },
+                      "workflowId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "copiedFromEvaluatorId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "createdAt": {
+                        "type": "string"
+                      },
+                      "updatedAt": {
+                        "type": "string"
+                      },
+                      "fields": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "identifier": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "optional": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
+                        }
+                      },
+                      "outputFields": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "identifier": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "optional": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "identifier",
+                            "type"
+                          ]
+                        }
+                      },
+                      "workflowName": {
+                        "type": "string"
+                      },
+                      "workflowIcon": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "projectId",
+                      "name",
+                      "slug",
+                      "type",
+                      "config",
+                      "workflowId",
+                      "copiedFromEvaluatorId",
+                      "createdAt",
+                      "updatedAt",
+                      "fields",
+                      "outputFields"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getApiEvaluators",
+        "parameters": [],
+        "description": "Get all evaluators for a project"
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "config": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "additionalProperties": {}
+                    },
+                    "workflowId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "copiedFromEvaluatorId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "identifier": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "optional": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
+                      }
+                    },
+                    "outputFields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "identifier": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "optional": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
+                      }
+                    },
+                    "workflowName": {
+                      "type": "string"
+                    },
+                    "workflowIcon": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "projectId",
+                    "name",
+                    "slug",
+                    "type",
+                    "config",
+                    "workflowId",
+                    "copiedFromEvaluatorId",
+                    "createdAt",
+                    "updatedAt",
+                    "fields",
+                    "outputFields"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "postApiEvaluators",
+        "parameters": [],
+        "description": "Create a new evaluator",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 255
+                  },
+                  "config": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "required": [
+                  "name",
+                  "config"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluators/{idOrSlug}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "projectId": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "config": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "additionalProperties": {}
+                    },
+                    "workflowId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "copiedFromEvaluatorId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "identifier": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "optional": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
+                      }
+                    },
+                    "outputFields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "identifier": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "optional": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "identifier",
+                          "type"
+                        ]
+                      }
+                    },
+                    "workflowName": {
+                      "type": "string"
+                    },
+                    "workflowIcon": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "projectId",
+                    "name",
+                    "slug",
+                    "type",
+                    "config",
+                    "workflowId",
+                    "copiedFromEvaluatorId",
+                    "createdAt",
+                    "updatedAt",
+                    "fields",
+                    "outputFields"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Evaluator not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getApiEvaluatorsByIdOrSlug",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "idOrSlug",
+            "required": true
+          }
+        ],
+        "description": "Get a specific evaluator by ID or slug"
+      }
+    },
+    "/api/traces/search": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Matching traces with pagination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "traces": {
+                      "type": "array",
+                      "items": {}
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "totalHits": {
+                          "type": "number"
+                        },
+                        "scrollId": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "totalHits"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "traces",
+                    "pagination"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "postApiTracesSearch",
+        "parameters": [],
+        "description": "Search traces for a project",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  },
+                  "filters": {
+                    "type": "object",
+                    "properties": {
+                      "topics.topics": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "topics.subtopics": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.user_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.thread_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.customer_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.labels": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.key": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.value": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "metadata.prompt_ids": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "traces.error": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "spans.type": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "spans.model": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.evaluator_id": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.evaluator_id.guardrails_only": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.passed": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.score": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.state": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "evaluations.label": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.event_type": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.metrics.key": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.metrics.value": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "events.event_details.key": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "annotations.hasAnnotation": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "sentiment.input_sentiment": {
+                        "anyOf": [
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "additionalProperties": false,
+                    "default": {}
+                  },
+                  "traceIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "negateFilters": {
+                    "type": "boolean"
+                  },
+                  "pageOffset": {
+                    "type": "number"
+                  },
+                  "pageSize": {
+                    "type": "number"
+                  },
+                  "groupBy": {
+                    "type": "string"
+                  },
+                  "sortBy": {
+                    "type": "string"
+                  },
+                  "sortDirection": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "type": "number"
+                  },
+                  "scrollId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "startDate": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "endDate": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ]
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "digest",
+                      "json"
+                    ],
+                    "description": "Output format: 'digest' (AI-readable trace digest) or 'json' (full raw data)"
+                  },
+                  "llmMode": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "startDate",
+                  "endDate"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/traces/{traceId}": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Trace detail with spans, evaluations, and ASCII tree",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Trace not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getApiTracesByTraceId",
+        "parameters": [
+          {
+            "name": "traceId",
+            "in": "path",
+            "description": "The trace ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Output format: 'digest' (default, AI-readable) or 'json' (full raw data)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "digest",
+                "json"
+              ]
+            }
+          },
+          {
+            "name": "llmMode",
+            "in": "query",
+            "description": "Deprecated: use format=digest instead",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false",
+                "1",
+                "0"
+              ]
+            }
+          }
+        ],
+        "description": "Get a single trace by ID. Defaults to AI-readable digest format."
       }
     }
   },
