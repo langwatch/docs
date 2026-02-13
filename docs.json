@@ -157,6 +157,7 @@
               "prompt-management/overview",
               "prompt-management/getting-started",
               "prompt-management/data-model",
+              "prompts/template-syntax",
               "prompt-management/scope",
               "prompt-management/cli",
               "prompt-management/prompt-playground",
