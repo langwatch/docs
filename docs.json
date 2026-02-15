@@ -109,6 +109,7 @@
                       "evaluations/experiments/ui/llm-as-a-judge"
                     ]
                   },
+                  "evaluations/experiments/multimodal-evaluation",
                   "evaluations/experiments/ci-cd"
                 ]
               },
