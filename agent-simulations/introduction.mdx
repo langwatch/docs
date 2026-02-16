@@ -83,16 +83,39 @@ script=[
 - **Simple integration** - Just implement one `call()` method
 - **Multi-language support** - Python, TypeScript, and Go
 
+## Two Ways to Create Simulations
+
+LangWatch offers two approaches to agent testing:
+
+### On-Platform Scenarios (No Code)
+
+Create and run simulations directly in the LangWatch UI:
+- Define situations and evaluation criteria visually
+- Run against HTTP agents or managed prompts
+- Ideal for quick iteration and non-technical team members
+
+[Get started with On-Platform Scenarios →](/scenarios/overview)
+
+### Scenario Library (Code-Based)
+
+Write simulations in code for maximum control:
+- Full programmatic control over conversation flow
+- Complex assertions and tool call verification
+- CI/CD integration for automated testing
+- **Trace-based evaluation** via OpenTelemetry integration
+
+[Get started with the Scenario library →](/agent-simulations/getting-started)
+
+Both approaches produce simulations that appear in the same visualizer, so you can mix and match based on your needs.
+
 ## Visualizing Simulations in LangWatch
 
-Once you've set up your agent tests with Scenario, LangWatch provides powerful visualization tools to:
+The Simulations visualizer helps you analyze results from both On-Platform Scenarios and code-based tests:
 
 - **Organize simulations** into sets and batches
 - **Debug agent behavior** by stepping through conversations
 - **Track performance** over time with run history
 - **Collaborate** with your team on agent improvements
-
-The rest of this documentation will show you how to use LangWatch's simulation visualizer to get the most out of your agent testing.
 
 <img
   src="/images/simulations/simulation-set-overview.png"
@@ -102,8 +125,14 @@ The rest of this documentation will show you how to use LangWatch's simulation v
 
 ## Next Steps
 
-- [Overview](/agent-simulations/overview) - Learn about LangWatch's simulation visualizer
-- [Getting Started](/agent-simulations/getting-started) - Set up your first simulation
-- [Individual Run Analysis](/agent-simulations/individual-run) - Learn how to debug specific scenarios
-- [Batch Runs](/agent-simulations/batch-runs) - Understand how to organize multiple tests
-- [Scenario Documentation](https://langwatch.ai/scenario/) - Deep dive into the testing framework
+### On-Platform Scenarios
+- [Overview](/scenarios/overview) - Create scenarios in the UI
+- [Creating Scenarios](/scenarios/creating-scenarios) - Write effective test cases
+- [Running Scenarios](/scenarios/running-scenarios) - Execute and analyze results
+
+### Scenario Library
+- [Visualizer Overview](/agent-simulations/overview) - Learn about the simulation visualizer
+- [Library Getting Started](/agent-simulations/getting-started) - Set up your first code-based simulation
+- [Individual Run Analysis](/agent-simulations/individual-run) - Debug specific scenarios
+- [Batch Runs](/agent-simulations/batch-runs) - Organize multiple tests
+- [Scenario Documentation](https://langwatch.ai/scenario/) - Deep dive into the testing library

@@ -66,11 +66,31 @@
             "group": "Agent Simulations",
             "pages": [
               "agent-simulations/introduction",
-              "agent-simulations/overview",
-              "agent-simulations/getting-started",
-              "agent-simulations/set-overview",
-              "agent-simulations/batch-runs",
-              "agent-simulations/individual-run"
+              {
+                "group": "On-Platform Scenarios",
+                "pages": [
+                  "scenarios/overview",
+                  "scenarios/creating-scenarios",
+                  "scenarios/running-scenarios"
+                ]
+              },
+              {
+                "group": "Scenario Library",
+                "pages": [
+                  "agent-simulations/overview",
+                  "agent-simulations/getting-started",
+                  "agent-simulations/set-overview",
+                  "agent-simulations/batch-runs",
+                  "agent-simulations/individual-run"
+                ]
+              },
+              {
+                "group": "Agents",
+                "pages": [
+                  "agents/overview",
+                  "agents/http-agents"
+                ]
+              }
             ]
           },
           {
