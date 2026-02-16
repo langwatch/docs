@@ -694,6 +694,10 @@
       "destination": "/evaluations/online-evaluation/overview"
     },
     {
+      "source": "/llm-evaluation/offline/platform/ci-cd-execution",
+      "destination": "/evaluations/experiments/ci-cd"
+    },
+    {
       "source": "/llm-evaluation/:path*",
       "destination": "/evaluations/overview"
     },
