@@ -627,16 +627,16 @@
   },
   "redirects": [
     {
+      "source": "/ci/cache/busted/1770286100",
+      "destination": "/"
+    },
+    {
       "source": "/api-reference/traces/get-trace-details",
       "destination": "/api-reference/traces/get-trace"
     },
     {
       "source": "/api-reference/traces/search-traces",
       "destination": "/api-reference/traces/search"
-    },
-    {
-      "source": "/ci/cache/busted/1770286100",
-      "destination": "/"
     },
     {
       "source": "/langevals/:path*",
