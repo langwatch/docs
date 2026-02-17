@@ -17,7 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "banner": {
-    "content": "**Ship reliable, testable agents \u2013 not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](https://github.com/langwatch/better-agents)",
+    "content": "**Ship reliable, testable agents – not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](https://github.com/langwatch/better-agents)",
     "dismissible": true
   },
   "contextual": {
@@ -627,7 +627,7 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1770286100",
+      "source": "/ci/cache/busted/1771331977",
       "destination": "/"
     },
     {
