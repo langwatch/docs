@@ -63,10 +63,10 @@ Ready to start taking control of your LLM application quality? Quick start with 
     horizontal
   />
   <Card
-    title="Alerts & Triggers"
-    description="Set up alerts and triggers for your LLM applications."
+    title="Alerts & Automations"
+    description="Set up alerts and automations for your LLM applications."
     icon="bell"
-    href="/features/triggers"
+    href="/features/automations"
     arrow
     horizontal
   />
@@ -261,10 +261,10 @@ See what's happening inside your LLM applications. LangWatch tracks every intera
     horizontal
   />
   <Card
-    title="Triggers & Alerts"
+    title="Automations & Alerts"
     description="Get notified when things go wrong, or when costs spike unexpectedly."
     icon="bell"
-    href="/features/triggers"
+    href="/features/automations"
     horizontal
     arrow
   />
@@ -13999,7 +13999,7 @@ title: Automatically build datasets from real-time traces
 description: Automatically build datasets from real-time traces to power LLM evaluations, regression tests, and AI agent testing workflows.
 ---
 
-You can keep continously populating the dataset with new data arriving from production by using **Triggers**, mapping trace fields to any dataset columns you prefer.
+You can keep continously populating the dataset with new data arriving from production by using **Automations**, mapping trace fields to any dataset columns you prefer.
 
 Simply go to the Messages page and select a filter (for example, by model), the Add Trigger button will be enabled:
 
@@ -14089,7 +14089,7 @@ To add data by selecting a group, simply click the "Add to Dataset" button after
 
 ### Continuously
 
-You can keep continuously populating the dataset with new data arriving from production by using **Triggers**. See [Automatically building a dataset from traces](/datasets/automatically-from-traces) for more details.
+You can keep continuously populating the dataset with new data arriving from production by using **Automations**. See [Automatically building a dataset from traces](/datasets/automatically-from-traces) for more details.
 
 
 ### CSV Upload
@@ -16391,10 +16391,10 @@ See the full [Evaluators List](/evaluations/evaluators/list).
     href="/evaluations/online-evaluation/setup-monitors"
   />
   <Card
-    title="Triggers & Alerts"
+    title="Automations & Alerts"
     description="Get notified when quality drops."
     icon="bell"
-    href="/features/triggers"
+    href="/features/automations"
   />
   <Card
     title="Guardrails"
@@ -17151,7 +17151,7 @@ BUILD → TEST → DEPLOY → MONITOR
 | Run quality checks in CI/CD | [Experiments CI/CD](/evaluations/experiments/ci-cd) |
 | Monitor production quality over time | [Online Evaluation](/evaluations/online-evaluation/overview) |
 | Block harmful or policy-violating content | [Guardrails](/evaluations/guardrails/overview) |
-| Get alerts when quality drops | [Online Evaluation](/evaluations/online-evaluation/overview) + [Triggers](/features/triggers) |
+| Get alerts when quality drops | [Online Evaluation](/evaluations/online-evaluation/overview) + [Automations](/features/automations) |
 
 ## Quick Start
 
