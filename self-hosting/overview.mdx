@@ -20,7 +20,7 @@ LangWatch is composed of a few core components:
 - **LangWatch App**: The main application and user interface for the platform.
 - **LangEvals**: The evaluation service for LangWatch built-in evaluators.
 - **LangWatch NLP**: The service the runs workflows and custom built evaluators in the platform.
-- **LangWatch Workers**: The background workers running inside the app, processing traces, triggering alerts, real-time evaluations and so on.
+- **LangWatch Workers**: Background workers that process traces, trigger alerts, run real-time evaluations and so on. By default, workers are deployed as a separate pod for independent scaling.
 - **Redis**: A redis queue that coordinates and add resiliency for the traces to be processed.
 - **Elasticsearch/OpenSearch**: The main database for the platform, storing traces and evaluation results.
 - **PostgreSQL**: The core database for the platform, storing user accounts, teams, and other metadata.

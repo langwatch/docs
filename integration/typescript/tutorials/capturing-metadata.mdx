@@ -10,398 +10,118 @@ Metadata and attributes are key-value pairs that allow you to add custom context
 
 In the TypeScript SDK, all metadata is captured through **span attributes**. You can set attributes on any span to provide context for that operation or the entire trace.
 
-This tutorial will guide you through capturing metadata using span attributes with the TypeScript SDK.
-
 <Note>
   For a comprehensive reference of all available attributes and semantic conventions, see the [Semantic Conventions guide](/integration/typescript/tutorials/semantic-conventions).
 </Note>
 
-## Understanding Span Attributes
-
-Span attributes provide contextual information for any span in your trace. They can be used to capture:
-
-*   **Trace-level context**: Information that applies to the entire trace (set on the root span)
-*   **Span-specific details**: Information relevant to a particular operation or step
-*   **Business logic metadata**: Custom flags, parameters, or results specific to your application
-
-### Common Use Cases
-
-*   **User and session information**: `langwatch.user.id`, `langwatch.thread.id`
-*   **Application context**: `app.version`, `environment`, `region`
-*   **LLM operation details**: `gen_ai.request.model`, `gen_ai.request.temperature`, `gen_ai.response.prompt_tokens`
-*   **Tool and API calls**: `tool.name`, `api.endpoint`, `response.status`
-*   **RAG operations**: `retrieved.document.ids`, `chunk.count`
-*   **Custom business logic**: `customer.tier`, `feature.flags`, `processing.stage`
-
 ## Setting Attributes
 
-You can set attributes on any span using the `setAttributes()` method. This method accepts an object with key-value pairs.
-
-### Basic Attribute Setting
+Use `setAttributes()` on any span to attach metadata. For trace-level context, set attributes on the root span:
 
 ```typescript
 import { setupObservability } from "langwatch/observability/node";
 import { getLangWatchTracer } from "langwatch";
 
-// Setup observability
 setupObservability();
 
-const tracer = getLangWatchTracer("metadata-example");
+const tracer = getLangWatchTracer("my-service");
 
-async function handleUserQuery(query: string): Promise<string> {
-  return await tracer.withActiveSpan("UserQueryHandler", async (span) => {
-    // Set attributes on the root span for trace-level context
+async function handleMessage(userId: string, message: string) {
+  return await tracer.withActiveSpan("HandleMessage", async (span) => {
     span.setAttributes({
-      "langwatch.user.id": "user_123",
-      "langwatch.thread.id": "session_abc",
-      "app.version": "1.0.0"
+      "langwatch.user.id": userId,
+      "app.version": "1.0.0",
     });
 
-    // Your application logic here
-    const processedQuery = `Query processed: ${query}`;
+    // your application logic here...
 
-    // Add more attributes based on processing
+    // add more attributes as context becomes available
     span.setAttributes({
       "query.language": "en",
-      "processing.completed": true
+      "processing.completed": true,
     });
 
-    return processedQuery;
+    return result;
   });
 }
-
-await handleUserQuery("Hello, LangWatch!");
 ```
+
+You can also use typed attribute constants:
+
+```typescript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_USER_ID]: userId,
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: threadId,
+});
+```
+
+### Common Attributes
+
+*   **User and session**: `langwatch.user.id`, `langwatch.thread.id` - see [Tracking Conversations](/integration/typescript/tutorials/tracking-conversations)
+*   **Application context**: `app.version`, `environment`, `region`
+*   **LLM operations**: `gen_ai.request.model`, `gen_ai.request.temperature`
+*   **Custom business logic**: `customer.tier`, `feature.flags`
 
 ### Setting Attributes on Child Spans
 
 You can set attributes on any span in your trace hierarchy:
 
 ```typescript
-async function processWithChildSpans(): Promise<void> {
+async function processWithChildSpans() {
   return await tracer.withActiveSpan("ParentOperation", async (parentSpan) => {
-    // Set attributes on the parent span
     parentSpan.setAttributes({
       "operation.type": "batch_processing",
-      "batch.size": 100
+      "batch.size": 100,
     });
 
     await tracer.withActiveSpan("ChildOperation", async (childSpan) => {
-      // Set attributes on the child span
       childSpan.setAttributes({
         "child.operation": "data_validation",
-        "validation.rules": 5
+        "validation.rules": 5,
       });
 
       // ... logic for child operation ...
 
-      // Add more attributes based on results
       childSpan.setAttributes({
         "validation.passed": true,
-        "items.processed": 95
+        "items.processed": 95,
       });
     });
-  });
-}
-```
-
-## Dynamic Attribute Updates
-
-You can update attributes at any point during span execution:
-
-```typescript
-async function dynamicAttributes(customerId: string, requestDetails: any): Promise<string> {
-  return await tracer.withActiveSpan("CustomerRequestFlow", async (span) => {
-    // Set initial attributes
-    span.setAttributes({
-      "langwatch.customer.id": customerId,
-      "request.type": requestDetails.type
-    });
-
-    // Simulate processing
-    console.log(`Processing request for customer ${customerId}`);
-
-    // Update attributes based on conditions
-    const isPriorityCustomer = customerId.startsWith("vip_");
-    span.setAttributes({
-      "customer.priority": isPriorityCustomer
-    });
-
-    // ... further processing ...
-
-    if (requestDetails.type === "complaint") {
-      span.setAttributes({
-        "escalation.needed": true
-      });
-    }
-
-    return "Request processed successfully";
   });
 }
 ```
 
 ## Adding Labels to Traces
 
-Labels are a special type of trace metadata that allows you to organize, filter, and categorize your traces in the LangWatch dashboard. You can add labels dynamically by setting them on the span:
+Labels allow you to organize, filter, and categorize your traces in the LangWatch dashboard:
 
 ```typescript
-import { setupObservability } from "langwatch/observability/node";
-import { getLangWatchTracer } from "langwatch";
-
-setupObservability();
-
-const tracer = getLangWatchTracer("user-service");
-
-const handleUserRequest = async (userId: string, requestType: string): Promise<string> => {
+async function handleRequest(userId: string, requestType: string) {
   return await tracer.withActiveSpan("UserRequest", async (span) => {
-    // Set initial labels based on request type
     if (requestType === "support") {
       span.setAttributes({
-        "langwatch.labels": JSON.stringify(["customer_support", "high_priority"])
+        "langwatch.labels": JSON.stringify(["customer_support", "high_priority"]),
       });
     } else if (requestType === "sales") {
       span.setAttributes({
-        "langwatch.labels": JSON.stringify(["sales_inquiry"])
+        "langwatch.labels": JSON.stringify(["sales_inquiry"]),
       });
     }
 
-    // Process the request
-    const result = `Processed ${requestType} request for user ${userId}`;
-
-    // Add additional labels based on processing results
-    if (result.toLowerCase().includes("urgent")) {
-      span.setAttributes({
-        "langwatch.labels": JSON.stringify(["urgent_escalation"])
-      });
-    }
-
-    return result;
-  });
-};
-
-await handleUserRequest("user_123", "support");
-```
-
-## Using Semantic Conventions
-
-LangWatch supports OpenTelemetry semantic conventions for consistent attribute naming. You can import semantic convention attributes for type-safe attribute setting:
-
-```typescript
-import { setupObservability } from "langwatch/observability/node";
-import { getLangWatchTracer } from "langwatch";
-import { attributes } from "langwatch";
-import * as semconv from "@opentelemetry/semantic-conventions";
-
-// Setup observability
-setupObservability();
-
-const tracer = getLangWatchTracer("semantic-conventions-example");
-
-async function exampleWithSemanticConventions(): Promise<void> {
-  return await tracer.withActiveSpan("SemanticConventionsExample", async (span) => {
-    // Use semantic convention attributes for consistency
-    span.setAttributes({
-      [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
-      [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
-      [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
-      [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
-      [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7
-    });
+    // process the request...
   });
 }
 ```
-
-<Note>
-  For a complete list of available semantic conventions and attributes, see the [Semantic Conventions guide](/integration/typescript/tutorials/semantic-conventions).
-</Note>
-
-## Advanced Attribute Patterns
-
-### Conditional Attributes
-
-Set attributes based on your application logic:
-
-```typescript
-async function conditionalAttributes(userId: string, isPremium: boolean): Promise<void> {
-  return await tracer.withActiveSpan("ConditionalAttributes", async (span) => {
-    // Always set these attributes
-    span.setAttributes({
-      "langwatch.user.id": userId,
-      "user.type": isPremium ? "premium" : "standard"
-    });
-
-    // Conditionally set additional attributes
-    if (isPremium) {
-      span.setAttributes({
-        "premium.features": ["priority_support", "advanced_analytics"],
-        "billing.tier": "premium"
-      });
-    }
-
-    // Set attributes based on processing results
-    const processingTime = Date.now();
-    if (processingTime > 5000) {
-      span.setAttributes({
-        "performance.slow": true,
-        "processing.time.ms": processingTime
-      });
-    }
-  });
-}
-```
-
-### Structured Data Attributes
-
-For complex data, you can serialize objects as JSON strings:
-
-```typescript
-async function structuredAttributes(): Promise<void> {
-  return await tracer.withActiveSpan("StructuredData", async (span) => {
-    const userPreferences = {
-      language: "en",
-      theme: "dark",
-      notifications: ["email", "push"]
-    };
-
-    const systemInfo = {
-      version: "1.2.3",
-      environment: "production",
-      region: "us-east-1"
-    };
-
-    span.setAttributes({
-      "user.preferences": JSON.stringify(userPreferences),
-      "system.info": JSON.stringify(systemInfo),
-      "feature.flags": JSON.stringify({
-        "new_ui": true,
-        "beta_features": false
-      })
-    });
-  });
-}
-```
-
-### LLM-Specific Attributes
-
-For LLM operations, you can use GenAI semantic convention attributes:
-
-```typescript
-import { setupObservability } from "langwatch/observability/node";
-import { getLangWatchTracer } from "langwatch";
-import * as semconv from "@opentelemetry/semantic-conventions";
-
-async function llmAttributes(): Promise<void> {
-  return await tracer.withActiveSpan("LLMOperation", async (span) => {
-    span.setType("llm");
-    span.setRequestModel("gpt-5");
-
-    span.setAttributes({
-      [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
-      [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7,
-      [semconv.ATTR_GEN_AI_REQUEST_MAX_TOKENS]: 1000,
-      [semconv.ATTR_GEN_AI_REQUEST_TOP_P]: 1.0,
-      [semconv.ATTR_GEN_AI_REQUEST_FREQUENCY_PENALTY]: 0.0,
-      [semconv.ATTR_GEN_AI_REQUEST_PRESENCE_PENALTY]: 0.0,
-      [semconv.ATTR_GEN_AI_REQUEST_STREAMING]: false
-    });
-
-    // Simulate LLM call
-    const response = "Generated response";
-
-    span.setAttributes({
-      [semconv.ATTR_GEN_AI_RESPONSE_MODEL]: "gpt-5",
-      [semconv.ATTR_GEN_AI_RESPONSE_PROMPT_TOKENS]: 150,
-      [semconv.ATTR_GEN_AI_RESPONSE_COMPLETION_TOKENS]: 75,
-      [semconv.ATTR_GEN_AI_RESPONSE_TOTAL_TOKENS]: 225,
-      [semconv.ATTR_GEN_AI_RESPONSE_USAGE_TOTAL_TOKENS]: 225
-    });
-  });
-}
-```
-
-## Best Practices
-
-### Attribute Naming
-
-Follow consistent naming conventions for your attributes:
-
-```typescript
-// ✅ Good: Use consistent naming patterns
-span.setAttributes({
-  "langwatch.user.id": "user-123",
-  "request.method": "POST",
-  "response.status": 200,
-  "processing.time.ms": 1500
-});
-
-// ❌ Avoid: Inconsistent naming
-span.setAttributes({
-  "user_id": "user-123", // Inconsistent with langwatch.user.id
-  "method": "POST", // Too generic
-  "status": 200, // Too generic
-  "time": 1500 // Missing units
-});
-```
-
-### Sensitive Data
-
-Never include sensitive information in attributes:
-
-```typescript
-// ✅ Good: Safe attributes
-span.setAttributes({
-  "langwatch.user.id": "user-123",
-  "request.type": "authentication",
-  "auth.method": "oauth"
-});
-
-// ❌ Avoid: Sensitive data in attributes
-span.setAttributes({
-  "api_key": "sk-...", // Never include API keys
-  "password": "secret123", // Never include passwords
-  "credit_card": "1234-5678-9012-3456", // Never include PII
-  "session_token": "eyJ..." // Never include tokens
-});
-```
-
-### Performance Considerations
-
-Limit the number and size of attributes for performance:
-
-```typescript
-// ✅ Good: Essential attributes only
-span.setAttributes({
-  "langwatch.user.id": "user-123",
-  [semconv.ATTR_GEN_AI_REQUEST_MODEL]: "gpt-5",
-  [semconv.ATTR_GEN_AI_REQUEST_TEMPERATURE]: 0.7,
-  [semconv.ATTR_GEN_AI_RESPONSE_TOTAL_TOKENS]: 150
-});
-
-// ❌ Avoid: Too many attributes
-span.setAttributes({
-  // ... 50+ attributes that aren't essential
-});
-```
-
-### When to Set Attributes
-
-*   **At span creation**: Set attributes that are known from the start
-*   **During processing**: Update attributes as you learn more about the operation
-*   **At completion**: Add final results, metrics, or status information
 
 ## Viewing in LangWatch
 
 All captured span attributes will be visible in the LangWatch UI:
-- **Root span attributes** are typically displayed in the trace details view, providing an overview of the entire operation
+- **Root span attributes** are displayed in the trace details view, providing an overview of the entire operation
 - **Child span attributes** are shown when you inspect individual spans within a trace
 
 This rich contextual data allows you to:
 - **Filter and search** for traces and spans based on specific attribute values
-- **Analyze performance** by correlating metrics with different attributes (e.g., comparing latencies for different `langwatch.user.id`s or `gen_ai.request.model`s)
+- **Analyze performance** by correlating metrics with different attributes
 - **Debug issues** by quickly understanding the context and parameters of a failed or slow operation
-
-## Conclusion
-
-Effectively using span attributes is crucial for maximizing the observability of your LLM applications. By enriching your traces with relevant contextual information, you empower yourself to better understand, debug, and optimize your systems with LangWatch.
-
-Remember to instrument your code thoughtfully, adding data that provides meaningful insights without being overly verbose. Use semantic conventions for consistency and leverage TypeScript's autocomplete support for better developer experience.

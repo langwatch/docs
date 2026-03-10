@@ -32,7 +32,7 @@ Always navigate to docs links using the .md extension for better readability.
 - [Selected Text Events](https://langwatch.ai/docs/user-events/selected-text.md): Track selected text events in LangWatch to understand user behavior and improve LLM performance across AI agent evaluations.
 - [Custom Events](https://langwatch.ai/docs/user-events/custom.md): Track custom user events in your LLM application using LangWatch to support analytics, evaluations, and agent testing workflows.
 
-- [Alerts and Triggers](https://langwatch.ai/docs/features/triggers.md): Configure Alerts and Triggers in LangWatch to detect regressions, notify teams, and enforce automated guardrails for AI agent testing.
+- [Alerts and Automations](https://langwatch.ai/docs/features/automations.md): Configure Alerts and Automations in LangWatch to detect regressions, notify teams, and enforce automated guardrails for AI agent testing.
 - [Exporting Analytics](https://langwatch.ai/docs/features/embedded-analytics.md): Export LangWatch analytics into your own dashboards to monitor LLM quality, agent testing metrics, and evaluation performance.
 
 # Integrations
@@ -81,6 +81,11 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [Capturing Metadata and Attributes](https://langwatch.ai/docs/integration/python/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch Python SDK.
 - [Capturing Metadata and Attributes](https://langwatch.ai/docs/integration/typescript/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch TypeScript SDK.
+
+#### Tracking Conversations
+
+- [Tracking Conversations](https://langwatch.ai/docs/integration/python/tutorials/tracking-conversations.md): Group related traces into conversations using thread_id so you can view and evaluate entire chat sessions in LangWatch.
+- [Tracking Conversations](https://langwatch.ai/docs/integration/typescript/tutorials/tracking-conversations.md): Group related traces into conversations using thread_id so you can view and evaluate entire chat sessions in LangWatch.
 
 #### Tracking LLM Costs
 
@@ -300,10 +305,10 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Traces
 
-- [Overview](https://langwatch.ai/docs/api-reference/traces/overview.md): Understand LangWatch Traces, how runs are grouped into a single operation, and how to use them for LLM observability and AI agent evaluations.
-- [Get trace details](https://langwatch.ai/docs/api-reference/traces/get-trace-details.md)
+- [Overview](https://langwatch.ai/docs/api-reference/traces/overview.md): Search, retrieve, and share LangWatch traces via the REST API. Traces capture the full execution of your LLM pipelines including all spans, evaluations, and metadata.
+- [Search traces](https://langwatch.ai/docs/api-reference/traces/search.md)
+- [Get trace details](https://langwatch.ai/docs/api-reference/traces/get-trace.md)
 - [Get thread details](https://langwatch.ai/docs/api-reference/traces/get-thread-details.md)
-- [Search traces](https://langwatch.ai/docs/api-reference/traces/search-traces.md)
 - [Create public path for single trace](https://langwatch.ai/docs/api-reference/traces/create-public-trace-path.md)
 - [Delete an existing public path for a trace](https://langwatch.ai/docs/api-reference/traces/delete-public-trace-path.md)
 
@@ -332,9 +337,9 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [Add dataset entries programmatically using the LangWatch API to build evaluation sets for LLM testing and agent validation.](https://langwatch.ai/docs/api-reference/datasets/post-dataset-entries.md)
 
-## Triggers
+## Automations
 
-- [Create Slack trigger](https://langwatch.ai/docs/api-reference/triggers/create-slack-trigger.md)
+- [Create Slack automation](https://langwatch.ai/docs/api-reference/automations/create-slack-automation.md)
 
 ## Scenarios
 
