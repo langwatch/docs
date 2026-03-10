@@ -17,7 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "banner": {
-    "content": "**[LangWatch MCP is live](/docs/integration/mcp):** Your AI coding assistant can now build, version, and ship evals — no platform context-switching required.",
+    "content": "**[LangWatch MCP is live](/integration/mcp):** Your AI coding assistant can now build, version, and ship evals — no platform context-switching required.",
     "dismissible": true
   },
   "contextual": {
