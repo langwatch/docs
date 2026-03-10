@@ -17,7 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "banner": {
-    "content": "**Ship reliable, testable agents – not guesses.** Better Agents adds simulations, evaluations, and standards on top of any framework. [Explore Better Agents](https://github.com/langwatch/better-agents)",
+    "content": "**[LangWatch MCP is live](/integration/mcp):** Your AI coding assistant can now build, version, and ship evals — no platform context-switching required.",
     "dismissible": true
   },
   "contextual": {
@@ -89,7 +89,7 @@
                   "user-events/custom"
                 ]
               },
-              "features/automations",
+              "features/triggers",
               "features/embedded-analytics"
             ]
           },
@@ -109,7 +109,6 @@
                       "evaluations/experiments/ui/llm-as-a-judge"
                     ]
                   },
-                  "evaluations/experiments/multimodal-evaluation",
                   "evaluations/experiments/ci-cd"
                 ]
               },
@@ -158,7 +157,6 @@
               "prompt-management/overview",
               "prompt-management/getting-started",
               "prompt-management/data-model",
-              "prompts/template-syntax",
               "prompt-management/scope",
               "prompt-management/cli",
               "prompt-management/prompt-playground",
@@ -301,13 +299,6 @@
                     ]
                   },
                   {
-                    "group": "Tracking Conversations",
-                    "pages": [
-                      "integration/python/tutorials/tracking-conversations",
-                      "integration/typescript/tutorials/tracking-conversations"
-                    ]
-                  },
-                  {
                     "group": "Tracking LLM Costs",
                     "pages": [
                       "integration/python/tutorials/tracking-llm-costs",
@@ -411,7 +402,6 @@
           {
             "group": "No-Code Platforms",
             "pages": [
-              "integration/openclaw",
               "integration/n8n",
               "integration/langflow",
               "integration/flowise"
@@ -421,8 +411,7 @@
             "group": "Direct Integrations",
             "pages": [
               "integration/opentelemetry/guide",
-              "integration/rest-api",
-              "integration/metadata-and-labels"
+              "integration/rest-api"
             ]
           }
         ]
@@ -467,9 +456,9 @@
             "group": "Traces",
             "pages": [
               "api-reference/traces/overview",
-              "api-reference/traces/search",
-              "api-reference/traces/get-trace",
+              "api-reference/traces/get-trace-details",
               "api-reference/traces/get-thread-details",
+              "api-reference/traces/search-traces",
               "api-reference/traces/create-public-trace-path",
               "api-reference/traces/delete-public-trace-path"
             ]
@@ -506,9 +495,9 @@
             ]
           },
           {
-            "group": "Automations",
+            "group": "Triggers",
             "pages": [
-              "api-reference/automations/create-slack-automation"
+              "api-reference/triggers/create-slack-trigger"
             ]
           },
           {
@@ -516,15 +505,6 @@
             "pages": [
               "api-reference/scenarios/overview",
               "api-reference/scenarios/create-event"
-            ]
-          },
-          {
-            "group": "Saved Evaluators",
-            "pages": [
-              "api-reference/saved-evaluators/overview",
-              "api-reference/saved-evaluators/get-evaluators",
-              "api-reference/saved-evaluators/get-evaluator",
-              "api-reference/saved-evaluators/create-evaluator"
             ]
           },
           {
@@ -627,16 +607,8 @@
   },
   "redirects": [
     {
-      "source": "/ci/cache/busted/1772445205",
+      "source": "/ci/cache/busted/1767690224",
       "destination": "/"
-    },
-    {
-      "source": "/api-reference/traces/get-trace-details",
-      "destination": "/api-reference/traces/get-trace"
-    },
-    {
-      "source": "/api-reference/traces/search-traces",
-      "destination": "/api-reference/traces/search"
     },
     {
       "source": "/langevals/:path*",
@@ -695,10 +667,6 @@
       "destination": "/evaluations/online-evaluation/overview"
     },
     {
-      "source": "/llm-evaluation/offline/platform/ci-cd-execution",
-      "destination": "/evaluations/experiments/ci-cd"
-    },
-    {
       "source": "/llm-evaluation/:path*",
       "destination": "/evaluations/overview"
     },
@@ -749,14 +717,6 @@
     {
       "source": "/hybrid-setup/sso-setup-langwatch",
       "destination": "/self-hosting/sso-setup-langwatch"
-    },
-    {
-      "source": "/features/triggers",
-      "destination": "/features/automations"
-    },
-    {
-      "source": "/api-reference/triggers/:path*",
-      "destination": "/api-reference/automations/:path*"
     }
   ]
 }
