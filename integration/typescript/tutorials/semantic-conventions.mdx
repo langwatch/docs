@@ -84,7 +84,7 @@ span.setType("llm");
 span.setAttributes({
   "langwatch.user.id": "user-123",
   "langwatch.thread.id": "thread-456",
-  "langwatch.streaming": false,
+  "langwatch.gen_ai.streaming": false,
 });
 ```
 
@@ -109,7 +109,7 @@ await tracer.withActiveSpan("llm-operation", async (span) => {
     "langwatch.span.type": "llm",
     "langwatch.user.id": "user-123",
     "langwatch.thread.id": "thread-456",
-    "langwatch.streaming": false,
+    "langwatch.gen_ai.streaming": false,
     // ... more attributes with autocomplete
   });
 });
@@ -136,6 +136,53 @@ const handle = setupObservability({
 
 LangWatch provides a comprehensive set of custom attributes for LLM-specific observability. All attributes are available with TypeScript autocomplete support.
 
+### Using SDK Constants
+
+Instead of using raw attribute strings, you can import typed constants from the SDK via the `attributes` namespace:
+
+```typescript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
+  [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
+  [attributes.ATTR_LANGWATCH_LABELS]: ["chat", "greeting"],
+  [attributes.ATTR_LANGWATCH_STREAMING]: false,
+});
+```
+
+All available constants:
+
+| Constant | Value |
+|----------|-------|
+| `ATTR_LANGWATCH_INPUT` | `langwatch.input` |
+| `ATTR_LANGWATCH_OUTPUT` | `langwatch.output` |
+| `ATTR_LANGWATCH_SPAN_TYPE` | `langwatch.span.type` |
+| `ATTR_LANGWATCH_RAG_CONTEXTS` | `langwatch.contexts` |
+| `ATTR_LANGWATCH_METRICS` | `langwatch.metrics` |
+| `ATTR_LANGWATCH_SDK_VERSION` | `langwatch.sdk.version` |
+| `ATTR_LANGWATCH_SDK_NAME` | `langwatch.sdk.name` |
+| `ATTR_LANGWATCH_SDK_LANGUAGE` | `langwatch.sdk.language` |
+| `ATTR_LANGWATCH_TIMESTAMPS` | `langwatch.timestamps` |
+| `ATTR_LANGWATCH_EVALUATION_CUSTOM` | `langwatch.evaluation.custom` |
+| `ATTR_LANGWATCH_PARAMS` | `langwatch.params` |
+| `ATTR_LANGWATCH_CUSTOMER_ID` | `langwatch.customer.id` |
+| `ATTR_LANGWATCH_THREAD_ID` | `langwatch.thread.id` |
+| `ATTR_LANGWATCH_USER_ID` | `langwatch.user.id` |
+| `ATTR_LANGWATCH_LABELS` | `langwatch.labels` |
+| `ATTR_LANGWATCH_STREAMING` | `langwatch.gen_ai.streaming` |
+| `ATTR_LANGWATCH_PROMPT_ID` | `langwatch.prompt.id` |
+| `ATTR_LANGWATCH_PROMPT_HANDLE` | `langwatch.prompt.handle` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_ID` | `langwatch.prompt.version.id` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_NUMBER` | `langwatch.prompt.version.number` |
+| `ATTR_LANGWATCH_PROMPT_SELECTED_ID` | `langwatch.prompt.selected.id` |
+| `ATTR_LANGWATCH_PROMPT_VARIABLES` | `langwatch.prompt.variables` |
+
+<Tip>
+Using SDK constants gives you autocomplete, typo prevention, and makes it easy to find all usages of an attribute across your codebase. All constants follow the `ATTR_LANGWATCH_*` naming pattern.
+</Tip>
+
 ### Core LangWatch Attributes
 
 | Attribute | Type | Description | Example |
@@ -144,11 +191,11 @@ LangWatch provides a comprehensive set of custom attributes for LLM-specific obs
 | `langwatch.user.id` | string | User identifier | `"user-123"` |
 | `langwatch.thread.id` | string | Conversation thread identifier | `"thread-456"` |
 | `langwatch.customer.id` | string | Customer identifier | `"customer-789"` |
-| `langwatch.streaming` | boolean | Whether the operation involves streaming | `true`, `false` |
+| `langwatch.gen_ai.streaming` | boolean | Whether the operation involves streaming | `true`, `false` |
 | `langwatch.input` | string/object | Input data for the span | `"Hello, how are you?"` |
 | `langwatch.output` | string/object | Output data from the span | `"I'm doing well, thank you!"` |
 | `langwatch.contexts` | array | RAG contexts for retrieval-augmented generation | Array of document contexts |
-| `langwatch.tags` | array | Tags for categorizing spans | `["chat", "greeting"]` |
+| `langwatch.labels` | array | Labels for categorizing spans | `["chat", "greeting"]` |
 | `langwatch.params` | object | Parameter data for operations | `{ temperature: 0.7 }` |
 | `langwatch.metrics` | object | Custom metrics data | `{ response_time: 1250 }` |
 | `langwatch.timestamps` | object | Timing information for events | `{ start: 1234567890 }` |
@@ -214,15 +261,15 @@ Use appropriate data types and formats:
 ```typescript
 // ✅ Good: Proper data types
 span.setAttributes({
-  "langwatch.streaming": false, // boolean
+  "langwatch.gen_ai.streaming": false, // boolean
   "langwatch.user.id": "user-123", // string
   "langwatch.prompt.version.number": 2, // number
-  "langwatch.tags": ["chat", "greeting"], // array
+  "langwatch.labels": ["chat", "greeting"], // array
 });
 
 // ❌ Avoid: Inconsistent data types
 span.setAttributes({
-  "langwatch.streaming": "false", // string instead of boolean
+  "langwatch.gen_ai.streaming": "false", // string instead of boolean
   "langwatch.prompt.version.number": "2", // string instead of number
 });
 ```
