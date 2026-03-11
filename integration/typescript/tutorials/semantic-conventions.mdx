@@ -136,53 +136,6 @@ const handle = setupObservability({
 
 LangWatch provides a comprehensive set of custom attributes for LLM-specific observability. All attributes are available with TypeScript autocomplete support.
 
-### Using SDK Constants
-
-Instead of using raw attribute strings, you can import typed constants from the SDK via the `attributes` namespace:
-
-```typescript
-import { attributes } from "langwatch";
-
-span.setAttributes({
-  [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
-  [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
-  [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
-  [attributes.ATTR_LANGWATCH_LABELS]: ["chat", "greeting"],
-  [attributes.ATTR_LANGWATCH_STREAMING]: false,
-});
-```
-
-All available constants:
-
-| Constant | Value |
-|----------|-------|
-| `ATTR_LANGWATCH_INPUT` | `langwatch.input` |
-| `ATTR_LANGWATCH_OUTPUT` | `langwatch.output` |
-| `ATTR_LANGWATCH_SPAN_TYPE` | `langwatch.span.type` |
-| `ATTR_LANGWATCH_RAG_CONTEXTS` | `langwatch.contexts` |
-| `ATTR_LANGWATCH_METRICS` | `langwatch.metrics` |
-| `ATTR_LANGWATCH_SDK_VERSION` | `langwatch.sdk.version` |
-| `ATTR_LANGWATCH_SDK_NAME` | `langwatch.sdk.name` |
-| `ATTR_LANGWATCH_SDK_LANGUAGE` | `langwatch.sdk.language` |
-| `ATTR_LANGWATCH_TIMESTAMPS` | `langwatch.timestamps` |
-| `ATTR_LANGWATCH_EVALUATION_CUSTOM` | `langwatch.evaluation.custom` |
-| `ATTR_LANGWATCH_PARAMS` | `langwatch.params` |
-| `ATTR_LANGWATCH_CUSTOMER_ID` | `langwatch.customer.id` |
-| `ATTR_LANGWATCH_THREAD_ID` | `langwatch.thread.id` |
-| `ATTR_LANGWATCH_USER_ID` | `langwatch.user.id` |
-| `ATTR_LANGWATCH_LABELS` | `langwatch.labels` |
-| `ATTR_LANGWATCH_STREAMING` | `langwatch.gen_ai.streaming` |
-| `ATTR_LANGWATCH_PROMPT_ID` | `langwatch.prompt.id` |
-| `ATTR_LANGWATCH_PROMPT_HANDLE` | `langwatch.prompt.handle` |
-| `ATTR_LANGWATCH_PROMPT_VERSION_ID` | `langwatch.prompt.version.id` |
-| `ATTR_LANGWATCH_PROMPT_VERSION_NUMBER` | `langwatch.prompt.version.number` |
-| `ATTR_LANGWATCH_PROMPT_SELECTED_ID` | `langwatch.prompt.selected.id` |
-| `ATTR_LANGWATCH_PROMPT_VARIABLES` | `langwatch.prompt.variables` |
-
-<Tip>
-Using SDK constants gives you autocomplete, typo prevention, and makes it easy to find all usages of an attribute across your codebase. All constants follow the `ATTR_LANGWATCH_*` naming pattern.
-</Tip>
-
 ### Core LangWatch Attributes
 
 | Attribute | Type | Description | Example |
@@ -232,6 +185,90 @@ Using SDK constants gives you autocomplete, typo prevention, and makes it easy t
 | `langwatch.langchain.run.extra_params` | object | Additional run parameters | `{ max_tokens: 1000 }` |
 | `langwatch.langchain.run.tags` | array | Run-specific tags | `["production", "chain"]` |
 | `langwatch.langchain.tags` | array | LangChain operation tags | `["langchain", "llm"]` |
+
+### Using SDK Constants
+
+Instead of using raw attribute strings, both SDKs provide typed constants you can import:
+
+<CodeGroup>
+
+```typescript TypeScript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
+  [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
+  [attributes.ATTR_LANGWATCH_LABELS]: ["chat", "greeting"],
+  [attributes.ATTR_LANGWATCH_STREAMING]: false,
+});
+```
+
+```python Python
+from langwatch.attributes import AttributeKey
+
+span.set_attribute(AttributeKey.LangWatchSpanType, "llm")
+span.set_attribute(AttributeKey.LangWatchCustomerId, "customer-789")
+span.set_attribute(AttributeKey.LangWatchThreadId, "thread-456")
+span.set_attribute(AttributeKey.LangWatchPromptHandle, "customer-support-greeting")
+```
+
+</CodeGroup>
+
+<Accordion title="Full list of SDK constants">
+
+**TypeScript** — `import { attributes } from "langwatch"`
+
+| Constant | Value |
+|----------|-------|
+| `ATTR_LANGWATCH_INPUT` | `langwatch.input` |
+| `ATTR_LANGWATCH_OUTPUT` | `langwatch.output` |
+| `ATTR_LANGWATCH_SPAN_TYPE` | `langwatch.span.type` |
+| `ATTR_LANGWATCH_RAG_CONTEXTS` | `langwatch.contexts` |
+| `ATTR_LANGWATCH_METRICS` | `langwatch.metrics` |
+| `ATTR_LANGWATCH_SDK_VERSION` | `langwatch.sdk.version` |
+| `ATTR_LANGWATCH_SDK_NAME` | `langwatch.sdk.name` |
+| `ATTR_LANGWATCH_SDK_LANGUAGE` | `langwatch.sdk.language` |
+| `ATTR_LANGWATCH_TIMESTAMPS` | `langwatch.timestamps` |
+| `ATTR_LANGWATCH_EVALUATION_CUSTOM` | `langwatch.evaluation.custom` |
+| `ATTR_LANGWATCH_PARAMS` | `langwatch.params` |
+| `ATTR_LANGWATCH_CUSTOMER_ID` | `langwatch.customer.id` |
+| `ATTR_LANGWATCH_THREAD_ID` | `langwatch.thread.id` |
+| `ATTR_LANGWATCH_USER_ID` | `langwatch.user.id` |
+| `ATTR_LANGWATCH_LABELS` | `langwatch.labels` |
+| `ATTR_LANGWATCH_STREAMING` | `langwatch.gen_ai.streaming` |
+| `ATTR_LANGWATCH_PROMPT_ID` | `langwatch.prompt.id` |
+| `ATTR_LANGWATCH_PROMPT_HANDLE` | `langwatch.prompt.handle` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_ID` | `langwatch.prompt.version.id` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_NUMBER` | `langwatch.prompt.version.number` |
+| `ATTR_LANGWATCH_PROMPT_SELECTED_ID` | `langwatch.prompt.selected.id` |
+| `ATTR_LANGWATCH_PROMPT_VARIABLES` | `langwatch.prompt.variables` |
+
+**Python** — `from langwatch.attributes import AttributeKey`
+
+| Constant | Value |
+|----------|-------|
+| `AttributeKey.LangWatchInput` | `langwatch.input` |
+| `AttributeKey.LangWatchOutput` | `langwatch.output` |
+| `AttributeKey.LangWatchSpanType` | `langwatch.span.type` |
+| `AttributeKey.LangWatchRAGContexts` | `langwatch.rag_contexts` |
+| `AttributeKey.LangWatchMetrics` | `langwatch.metrics` |
+| `AttributeKey.LangWatchSDKVersion` | `langwatch.sdk.version` |
+| `AttributeKey.LangWatchSDKName` | `langwatch.sdk.name` |
+| `AttributeKey.LangWatchSDKLanguage` | `langwatch.sdk.language` |
+| `AttributeKey.LangWatchTimestamps` | `langwatch.timestamps` |
+| `AttributeKey.LangWatchEventEvaluationCustom` | `langwatch.evaluation.custom` |
+| `AttributeKey.LangWatchParams` | `langwatch.params` |
+| `AttributeKey.LangWatchCustomerId` | `langwatch.customer.id` |
+| `AttributeKey.LangWatchThreadId` | `langwatch.thread.id` |
+| `AttributeKey.LangWatchPromptId` | `langwatch.prompt.id` |
+| `AttributeKey.LangWatchPromptHandle` | `langwatch.prompt.handle` |
+| `AttributeKey.LangWatchPromptVersionId` | `langwatch.prompt.version.id` |
+| `AttributeKey.LangWatchPromptVersionNumber` | `langwatch.prompt.version.number` |
+| `AttributeKey.LangWatchPromptSelectedId` | `langwatch.prompt.selected.id` |
+| `AttributeKey.LangWatchPromptVariables` | `langwatch.prompt.variables` |
+
+</Accordion>
 
 ## Best Practices
 
