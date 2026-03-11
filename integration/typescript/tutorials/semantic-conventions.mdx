@@ -84,7 +84,7 @@ span.setType("llm");
 span.setAttributes({
   "langwatch.user.id": "user-123",
   "langwatch.thread.id": "thread-456",
-  "langwatch.streaming": false,
+  "langwatch.gen_ai.streaming": false,
 });
 ```
 
@@ -109,7 +109,7 @@ await tracer.withActiveSpan("llm-operation", async (span) => {
     "langwatch.span.type": "llm",
     "langwatch.user.id": "user-123",
     "langwatch.thread.id": "thread-456",
-    "langwatch.streaming": false,
+    "langwatch.gen_ai.streaming": false,
     // ... more attributes with autocomplete
   });
 });
@@ -144,11 +144,11 @@ LangWatch provides a comprehensive set of custom attributes for LLM-specific obs
 | `langwatch.user.id` | string | User identifier | `"user-123"` |
 | `langwatch.thread.id` | string | Conversation thread identifier | `"thread-456"` |
 | `langwatch.customer.id` | string | Customer identifier | `"customer-789"` |
-| `langwatch.streaming` | boolean | Whether the operation involves streaming | `true`, `false` |
+| `langwatch.gen_ai.streaming` | boolean | Whether the operation involves streaming | `true`, `false` |
 | `langwatch.input` | string/object | Input data for the span | `"Hello, how are you?"` |
 | `langwatch.output` | string/object | Output data from the span | `"I'm doing well, thank you!"` |
 | `langwatch.contexts` | array | RAG contexts for retrieval-augmented generation | Array of document contexts |
-| `langwatch.tags` | array | Tags for categorizing spans | `["chat", "greeting"]` |
+| `langwatch.labels` | array | Labels for categorizing spans | `["chat", "greeting"]` |
 | `langwatch.params` | object | Parameter data for operations | `{ temperature: 0.7 }` |
 | `langwatch.metrics` | object | Custom metrics data | `{ response_time: 1250 }` |
 | `langwatch.timestamps` | object | Timing information for events | `{ start: 1234567890 }` |
@@ -186,6 +186,90 @@ LangWatch provides a comprehensive set of custom attributes for LLM-specific obs
 | `langwatch.langchain.run.tags` | array | Run-specific tags | `["production", "chain"]` |
 | `langwatch.langchain.tags` | array | LangChain operation tags | `["langchain", "llm"]` |
 
+### Using SDK Constants
+
+Instead of using raw attribute strings, both SDKs provide typed constants you can import:
+
+<CodeGroup>
+
+```typescript TypeScript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
+  [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
+  [attributes.ATTR_LANGWATCH_LABELS]: ["chat", "greeting"],
+  [attributes.ATTR_LANGWATCH_STREAMING]: false,
+});
+```
+
+```python Python
+from langwatch.attributes import AttributeKey
+
+span.set_attribute(AttributeKey.LangWatchSpanType, "llm")
+span.set_attribute(AttributeKey.LangWatchCustomerId, "customer-789")
+span.set_attribute(AttributeKey.LangWatchThreadId, "thread-456")
+span.set_attribute(AttributeKey.LangWatchPromptHandle, "customer-support-greeting")
+```
+
+</CodeGroup>
+
+<Accordion title="Full list of SDK constants">
+
+**TypeScript** — `import { attributes } from "langwatch"`
+
+| Constant | Value |
+|----------|-------|
+| `ATTR_LANGWATCH_INPUT` | `langwatch.input` |
+| `ATTR_LANGWATCH_OUTPUT` | `langwatch.output` |
+| `ATTR_LANGWATCH_SPAN_TYPE` | `langwatch.span.type` |
+| `ATTR_LANGWATCH_RAG_CONTEXTS` | `langwatch.contexts` |
+| `ATTR_LANGWATCH_METRICS` | `langwatch.metrics` |
+| `ATTR_LANGWATCH_SDK_VERSION` | `langwatch.sdk.version` |
+| `ATTR_LANGWATCH_SDK_NAME` | `langwatch.sdk.name` |
+| `ATTR_LANGWATCH_SDK_LANGUAGE` | `langwatch.sdk.language` |
+| `ATTR_LANGWATCH_TIMESTAMPS` | `langwatch.timestamps` |
+| `ATTR_LANGWATCH_EVALUATION_CUSTOM` | `langwatch.evaluation.custom` |
+| `ATTR_LANGWATCH_PARAMS` | `langwatch.params` |
+| `ATTR_LANGWATCH_CUSTOMER_ID` | `langwatch.customer.id` |
+| `ATTR_LANGWATCH_THREAD_ID` | `langwatch.thread.id` |
+| `ATTR_LANGWATCH_USER_ID` | `langwatch.user.id` |
+| `ATTR_LANGWATCH_LABELS` | `langwatch.labels` |
+| `ATTR_LANGWATCH_STREAMING` | `langwatch.gen_ai.streaming` |
+| `ATTR_LANGWATCH_PROMPT_ID` | `langwatch.prompt.id` |
+| `ATTR_LANGWATCH_PROMPT_HANDLE` | `langwatch.prompt.handle` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_ID` | `langwatch.prompt.version.id` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_NUMBER` | `langwatch.prompt.version.number` |
+| `ATTR_LANGWATCH_PROMPT_SELECTED_ID` | `langwatch.prompt.selected.id` |
+| `ATTR_LANGWATCH_PROMPT_VARIABLES` | `langwatch.prompt.variables` |
+
+**Python** — `from langwatch.attributes import AttributeKey`
+
+| Constant | Value |
+|----------|-------|
+| `AttributeKey.LangWatchInput` | `langwatch.input` |
+| `AttributeKey.LangWatchOutput` | `langwatch.output` |
+| `AttributeKey.LangWatchSpanType` | `langwatch.span.type` |
+| `AttributeKey.LangWatchRAGContexts` | `langwatch.rag_contexts` |
+| `AttributeKey.LangWatchMetrics` | `langwatch.metrics` |
+| `AttributeKey.LangWatchSDKVersion` | `langwatch.sdk.version` |
+| `AttributeKey.LangWatchSDKName` | `langwatch.sdk.name` |
+| `AttributeKey.LangWatchSDKLanguage` | `langwatch.sdk.language` |
+| `AttributeKey.LangWatchTimestamps` | `langwatch.timestamps` |
+| `AttributeKey.LangWatchEventEvaluationCustom` | `langwatch.evaluation.custom` |
+| `AttributeKey.LangWatchParams` | `langwatch.params` |
+| `AttributeKey.LangWatchCustomerId` | `langwatch.customer.id` |
+| `AttributeKey.LangWatchThreadId` | `langwatch.thread.id` |
+| `AttributeKey.LangWatchPromptId` | `langwatch.prompt.id` |
+| `AttributeKey.LangWatchPromptHandle` | `langwatch.prompt.handle` |
+| `AttributeKey.LangWatchPromptVersionId` | `langwatch.prompt.version.id` |
+| `AttributeKey.LangWatchPromptVersionNumber` | `langwatch.prompt.version.number` |
+| `AttributeKey.LangWatchPromptSelectedId` | `langwatch.prompt.selected.id` |
+| `AttributeKey.LangWatchPromptVariables` | `langwatch.prompt.variables` |
+
+</Accordion>
+
 ## Best Practices
 
 ### Attribute Naming
@@ -214,15 +298,15 @@ Use appropriate data types and formats:
 ```typescript
 // ✅ Good: Proper data types
 span.setAttributes({
-  "langwatch.streaming": false, // boolean
+  "langwatch.gen_ai.streaming": false, // boolean
   "langwatch.user.id": "user-123", // string
   "langwatch.prompt.version.number": 2, // number
-  "langwatch.tags": ["chat", "greeting"], // array
+  "langwatch.labels": ["chat", "greeting"], // array
 });
 
 // ❌ Avoid: Inconsistent data types
 span.setAttributes({
-  "langwatch.streaming": "false", // string instead of boolean
+  "langwatch.gen_ai.streaming": "false", // string instead of boolean
   "langwatch.prompt.version.number": "2", // string instead of number
 });
 ```
