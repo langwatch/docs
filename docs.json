@@ -58,8 +58,18 @@
             "group": "Get Started",
             "pages": [
               "introduction",
-              "better-agents/overview",
-              "integration/mcp"
+              {
+                "group": "LangWatch Skills",
+                "pages": [
+                  "skills/overview",
+                  "skills/developers",
+                  "skills/teams",
+                  "skills/platform",
+                  "skills/manual"
+                ]
+              },
+              "integration/mcp",
+              "better-agents/overview"
             ]
           },
           {
