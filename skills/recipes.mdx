@@ -10,8 +10,8 @@ import { PROMPTS } from "/snippets/prompts-data.jsx"
 
 <Tabs>
   <Tab title="Prompts">
-    <CopyPrompt title="Improve the LangWatch instrumentation of my agent" prompt={PROMPTS.recipe_debug_instrumentation} />
     <CopyPrompt title="What should I do next to improve my agent?" prompt={PROMPTS.recipe_improve_setup} />
+    <CopyPrompt title="Debug and improve my agent instrumentation" prompt={PROMPTS.recipe_debug_instrumentation} />
     <CopyPrompt title="Evaluate my multimodal agent" prompt={PROMPTS.recipe_evaluate_multimodal} />
     <CopyPrompt title="Generate an evaluation dataset from my RAG knowledge base" prompt={PROMPTS.recipe_generate_rag_dataset} />
     <CopyPrompt title="Test that my agent stays observational and doesn't give prescriptive advice" prompt={PROMPTS.recipe_test_compliance} />
@@ -19,8 +19,8 @@ import { PROMPTS } from "/snippets/prompts-data.jsx"
   </Tab>
 
   <Tab title="Skills">
-    <SkillInstall skill="langwatch/recipes/debug-instrumentation" run="Improve the LangWatch instrumentation of my agent" />
     <SkillInstall skill="langwatch/recipes/improve-setup" run="What should I do next to improve my agent?" />
+    <SkillInstall skill="langwatch/recipes/debug-instrumentation" run="Debug and improve my agent instrumentation" />
     <SkillInstall skill="langwatch/recipes/evaluate-multimodal" run="Evaluate my multimodal agent" />
     <SkillInstall skill="langwatch/recipes/generate-rag-dataset" run="Generate an evaluation dataset from my RAG knowledge base" />
     <SkillInstall skill="langwatch/recipes/test-compliance" run="Test that my agent stays observational and doesn't give prescriptive advice" />
