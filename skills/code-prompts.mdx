@@ -9,8 +9,6 @@ import { CopyLine } from "/snippets/copy-line.jsx"
 import { SkillInstall } from "/snippets/skill-install.jsx"
 import { PROMPTS } from "/snippets/prompts-data.jsx"
 
-
-
 <Tabs>
   <Tab title="Prompts">
     <CopyPrompt title="Instrument my code with LangWatch" prompt={PROMPTS.tracing} />
@@ -38,6 +36,34 @@ import { PROMPTS } from "/snippets/prompts-data.jsx"
         ```bash
         claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey your-api-key-here
         ```
+
+        Or add manually to `~/.claude.json`:
+        ```json
+        {
+          "mcpServers": {
+            "langwatch": {
+              "command": "npx",
+              "args": ["-y", "@langwatch/mcp-server"],
+              "env": { "LANGWATCH_API_KEY": "your-api-key-here" }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="Copilot">
+        Add to `.vscode/mcp.json` in your project (or use **MCP: Add Server** from the Command Palette):
+        ```json
+        {
+          "servers": {
+            "langwatch": {
+              "type": "stdio",
+              "command": "npx",
+              "args": ["-y", "@langwatch/mcp-server"],
+              "env": { "LANGWATCH_API_KEY": "your-api-key-here" }
+            }
+          }
+        }
+        ```
       </Tab>
       <Tab title="Cursor">
         Open Cursor Settings → Tools and MCP, add:
@@ -53,7 +79,23 @@ import { PROMPTS } from "/snippets/prompts-data.jsx"
         }
         ```
       </Tab>
-      <Tab title="Other Editors">
+      <Tab title="ChatGPT">
+        1. Go to **Settings → Connectors**
+        2. Click **Add connector**
+        3. Enter the MCP server URL or use the stdio configuration
+        4. Add your LangWatch API key in the configuration
+
+        *Note: ChatGPT MCP support requires a Plus or Team plan.*
+      </Tab>
+      <Tab title="Claude Chat">
+        1. Go to **Settings → Connectors**
+        2. Click **Add custom connector**
+        3. Enter the MCP server URL
+        4. Add your LangWatch API key in Advanced settings
+
+        *Note: Requires a Pro or Max plan.*
+      </Tab>
+      <Tab title="Other">
         Add to your editor's MCP settings:
         ```json
         {
