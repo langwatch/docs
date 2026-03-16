@@ -7,188 +7,45 @@ sidebarTitle: "Code Prompts"
 import { CopyPrompt } from "/snippets/copy-prompt.jsx"
 import { PROMPTS } from "/snippets/prompts-data.jsx"
 
-Pick what you want to do. Your agent handles the rest.
-
-### Instrument My Code
-
-Add LangWatch tracing to capture all LLM calls, costs, and latency.
+Pick what you want to do. Copy a prompt, paste it into your coding assistant, done.
 
 <Tabs>
-  <Tab title="Prompt">
+  <Tab title="Prompts">
     <CopyPrompt title="Instrument my code with LangWatch" prompt={PROMPTS.tracing} />
-  </Tab>
-  <Tab title="Skill">
-    ```bash
-    npx skills-add langwatch/tracing
-    ```
-    Then say: *"Instrument my code with LangWatch"*
-  </Tab>
-  <Tab title="MCP">
-    <Steps>
-      <Step title="Install the LangWatch MCP">
-        ```bash
-        claude mcp add langwatch -- npx -y @langwatch/mcp-server
-        ```
-      </Step>
-      <Step title="Ask your agent">
-        *"Instrument my code with LangWatch"*
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
-
----
-
-### Set Up Evaluations
-
-Create experiments, evaluators, datasets, and production monitoring.
-
-<Tabs>
-  <Tab title="Prompt">
     <CopyPrompt title="Set up evaluations for my agent" prompt={PROMPTS.evaluations} />
-  </Tab>
-  <Tab title="Skill">
-    ```bash
-    npx skills-add langwatch/evaluations
-    ```
-    Then say: *"Set up evaluations for my agent"*
-  </Tab>
-  <Tab title="MCP">
-    <Steps>
-      <Step title="Install the LangWatch MCP">
-        ```bash
-        claude mcp add langwatch -- npx -y @langwatch/mcp-server
-        ```
-      </Step>
-      <Step title="Ask your agent">
-        *"Set up evaluations for my agent"*
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
-
----
-
-### Add Scenario Tests
-
-Test your agent with realistic multi-turn simulations.
-
-<Tabs>
-  <Tab title="Prompt">
     <CopyPrompt title="Add scenario tests for my agent" prompt={PROMPTS.scenarios} />
-  </Tab>
-  <Tab title="Skill">
-    ```bash
-    npx skills-add langwatch/scenarios
-    ```
-    Then say: *"Add scenario tests for my agent"*
-  </Tab>
-  <Tab title="MCP">
-    <Steps>
-      <Step title="Install the LangWatch MCP">
-        ```bash
-        claude mcp add langwatch -- npx -y @langwatch/mcp-server
-        ```
-      </Step>
-      <Step title="Ask your agent">
-        *"Add scenario tests for my agent"*
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
-
----
-
-### Version My Prompts
-
-Track and manage your prompts with version control.
-
-<Tabs>
-  <Tab title="Prompt">
     <CopyPrompt title="Version my prompts with LangWatch" prompt={PROMPTS.prompts} />
-  </Tab>
-  <Tab title="Skill">
-    ```bash
-    npx skills-add langwatch/prompts
-    ```
-    Then say: *"Version my prompts with LangWatch"*
-  </Tab>
-  <Tab title="MCP">
-    <Steps>
-      <Step title="Install the LangWatch MCP">
-        ```bash
-        claude mcp add langwatch -- npx -y @langwatch/mcp-server
-        ```
-      </Step>
-      <Step title="Ask your agent">
-        *"Version my prompts with LangWatch"*
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
-
----
-
-### Query Performance
-
-Check costs, latency, error rates, and usage trends.
-
-<Tabs>
-  <Tab title="Prompt">
     <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.analytics} />
-  </Tab>
-  <Tab title="Skill">
-    ```bash
-    npx skills-add langwatch/analytics
-    ```
-    Then say: *"How is my agent performing?"*
-  </Tab>
-  <Tab title="MCP">
-    <Steps>
-      <Step title="Install the LangWatch MCP">
-        ```bash
-        claude mcp add langwatch -- npx -y @langwatch/mcp-server
-        ```
-      </Step>
-      <Step title="Ask your agent">
-        *"How is my agent performing?"*
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
-
----
-
-### All of the Above
-
-Get the full LangWatch stack in one go.
-
-<Tabs>
-  <Tab title="Prompt">
     <CopyPrompt title="Take my agent to the next level" prompt={PROMPTS.level_up} />
   </Tab>
-  <Tab title="Skill">
+  <Tab title="Skills">
+    Install a skill, then just describe what you need:
+
     ```bash
+    npx skills-add langwatch/tracing
+    npx skills-add langwatch/evaluations
+    npx skills-add langwatch/scenarios
+    npx skills-add langwatch/prompts
+    npx skills-add langwatch/analytics
     npx skills-add langwatch/level-up
     ```
-    Then say: *"Take my agent to the next level with LangWatch"*
   </Tab>
   <Tab title="MCP">
-    <Steps>
-      <Step title="Install the LangWatch MCP">
-        ```bash
-        claude mcp add langwatch -- npx -y @langwatch/mcp-server
-        ```
-      </Step>
-      <Step title="Ask your agent">
-        *"Take my agent to the next level with LangWatch"*
-      </Step>
-    </Steps>
+    Install the LangWatch MCP once:
+
+    ```bash
+    claude mcp add langwatch -- npx -y @langwatch/mcp-server
+    ```
+
+    Then just ask your agent what you need:
+    - *"Instrument my code with LangWatch"*
+    - *"Set up evaluations for my agent"*
+    - *"Add scenario tests"*
+    - *"Version my prompts"*
+    - *"How is my agent performing?"*
   </Tab>
 </Tabs>
 
 ---
-
-### Recipes
 
 Want domain-specific recipes? See [Prompt Recipes](/skills/recipes).

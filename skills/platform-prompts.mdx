@@ -7,41 +7,15 @@ sidebarTitle: "Platform Prompts"
 import { CopyPrompt } from "/snippets/copy-prompt.jsx"
 import { PROMPTS } from "/snippets/prompts-data.jsx"
 
-No codebase needed — just paste these prompts into your AI assistant.
-
-### How Is My Agent Performing?
-
-Get analytics on costs, latency, errors, and usage trends.
+No codebase needed — paste into your AI assistant and go.
 
 <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.platform_analytics} />
-
----
-
-### Create Scenario Tests
-
-Define simulation tests for your agent without writing code.
-
 <CopyPrompt title="Create scenario tests for my agent" prompt={PROMPTS.platform_scenarios} />
-
----
-
-### Set Up Evaluators
-
-Configure scoring functions for your agent's outputs.
-
 <CopyPrompt title="Set up evaluators for my agent" prompt={PROMPTS.platform_evaluators} />
 
 ---
 
-<Tip>
-  These prompts work best with the [LangWatch MCP](/integration/mcp) installed. The MCP gives your AI assistant access to LangWatch documentation and platform tools.
-</Tip>
-
----
-
 ### Use the Platform Directly
-
-Prefer the LangWatch UI? Jump straight to the feature you need.
 
 <CardGroup cols={2}>
   <Card title="Experiments" description="Batch test your prompts and models on datasets." icon="flask" href="/evaluations/experiments/overview" />
