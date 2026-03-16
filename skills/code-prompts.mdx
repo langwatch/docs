@@ -6,16 +6,13 @@ sidebarTitle: "Code Prompts"
 
 Pick what you want to do. Your agent handles the rest.
 
-## Instrument My Code
+### Instrument My Code
 
 Add LangWatch tracing to capture all LLM calls, costs, and latency.
 
 <Tabs>
   <Tab title="Prompt">
-    Copy this prompt into your coding agent:
-
-    <Accordion title="View full prompt">
-```text
+```text Instrument my code with LangWatch
 You are helping the user set up LangWatch for their AI agent project.
 
 IMPORTANT: You will need the user's LangWatch API key.
@@ -78,35 +75,27 @@ IMPORTANT: The exact pattern depends on the framework. Always follow the docs.
 
 Run the application and check that traces appear at https://app.langwatch.ai
 ```
-    </Accordion>
-
-    <Note>Replace `<LANGWATCH_API_KEY>` with your key from [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize)</Note>
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/tracing
     ```
-    Then ask your agent: *"Instrument my code with LangWatch"*
+    The skill activates automatically when your task matches -- just describe what you need.
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp) first, then ask your agent:
-
-    *"Please instrument my code with LangWatch"*
+    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to instrument your code.
   </Tab>
 </Tabs>
 
 ---
 
-## Set Up Evaluations
+### Set Up Evaluations
 
 Create experiments, evaluators, datasets, and production monitoring.
 
 <Tabs>
   <Tab title="Prompt">
-    Copy this prompt into your coding agent:
-
-    <Accordion title="View full prompt">
-```text
+```text Set up evaluations for my agent
 You are helping the user set up LangWatch evaluations for their AI agent.
 
 IMPORTANT: You will need the user's LangWatch API key.
@@ -171,35 +160,27 @@ TypeScript example:
 CRITICAL: Generate domain-specific datasets, not generic examples.
 Always read the docs for your specific framework before implementing.
 ```
-    </Accordion>
-
-    <Note>Replace `<LANGWATCH_API_KEY>` with your key from [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize)</Note>
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/evaluations
     ```
-    Then ask your agent: *"Set up evaluations for my agent"*
+    The skill activates automatically when your task matches -- just describe what you need.
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp) first, then ask your agent:
-
-    *"Set up evaluations for my agent"*
+    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to set up evaluations.
   </Tab>
 </Tabs>
 
 ---
 
-## Add Scenario Tests
+### Add Scenario Tests
 
 Test your agent with realistic multi-turn simulations.
 
 <Tabs>
   <Tab title="Prompt">
-    Copy this prompt into your coding agent:
-
-    <Accordion title="View full prompt">
-```text
+```text Add scenario tests for my agent
 You are helping the user add agent scenario tests using @langwatch/scenario.
 
 IMPORTANT: You will need the user's LangWatch API key.
@@ -276,35 +257,27 @@ TypeScript:
 CRITICAL: Do NOT guess how to write scenario tests.
 Read the actual documentation first.
 ```
-    </Accordion>
-
-    <Note>Replace `<LANGWATCH_API_KEY>` with your key from [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize)</Note>
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/scenarios
     ```
-    Then ask your agent: *"Add scenario tests for my agent"*
+    The skill activates automatically when your task matches -- just describe what you need.
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp) first, then ask your agent:
-
-    *"Write scenario tests for my agent"*
+    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to write scenario tests.
   </Tab>
 </Tabs>
 
 ---
 
-## Version My Prompts
+### Version My Prompts
 
 Track and manage your prompts with version control.
 
 <Tabs>
   <Tab title="Prompt">
-    Copy this prompt into your coding agent:
-
-    <Accordion title="View full prompt">
-```text
+```text Version my prompts with LangWatch
 You are helping the user set up prompt versioning with LangWatch.
 
 IMPORTANT: You will need the user's LangWatch API key.
@@ -361,35 +334,27 @@ fallback. That defeats the purpose of prompt versioning.
 
 Verify prompts appear at https://app.langwatch.ai in the Prompts section.
 ```
-    </Accordion>
-
-    <Note>Replace `<LANGWATCH_API_KEY>` with your key from [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize)</Note>
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/prompts
     ```
-    Then ask your agent: *"Version my prompts with LangWatch"*
+    The skill activates automatically when your task matches -- just describe what you need.
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp) first, then ask your agent:
-
-    *"Set up prompt versioning for my project"*
+    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to set up prompt versioning.
   </Tab>
 </Tabs>
 
 ---
 
-## Query My Agent's Performance
+### Query My Agent's Performance
 
 Get insights on costs, latency, errors, and usage trends.
 
 <Tabs>
   <Tab title="Prompt">
-    Copy this prompt into your coding agent:
-
-    <Accordion title="View full prompt">
-```text
+```text Analyze my agent's performance
 You are helping the user analyze their agent's performance with LangWatch.
 
 IMPORTANT: You will need the user's LangWatch API key.
@@ -426,35 +391,27 @@ Use get_trace to drill into individual trace details.
 - Highlight anomalies or concerning trends
 - Suggest next steps if issues are found
 ```
-    </Accordion>
-
-    <Note>Replace `<LANGWATCH_API_KEY>` with your key from [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize)</Note>
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/analytics
     ```
-    Then ask your agent: *"How is my agent performing?"*
+    The skill activates automatically when your task matches -- just describe what you need.
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp) first, then ask your agent:
-
-    *"Show me my agent's performance analytics"*
+    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to show performance analytics.
   </Tab>
 </Tabs>
 
 ---
 
-## All of the Above
+### All of the Above
 
 Get the full LangWatch stack in one go -- tracing, evaluations, scenarios, prompt versioning, and analytics.
 
 <Tabs>
   <Tab title="Prompt">
-    Copy this prompt into your coding agent:
-
-    <Accordion title="View full prompt">
-```text
+```text Take my agent to the next level with LangWatch
 You are helping the user set up the full LangWatch stack for their
 AI agent project.
 
@@ -506,23 +463,18 @@ scenario tests, and analytics.
 - Check experiment results in the Experiments section
 - Check scenario results in the Simulations section
 ```
-    </Accordion>
-
-    <Note>Replace `<LANGWATCH_API_KEY>` with your key from [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize)</Note>
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/level-up
     ```
-    Then ask your agent: *"Take my agent to the next level with LangWatch"*
+    The skill activates automatically when your task matches -- just describe what you need.
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp) first, then ask your agent:
-
-    *"Take my agent to the next level with LangWatch"*
+    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to set up the full LangWatch stack.
   </Tab>
 </Tabs>
 
-## Recipes
+### Recipes
 
 Want domain-specific recipes? See [Prompt Recipes](/skills/recipes).
