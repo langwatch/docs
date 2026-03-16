@@ -1,0 +1,49 @@
+---
+title: "Prompt Recipes"
+description: "Domain-specific, actionable recipes your AI agent can execute. The 2026 version of cookbooks — literally autoplayable."
+sidebarTitle: "Recipes"
+---
+
+# Prompt Recipes
+
+Recipes are domain-specific skills that solve particular problems. Unlike feature skills (tracing, evaluations, scenarios, prompts) which set up LangWatch platform features, recipes are actionable guides your AI agent executes — the autoplayable cookbooks of 2026.
+
+## Available Recipes
+
+<CardGroup cols={2}>
+  <Card title="Debug Instrumentation" description="Inspect your LangWatch traces and fix missing input/output, disconnected spans, and unlabeled traces." icon="bug" />
+  <Card title="Improve Setup" description="Expert AI engineering consultant. Audits your code, traces, and tests, then guides you deeper." icon="wand-magic-sparkles" />
+  <Card title="Evaluate Multimodal" description="Evaluate agents that process images, audio, PDFs, or other non-text inputs." icon="images" />
+  <Card title="Generate RAG Dataset" description="Create a synthetic evaluation dataset from your RAG knowledge base with diverse Q&A pairs." icon="database" />
+  <Card title="Test Compliance" description="Verify your agent stays observational in regulated domains (healthcare, finance, legal)." icon="shield-check" />
+  <Card title="Test CLI Usability" description="Write scenario tests to ensure your CLI tool works well with AI agents." icon="terminal" />
+</CardGroup>
+
+## How to Use a Recipe
+
+### Option 1: Copy the Prompt
+
+Copy the recipe prompt into your coding agent (Claude Code, Cursor, etc.):
+
+<Accordion title="Example: Generate RAG Dataset">
+  Tell your agent: "Generate an evaluation dataset from my RAG knowledge base. Read my codebase to understand the knowledge base, then create diverse Q&A pairs with expected answers and relevant context."
+</Accordion>
+
+### Option 2: Install the Skill
+
+```bash
+npx skills-add langwatch/recipes/generate-rag-dataset
+```
+
+### Option 3: Use with MCP
+
+If you have the [LangWatch MCP](/integration/mcp) installed, just ask your agent what you need — it can read the recipe docs and execute them.
+
+## Recipe vs Feature Skill
+
+| | Feature Skills | Recipes |
+|---|---|---|
+| **Purpose** | Set up a LangWatch feature | Solve a specific problem |
+| **Examples** | tracing, evaluations, scenarios | test-compliance, generate-rag-dataset |
+| **Scope** | Platform feature lifecycle | Domain-specific use case |
+| **Install** | `npx skills-add langwatch/tracing` | `npx skills-add langwatch/recipes/test-compliance` |
