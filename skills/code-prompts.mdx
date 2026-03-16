@@ -4,6 +4,9 @@ description: "Prompt Claude Code or Copilot to set up LangWatch — copy, paste,
 sidebarTitle: "Code Prompts"
 ---
 
+import { CopyPrompt } from "/snippets/copy-prompt.jsx"
+import { PROMPTS } from "/snippets/prompts-data.jsx"
+
 Pick what you want to do. Your agent handles the rest.
 
 ### Instrument My Code
@@ -12,78 +15,25 @@ Add LangWatch tracing to capture all LLM calls, costs, and latency.
 
 <Tabs>
   <Tab title="Prompt">
-```text Instrument my code with LangWatch
-You are helping the user set up LangWatch for their AI agent project.
-
-IMPORTANT: You will need the user's LangWatch API key.
-Ask them for it and direct them to https://app.langwatch.ai/authorize
-
-# Add LangWatch Tracing to Your Code
-
-## Step 1: Set up the LangWatch MCP
-
-Install the LangWatch MCP server for access to framework-specific documentation:
-
-For Claude Code:
-  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <LANGWATCH_API_KEY>
-
-For other editors, add to your MCP settings:
-  {
-    "mcpServers": {
-      "langwatch": {
-        "command": "npx",
-        "args": ["-y", "@langwatch/mcp-server"],
-        "env": { "LANGWATCH_API_KEY": "<LANGWATCH_API_KEY>" }
-      }
-    }
-  }
-
-## Step 2: Read the Integration Docs
-
-Use the LangWatch MCP to fetch the correct integration guide for this project:
-- Call fetch_langwatch_docs with no arguments to see the docs index
-- Find the integration guide matching the project's framework
-- Read the specific integration page for step-by-step instructions
-
-CRITICAL: Do NOT guess how to instrument. Read the actual documentation
-for the specific framework.
-
-## Step 3: Install the LangWatch SDK
-
-Python: pip install langwatch
-TypeScript: npm install langwatch
-
-## Step 4: Add Instrumentation
-
-Follow the integration guide from Step 2. The general pattern is:
-
-Python:
-  import langwatch
-  langwatch.setup()
-
-  @langwatch.trace()
-  def my_function():
-      pass
-
-TypeScript:
-  import { LangWatch } from "langwatch";
-  const langwatch = new LangWatch();
-
-IMPORTANT: The exact pattern depends on the framework. Always follow the docs.
-
-## Step 5: Verify
-
-Run the application and check that traces appear at https://app.langwatch.ai
-```
+    <CopyPrompt title="Instrument my code with LangWatch" prompt={PROMPTS.tracing} />
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/tracing
     ```
-    The skill activates automatically when your task matches -- just describe what you need.
+    Then say: *"Instrument my code with LangWatch"*
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to instrument your code.
+    <Steps>
+      <Step title="Install the LangWatch MCP">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server
+        ```
+      </Step>
+      <Step title="Ask your agent">
+        *"Instrument my code with LangWatch"*
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
@@ -95,80 +45,25 @@ Create experiments, evaluators, datasets, and production monitoring.
 
 <Tabs>
   <Tab title="Prompt">
-```text Set up evaluations for my agent
-You are helping the user set up LangWatch evaluations for their AI agent.
-
-IMPORTANT: You will need the user's LangWatch API key.
-Ask them for it and direct them to https://app.langwatch.ai/authorize
-
-# Set Up Evaluations for Your Agent
-
-LangWatch Evaluations covers:
-- Experiments: batch test your agent against a dataset
-- Online Evaluation: monitors (async) and guardrails (sync)
-- Evaluators: scoring functions (faithfulness, answer relevancy, etc.)
-- Datasets: test data tailored to your agent's domain
-
-## Step 1: Set up the LangWatch MCP
-
-  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <LANGWATCH_API_KEY>
-
-## Step 2: Read the Evaluation Docs
-
-- Call fetch_langwatch_docs with url:
-  https://langwatch.ai/docs/evaluations/overview.md
-- For experiments SDK:
-  https://langwatch.ai/docs/evaluations/experiments/sdk.md
-- For guardrails:
-  https://langwatch.ai/docs/evaluations/guardrails/code-integration.md
-
-## Step 3: Create an Experiment
-
-Python example:
-  import langwatch
-  import pandas as pd
-
-  data = {
-      "input": ["domain-specific question 1", "question 2"],
-      "expected_output": ["expected answer 1", "answer 2"],
-  }
-  df = pd.DataFrame(data)
-
-  evaluation = langwatch.experiment.init("agent-evaluation")
-  for index, row in evaluation.loop(df.iterrows()):
-      response = my_agent(row["input"])
-      evaluation.evaluate(
-          "ragas/answer_relevancy",
-          index=index,
-          data={"input": row["input"], "output": response},
-          settings={"model": "openai/gpt-4.1-mini", "max_tokens": 2048},
-      )
-
-TypeScript example:
-  import { LangWatch } from "langwatch";
-  const langwatch = new LangWatch();
-  const evaluation = await langwatch.experiments.init("agent-evaluation");
-  await evaluation.run(dataset, async ({ item, index }) => {
-    const response = await myAgent(item.input);
-    await evaluation.evaluate("ragas/answer_relevancy", {
-      index,
-      data: { input: item.input, output: response },
-      settings: { model: "openai/gpt-4.1-mini", max_tokens: 2048 },
-    });
-  });
-
-CRITICAL: Generate domain-specific datasets, not generic examples.
-Always read the docs for your specific framework before implementing.
-```
+    <CopyPrompt title="Set up evaluations for my agent" prompt={PROMPTS.evaluations} />
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/evaluations
     ```
-    The skill activates automatically when your task matches -- just describe what you need.
+    Then say: *"Set up evaluations for my agent"*
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to set up evaluations.
+    <Steps>
+      <Step title="Install the LangWatch MCP">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server
+        ```
+      </Step>
+      <Step title="Ask your agent">
+        *"Set up evaluations for my agent"*
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
@@ -180,92 +75,25 @@ Test your agent with realistic multi-turn simulations.
 
 <Tabs>
   <Tab title="Prompt">
-```text Add scenario tests for my agent
-You are helping the user add agent scenario tests using @langwatch/scenario.
-
-IMPORTANT: You will need the user's LangWatch API key.
-Ask them for it and direct them to https://app.langwatch.ai/authorize
-
-# Test Your Agent with Scenarios
-
-NEVER invent your own agent testing framework.
-Use @langwatch/scenario (Python: langwatch-scenario).
-
-## Step 1: Set up the LangWatch MCP
-
-  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <LANGWATCH_API_KEY>
-
-## Step 2: Read the Scenario Docs
-
-- Call fetch_scenario_docs with no arguments to see the docs index
-- Read the Getting Started guide
-
-## Step 3: Install the Scenario SDK
-
-Python: pip install langwatch-scenario pytest pytest-asyncio
-TypeScript: npm install @langwatch/scenario vitest @ai-sdk/openai
-
-## Step 4: Write Scenario Tests
-
-Python:
-  import pytest
-  import scenario
-
-  scenario.configure(default_model="openai/gpt-4.1-mini")
-
-  @pytest.mark.agent_test
-  @pytest.mark.asyncio
-  async def test_agent_responds_helpfully():
-      class MyAgent(scenario.AgentAdapter):
-          async def call(self, input):
-              return await my_agent(input.messages)
-
-      result = await scenario.run(
-          name="helpful response",
-          description="User asks a simple question",
-          agents=[
-              MyAgent(),
-              scenario.UserSimulatorAgent(),
-              scenario.JudgeAgent(criteria=[
-                  "Agent provides a helpful and relevant response",
-              ]),
-          ],
-      )
-      assert result.success
-
-TypeScript:
-  import scenario, { type AgentAdapter, AgentRole } from "@langwatch/scenario";
-  import { describe, it, expect } from "vitest";
-
-  describe("My Agent", () => {
-    it("responds helpfully", async () => {
-      const result = await scenario.run({
-        name: "helpful response",
-        description: "User asks a simple question",
-        agents: [
-          myAgent,
-          scenario.userSimulatorAgent(),
-          scenario.judgeAgent({
-            criteria: ["Agent provides a helpful response"],
-          }),
-        ],
-      });
-      expect(result.success).toBe(true);
-    }, 30_000);
-  });
-
-CRITICAL: Do NOT guess how to write scenario tests.
-Read the actual documentation first.
-```
+    <CopyPrompt title="Add scenario tests for my agent" prompt={PROMPTS.scenarios} />
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/scenarios
     ```
-    The skill activates automatically when your task matches -- just describe what you need.
+    Then say: *"Add scenario tests for my agent"*
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to write scenario tests.
+    <Steps>
+      <Step title="Install the LangWatch MCP">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server
+        ```
+      </Step>
+      <Step title="Ask your agent">
+        *"Add scenario tests for my agent"*
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
@@ -277,129 +105,55 @@ Track and manage your prompts with version control.
 
 <Tabs>
   <Tab title="Prompt">
-```text Version my prompts with LangWatch
-You are helping the user set up prompt versioning with LangWatch.
-
-IMPORTANT: You will need the user's LangWatch API key.
-Ask them for it and direct them to https://app.langwatch.ai/authorize
-
-# Version Your Prompts with LangWatch Prompts CLI
-
-## Step 1: Set up the LangWatch MCP
-
-  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <LANGWATCH_API_KEY>
-
-## Step 2: Read the Prompts CLI Docs
-
-- Call fetch_langwatch_docs with no arguments to see the docs index
-- Find the Prompts CLI page and read it
-
-## Step 3: Install and Authenticate
-
-  npm install -g langwatch
-  langwatch login
-
-## Step 4: Initialize Prompts
-
-  langwatch prompt init
-
-This creates prompts.json and a prompts/ directory.
-
-## Step 5: Create Managed Prompts
-
-Scan the codebase for hardcoded prompt strings and create a managed
-prompt for each:
-
-  langwatch prompt create <name>
-
-## Step 6: Update Application Code
-
-Replace hardcoded prompts with langwatch.prompts.get():
-
-Python:
-  import langwatch
-  prompt = langwatch.prompts.get("my-agent")
-  agent = Agent(instructions=prompt.compile().messages[0]["content"])
-
-TypeScript:
-  const langwatch = new LangWatch();
-  const prompt = await langwatch.prompts.get("my-agent");
-
-CRITICAL: Do NOT wrap prompts.get() in a try/catch with a hardcoded
-fallback. That defeats the purpose of prompt versioning.
-
-## Step 7: Sync to the Platform
-
-  langwatch prompt sync
-
-Verify prompts appear at https://app.langwatch.ai in the Prompts section.
-```
+    <CopyPrompt title="Version my prompts with LangWatch" prompt={PROMPTS.prompts} />
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/prompts
     ```
-    The skill activates automatically when your task matches -- just describe what you need.
+    Then say: *"Version my prompts with LangWatch"*
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to set up prompt versioning.
+    <Steps>
+      <Step title="Install the LangWatch MCP">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server
+        ```
+      </Step>
+      <Step title="Ask your agent">
+        *"Version my prompts with LangWatch"*
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
 ---
 
-### Query My Agent's Performance
+### Query Performance
 
-Get insights on costs, latency, errors, and usage trends.
+Check costs, latency, error rates, and usage trends.
 
 <Tabs>
   <Tab title="Prompt">
-```text Analyze my agent's performance
-You are helping the user analyze their agent's performance with LangWatch.
-
-IMPORTANT: You will need the user's LangWatch API key.
-Ask them for it and direct them to https://app.langwatch.ai/authorize
-
-# Analyze Agent Performance with LangWatch
-
-This uses LangWatch MCP tools to query analytics. No code changes needed.
-
-## Step 1: Set up the LangWatch MCP
-
-  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <LANGWATCH_API_KEY>
-
-## Step 2: Discover Available Metrics
-
-Call discover_schema with category "all" to learn what metrics,
-aggregations, and filters are available.
-
-CRITICAL: Always call discover_schema first. Do NOT guess metric names.
-
-## Step 3: Query Analytics
-
-Use get_analytics for time-series data:
-- Total LLM cost: metric "performance.total_cost", aggregation "sum"
-- P95 latency: metric "performance.completion_time", aggregation "p95"
-- Token usage: metric "performance.total_tokens", aggregation "sum"
-
-Use search_traces to find specific requests matching criteria.
-Use get_trace to drill into individual trace details.
-
-## Step 4: Present Findings
-
-- Lead with the key numbers
-- Highlight anomalies or concerning trends
-- Suggest next steps if issues are found
-```
+    <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.analytics} />
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/analytics
     ```
-    The skill activates automatically when your task matches -- just describe what you need.
+    Then say: *"How is my agent performing?"*
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to show performance analytics.
+    <Steps>
+      <Step title="Install the LangWatch MCP">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server
+        ```
+      </Step>
+      <Step title="Ask your agent">
+        *"How is my agent performing?"*
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
@@ -407,73 +161,33 @@ Use get_trace to drill into individual trace details.
 
 ### All of the Above
 
-Get the full LangWatch stack in one go -- tracing, evaluations, scenarios, prompt versioning, and analytics.
+Get the full LangWatch stack in one go.
 
 <Tabs>
   <Tab title="Prompt">
-```text Take my agent to the next level with LangWatch
-You are helping the user set up the full LangWatch stack for their
-AI agent project.
-
-IMPORTANT: You will need the user's LangWatch API key.
-Ask them for it and direct them to https://app.langwatch.ai/authorize
-
-# Take Your Agent to the Next Level with LangWatch
-
-This sets up everything: tracing, prompt versioning, evaluations,
-scenario tests, and analytics.
-
-## Step 1: Set up the LangWatch MCP
-
-  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <LANGWATCH_API_KEY>
-
-## Step 2: Add Tracing
-
-- Read the integration docs via fetch_langwatch_docs
-- Install the LangWatch SDK (pip install langwatch / npm install langwatch)
-- Add @langwatch.trace() decorators to your functions
-- Follow the framework-specific guide
-
-## Step 3: Version Your Prompts
-
-- Install the CLI: npm install -g langwatch && langwatch login
-- Initialize: langwatch prompt init
-- Create managed prompts for all hardcoded strings
-- Update code to use langwatch.prompts.get()
-- Sync: langwatch prompt sync
-
-## Step 4: Set Up Evaluations
-
-- Read the experiments SDK docs
-- Create a domain-specific dataset (10-20 examples)
-- Write an experiment script using langwatch.experiment.init()
-- Run the experiment to verify
-
-## Step 5: Add Scenario Tests
-
-- Read the Scenario docs via fetch_scenario_docs
-- Install: pip install langwatch-scenario / npm install @langwatch/scenario
-- Write scenario tests with UserSimulatorAgent and JudgeAgent
-- Run the tests
-
-## Step 6: Verify Everything
-
-- Check traces at https://app.langwatch.ai
-- Check prompts in the Prompts section
-- Check experiment results in the Experiments section
-- Check scenario results in the Simulations section
-```
+    <CopyPrompt title="Take my agent to the next level" prompt={PROMPTS.level_up} />
   </Tab>
   <Tab title="Skill">
     ```bash
     npx skills-add langwatch/level-up
     ```
-    The skill activates automatically when your task matches -- just describe what you need.
+    Then say: *"Take my agent to the next level with LangWatch"*
   </Tab>
   <Tab title="MCP">
-    [Install the LangWatch MCP](/integration/mcp), then just ask your agent to set up the full LangWatch stack.
+    <Steps>
+      <Step title="Install the LangWatch MCP">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server
+        ```
+      </Step>
+      <Step title="Ask your agent">
+        *"Take my agent to the next level with LangWatch"*
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
+
+---
 
 ### Recipes
 
