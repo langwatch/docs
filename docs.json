@@ -61,11 +61,9 @@
               {
                 "group": "LangWatch Skills",
                 "pages": [
-                  "skills/overview",
-                  "skills/developers",
-                  "skills/teams",
-                  "skills/platform",
-                  "skills/manual",
+                  "skills/directory",
+                  "skills/code-prompts",
+                  "skills/platform-prompts",
                   "skills/recipes"
                 ]
               },
@@ -728,6 +726,26 @@
     {
       "source": "/hybrid-setup/sso-setup-langwatch",
       "destination": "/self-hosting/sso-setup-langwatch"
+    },
+    {
+      "source": "/skills/overview",
+      "destination": "/skills/directory"
+    },
+    {
+      "source": "/skills/developers",
+      "destination": "/skills/code-prompts"
+    },
+    {
+      "source": "/skills/teams",
+      "destination": "/skills/platform-prompts"
+    },
+    {
+      "source": "/skills/platform",
+      "destination": "/skills/platform-prompts"
+    },
+    {
+      "source": "/skills/manual",
+      "destination": "/integration/quick-start"
     }
   ]
 }
