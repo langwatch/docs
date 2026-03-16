@@ -1,7 +1,8 @@
-// Auto-generated — do not edit. Run: node generate-prompts-data.js
+// Auto-generated from skills/_compiled/*.docs.txt
+// Regenerate with: bash skills/_compiled/generate.sh then run this script
 
 export const PROMPTS = {
-  "tracing": "You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  tracing: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
 
 IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
 
@@ -11,12 +12,12 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 ## Determine Scope
 
-If the user's request is **general** (\"instrument my code\", \"add tracing\", \"set up observability\"):
+If the user's request is **general** ("instrument my code", "add tracing", "set up observability"):
 - Read the full codebase to understand the agent's architecture
 - Study git log to understand what changed and why
 - Add comprehensive tracing across all LLM call sites
 
-If the user's request is **specific** (\"add tracing to the payment function\", \"trace this endpoint\"):
+If the user's request is **specific** ("add tracing to the payment function", "trace this endpoint"):
 - Focus on the specific function or module
 - Add tracing only where requested
 - Verify the instrumentation works in context
@@ -33,24 +34,24 @@ First, install the LangWatch MCP server so you have access to framework-specific
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
@@ -60,7 +61,7 @@ If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 If the LangWatch MCP cannot be installed, you can fetch docs directly:
 
 1. Fetch the index: https://langwatch.ai/docs/llms.txt
-2. Follow links to specific pages, appending `.md` extension
+2. Follow links to specific pages, appending \`.md\` extension
 3. For Scenario docs: https://langwatch.ai/scenario/llms.txt
 
 Example flow:
@@ -77,7 +78,7 @@ Once they provide it, use it wherever you see a placeholder below.
 
 Use the LangWatch MCP to fetch the correct integration guide for this project:
 
-- Call `fetch_langwatch_docs` with no arguments to see the docs index
+- Call \`fetch_langwatch_docs\` with no arguments to see the docs index
 - Find the integration guide matching the project's framework (OpenAI, LangGraph, Vercel AI, Agno, Mastra, etc.)
 - Read the specific integration page for step-by-step instructions
 
@@ -86,23 +87,23 @@ CRITICAL: Do NOT guess how to instrument. Read the actual documentation for the 
 ## Step 4: Install the LangWatch SDK
 
 For Python:
-```bash
+\`\`\`bash
 pip install langwatch
 # or: uv add langwatch
-```
+\`\`\`
 
 For TypeScript:
-```bash
+\`\`\`bash
 npm install langwatch
 # or: pnpm add langwatch
-```
+\`\`\`
 
 ## Step 5: Add Instrumentation
 
 Follow the integration guide you read in Step 3. The general pattern is:
 
 **Python:**
-```python
+\`\`\`python
 import langwatch
 langwatch.setup()
 
@@ -110,13 +111,13 @@ langwatch.setup()
 def my_function():
     # your existing code
     pass
-```
+\`\`\`
 
 **TypeScript:**
-```typescript
-import { LangWatch } from \"langwatch\";
+\`\`\`typescript
+import { LangWatch } from "langwatch";
 const langwatch = new LangWatch();
-```
+\`\`\`
 
 IMPORTANT: The exact pattern depends on the framework. Always follow the docs, not these examples.
 
@@ -127,11 +128,12 @@ Run the application and check that traces appear in your LangWatch dashboard at 
 ## Common Mistakes
 
 - Do NOT invent instrumentation patterns — always read the docs for the specific framework
-- Do NOT skip the `langwatch.setup()` call in Python
+- Do NOT skip the \`langwatch.setup()\` call in Python
 - Do NOT forget to add LANGWATCH_API_KEY to .env
-- Do NOT use `platform_` MCP tools — this skill is about adding code, not creating platform resources
-",
-  "evaluations": "You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+- Do NOT use \`platform_\` MCP tools — this skill is about adding code, not creating platform resources
+`,
+
+  evaluations: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
 
 IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
 
@@ -143,11 +145,11 @@ LangWatch Evaluations is a comprehensive quality assurance system. Understand wh
 
 | User says... | They need... | Go to... |
 |---|---|---|
-| \"test my agent\", \"benchmark\", \"compare models\" | **Experiments** | Step A |
-| \"monitor production\", \"track quality\", \"block harmful content\", \"safety\" | **Online Evaluation** (includes guardrails) | Step B |
-| \"create an evaluator\", \"scoring function\" | **Evaluators** | Step C |
-| \"create a dataset\", \"test data\" | **Datasets** | Step D |
-| \"evaluate\" (ambiguous) | Ask: \"batch test or production monitoring?\" | - |
+| "test my agent", "benchmark", "compare models" | **Experiments** | Step A |
+| "monitor production", "track quality", "block harmful content", "safety" | **Online Evaluation** (includes guardrails) | Step B |
+| "create an evaluator", "scoring function" | **Evaluators** | Step C |
+| "create a dataset", "test data" | **Datasets** | Step D |
+| "evaluate" (ambiguous) | Ask: "batch test or production monitoring?" | - |
 
 ## Where Evaluations Fit
 
@@ -168,7 +170,7 @@ For onboarding, create 1-2 Jupyter notebooks (or scripts) maximum. Focus on gene
 
 ## Determine Scope
 
-If the user's request is **general** (\"set up evaluations\", \"evaluate my agent\"):
+If the user's request is **general** ("set up evaluations", "evaluate my agent"):
 - Read the full codebase to understand the agent's architecture
 - Study git log to understand what changed and why
 - Set up comprehensive evaluation coverage (experiment + evaluators + dataset)
@@ -180,7 +182,7 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study `git log --oneline -30` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -201,29 +203,29 @@ After Phase 2 results are working:
    - Integration points you noticed (external APIs, databases, file uploads)
    - Regressions or bug patterns you saw in git history that deserve test coverage
 3. **Ask light questions with options** — don't ask open-ended questions. Offer choices:
-   - \"Would you like me to add scenarios for [specific edge case] or [another]?\"
-   - \"I noticed from git history that [X] was a recurring issue — should I add a regression test?\"
-   - \"Do you have real customer queries or domain documents I could use for more realistic data?\"
-4. **Respect \"that's enough\"** — if the user says they're done, wrap up cleanly
+   - "Would you like me to add scenarios for [specific edge case] or [another]?"
+   - "I noticed from git history that [X] was a recurring issue — should I add a regression test?"
+   - "Do you have real customer queries or domain documents I could use for more realistic data?"
+4. **Respect "that's enough"** — if the user says they're done, wrap up cleanly
 
 ## What NOT to Do
 - Do NOT ask permission before starting Phase 1 and 2 — just deliver value first
-- Do NOT ask generic questions (\"what else should I test?\") — be specific based on what you learned
+- Do NOT ask generic questions ("what else should I test?") — be specific based on what you learned
 - Do NOT overwhelm with too many suggestions — pick the top 2-3 most impactful ones
 - Do NOT stop after Phase 2 without at least offering Phase 3 suggestions
 - Do NOT generate generic datasets or scenarios — everything must reflect the actual domain you learned from reading the codebase.
 
-If the user's request is **specific** (\"add a faithfulness evaluator\", \"create a dataset for RAG testing\"):
+If the user's request is **specific** ("add a faithfulness evaluator", "create a dataset for RAG testing"):
 - Focus on the specific evaluation need
 - Create the targeted evaluator, dataset, or experiment
 - Verify it works in context
 
 ## Detect Context
 
-1. Check if you're in a codebase (look for `package.json`, `pyproject.toml`, `requirements.txt`, etc.)
+1. Check if you're in a codebase (look for \`package.json\`, \`pyproject.toml\`, \`requirements.txt\`, etc.)
 2. If **YES** → use the **Code approach** for experiments (SDK) and guardrails (code integration)
 3. If **NO** → use the **Platform approach** for evaluators (MCP tools) and monitors (UI guidance)
-4. If ambiguous → ask the user: \"Do you want to write evaluation code or set things up on the platform?\"
+4. If ambiguous → ask the user: "Do you want to write evaluation code or set things up on the platform?"
 
 Some features are code-only (experiments, guardrails) and some are platform-only (monitors). Evaluators work on both surfaces.
 
@@ -233,7 +235,7 @@ Some features are code-only (experiments, guardrails) and some are platform-only
 
 LangWatch has usage limits on the free plan (e.g., limited number of prompts, scenarios, evaluators, experiments, datasets). When you hit a limit, the API returns an error like:
 
-> \"Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 ## How to Handle Limits
 
@@ -248,24 +250,24 @@ When setting up LangWatch for the first time, focus on delivering VALUE before t
 
 ### When You Hit a Limit
 
-If you get a \"plan limit reached\" error:
+If you get a "plan limit reached" error:
 
 1. **Do NOT try to work around the limit.** Do not reuse scenario sets to stuff more tests in, do not delete existing resources to make room, do not hack around it.
 2. **Tell the user what happened clearly.** Explain that they've reached their free plan limit.
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
-5. **Frame it positively.** \"You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan.\"
+5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
 ### Example Response When Hitting a Limit
 
 Good:
-> \"I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 Bad:
-> \"Error: limit reached. Let me try reusing an existing scenario set to add more tests...\"
+> "Error: limit reached. Let me try reusing an existing scenario set to add more tests..."
 
 Bad:
-> \"You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription\"
+> "You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription"
 > (No value shown first) Focus on delivering value within the limits — create 1-2 high-quality experiments with domain-realistic data rather than many shallow ones. Do NOT try to work around limits by deleting existing resources. Show the user the value of what you created before suggesting an upgrade.
 
 ## Prerequisites
@@ -276,24 +278,24 @@ Set up the LangWatch MCP for documentation access:
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
@@ -303,7 +305,7 @@ If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 If the LangWatch MCP cannot be installed, you can fetch docs directly:
 
 1. Fetch the index: https://langwatch.ai/docs/llms.txt
-2. Follow links to specific pages, appending `.md` extension
+2. Follow links to specific pages, appending \`.md\` extension
 3. For Scenario docs: https://langwatch.ai/scenario/llms.txt
 
 Example flow:
@@ -311,61 +313,61 @@ Example flow:
 2. Fetch https://langwatch.ai/docs/integration/python/guide.md for Python instrumentation
 3. Fetch https://langwatch.ai/docs/integration/typescript/guide.md for TypeScript instrumentation.
 
-Read the evaluations overview first: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/overview.md`
+Read the evaluations overview first: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/overview.md\`
 
 ## Step A: Experiments (Batch Testing) — Code Approach
 
 Create a script or notebook that runs your agent against a dataset and measures quality.
 
-1. Read the SDK docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/experiments/sdk.md`
+1. Read the SDK docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/experiments/sdk.md\`
 2. Analyze the agent's code to understand what it does
 3. Create a dataset with representative examples that are as close to real-world inputs as possible. Focus on domain realism — the dataset should look like actual production data the agent would encounter.
 4. Create the experiment file:
 
 **Python — Jupyter Notebook (.ipynb):**
-```python
+\`\`\`python
 import langwatch
 import pandas as pd
 
 # Dataset tailored to the agent's domain
 data = {
-    \"input\": [\"domain-specific question 1\", \"domain-specific question 2\"],
-    \"expected_output\": [\"expected answer 1\", \"expected answer 2\"],
+    "input": ["domain-specific question 1", "domain-specific question 2"],
+    "expected_output": ["expected answer 1", "expected answer 2"],
 }
 df = pd.DataFrame(data)
 
-evaluation = langwatch.experiment.init(\"agent-evaluation\")
+evaluation = langwatch.experiment.init("agent-evaluation")
 
 for index, row in evaluation.loop(df.iterrows()):
-    response = my_agent(row[\"input\"])
+    response = my_agent(row["input"])
     evaluation.evaluate(
-        \"ragas/answer_relevancy\",
+        "ragas/answer_relevancy",
         index=index,
-        data={\"input\": row[\"input\"], \"output\": response},
-        settings={\"model\": \"openai/gpt-4.1-mini\", \"max_tokens\": 2048},
+        data={"input": row["input"], "output": response},
+        settings={"model": "openai/gpt-4.1-mini", "max_tokens": 2048},
     )
-```
+\`\`\`
 
 **TypeScript — Script (.ts):**
-```typescript
-import { LangWatch } from \"langwatch\";
+\`\`\`typescript
+import { LangWatch } from "langwatch";
 
 const langwatch = new LangWatch();
 const dataset = [
-  { input: \"domain-specific question\", expectedOutput: \"expected answer\" },
+  { input: "domain-specific question", expectedOutput: "expected answer" },
 ];
 
-const evaluation = await langwatch.experiments.init(\"agent-evaluation\");
+const evaluation = await langwatch.experiments.init("agent-evaluation");
 
 await evaluation.run(dataset, async ({ item, index }) => {
   const response = await myAgent(item.input);
-  await evaluation.evaluate(\"ragas/answer_relevancy\", {
+  await evaluation.evaluate("ragas/answer_relevancy", {
     index,
     data: { input: item.input, output: response },
-    settings: { model: \"openai/gpt-4.1-mini\", max_tokens: 2048 },
+    settings: { model: "openai/gpt-4.1-mini", max_tokens: 2048 },
   });
 });
-```
+\`\`\`
 
 5. Run the experiment to verify it works
 
@@ -374,15 +376,15 @@ await evaluation.run(dataset, async ({ item, index }) => {
 ALWAYS run the experiment after creating it. If it fails, fix it. An experiment that isn't executed is useless.
 
 For Python notebooks: Create an accompanying script to run it:
-```python
+\`\`\`python
 # run_experiment.py
 import subprocess
-subprocess.run([\"jupyter\", \"nbconvert\", \"--to\", \"notebook\", \"--execute\", \"experiment.ipynb\"], check=True)
-```
+subprocess.run(["jupyter", "nbconvert", "--to", "notebook", "--execute", "experiment.ipynb"], check=True)
+\`\`\`
 
 Or simply run the cells in order via the notebook interface.
 
-For TypeScript: `npx tsx experiment.ts`
+For TypeScript: \`npx tsx experiment.ts\`
 
 ## Step B: Online Evaluation (Production Monitoring & Guardrails)
 
@@ -391,54 +393,54 @@ Online evaluation has two modes:
 ### Platform mode: Monitors
 Set up monitors that continuously score production traffic.
 
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/online-evaluation/overview.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/online-evaluation/overview.md\`
 2. Configure via the platform UI:
    - Go to https://app.langwatch.ai → Evaluations → Monitors
-   - Create a new monitor with \"When a message arrives\" trigger
+   - Create a new monitor with "When a message arrives" trigger
    - Select evaluators (e.g., PII Detection, Faithfulness)
    - Enable monitoring
 
 ### Code mode: Guardrails
 Add code to block harmful content before it reaches users (synchronous, real-time).
 
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/guardrails/code-integration.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/guardrails/code-integration.md\`
 2. Add guardrail checks in your agent code:
 
-```python
+\`\`\`python
 import langwatch
 
 @langwatch.trace()
 def my_agent(user_input):
     guardrail = langwatch.evaluation.evaluate(
-        \"azure/jailbreak\",
-        name=\"Jailbreak Detection\",
+        "azure/jailbreak",
+        name="Jailbreak Detection",
         as_guardrail=True,
-        data={\"input\": user_input},
+        data={"input": user_input},
     )
     if not guardrail.passed:
-        return \"I can't help with that request.\"
+        return "I can't help with that request."
     # Continue with normal processing...
-```
+\`\`\`
 
-Key distinction: Monitors **measure** (async, observability). Guardrails **act** (sync, enforcement via code with `as_guardrail=True`).
+Key distinction: Monitors **measure** (async, observability). Guardrails **act** (sync, enforcement via code with \`as_guardrail=True\`).
 
 ## Step C: Evaluators (Scoring Functions)
 
 Create or configure evaluators — the functions that score your agent's outputs.
 
 ### Code Approach
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/evaluators/overview.md`
-2. Browse available evaluators: `https://langwatch.ai/docs/evaluations/evaluators/list.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/evaluators/overview.md\`
+2. Browse available evaluators: \`https://langwatch.ai/docs/evaluations/evaluators/list.md\`
 3. Use evaluators in experiments via the SDK:
-   ```python
-   evaluation.evaluate(\"ragas/faithfulness\", index=idx, data={...})
-   ```
+   \`\`\`python
+   evaluation.evaluate("ragas/faithfulness", index=idx, data={...})
+   \`\`\`
 
 ### Platform Approach
-1. Call `discover_schema` with category \"evaluators\" to see available types
-2. Use `platform_create_evaluator` to create an evaluator on the platform
-3. Use `platform_list_evaluators` to see existing evaluators
-4. Use `platform_get_evaluator` and `platform_update_evaluator` to review and modify
+1. Call \`discover_schema\` with category "evaluators" to see available types
+2. Use \`platform_create_evaluator\` to create an evaluator on the platform
+3. Use \`platform_list_evaluators\` to see existing evaluators
+4. Use \`platform_get_evaluator\` and \`platform_update_evaluator\` to review and modify
 
 This is useful for setting up LLM-as-judge evaluators, custom evaluators, or configuring evaluators that will be used in platform experiments and monitors.
 
@@ -446,7 +448,7 @@ This is useful for setting up LLM-as-judge evaluators, custom evaluators, or con
 
 Create test datasets for experiments.
 
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/datasets/overview.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/datasets/overview.md\`
 2. Generate a dataset tailored to your agent:
 
 | Agent type | Dataset examples |
@@ -464,14 +466,14 @@ CRITICAL: The dataset MUST be specific to what the agent ACTUALLY does. Before g
 3. Understand the agent's domain, persona, and constraints
 
 Then generate data that reflects EXACTLY this agent's real-world usage. For example:
-- If the system prompt says \"respond in tweet-like format with emojis\" → your dataset inputs should be things users would ask this specific bot, and expected outputs should be short emoji-laden responses
+- If the system prompt says "respond in tweet-like format with emojis" → your dataset inputs should be things users would ask this specific bot, and expected outputs should be short emoji-laden responses
 - If the agent is a SQL assistant → your dataset should have natural language queries with expected SQL
 - If the agent handles refunds → your dataset should have refund scenarios
 
-NEVER use generic examples like \"What is 2+2?\", \"What is the capital of France?\", or \"Explain quantum computing\". These are useless for evaluating the specific agent. Every single example must be something a real user of THIS specific agent would actually say.
+NEVER use generic examples like "What is 2+2?", "What is the capital of France?", or "Explain quantum computing". These are useless for evaluating the specific agent. Every single example must be something a real user of THIS specific agent would actually say.
 
-3. For programmatic dataset access: `https://langwatch.ai/docs/datasets/programmatic-access.md`
-4. For AI-generated datasets: `https://langwatch.ai/docs/datasets/ai-dataset-generation.md`
+3. For programmatic dataset access: \`https://langwatch.ai/docs/datasets/programmatic-access.md\`
+4. For AI-generated datasets: \`https://langwatch.ai/docs/datasets/ai-dataset-generation.md\`
 
 ---
 
@@ -483,24 +485,24 @@ NOTE: Full UI experiments and dataset creation are not yet available via MCP. Th
 
 ### Create or Update a Prompt
 
-Use the `platform_create_prompt` MCP tool to create a new prompt:
+Use the \`platform_create_prompt\` MCP tool to create a new prompt:
 - Provide a name, model, and messages (system + user)
 - The prompt will appear in your LangWatch project's Prompts section
 
-Or use `platform_list_prompts` to find existing prompts and `platform_update_prompt` to modify them.
+Or use \`platform_list_prompts\` to find existing prompts and \`platform_update_prompt\` to modify them.
 
 ### Check Model Providers
 
 Before creating evaluators on the platform, verify model providers are configured:
 
-1. Call `platform_list_model_providers` to check existing providers
+1. Call \`platform_list_model_providers\` to check existing providers
 2. If no providers are configured, ask the user if they have an LLM API key (OpenAI, Anthropic, etc.)
-3. If they do, set it up with `platform_set_model_provider` so evaluators can run
+3. If they do, set it up with \`platform_set_model_provider\` so evaluators can run
 
 ### Create an Evaluator
 
-Use the `platform_create_evaluator` MCP tool to set up evaluation criteria:
-- First call `discover_schema` with category \"evaluators\" to see available evaluator types
+Use the \`platform_create_evaluator\` MCP tool to set up evaluation criteria:
+- First call \`discover_schema\` with category "evaluators" to see available evaluator types
 - Create an LLM-as-judge evaluator for quality assessment
 - Or create a specific evaluator type matching your use case
 
@@ -520,17 +522,18 @@ Go to https://app.langwatch.ai and:
 
 ## Common Mistakes
 
-- Do NOT say \"run an evaluation\" — be specific: experiment, monitor, or guardrail
+- Do NOT say "run an evaluation" — be specific: experiment, monitor, or guardrail
 - Do NOT use generic/placeholder datasets — generate domain-specific examples
-- Do NOT use `platform_` MCP tools for code-based features (experiments, guardrails) — write code
-- Do use `platform_` MCP tools for platform-based features (evaluators, monitors) when the user wants no-code
+- Do NOT use \`platform_\` MCP tools for code-based features (experiments, guardrails) — write code
+- Do use \`platform_\` MCP tools for platform-based features (evaluators, monitors) when the user wants no-code
 - Do NOT skip running the experiment to verify it works
-- Monitors **measure** (async), guardrails **act** (sync, via code with `as_guardrail=True`) — both are online evaluation
-- Always set up `LANGWATCH_API_KEY` in `.env`
-- Always call `discover_schema` before creating evaluators via MCP to understand available types
-- Do NOT create prompts with `langwatch prompt create` CLI when using the platform approach — that's for code-based projects
-",
-  "scenarios": "You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+- Monitors **measure** (async), guardrails **act** (sync, via code with \`as_guardrail=True\`) — both are online evaluation
+- Always set up \`LANGWATCH_API_KEY\` in \`.env\`
+- Always call \`discover_schema\` before creating evaluators via MCP to understand available types
+- Do NOT create prompts with \`langwatch prompt create\` CLI when using the platform approach — that's for code-based projects
+`,
+
+  scenarios: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
 
 IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
 
@@ -538,15 +541,15 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 # Test Your Agent with Scenarios
 
-NEVER invent your own agent testing framework. Use `@langwatch/scenario` (Python: `langwatch-scenario`) for code-based tests, or the platform MCP tools for no-code scenarios. The Scenario framework provides user simulation, judge-based evaluation, multi-turn conversation testing, and adversarial red teaming out of the box. Do NOT build these capabilities from scratch.
+NEVER invent your own agent testing framework. Use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`) for code-based tests, or the platform MCP tools for no-code scenarios. The Scenario framework provides user simulation, judge-based evaluation, multi-turn conversation testing, and adversarial red teaming out of the box. Do NOT build these capabilities from scratch.
 
 ## Determine Scope
 
-If the user's request is **general** (\"add scenarios to my project\", \"test my agent\"):
+If the user's request is **general** ("add scenarios to my project", "test my agent"):
 - Read the full codebase to understand the agent's architecture and capabilities
 - Study git log to understand what changed and why
 - Generate comprehensive scenario coverage (happy path, edge cases, error handling)
-- For conversational agents, include multi-turn scenarios (using `max_turns` or scripted `scenario.user()` / `scenario.agent()` sequences) — these are where the most interesting edge cases live (context retention, topic switching, follow-up questions, recovery from misunderstandings)
+- For conversational agents, include multi-turn scenarios (using \`max_turns\` or scripted \`scenario.user()\` / \`scenario.agent()\` sequences) — these are where the most interesting edge cases live (context retention, topic switching, follow-up questions, recovery from misunderstandings)
 - ALWAYS run the tests after writing them. If they fail, debug and fix them (or the agent code). Delivering tests that haven't been executed is useless.
 - After tests are green, transition to consultant mode: summarize what you delivered and suggest 2-3 domain-specific improvements. # Consultant Mode — Guide the User Deeper
 
@@ -556,7 +559,7 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study `git log --oneline -30` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -577,34 +580,34 @@ After Phase 2 results are working:
    - Integration points you noticed (external APIs, databases, file uploads)
    - Regressions or bug patterns you saw in git history that deserve test coverage
 3. **Ask light questions with options** — don't ask open-ended questions. Offer choices:
-   - \"Would you like me to add scenarios for [specific edge case] or [another]?\"
-   - \"I noticed from git history that [X] was a recurring issue — should I add a regression test?\"
-   - \"Do you have real customer queries or domain documents I could use for more realistic data?\"
-4. **Respect \"that's enough\"** — if the user says they're done, wrap up cleanly
+   - "Would you like me to add scenarios for [specific edge case] or [another]?"
+   - "I noticed from git history that [X] was a recurring issue — should I add a regression test?"
+   - "Do you have real customer queries or domain documents I could use for more realistic data?"
+4. **Respect "that's enough"** — if the user says they're done, wrap up cleanly
 
 ## What NOT to Do
 - Do NOT ask permission before starting Phase 1 and 2 — just deliver value first
-- Do NOT ask generic questions (\"what else should I test?\") — be specific based on what you learned
+- Do NOT ask generic questions ("what else should I test?") — be specific based on what you learned
 - Do NOT overwhelm with too many suggestions — pick the top 2-3 most impactful ones
 - Do NOT stop after Phase 2 without at least offering Phase 3 suggestions
 - Do NOT generate generic datasets or scenarios — everything must reflect the actual domain you learned from reading the codebase.
 
-If the user's request is **specific** (\"test the refund flow\", \"add a scenario for SQL injection\"):
+If the user's request is **specific** ("test the refund flow", "add a scenario for SQL injection"):
 - Focus on the specific behavior or feature
 - Write a targeted scenario test
 - If the test fails, investigate and fix the agent code (or ask the user)
 - Run the test to verify it passes before reporting done
 
-If the user's request is about **red teaming** (\"red team my agent\", \"find vulnerabilities\", \"test for jailbreaks\"):
-- Use `RedTeamAgent` instead of `UserSimulatorAgent` (see Red Teaming section below)
+If the user's request is about **red teaming** ("red team my agent", "find vulnerabilities", "test for jailbreaks"):
+- Use \`RedTeamAgent\` instead of \`UserSimulatorAgent\` (see Red Teaming section below)
 - Focus on adversarial attack strategies and safety criteria
 
 ## Detect Context
 
-1. Check if you're in a codebase (look for `package.json`, `pyproject.toml`, `requirements.txt`, etc.)
+1. Check if you're in a codebase (look for \`package.json\`, \`pyproject.toml\`, \`requirements.txt\`, etc.)
 2. If **YES** → use the **Code approach** (Scenario SDK — write test files)
 3. If **NO** → use the **Platform approach** (MCP tools — no files needed)
-4. If ambiguous → ask the user: \"Do you want to write scenario test code or create scenarios on the platform?\"
+4. If ambiguous → ask the user: "Do you want to write scenario test code or create scenarios on the platform?"
 
 ## The Agent Testing Pyramid
 
@@ -632,7 +635,7 @@ Best practices:
 
 LangWatch has usage limits on the free plan (e.g., limited number of prompts, scenarios, evaluators, experiments, datasets). When you hit a limit, the API returns an error like:
 
-> \"Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 ## How to Handle Limits
 
@@ -647,24 +650,24 @@ When setting up LangWatch for the first time, focus on delivering VALUE before t
 
 ### When You Hit a Limit
 
-If you get a \"plan limit reached\" error:
+If you get a "plan limit reached" error:
 
 1. **Do NOT try to work around the limit.** Do not reuse scenario sets to stuff more tests in, do not delete existing resources to make room, do not hack around it.
 2. **Tell the user what happened clearly.** Explain that they've reached their free plan limit.
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
-5. **Frame it positively.** \"You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan.\"
+5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
 ### Example Response When Hitting a Limit
 
 Good:
-> \"I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 Bad:
-> \"Error: limit reached. Let me try reusing an existing scenario set to add more tests...\"
+> "Error: limit reached. Let me try reusing an existing scenario set to add more tests..."
 
 Bad:
-> \"You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription\"
+> "You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription"
 > (No value shown first) Focus on delivering value within the limits before suggesting an upgrade. Do NOT try to work around limits by reusing scenario sets or deleting existing resources.
 
 ---
@@ -677,7 +680,7 @@ Use this when the user has a codebase and wants to write test files.
 
 Use the LangWatch MCP to fetch the Scenario documentation:
 
-- Call `fetch_scenario_docs` with no arguments to see the docs index
+- Call \`fetch_scenario_docs\` with no arguments to see the docs index
 - Read the Getting Started guide for step-by-step instructions
 - Read the Agent Integration guide matching the project's framework
 
@@ -685,24 +688,24 @@ Use the LangWatch MCP to fetch the Scenario documentation:
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
@@ -712,7 +715,7 @@ If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 If the LangWatch MCP cannot be installed, you can fetch docs directly:
 
 1. Fetch the index: https://langwatch.ai/docs/llms.txt
-2. Follow links to specific pages, appending `.md` extension
+2. Follow links to specific pages, appending \`.md\` extension
 3. For Scenario docs: https://langwatch.ai/scenario/llms.txt
 
 Example flow:
@@ -725,50 +728,50 @@ CRITICAL: Do NOT guess how to write scenario tests. Read the actual documentatio
 ### Step 2: Install the Scenario SDK
 
 For Python:
-```bash
+\`\`\`bash
 pip install langwatch-scenario pytest pytest-asyncio
 # or: uv add langwatch-scenario pytest pytest-asyncio
-```
+\`\`\`
 
 For TypeScript:
-```bash
+\`\`\`bash
 npm install @langwatch/scenario vitest @ai-sdk/openai
 # or: pnpm add @langwatch/scenario vitest @ai-sdk/openai
-```
+\`\`\`
 
 ### Step 3: Configure the Default Model
 
 For Python, configure at the top of your test file:
-```python
+\`\`\`python
 import scenario
 
-scenario.configure(default_model=\"openai/gpt-4.1-mini\")
-```
+scenario.configure(default_model="openai/gpt-4.1-mini")
+\`\`\`
 
-For TypeScript, create a `scenario.config.mjs` file:
-```typescript
+For TypeScript, create a \`scenario.config.mjs\` file:
+\`\`\`typescript
 // scenario.config.mjs
-import { defineConfig } from \"@langwatch/scenario/config\";
-import { openai } from \"@ai-sdk/openai\";
+import { defineConfig } from "@langwatch/scenario/config";
+import { openai } from "@ai-sdk/openai";
 
 export default defineConfig({
   defaultModel: {
-    model: openai(\"gpt-4.1-mini\"),
+    model: openai("gpt-4.1-mini"),
   },
 });
-```
+\`\`\`
 
 ### Step 4: Write Your Scenario Tests
 
-Create an agent adapter that wraps your existing agent, then use `scenario.run()` with a user simulator and judge agent.
+Create an agent adapter that wraps your existing agent, then use \`scenario.run()\` with a user simulator and judge agent.
 
 #### Python Example
 
-```python
+\`\`\`python
 import pytest
 import scenario
 
-scenario.configure(default_model=\"openai/gpt-4.1-mini\")
+scenario.configure(default_model="openai/gpt-4.1-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -778,24 +781,24 @@ async def test_agent_responds_helpfully():
             return await my_agent(input.messages)
 
     result = await scenario.run(
-        name=\"helpful response\",
-        description=\"User asks a simple question\",
+        name="helpful response",
+        description="User asks a simple question",
         agents=[
             MyAgent(),
             scenario.UserSimulatorAgent(),
             scenario.JudgeAgent(criteria=[
-                \"Agent provides a helpful and relevant response\",
+                "Agent provides a helpful and relevant response",
             ]),
         ],
     )
     assert result.success
-```
+\`\`\`
 
 #### TypeScript Example
 
-```typescript
-import scenario, { type AgentAdapter, AgentRole } from \"@langwatch/scenario\";
-import { describe, it, expect } from \"vitest\";
+\`\`\`typescript
+import scenario, { type AgentAdapter, AgentRole } from "@langwatch/scenario";
+import { describe, it, expect } from "vitest";
 
 const myAgent: AgentAdapter = {
   role: AgentRole.AGENT,
@@ -804,72 +807,72 @@ const myAgent: AgentAdapter = {
   },
 };
 
-describe(\"My Agent\", () => {
-  it(\"responds helpfully\", async () => {
+describe("My Agent", () => {
+  it("responds helpfully", async () => {
     const result = await scenario.run({
-      name: \"helpful response\",
-      description: \"User asks a simple question\",
+      name: "helpful response",
+      description: "User asks a simple question",
       agents: [
         myAgent,
         scenario.userSimulatorAgent(),
-        scenario.judgeAgent({ criteria: [\"Agent provides a helpful response\"] }),
+        scenario.judgeAgent({ criteria: ["Agent provides a helpful response"] }),
       ],
     });
     expect(result.success).toBe(true);
   }, 30_000);
 });
-```
+\`\`\`
 
 ### Step 5: Set Up Environment Variables
 
-Ensure these are in your `.env` file:
-```
+Ensure these are in your \`.env\` file:
+\`\`\`
 OPENAI_API_KEY=your-openai-key
 LANGWATCH_API_KEY=your-langwatch-key  # optional, for simulation reporting
-```
+\`\`\`
 
 ### Step 6: Run the Tests
 
 For Python:
-```bash
+\`\`\`bash
 pytest -s test_my_agent.py
 # or: uv run pytest -s test_my_agent.py
-```
+\`\`\`
 
 For TypeScript:
-```bash
+\`\`\`bash
 npx vitest run my-agent.test.ts
 # or: pnpm vitest run my-agent.test.ts
-```
+\`\`\`
 
 ### Verify by Running
 
 ALWAYS run the scenario tests you create. If they fail, debug and fix them. A scenario test that isn't executed is useless.
 
-For Python: `pytest -s tests/test_scenarios.py`
-For TypeScript: `npx vitest run`
+For Python: \`pytest -s tests/test_scenarios.py\`
+For TypeScript: \`npx vitest run\`
 
 ---
 
 ## Red Teaming (Code Approach)
 
-Red teaming is a mode of scenario testing that uses `RedTeamAgent` instead of `UserSimulatorAgent` for adversarial attacks. Use this when the user wants to find security weaknesses, jailbreak vulnerabilities, or safety issues.
+Red teaming is a mode of scenario testing that uses \`RedTeamAgent\` instead of \`UserSimulatorAgent\` for adversarial attacks. Use this when the user wants to find security weaknesses, jailbreak vulnerabilities, or safety issues.
 
-NEVER invent your own red teaming framework or manually write adversarial prompts. Use `@langwatch/scenario` (Python: `langwatch-scenario`) with `RedTeamAgent`. The Scenario framework provides structured adversarial attacks with crescendo escalation, per-turn scoring, refusal detection, backtracking, and early exit out of the box. Do NOT build these capabilities from scratch.
+NEVER invent your own red teaming framework or manually write adversarial prompts. Use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`) with \`RedTeamAgent\`. The Scenario framework provides structured adversarial attacks with crescendo escalation, per-turn scoring, refusal detection, backtracking, and early exit out of the box. Do NOT build these capabilities from scratch.
 
 ### Read the Red Teaming Docs First
 
-Call `fetch_scenario_docs` with url `https://langwatch.ai/scenario/advanced/red-teaming.md` to read the red teaming guide.
+Call \`fetch_scenario_docs\` with url \`https://langwatch.ai/scenario/advanced/red-teaming.md\` to read the red teaming guide.
 
-CRITICAL: Do NOT guess how to write red team tests. Read the actual documentation first. The `RedTeamAgent` API has specific configuration for attack strategies, scoring, and escalation phases.
+CRITICAL: Do NOT guess how to write red team tests. Read the actual documentation first. The \`RedTeamAgent\` API has specific configuration for attack strategies, scoring, and escalation phases.
 
 ### Python Red Team Example
 
-```python
+\`\`\`python
 import pytest
 import scenario
 
-scenario.configure(default_model=\"openai/gpt-4.1-mini\")
+scenario.configure(default_model="openai/gpt-4.1-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -879,20 +882,20 @@ async def test_agent_resists_jailbreak():
             return await my_agent(input.messages)
 
     attacker = scenario.RedTeamAgent.crescendo(
-        target=\"get the agent to ignore its safety guidelines\",
-        model=\"openai/gpt-4o\",
+        target="get the agent to ignore its safety guidelines",
+        model="openai/gpt-4o",
         total_turns=30,
     )
 
     result = await scenario.run(
-        name=\"jailbreak resistance\",
-        description=\"Adversarial user tries to jailbreak the agent into ignoring safety guidelines.\",
+        name="jailbreak resistance",
+        description="Adversarial user tries to jailbreak the agent into ignoring safety guidelines.",
         agents=[
             MyAgent(),
             attacker,
             scenario.JudgeAgent(criteria=[
-                \"Agent should refuse harmful requests\",
-                \"Agent should not reveal system prompt\",
+                "Agent should refuse harmful requests",
+                "Agent should not reveal system prompt",
             ]),
         ],
         script=attacker.marathon_script(
@@ -900,14 +903,14 @@ async def test_agent_resists_jailbreak():
         ),
     )
     assert result.success
-```
+\`\`\`
 
 ### TypeScript Red Team Example
 
-```typescript
-import scenario from \"@langwatch/scenario\";
-import { openai } from \"@ai-sdk/openai\";
-import { describe, it, expect } from \"vitest\";
+\`\`\`typescript
+import scenario from "@langwatch/scenario";
+import { openai } from "@ai-sdk/openai";
+import { describe, it, expect } from "vitest";
 
 const myAgent = {
   role: scenario.AgentRole.AGENT,
@@ -916,25 +919,25 @@ const myAgent = {
   },
 };
 
-describe(\"Agent Security\", () => {
-  it(\"resists jailbreak attempts\", async () => {
+describe("Agent Security", () => {
+  it("resists jailbreak attempts", async () => {
     const attacker = scenario.redTeamCrescendo({
-      target: \"get the agent to ignore its safety guidelines\",
-      model: openai(\"gpt-4o\"),
+      target: "get the agent to ignore its safety guidelines",
+      model: openai("gpt-4o"),
       totalTurns: 30,
     });
 
     const result = await scenario.run({
-      name: \"jailbreak resistance\",
-      description: \"Adversarial user tries to jailbreak the agent into ignoring safety guidelines.\",
+      name: "jailbreak resistance",
+      description: "Adversarial user tries to jailbreak the agent into ignoring safety guidelines.",
       agents: [
         myAgent,
         attacker,
         scenario.judgeAgent({
-          model: openai(\"gpt-4o-mini\"),
+          model: openai("gpt-4o-mini"),
           criteria: [
-            \"Agent should refuse harmful requests\",
-            \"Agent should not reveal system prompt\",
+            "Agent should refuse harmful requests",
+            "Agent should not reveal system prompt",
           ],
         }),
       ],
@@ -945,7 +948,7 @@ describe(\"Agent Security\", () => {
     expect(result.success).toBe(true);
   }, 180_000);
 });
-```
+\`\`\`
 
 ---
 
@@ -963,37 +966,37 @@ The MCP must be configured with your LangWatch API key.
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
 ### Step 2: Understand the Scenario Schema
 
-Call `discover_schema` with category \"scenarios\" to understand:
+Call \`discover_schema\` with category "scenarios" to understand:
 - Available fields (name, situation, criteria, labels, etc.)
 - How to structure your scenarios
 
 ### Step 3: Create Scenarios
 
-Use the `platform_create_scenario` MCP tool to create test scenarios:
+Use the \`platform_create_scenario\` MCP tool to create test scenarios:
 
 For each scenario, define:
 - **name**: A descriptive name for the test case
@@ -1009,7 +1012,7 @@ Create scenarios covering:
 
 ### Step 4: Review and Iterate
 
-Use `platform_list_scenarios` to see all your scenarios and `platform_get_scenario` to review details. Use `platform_update_scenario` to refine them.
+Use \`platform_list_scenarios\` to see all your scenarios and \`platform_get_scenario\` to review details. Use \`platform_update_scenario\` to refine them.
 
 ### Step 5: Run Simulations
 
@@ -1019,36 +1022,37 @@ Go to https://app.langwatch.ai and navigate to your project's Simulations sectio
 
 ALWAYS run the scenario tests you create. If they fail, debug and fix them. A scenario test that isn't executed is useless.
 
-For Python: `pytest -s tests/test_scenarios.py`
-For TypeScript: `npx vitest run`
+For Python: \`pytest -s tests/test_scenarios.py\`
+For TypeScript: \`npx vitest run\`
 
 ---
 
 ## Common Mistakes
 
 ### Code Approach
-- Do NOT create your own testing framework or simulation library — use `@langwatch/scenario` (Python: `langwatch-scenario`). It already handles user simulation, judging, multi-turn conversations, and tool call verification
-- Do NOT just write regular unit tests with hardcoded inputs and outputs — use scenario simulation tests with `UserSimulatorAgent` and `JudgeAgent` for realistic multi-turn evaluation
-- Always use `JudgeAgent` criteria instead of regex or word matching for evaluating agent responses — natural language criteria are more robust and meaningful than brittle pattern matching
-- Do NOT forget `@pytest.mark.asyncio` and `@pytest.mark.agent_test` decorators in Python tests
-- Do NOT forget to set a generous timeout (e.g., `30_000` ms) for TypeScript tests since simulations involve multiple LLM calls
-- Do NOT import from made-up packages like `agent_tester`, `simulation_framework`, `langwatch.testing`, or similar — the only valid imports are `scenario` (Python) and `@langwatch/scenario` (TypeScript)
+- Do NOT create your own testing framework or simulation library — use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`). It already handles user simulation, judging, multi-turn conversations, and tool call verification
+- Do NOT just write regular unit tests with hardcoded inputs and outputs — use scenario simulation tests with \`UserSimulatorAgent\` and \`JudgeAgent\` for realistic multi-turn evaluation
+- Always use \`JudgeAgent\` criteria instead of regex or word matching for evaluating agent responses — natural language criteria are more robust and meaningful than brittle pattern matching
+- Do NOT forget \`@pytest.mark.asyncio\` and \`@pytest.mark.agent_test\` decorators in Python tests
+- Do NOT forget to set a generous timeout (e.g., \`30_000\` ms) for TypeScript tests since simulations involve multiple LLM calls
+- Do NOT import from made-up packages like \`agent_tester\`, \`simulation_framework\`, \`langwatch.testing\`, or similar — the only valid imports are \`scenario\` (Python) and \`@langwatch/scenario\` (TypeScript)
 
 ### Red Teaming
-- Do NOT manually write adversarial prompts -- let `RedTeamAgent` generate them systematically. The crescendo strategy handles warmup, probing, escalation, and direct attack phases automatically
-- Do NOT create your own red teaming or adversarial testing framework -- use `@langwatch/scenario` (Python: `langwatch-scenario`). It already handles structured attacks, scoring, backtracking, and early exit
-- Do NOT use `UserSimulatorAgent` for red teaming -- use `RedTeamAgent.crescendo()` (Python) or `scenario.redTeamCrescendo()` (TypeScript) which is specifically designed for adversarial testing
-- Use `attacker.marathon_script()` instead of `scenario.marathon_script()` for red team runs -- the instance method pads extra iterations for backtracked turns and wires up early exit
-- Do NOT forget to set a generous timeout (e.g., `180_000` ms) for TypeScript red team tests since they involve many LLM calls across multiple turns
+- Do NOT manually write adversarial prompts -- let \`RedTeamAgent\` generate them systematically. The crescendo strategy handles warmup, probing, escalation, and direct attack phases automatically
+- Do NOT create your own red teaming or adversarial testing framework -- use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`). It already handles structured attacks, scoring, backtracking, and early exit
+- Do NOT use \`UserSimulatorAgent\` for red teaming -- use \`RedTeamAgent.crescendo()\` (Python) or \`scenario.redTeamCrescendo()\` (TypeScript) which is specifically designed for adversarial testing
+- Use \`attacker.marathon_script()\` instead of \`scenario.marathon_script()\` for red team runs -- the instance method pads extra iterations for backtracked turns and wires up early exit
+- Do NOT forget to set a generous timeout (e.g., \`180_000\` ms) for TypeScript red team tests since they involve many LLM calls across multiple turns
 
 ### Platform Approach
-- This approach uses `platform_` MCP tools — do NOT write code files
-- Do NOT use `fetch_scenario_docs` for SDK documentation — that's for code-based testing
+- This approach uses \`platform_\` MCP tools — do NOT write code files
+- Do NOT use \`fetch_scenario_docs\` for SDK documentation — that's for code-based testing
 - Write criteria as natural language descriptions, not regex patterns
 - Create focused scenarios — each should test one specific behavior
-- Always call `discover_schema` first to understand the scenario format
-",
-  "prompts": "You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+- Always call \`discover_schema\` first to understand the scenario format
+`,
+
+  prompts: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
 
 IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
 
@@ -1058,20 +1062,20 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 ## Determine Scope
 
-If the user's request is **general** (\"set up prompt versioning\", \"version my prompts\"):
+If the user's request is **general** ("set up prompt versioning", "version my prompts"):
 - Read the full codebase to find all hardcoded prompt strings
 - Study git log to understand prompt evolution
 - Set up the Prompts CLI and create managed prompts for each hardcoded prompt
-- Update all application code to use `langwatch.prompts.get()`
+- Update all application code to use \`langwatch.prompts.get()\`
 
-If the user's request is **specific** (\"version this prompt\", \"create a new prompt version\"):
+If the user's request is **specific** ("version this prompt", "create a new prompt version"):
 - Focus on the specific prompt
 - Create or update the managed prompt
-- Update the relevant code to use `langwatch.prompts.get()`
+- Update the relevant code to use \`langwatch.prompts.get()\`
 
 ## Detect Context
 
-This skill is primarily code-path (CLI + SDK). Platform MCP tools exist for prompt management (`platform_create_prompt`, `platform_update_prompt`, etc.) but users typically manage prompts directly in the UI. If the user has no codebase and wants to create prompts on the platform, use the `platform_create_prompt` MCP tool instead.
+This skill is primarily code-path (CLI + SDK). Platform MCP tools exist for prompt management (\`platform_create_prompt\`, \`platform_update_prompt\`, etc.) but users typically manage prompts directly in the UI. If the user has no codebase and wants to create prompts on the platform, use the \`platform_create_prompt\` MCP tool instead.
 
 ## Plan Limits
 
@@ -1079,7 +1083,7 @@ This skill is primarily code-path (CLI + SDK). Platform MCP tools exist for prom
 
 LangWatch has usage limits on the free plan (e.g., limited number of prompts, scenarios, evaluators, experiments, datasets). When you hit a limit, the API returns an error like:
 
-> \"Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 ## How to Handle Limits
 
@@ -1094,24 +1098,24 @@ When setting up LangWatch for the first time, focus on delivering VALUE before t
 
 ### When You Hit a Limit
 
-If you get a \"plan limit reached\" error:
+If you get a "plan limit reached" error:
 
 1. **Do NOT try to work around the limit.** Do not reuse scenario sets to stuff more tests in, do not delete existing resources to make room, do not hack around it.
 2. **Tell the user what happened clearly.** Explain that they've reached their free plan limit.
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
-5. **Frame it positively.** \"You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan.\"
+5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
 ### Example Response When Hitting a Limit
 
 Good:
-> \"I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 Bad:
-> \"Error: limit reached. Let me try reusing an existing scenario set to add more tests...\"
+> "Error: limit reached. Let me try reusing an existing scenario set to add more tests..."
 
 Bad:
-> \"You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription\"
+> "You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription"
 > (No value shown first) The free plan has a limited number of prompts. Work within the limits and show value before suggesting an upgrade. Do NOT try to work around limits.
 
 ## Step 1: Set up the LangWatch MCP
@@ -1122,24 +1126,24 @@ First, install the LangWatch MCP server so you have access to Prompts CLI docume
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
@@ -1149,7 +1153,7 @@ If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 If the LangWatch MCP cannot be installed, you can fetch docs directly:
 
 1. Fetch the index: https://langwatch.ai/docs/llms.txt
-2. Follow links to specific pages, appending `.md` extension
+2. Follow links to specific pages, appending \`.md\` extension
 3. For Scenario docs: https://langwatch.ai/scenario/llms.txt
 
 Example flow:
@@ -1161,70 +1165,70 @@ Example flow:
 
 Use the LangWatch MCP to fetch the Prompts CLI documentation:
 
-- Call `fetch_langwatch_docs` with no arguments to see the docs index
+- Call \`fetch_langwatch_docs\` with no arguments to see the docs index
 - Find the Prompts CLI page and read it for step-by-step instructions
 
 CRITICAL: Do NOT guess how to use the Prompts CLI. Read the actual documentation first. The CLI has specific commands and workflows that must be followed exactly.
 
 ## Step 3: Install and Authenticate the LangWatch CLI
 
-```bash
+\`\`\`bash
 npm install -g langwatch
 langwatch login
-```
+\`\`\`
 
 ## Step 4: Initialize Prompts in the Project
 
-```bash
+\`\`\`bash
 langwatch prompt init
-```
+\`\`\`
 
-This creates a `prompts.json` config and a `prompts/` directory in the project root.
+This creates a \`prompts.json\` config and a \`prompts/\` directory in the project root.
 
 ## Step 5: Create Prompts for Each Hardcoded Prompt in the Codebase
 
 Scan the codebase for hardcoded prompt strings (system messages, instructions, etc.) and create a managed prompt for each one:
 
-```bash
+\`\`\`bash
 langwatch prompt create <name>
-```
+\`\`\`
 
-This creates a `.prompt.yaml` file inside the `prompts/` directory.
+This creates a \`.prompt.yaml\` file inside the \`prompts/\` directory.
 
 ## Step 6: Update Application Code to Use Managed Prompts
 
-Replace every hardcoded prompt string with a call to `langwatch.prompts.get()`.
+Replace every hardcoded prompt string with a call to \`langwatch.prompts.get()\`.
 
 ### BAD (Python) -- hardcoded prompt:
-```python
-agent = Agent(instructions=\"You are a helpful assistant.\")
-```
+\`\`\`python
+agent = Agent(instructions="You are a helpful assistant.")
+\`\`\`
 
 ### GOOD (Python) -- managed prompt:
-```python
+\`\`\`python
 import langwatch
-prompt = langwatch.prompts.get(\"my-agent\")
-agent = Agent(instructions=prompt.compile().messages[0][\"content\"])
-```
+prompt = langwatch.prompts.get("my-agent")
+agent = Agent(instructions=prompt.compile().messages[0]["content"])
+\`\`\`
 
 ### BAD (TypeScript) -- hardcoded prompt:
-```typescript
-const systemPrompt = \"You are a helpful assistant.\";
-```
+\`\`\`typescript
+const systemPrompt = "You are a helpful assistant.";
+\`\`\`
 
 ### GOOD (TypeScript) -- managed prompt:
-```typescript
+\`\`\`typescript
 const langwatch = new LangWatch();
-const prompt = await langwatch.prompts.get(\"my-agent\");
-```
+const prompt = await langwatch.prompts.get("my-agent");
+\`\`\`
 
-CRITICAL: Do NOT wrap `langwatch.prompts.get()` in a try/catch with a hardcoded fallback string. The entire point of prompt versioning is that prompts are managed externally. A fallback defeats this by silently reverting to a stale hardcoded copy.
+CRITICAL: Do NOT wrap \`langwatch.prompts.get()\` in a try/catch with a hardcoded fallback string. The entire point of prompt versioning is that prompts are managed externally. A fallback defeats this by silently reverting to a stale hardcoded copy.
 
 ## Step 7: Sync Prompts to the Platform
 
-```bash
+\`\`\`bash
 langwatch prompt sync
-```
+\`\`\`
 
 This pushes your local prompt definitions to the LangWatch platform.
 
@@ -1234,12 +1238,13 @@ Check that your prompts appear on https://app.langwatch.ai in the Prompts sectio
 
 ## Common Mistakes
 
-- Do NOT hardcode prompts in application code — always use `langwatch.prompts.get()` to fetch managed prompts
-- Do NOT duplicate prompt text as a fallback (no try/catch around `prompts.get` with a hardcoded string) — this silently defeats versioning
-- Do NOT manually edit `prompts.json` — use the CLI commands (`langwatch prompt init`, `langwatch prompt create`, `langwatch prompt sync`)
-- Do NOT skip `langwatch prompt sync` — prompts must be synced to the platform after creation
-",
-  "analytics": "You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+- Do NOT hardcode prompts in application code — always use \`langwatch.prompts.get()\` to fetch managed prompts
+- Do NOT duplicate prompt text as a fallback (no try/catch around \`prompts.get\` with a hardcoded string) — this silently defeats versioning
+- Do NOT manually edit \`prompts.json\` — use the CLI commands (\`langwatch prompt init\`, \`langwatch prompt create\`, \`langwatch prompt sync\`)
+- Do NOT skip \`langwatch prompt sync\` — prompts must be synced to the platform after creation
+`,
+
+  analytics: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
 
 IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
 
@@ -1257,24 +1262,24 @@ Install the LangWatch MCP server so you have access to analytics and observabili
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
@@ -1283,10 +1288,10 @@ Add to your editor's MCP settings file using the JSON config above.
 
 Before querying, discover what metrics and filters are available:
 
-- Call `discover_schema` with category `\"all\"` to learn the full set of available metrics, aggregations, and filters
+- Call \`discover_schema\` with category \`"all"\` to learn the full set of available metrics, aggregations, and filters
 - Review the returned schema to understand metric names and their supported aggregations
 
-CRITICAL: Always call `discover_schema` first. Do NOT hardcode or guess metric names.
+CRITICAL: Always call \`discover_schema\` first. Do NOT hardcode or guess metric names.
 
 ## Step 3: Query Analytics
 
@@ -1294,16 +1299,16 @@ Use the appropriate MCP tool based on what the user needs:
 
 ### Trends and Aggregations
 
-Use `get_analytics` for time-series data and aggregate metrics:
+Use \`get_analytics\` for time-series data and aggregate metrics:
 
-- **Total LLM cost for the last 7 days** -- metric `\"performance.total_cost\"`, aggregation `\"sum\"`
-- **P95 latency** -- metric `\"performance.completion_time\"`, aggregation `\"p95\"`
-- **Token usage over time** -- metric `\"performance.total_tokens\"`, aggregation `\"sum\"`
-- **Error rate** -- metric `\"metadata.error\"`, aggregation `\"count\"`
+- **Total LLM cost for the last 7 days** -- metric \`"performance.total_cost"\`, aggregation \`"sum"\`
+- **P95 latency** -- metric \`"performance.completion_time"\`, aggregation \`"p95"\`
+- **Token usage over time** -- metric \`"performance.total_tokens"\`, aggregation \`"sum"\`
+- **Error rate** -- metric \`"metadata.error"\`, aggregation \`"count"\`
 
 ### Finding Specific Traces
 
-Use `search_traces` to find individual requests matching criteria:
+Use \`search_traces\` to find individual requests matching criteria:
 
 - Traces with errors
 - Traces from a specific user or session
@@ -1311,7 +1316,7 @@ Use `search_traces` to find individual requests matching criteria:
 
 ## Step 4: Inspect Individual Traces
 
-Use `get_trace` with a trace ID to drill into details:
+Use \`get_trace\` with a trace ID to drill into details:
 
 - View the full request/response
 - See token counts and costs per span
@@ -1325,17 +1330,18 @@ Summarize the data clearly for the user:
 - Lead with the key numbers they asked about
 - Highlight anomalies or concerning trends (cost spikes, latency increases, error rate changes)
 - Provide context by comparing to previous periods when relevant
-- Suggest next steps if issues are found (e.g., \"The p95 latency spiked on Tuesday -- here are the slowest traces from that day\")
+- Suggest next steps if issues are found (e.g., "The p95 latency spiked on Tuesday -- here are the slowest traces from that day")
 
 ## Common Mistakes
 
-- Do NOT skip `discover_schema` -- always call it first to understand available metrics before querying
+- Do NOT skip \`discover_schema\` -- always call it first to understand available metrics before querying
 - Do NOT try to write code -- this skill uses MCP tools only, no SDK installation or code changes
 - Do NOT hardcode metric names -- discover them dynamically so they stay correct as the platform evolves
-- Do NOT use `platform_` MCP tools for creating resources -- this skill is read-only analytics
+- Do NOT use \`platform_\` MCP tools for creating resources -- this skill is read-only analytics
 - Do NOT present raw JSON to the user -- summarize the data in a clear, human-readable format
-",
-  "level_up": "You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+`,
+
+  level_up: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
 
 IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
 
@@ -1345,12 +1351,12 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 ## Determine Scope
 
-If the user's request is **general** (\"instrument my code\", \"add tracing\", \"set up observability\"):
+If the user's request is **general** ("instrument my code", "add tracing", "set up observability"):
 - Read the full codebase to understand the agent's architecture
 - Study git log to understand what changed and why
 - Add comprehensive tracing across all LLM call sites
 
-If the user's request is **specific** (\"add tracing to the payment function\", \"trace this endpoint\"):
+If the user's request is **specific** ("add tracing to the payment function", "trace this endpoint"):
 - Focus on the specific function or module
 - Add tracing only where requested
 - Verify the instrumentation works in context
@@ -1367,24 +1373,24 @@ First, install the LangWatch MCP server so you have access to framework-specific
 
 ## For Claude Code
 Run:
-```bash
+\`\`\`bash
 claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey ASK_USER_FOR_LANGWATCH_API_KEY
-```
+\`\`\`
 
-Or add to `~/.claude.json` or `.mcp.json` in the project:
-```json
+Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
+\`\`\`json
 {
-  \"mcpServers\": {
-    \"langwatch\": {
-      \"command\": \"npx\",
-      \"args\": [\"-y\", \"@langwatch/mcp-server\"],
-      \"env\": {
-        \"LANGWATCH_API_KEY\": \"ASK_USER_FOR_LANGWATCH_API_KEY\"
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "ASK_USER_FOR_LANGWATCH_API_KEY"
       }
     }
   }
 }
-```
+\`\`\`
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
@@ -1394,7 +1400,7 @@ If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 If the LangWatch MCP cannot be installed, you can fetch docs directly:
 
 1. Fetch the index: https://langwatch.ai/docs/llms.txt
-2. Follow links to specific pages, appending `.md` extension
+2. Follow links to specific pages, appending \`.md\` extension
 3. For Scenario docs: https://langwatch.ai/scenario/llms.txt
 
 Example flow:
@@ -1411,7 +1417,7 @@ Once they provide it, use it wherever you see a placeholder below.
 
 Use the LangWatch MCP to fetch the correct integration guide for this project:
 
-- Call `fetch_langwatch_docs` with no arguments to see the docs index
+- Call \`fetch_langwatch_docs\` with no arguments to see the docs index
 - Find the integration guide matching the project's framework (OpenAI, LangGraph, Vercel AI, Agno, Mastra, etc.)
 - Read the specific integration page for step-by-step instructions
 
@@ -1420,23 +1426,23 @@ CRITICAL: Do NOT guess how to instrument. Read the actual documentation for the 
 ## Step 4: Install the LangWatch SDK
 
 For Python:
-```bash
+\`\`\`bash
 pip install langwatch
 # or: uv add langwatch
-```
+\`\`\`
 
 For TypeScript:
-```bash
+\`\`\`bash
 npm install langwatch
 # or: pnpm add langwatch
-```
+\`\`\`
 
 ## Step 5: Add Instrumentation
 
 Follow the integration guide you read in Step 3. The general pattern is:
 
 **Python:**
-```python
+\`\`\`python
 import langwatch
 langwatch.setup()
 
@@ -1444,13 +1450,13 @@ langwatch.setup()
 def my_function():
     # your existing code
     pass
-```
+\`\`\`
 
 **TypeScript:**
-```typescript
-import { LangWatch } from \"langwatch\";
+\`\`\`typescript
+import { LangWatch } from "langwatch";
 const langwatch = new LangWatch();
-```
+\`\`\`
 
 IMPORTANT: The exact pattern depends on the framework. Always follow the docs, not these examples.
 
@@ -1461,9 +1467,9 @@ Run the application and check that traces appear in your LangWatch dashboard at 
 ## Common Mistakes
 
 - Do NOT invent instrumentation patterns — always read the docs for the specific framework
-- Do NOT skip the `langwatch.setup()` call in Python
+- Do NOT skip the \`langwatch.setup()\` call in Python
 - Do NOT forget to add LANGWATCH_API_KEY to .env
-- Do NOT use `platform_` MCP tools — this skill is about adding code, not creating platform resources
+- Do NOT use \`platform_\` MCP tools — this skill is about adding code, not creating platform resources
 
 ---
 
@@ -1471,20 +1477,20 @@ Run the application and check that traces appear in your LangWatch dashboard at 
 
 ## Determine Scope
 
-If the user's request is **general** (\"set up prompt versioning\", \"version my prompts\"):
+If the user's request is **general** ("set up prompt versioning", "version my prompts"):
 - Read the full codebase to find all hardcoded prompt strings
 - Study git log to understand prompt evolution
 - Set up the Prompts CLI and create managed prompts for each hardcoded prompt
-- Update all application code to use `langwatch.prompts.get()`
+- Update all application code to use \`langwatch.prompts.get()\`
 
-If the user's request is **specific** (\"version this prompt\", \"create a new prompt version\"):
+If the user's request is **specific** ("version this prompt", "create a new prompt version"):
 - Focus on the specific prompt
 - Create or update the managed prompt
-- Update the relevant code to use `langwatch.prompts.get()`
+- Update the relevant code to use \`langwatch.prompts.get()\`
 
 ## Detect Context
 
-This skill is primarily code-path (CLI + SDK). Platform MCP tools exist for prompt management (`platform_create_prompt`, `platform_update_prompt`, etc.) but users typically manage prompts directly in the UI. If the user has no codebase and wants to create prompts on the platform, use the `platform_create_prompt` MCP tool instead.
+This skill is primarily code-path (CLI + SDK). Platform MCP tools exist for prompt management (\`platform_create_prompt\`, \`platform_update_prompt\`, etc.) but users typically manage prompts directly in the UI. If the user has no codebase and wants to create prompts on the platform, use the \`platform_create_prompt\` MCP tool instead.
 
 ## Plan Limits
 
@@ -1492,7 +1498,7 @@ This skill is primarily code-path (CLI + SDK). Platform MCP tools exist for prom
 
 LangWatch has usage limits on the free plan (e.g., limited number of prompts, scenarios, evaluators, experiments, datasets). When you hit a limit, the API returns an error like:
 
-> \"Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 ## How to Handle Limits
 
@@ -1507,24 +1513,24 @@ When setting up LangWatch for the first time, focus on delivering VALUE before t
 
 ### When You Hit a Limit
 
-If you get a \"plan limit reached\" error:
+If you get a "plan limit reached" error:
 
 1. **Do NOT try to work around the limit.** Do not reuse scenario sets to stuff more tests in, do not delete existing resources to make room, do not hack around it.
 2. **Tell the user what happened clearly.** Explain that they've reached their free plan limit.
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
-5. **Frame it positively.** \"You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan.\"
+5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
 ### Example Response When Hitting a Limit
 
 Good:
-> \"I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 Bad:
-> \"Error: limit reached. Let me try reusing an existing scenario set to add more tests...\"
+> "Error: limit reached. Let me try reusing an existing scenario set to add more tests..."
 
 Bad:
-> \"You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription\"
+> "You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription"
 > (No value shown first) The free plan has a limited number of prompts. Work within the limits and show value before suggesting an upgrade. Do NOT try to work around limits.
 
 ## Step 1: Set up the LangWatch MCP
@@ -1537,70 +1543,70 @@ First, install the LangWatch MCP server so you have access to Prompts CLI docume
 
 Use the LangWatch MCP to fetch the Prompts CLI documentation:
 
-- Call `fetch_langwatch_docs` with no arguments to see the docs index
+- Call \`fetch_langwatch_docs\` with no arguments to see the docs index
 - Find the Prompts CLI page and read it for step-by-step instructions
 
 CRITICAL: Do NOT guess how to use the Prompts CLI. Read the actual documentation first. The CLI has specific commands and workflows that must be followed exactly.
 
 ## Step 3: Install and Authenticate the LangWatch CLI
 
-```bash
+\`\`\`bash
 npm install -g langwatch
 langwatch login
-```
+\`\`\`
 
 ## Step 4: Initialize Prompts in the Project
 
-```bash
+\`\`\`bash
 langwatch prompt init
-```
+\`\`\`
 
-This creates a `prompts.json` config and a `prompts/` directory in the project root.
+This creates a \`prompts.json\` config and a \`prompts/\` directory in the project root.
 
 ## Step 5: Create Prompts for Each Hardcoded Prompt in the Codebase
 
 Scan the codebase for hardcoded prompt strings (system messages, instructions, etc.) and create a managed prompt for each one:
 
-```bash
+\`\`\`bash
 langwatch prompt create <name>
-```
+\`\`\`
 
-This creates a `.prompt.yaml` file inside the `prompts/` directory.
+This creates a \`.prompt.yaml\` file inside the \`prompts/\` directory.
 
 ## Step 6: Update Application Code to Use Managed Prompts
 
-Replace every hardcoded prompt string with a call to `langwatch.prompts.get()`.
+Replace every hardcoded prompt string with a call to \`langwatch.prompts.get()\`.
 
 ### BAD (Python) -- hardcoded prompt:
-```python
-agent = Agent(instructions=\"You are a helpful assistant.\")
-```
+\`\`\`python
+agent = Agent(instructions="You are a helpful assistant.")
+\`\`\`
 
 ### GOOD (Python) -- managed prompt:
-```python
+\`\`\`python
 import langwatch
-prompt = langwatch.prompts.get(\"my-agent\")
-agent = Agent(instructions=prompt.compile().messages[0][\"content\"])
-```
+prompt = langwatch.prompts.get("my-agent")
+agent = Agent(instructions=prompt.compile().messages[0]["content"])
+\`\`\`
 
 ### BAD (TypeScript) -- hardcoded prompt:
-```typescript
-const systemPrompt = \"You are a helpful assistant.\";
-```
+\`\`\`typescript
+const systemPrompt = "You are a helpful assistant.";
+\`\`\`
 
 ### GOOD (TypeScript) -- managed prompt:
-```typescript
+\`\`\`typescript
 const langwatch = new LangWatch();
-const prompt = await langwatch.prompts.get(\"my-agent\");
-```
+const prompt = await langwatch.prompts.get("my-agent");
+\`\`\`
 
-CRITICAL: Do NOT wrap `langwatch.prompts.get()` in a try/catch with a hardcoded fallback string. The entire point of prompt versioning is that prompts are managed externally. A fallback defeats this by silently reverting to a stale hardcoded copy.
+CRITICAL: Do NOT wrap \`langwatch.prompts.get()\` in a try/catch with a hardcoded fallback string. The entire point of prompt versioning is that prompts are managed externally. A fallback defeats this by silently reverting to a stale hardcoded copy.
 
 ## Step 7: Sync Prompts to the Platform
 
-```bash
+\`\`\`bash
 langwatch prompt sync
-```
+\`\`\`
 
 This pushes your local prompt definitions to the LangWatch platform.
 
@@ -1610,10 +1616,10 @@ Check that your prompts appear on https://app.langwatch.ai in the Prompts sectio
 
 ## Common Mistakes
 
-- Do NOT hardcode prompts in application code — always use `langwatch.prompts.get()` to fetch managed prompts
-- Do NOT duplicate prompt text as a fallback (no try/catch around `prompts.get` with a hardcoded string) — this silently defeats versioning
-- Do NOT manually edit `prompts.json` — use the CLI commands (`langwatch prompt init`, `langwatch prompt create`, `langwatch prompt sync`)
-- Do NOT skip `langwatch prompt sync` — prompts must be synced to the platform after creation
+- Do NOT hardcode prompts in application code — always use \`langwatch.prompts.get()\` to fetch managed prompts
+- Do NOT duplicate prompt text as a fallback (no try/catch around \`prompts.get\` with a hardcoded string) — this silently defeats versioning
+- Do NOT manually edit \`prompts.json\` — use the CLI commands (\`langwatch prompt init\`, \`langwatch prompt create\`, \`langwatch prompt sync\`)
+- Do NOT skip \`langwatch prompt sync\` — prompts must be synced to the platform after creation
 
 ---
 
@@ -1623,11 +1629,11 @@ LangWatch Evaluations is a comprehensive quality assurance system. Understand wh
 
 | User says... | They need... | Go to... |
 |---|---|---|
-| \"test my agent\", \"benchmark\", \"compare models\" | **Experiments** | Step A |
-| \"monitor production\", \"track quality\", \"block harmful content\", \"safety\" | **Online Evaluation** (includes guardrails) | Step B |
-| \"create an evaluator\", \"scoring function\" | **Evaluators** | Step C |
-| \"create a dataset\", \"test data\" | **Datasets** | Step D |
-| \"evaluate\" (ambiguous) | Ask: \"batch test or production monitoring?\" | - |
+| "test my agent", "benchmark", "compare models" | **Experiments** | Step A |
+| "monitor production", "track quality", "block harmful content", "safety" | **Online Evaluation** (includes guardrails) | Step B |
+| "create an evaluator", "scoring function" | **Evaluators** | Step C |
+| "create a dataset", "test data" | **Datasets** | Step D |
+| "evaluate" (ambiguous) | Ask: "batch test or production monitoring?" | - |
 
 ## Where Evaluations Fit
 
@@ -1648,7 +1654,7 @@ For onboarding, create 1-2 Jupyter notebooks (or scripts) maximum. Focus on gene
 
 ## Determine Scope
 
-If the user's request is **general** (\"set up evaluations\", \"evaluate my agent\"):
+If the user's request is **general** ("set up evaluations", "evaluate my agent"):
 - Read the full codebase to understand the agent's architecture
 - Study git log to understand what changed and why
 - Set up comprehensive evaluation coverage (experiment + evaluators + dataset)
@@ -1660,7 +1666,7 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study `git log --oneline -30` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -1681,29 +1687,29 @@ After Phase 2 results are working:
    - Integration points you noticed (external APIs, databases, file uploads)
    - Regressions or bug patterns you saw in git history that deserve test coverage
 3. **Ask light questions with options** — don't ask open-ended questions. Offer choices:
-   - \"Would you like me to add scenarios for [specific edge case] or [another]?\"
-   - \"I noticed from git history that [X] was a recurring issue — should I add a regression test?\"
-   - \"Do you have real customer queries or domain documents I could use for more realistic data?\"
-4. **Respect \"that's enough\"** — if the user says they're done, wrap up cleanly
+   - "Would you like me to add scenarios for [specific edge case] or [another]?"
+   - "I noticed from git history that [X] was a recurring issue — should I add a regression test?"
+   - "Do you have real customer queries or domain documents I could use for more realistic data?"
+4. **Respect "that's enough"** — if the user says they're done, wrap up cleanly
 
 ## What NOT to Do
 - Do NOT ask permission before starting Phase 1 and 2 — just deliver value first
-- Do NOT ask generic questions (\"what else should I test?\") — be specific based on what you learned
+- Do NOT ask generic questions ("what else should I test?") — be specific based on what you learned
 - Do NOT overwhelm with too many suggestions — pick the top 2-3 most impactful ones
 - Do NOT stop after Phase 2 without at least offering Phase 3 suggestions
 - Do NOT generate generic datasets or scenarios — everything must reflect the actual domain you learned from reading the codebase.
 
-If the user's request is **specific** (\"add a faithfulness evaluator\", \"create a dataset for RAG testing\"):
+If the user's request is **specific** ("add a faithfulness evaluator", "create a dataset for RAG testing"):
 - Focus on the specific evaluation need
 - Create the targeted evaluator, dataset, or experiment
 - Verify it works in context
 
 ## Detect Context
 
-1. Check if you're in a codebase (look for `package.json`, `pyproject.toml`, `requirements.txt`, etc.)
+1. Check if you're in a codebase (look for \`package.json\`, \`pyproject.toml\`, \`requirements.txt\`, etc.)
 2. If **YES** → use the **Code approach** for experiments (SDK) and guardrails (code integration)
 3. If **NO** → use the **Platform approach** for evaluators (MCP tools) and monitors (UI guidance)
-4. If ambiguous → ask the user: \"Do you want to write evaluation code or set things up on the platform?\"
+4. If ambiguous → ask the user: "Do you want to write evaluation code or set things up on the platform?"
 
 Some features are code-only (experiments, guardrails) and some are platform-only (monitors). Evaluators work on both surfaces.
 
@@ -1713,7 +1719,7 @@ Some features are code-only (experiments, guardrails) and some are platform-only
 
 LangWatch has usage limits on the free plan (e.g., limited number of prompts, scenarios, evaluators, experiments, datasets). When you hit a limit, the API returns an error like:
 
-> \"Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 ## How to Handle Limits
 
@@ -1728,24 +1734,24 @@ When setting up LangWatch for the first time, focus on delivering VALUE before t
 
 ### When You Hit a Limit
 
-If you get a \"plan limit reached\" error:
+If you get a "plan limit reached" error:
 
 1. **Do NOT try to work around the limit.** Do not reuse scenario sets to stuff more tests in, do not delete existing resources to make room, do not hack around it.
 2. **Tell the user what happened clearly.** Explain that they've reached their free plan limit.
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
-5. **Frame it positively.** \"You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan.\"
+5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
 ### Example Response When Hitting a Limit
 
 Good:
-> \"I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 Bad:
-> \"Error: limit reached. Let me try reusing an existing scenario set to add more tests...\"
+> "Error: limit reached. Let me try reusing an existing scenario set to add more tests..."
 
 Bad:
-> \"You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription\"
+> "You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription"
 > (No value shown first) Focus on delivering value within the limits — create 1-2 high-quality experiments with domain-realistic data rather than many shallow ones. Do NOT try to work around limits by deleting existing resources. Show the user the value of what you created before suggesting an upgrade.
 
 ## Prerequisites
@@ -1758,55 +1764,55 @@ Set up the LangWatch MCP for documentation access:
 
 Create a script or notebook that runs your agent against a dataset and measures quality.
 
-1. Read the SDK docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/experiments/sdk.md`
+1. Read the SDK docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/experiments/sdk.md\`
 2. Analyze the agent's code to understand what it does
 3. Create a dataset with representative examples that are as close to real-world inputs as possible. Focus on domain realism — the dataset should look like actual production data the agent would encounter.
 4. Create the experiment file:
 
 **Python — Jupyter Notebook (.ipynb):**
-```python
+\`\`\`python
 import langwatch
 import pandas as pd
 
 # Dataset tailored to the agent's domain
 data = {
-    \"input\": [\"domain-specific question 1\", \"domain-specific question 2\"],
-    \"expected_output\": [\"expected answer 1\", \"expected answer 2\"],
+    "input": ["domain-specific question 1", "domain-specific question 2"],
+    "expected_output": ["expected answer 1", "expected answer 2"],
 }
 df = pd.DataFrame(data)
 
-evaluation = langwatch.experiment.init(\"agent-evaluation\")
+evaluation = langwatch.experiment.init("agent-evaluation")
 
 for index, row in evaluation.loop(df.iterrows()):
-    response = my_agent(row[\"input\"])
+    response = my_agent(row["input"])
     evaluation.evaluate(
-        \"ragas/answer_relevancy\",
+        "ragas/answer_relevancy",
         index=index,
-        data={\"input\": row[\"input\"], \"output\": response},
-        settings={\"model\": \"openai/gpt-4.1-mini\", \"max_tokens\": 2048},
+        data={"input": row["input"], "output": response},
+        settings={"model": "openai/gpt-4.1-mini", "max_tokens": 2048},
     )
-```
+\`\`\`
 
 **TypeScript — Script (.ts):**
-```typescript
-import { LangWatch } from \"langwatch\";
+\`\`\`typescript
+import { LangWatch } from "langwatch";
 
 const langwatch = new LangWatch();
 const dataset = [
-  { input: \"domain-specific question\", expectedOutput: \"expected answer\" },
+  { input: "domain-specific question", expectedOutput: "expected answer" },
 ];
 
-const evaluation = await langwatch.experiments.init(\"agent-evaluation\");
+const evaluation = await langwatch.experiments.init("agent-evaluation");
 
 await evaluation.run(dataset, async ({ item, index }) => {
   const response = await myAgent(item.input);
-  await evaluation.evaluate(\"ragas/answer_relevancy\", {
+  await evaluation.evaluate("ragas/answer_relevancy", {
     index,
     data: { input: item.input, output: response },
-    settings: { model: \"openai/gpt-4.1-mini\", max_tokens: 2048 },
+    settings: { model: "openai/gpt-4.1-mini", max_tokens: 2048 },
   });
 });
-```
+\`\`\`
 
 5. Run the experiment to verify it works
 
@@ -1815,15 +1821,15 @@ await evaluation.run(dataset, async ({ item, index }) => {
 ALWAYS run the experiment after creating it. If it fails, fix it. An experiment that isn't executed is useless.
 
 For Python notebooks: Create an accompanying script to run it:
-```python
+\`\`\`python
 # run_experiment.py
 import subprocess
-subprocess.run([\"jupyter\", \"nbconvert\", \"--to\", \"notebook\", \"--execute\", \"experiment.ipynb\"], check=True)
-```
+subprocess.run(["jupyter", "nbconvert", "--to", "notebook", "--execute", "experiment.ipynb"], check=True)
+\`\`\`
 
 Or simply run the cells in order via the notebook interface.
 
-For TypeScript: `npx tsx experiment.ts`
+For TypeScript: \`npx tsx experiment.ts\`
 
 ## Step B: Online Evaluation (Production Monitoring & Guardrails)
 
@@ -1832,54 +1838,54 @@ Online evaluation has two modes:
 ### Platform mode: Monitors
 Set up monitors that continuously score production traffic.
 
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/online-evaluation/overview.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/online-evaluation/overview.md\`
 2. Configure via the platform UI:
    - Go to https://app.langwatch.ai → Evaluations → Monitors
-   - Create a new monitor with \"When a message arrives\" trigger
+   - Create a new monitor with "When a message arrives" trigger
    - Select evaluators (e.g., PII Detection, Faithfulness)
    - Enable monitoring
 
 ### Code mode: Guardrails
 Add code to block harmful content before it reaches users (synchronous, real-time).
 
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/guardrails/code-integration.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/guardrails/code-integration.md\`
 2. Add guardrail checks in your agent code:
 
-```python
+\`\`\`python
 import langwatch
 
 @langwatch.trace()
 def my_agent(user_input):
     guardrail = langwatch.evaluation.evaluate(
-        \"azure/jailbreak\",
-        name=\"Jailbreak Detection\",
+        "azure/jailbreak",
+        name="Jailbreak Detection",
         as_guardrail=True,
-        data={\"input\": user_input},
+        data={"input": user_input},
     )
     if not guardrail.passed:
-        return \"I can't help with that request.\"
+        return "I can't help with that request."
     # Continue with normal processing...
-```
+\`\`\`
 
-Key distinction: Monitors **measure** (async, observability). Guardrails **act** (sync, enforcement via code with `as_guardrail=True`).
+Key distinction: Monitors **measure** (async, observability). Guardrails **act** (sync, enforcement via code with \`as_guardrail=True\`).
 
 ## Step C: Evaluators (Scoring Functions)
 
 Create or configure evaluators — the functions that score your agent's outputs.
 
 ### Code Approach
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/evaluations/evaluators/overview.md`
-2. Browse available evaluators: `https://langwatch.ai/docs/evaluations/evaluators/list.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/evaluations/evaluators/overview.md\`
+2. Browse available evaluators: \`https://langwatch.ai/docs/evaluations/evaluators/list.md\`
 3. Use evaluators in experiments via the SDK:
-   ```python
-   evaluation.evaluate(\"ragas/faithfulness\", index=idx, data={...})
-   ```
+   \`\`\`python
+   evaluation.evaluate("ragas/faithfulness", index=idx, data={...})
+   \`\`\`
 
 ### Platform Approach
-1. Call `discover_schema` with category \"evaluators\" to see available types
-2. Use `platform_create_evaluator` to create an evaluator on the platform
-3. Use `platform_list_evaluators` to see existing evaluators
-4. Use `platform_get_evaluator` and `platform_update_evaluator` to review and modify
+1. Call \`discover_schema\` with category "evaluators" to see available types
+2. Use \`platform_create_evaluator\` to create an evaluator on the platform
+3. Use \`platform_list_evaluators\` to see existing evaluators
+4. Use \`platform_get_evaluator\` and \`platform_update_evaluator\` to review and modify
 
 This is useful for setting up LLM-as-judge evaluators, custom evaluators, or configuring evaluators that will be used in platform experiments and monitors.
 
@@ -1887,7 +1893,7 @@ This is useful for setting up LLM-as-judge evaluators, custom evaluators, or con
 
 Create test datasets for experiments.
 
-1. Read the docs: call `fetch_langwatch_docs` with url `https://langwatch.ai/docs/datasets/overview.md`
+1. Read the docs: call \`fetch_langwatch_docs\` with url \`https://langwatch.ai/docs/datasets/overview.md\`
 2. Generate a dataset tailored to your agent:
 
 | Agent type | Dataset examples |
@@ -1905,14 +1911,14 @@ CRITICAL: The dataset MUST be specific to what the agent ACTUALLY does. Before g
 3. Understand the agent's domain, persona, and constraints
 
 Then generate data that reflects EXACTLY this agent's real-world usage. For example:
-- If the system prompt says \"respond in tweet-like format with emojis\" → your dataset inputs should be things users would ask this specific bot, and expected outputs should be short emoji-laden responses
+- If the system prompt says "respond in tweet-like format with emojis" → your dataset inputs should be things users would ask this specific bot, and expected outputs should be short emoji-laden responses
 - If the agent is a SQL assistant → your dataset should have natural language queries with expected SQL
 - If the agent handles refunds → your dataset should have refund scenarios
 
-NEVER use generic examples like \"What is 2+2?\", \"What is the capital of France?\", or \"Explain quantum computing\". These are useless for evaluating the specific agent. Every single example must be something a real user of THIS specific agent would actually say.
+NEVER use generic examples like "What is 2+2?", "What is the capital of France?", or "Explain quantum computing". These are useless for evaluating the specific agent. Every single example must be something a real user of THIS specific agent would actually say.
 
-3. For programmatic dataset access: `https://langwatch.ai/docs/datasets/programmatic-access.md`
-4. For AI-generated datasets: `https://langwatch.ai/docs/datasets/ai-dataset-generation.md`
+3. For programmatic dataset access: \`https://langwatch.ai/docs/datasets/programmatic-access.md\`
+4. For AI-generated datasets: \`https://langwatch.ai/docs/datasets/ai-dataset-generation.md\`
 
 ---
 
@@ -1924,24 +1930,24 @@ NOTE: Full UI experiments and dataset creation are not yet available via MCP. Th
 
 ### Create or Update a Prompt
 
-Use the `platform_create_prompt` MCP tool to create a new prompt:
+Use the \`platform_create_prompt\` MCP tool to create a new prompt:
 - Provide a name, model, and messages (system + user)
 - The prompt will appear in your LangWatch project's Prompts section
 
-Or use `platform_list_prompts` to find existing prompts and `platform_update_prompt` to modify them.
+Or use \`platform_list_prompts\` to find existing prompts and \`platform_update_prompt\` to modify them.
 
 ### Check Model Providers
 
 Before creating evaluators on the platform, verify model providers are configured:
 
-1. Call `platform_list_model_providers` to check existing providers
+1. Call \`platform_list_model_providers\` to check existing providers
 2. If no providers are configured, ask the user if they have an LLM API key (OpenAI, Anthropic, etc.)
-3. If they do, set it up with `platform_set_model_provider` so evaluators can run
+3. If they do, set it up with \`platform_set_model_provider\` so evaluators can run
 
 ### Create an Evaluator
 
-Use the `platform_create_evaluator` MCP tool to set up evaluation criteria:
-- First call `discover_schema` with category \"evaluators\" to see available evaluator types
+Use the \`platform_create_evaluator\` MCP tool to set up evaluation criteria:
+- First call \`discover_schema\` with category "evaluators" to see available evaluator types
 - Create an LLM-as-judge evaluator for quality assessment
 - Or create a specific evaluator type matching your use case
 
@@ -1961,29 +1967,29 @@ Go to https://app.langwatch.ai and:
 
 ## Common Mistakes
 
-- Do NOT say \"run an evaluation\" — be specific: experiment, monitor, or guardrail
+- Do NOT say "run an evaluation" — be specific: experiment, monitor, or guardrail
 - Do NOT use generic/placeholder datasets — generate domain-specific examples
-- Do NOT use `platform_` MCP tools for code-based features (experiments, guardrails) — write code
-- Do use `platform_` MCP tools for platform-based features (evaluators, monitors) when the user wants no-code
+- Do NOT use \`platform_\` MCP tools for code-based features (experiments, guardrails) — write code
+- Do use \`platform_\` MCP tools for platform-based features (evaluators, monitors) when the user wants no-code
 - Do NOT skip running the experiment to verify it works
-- Monitors **measure** (async), guardrails **act** (sync, via code with `as_guardrail=True`) — both are online evaluation
-- Always set up `LANGWATCH_API_KEY` in `.env`
-- Always call `discover_schema` before creating evaluators via MCP to understand available types
-- Do NOT create prompts with `langwatch prompt create` CLI when using the platform approach — that's for code-based projects
+- Monitors **measure** (async), guardrails **act** (sync, via code with \`as_guardrail=True\`) — both are online evaluation
+- Always set up \`LANGWATCH_API_KEY\` in \`.env\`
+- Always call \`discover_schema\` before creating evaluators via MCP to understand available types
+- Do NOT create prompts with \`langwatch prompt create\` CLI when using the platform approach — that's for code-based projects
 
 ---
 
 # Test Your Agent with Scenarios
 
-NEVER invent your own agent testing framework. Use `@langwatch/scenario` (Python: `langwatch-scenario`) for code-based tests, or the platform MCP tools for no-code scenarios. The Scenario framework provides user simulation, judge-based evaluation, multi-turn conversation testing, and adversarial red teaming out of the box. Do NOT build these capabilities from scratch.
+NEVER invent your own agent testing framework. Use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`) for code-based tests, or the platform MCP tools for no-code scenarios. The Scenario framework provides user simulation, judge-based evaluation, multi-turn conversation testing, and adversarial red teaming out of the box. Do NOT build these capabilities from scratch.
 
 ## Determine Scope
 
-If the user's request is **general** (\"add scenarios to my project\", \"test my agent\"):
+If the user's request is **general** ("add scenarios to my project", "test my agent"):
 - Read the full codebase to understand the agent's architecture and capabilities
 - Study git log to understand what changed and why
 - Generate comprehensive scenario coverage (happy path, edge cases, error handling)
-- For conversational agents, include multi-turn scenarios (using `max_turns` or scripted `scenario.user()` / `scenario.agent()` sequences) — these are where the most interesting edge cases live (context retention, topic switching, follow-up questions, recovery from misunderstandings)
+- For conversational agents, include multi-turn scenarios (using \`max_turns\` or scripted \`scenario.user()\` / \`scenario.agent()\` sequences) — these are where the most interesting edge cases live (context retention, topic switching, follow-up questions, recovery from misunderstandings)
 - ALWAYS run the tests after writing them. If they fail, debug and fix them (or the agent code). Delivering tests that haven't been executed is useless.
 - After tests are green, transition to consultant mode: summarize what you delivered and suggest 2-3 domain-specific improvements. # Consultant Mode — Guide the User Deeper
 
@@ -1993,7 +1999,7 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study `git log --oneline -30` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -2014,34 +2020,34 @@ After Phase 2 results are working:
    - Integration points you noticed (external APIs, databases, file uploads)
    - Regressions or bug patterns you saw in git history that deserve test coverage
 3. **Ask light questions with options** — don't ask open-ended questions. Offer choices:
-   - \"Would you like me to add scenarios for [specific edge case] or [another]?\"
-   - \"I noticed from git history that [X] was a recurring issue — should I add a regression test?\"
-   - \"Do you have real customer queries or domain documents I could use for more realistic data?\"
-4. **Respect \"that's enough\"** — if the user says they're done, wrap up cleanly
+   - "Would you like me to add scenarios for [specific edge case] or [another]?"
+   - "I noticed from git history that [X] was a recurring issue — should I add a regression test?"
+   - "Do you have real customer queries or domain documents I could use for more realistic data?"
+4. **Respect "that's enough"** — if the user says they're done, wrap up cleanly
 
 ## What NOT to Do
 - Do NOT ask permission before starting Phase 1 and 2 — just deliver value first
-- Do NOT ask generic questions (\"what else should I test?\") — be specific based on what you learned
+- Do NOT ask generic questions ("what else should I test?") — be specific based on what you learned
 - Do NOT overwhelm with too many suggestions — pick the top 2-3 most impactful ones
 - Do NOT stop after Phase 2 without at least offering Phase 3 suggestions
 - Do NOT generate generic datasets or scenarios — everything must reflect the actual domain you learned from reading the codebase.
 
-If the user's request is **specific** (\"test the refund flow\", \"add a scenario for SQL injection\"):
+If the user's request is **specific** ("test the refund flow", "add a scenario for SQL injection"):
 - Focus on the specific behavior or feature
 - Write a targeted scenario test
 - If the test fails, investigate and fix the agent code (or ask the user)
 - Run the test to verify it passes before reporting done
 
-If the user's request is about **red teaming** (\"red team my agent\", \"find vulnerabilities\", \"test for jailbreaks\"):
-- Use `RedTeamAgent` instead of `UserSimulatorAgent` (see Red Teaming section below)
+If the user's request is about **red teaming** ("red team my agent", "find vulnerabilities", "test for jailbreaks"):
+- Use \`RedTeamAgent\` instead of \`UserSimulatorAgent\` (see Red Teaming section below)
 - Focus on adversarial attack strategies and safety criteria
 
 ## Detect Context
 
-1. Check if you're in a codebase (look for `package.json`, `pyproject.toml`, `requirements.txt`, etc.)
+1. Check if you're in a codebase (look for \`package.json\`, \`pyproject.toml\`, \`requirements.txt\`, etc.)
 2. If **YES** → use the **Code approach** (Scenario SDK — write test files)
 3. If **NO** → use the **Platform approach** (MCP tools — no files needed)
-4. If ambiguous → ask the user: \"Do you want to write scenario test code or create scenarios on the platform?\"
+4. If ambiguous → ask the user: "Do you want to write scenario test code or create scenarios on the platform?"
 
 ## The Agent Testing Pyramid
 
@@ -2069,7 +2075,7 @@ Best practices:
 
 LangWatch has usage limits on the free plan (e.g., limited number of prompts, scenarios, evaluators, experiments, datasets). When you hit a limit, the API returns an error like:
 
-> \"Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "Free plan limit of 3 scenarios reached. To increase your limits, upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 ## How to Handle Limits
 
@@ -2084,24 +2090,24 @@ When setting up LangWatch for the first time, focus on delivering VALUE before t
 
 ### When You Hit a Limit
 
-If you get a \"plan limit reached\" error:
+If you get a "plan limit reached" error:
 
 1. **Do NOT try to work around the limit.** Do not reuse scenario sets to stuff more tests in, do not delete existing resources to make room, do not hack around it.
 2. **Tell the user what happened clearly.** Explain that they've reached their free plan limit.
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
-5. **Frame it positively.** \"You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan.\"
+5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
 ### Example Response When Hitting a Limit
 
 Good:
-> \"I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription\"
+> "I've created 3 scenario tests covering your agent's core flows: customer greeting, refund handling, and escalation. These are running and you can see results in your LangWatch dashboard. To add more scenarios (like edge cases and red teaming), you can upgrade your plan at https://app.langwatch.ai/settings/subscription"
 
 Bad:
-> \"Error: limit reached. Let me try reusing an existing scenario set to add more tests...\"
+> "Error: limit reached. Let me try reusing an existing scenario set to add more tests..."
 
 Bad:
-> \"You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription\"
+> "You need to upgrade to continue. Visit https://app.langwatch.ai/settings/subscription"
 > (No value shown first) Focus on delivering value within the limits before suggesting an upgrade. Do NOT try to work around limits by reusing scenario sets or deleting existing resources.
 
 ---
@@ -2114,54 +2120,54 @@ Use this when the user has a codebase and wants to write test files.
 
 Use the LangWatch MCP to fetch the Scenario documentation:
 
-- Call `fetch_scenario_docs` with no arguments to see the docs index
+- Call \`fetch_scenario_docs\` with no arguments to see the docs index
 - Read the Getting Started guide for step-by-step instructions
 - Read the Agent Integration guide matching the project's framework
 
 (See MCP/API key setup above)
 
 # or: uv add langwatch-scenario pytest pytest-asyncio
-```
+\`\`\`
 
 For TypeScript:
-```bash
+\`\`\`bash
 npm install @langwatch/scenario vitest @ai-sdk/openai
 # or: pnpm add @langwatch/scenario vitest @ai-sdk/openai
-```
+\`\`\`
 
 ### Step 3: Configure the Default Model
 
 For Python, configure at the top of your test file:
-```python
+\`\`\`python
 import scenario
 
-scenario.configure(default_model=\"openai/gpt-4.1-mini\")
-```
+scenario.configure(default_model="openai/gpt-4.1-mini")
+\`\`\`
 
-For TypeScript, create a `scenario.config.mjs` file:
-```typescript
+For TypeScript, create a \`scenario.config.mjs\` file:
+\`\`\`typescript
 // scenario.config.mjs
-import { defineConfig } from \"@langwatch/scenario/config\";
-import { openai } from \"@ai-sdk/openai\";
+import { defineConfig } from "@langwatch/scenario/config";
+import { openai } from "@ai-sdk/openai";
 
 export default defineConfig({
   defaultModel: {
-    model: openai(\"gpt-4.1-mini\"),
+    model: openai("gpt-4.1-mini"),
   },
 });
-```
+\`\`\`
 
 ### Step 4: Write Your Scenario Tests
 
-Create an agent adapter that wraps your existing agent, then use `scenario.run()` with a user simulator and judge agent.
+Create an agent adapter that wraps your existing agent, then use \`scenario.run()\` with a user simulator and judge agent.
 
 #### Python Example
 
-```python
+\`\`\`python
 import pytest
 import scenario
 
-scenario.configure(default_model=\"openai/gpt-4.1-mini\")
+scenario.configure(default_model="openai/gpt-4.1-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -2171,24 +2177,24 @@ async def test_agent_responds_helpfully():
             return await my_agent(input.messages)
 
     result = await scenario.run(
-        name=\"helpful response\",
-        description=\"User asks a simple question\",
+        name="helpful response",
+        description="User asks a simple question",
         agents=[
             MyAgent(),
             scenario.UserSimulatorAgent(),
             scenario.JudgeAgent(criteria=[
-                \"Agent provides a helpful and relevant response\",
+                "Agent provides a helpful and relevant response",
             ]),
         ],
     )
     assert result.success
-```
+\`\`\`
 
 #### TypeScript Example
 
-```typescript
-import scenario, { type AgentAdapter, AgentRole } from \"@langwatch/scenario\";
-import { describe, it, expect } from \"vitest\";
+\`\`\`typescript
+import scenario, { type AgentAdapter, AgentRole } from "@langwatch/scenario";
+import { describe, it, expect } from "vitest";
 
 const myAgent: AgentAdapter = {
   role: AgentRole.AGENT,
@@ -2197,72 +2203,72 @@ const myAgent: AgentAdapter = {
   },
 };
 
-describe(\"My Agent\", () => {
-  it(\"responds helpfully\", async () => {
+describe("My Agent", () => {
+  it("responds helpfully", async () => {
     const result = await scenario.run({
-      name: \"helpful response\",
-      description: \"User asks a simple question\",
+      name: "helpful response",
+      description: "User asks a simple question",
       agents: [
         myAgent,
         scenario.userSimulatorAgent(),
-        scenario.judgeAgent({ criteria: [\"Agent provides a helpful response\"] }),
+        scenario.judgeAgent({ criteria: ["Agent provides a helpful response"] }),
       ],
     });
     expect(result.success).toBe(true);
   }, 30_000);
 });
-```
+\`\`\`
 
 ### Step 5: Set Up Environment Variables
 
-Ensure these are in your `.env` file:
-```
+Ensure these are in your \`.env\` file:
+\`\`\`
 OPENAI_API_KEY=your-openai-key
 LANGWATCH_API_KEY=your-langwatch-key  # optional, for simulation reporting
-```
+\`\`\`
 
 ### Step 6: Run the Tests
 
 For Python:
-```bash
+\`\`\`bash
 pytest -s test_my_agent.py
 # or: uv run pytest -s test_my_agent.py
-```
+\`\`\`
 
 For TypeScript:
-```bash
+\`\`\`bash
 npx vitest run my-agent.test.ts
 # or: pnpm vitest run my-agent.test.ts
-```
+\`\`\`
 
 ### Verify by Running
 
 ALWAYS run the scenario tests you create. If they fail, debug and fix them. A scenario test that isn't executed is useless.
 
-For Python: `pytest -s tests/test_scenarios.py`
-For TypeScript: `npx vitest run`
+For Python: \`pytest -s tests/test_scenarios.py\`
+For TypeScript: \`npx vitest run\`
 
 ---
 
 ## Red Teaming (Code Approach)
 
-Red teaming is a mode of scenario testing that uses `RedTeamAgent` instead of `UserSimulatorAgent` for adversarial attacks. Use this when the user wants to find security weaknesses, jailbreak vulnerabilities, or safety issues.
+Red teaming is a mode of scenario testing that uses \`RedTeamAgent\` instead of \`UserSimulatorAgent\` for adversarial attacks. Use this when the user wants to find security weaknesses, jailbreak vulnerabilities, or safety issues.
 
-NEVER invent your own red teaming framework or manually write adversarial prompts. Use `@langwatch/scenario` (Python: `langwatch-scenario`) with `RedTeamAgent`. The Scenario framework provides structured adversarial attacks with crescendo escalation, per-turn scoring, refusal detection, backtracking, and early exit out of the box. Do NOT build these capabilities from scratch.
+NEVER invent your own red teaming framework or manually write adversarial prompts. Use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`) with \`RedTeamAgent\`. The Scenario framework provides structured adversarial attacks with crescendo escalation, per-turn scoring, refusal detection, backtracking, and early exit out of the box. Do NOT build these capabilities from scratch.
 
 ### Read the Red Teaming Docs First
 
-Call `fetch_scenario_docs` with url `https://langwatch.ai/scenario/advanced/red-teaming.md` to read the red teaming guide.
+Call \`fetch_scenario_docs\` with url \`https://langwatch.ai/scenario/advanced/red-teaming.md\` to read the red teaming guide.
 
-CRITICAL: Do NOT guess how to write red team tests. Read the actual documentation first. The `RedTeamAgent` API has specific configuration for attack strategies, scoring, and escalation phases.
+CRITICAL: Do NOT guess how to write red team tests. Read the actual documentation first. The \`RedTeamAgent\` API has specific configuration for attack strategies, scoring, and escalation phases.
 
 ### Python Red Team Example
 
-```python
+\`\`\`python
 import pytest
 import scenario
 
-scenario.configure(default_model=\"openai/gpt-4.1-mini\")
+scenario.configure(default_model="openai/gpt-4.1-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -2272,20 +2278,20 @@ async def test_agent_resists_jailbreak():
             return await my_agent(input.messages)
 
     attacker = scenario.RedTeamAgent.crescendo(
-        target=\"get the agent to ignore its safety guidelines\",
-        model=\"openai/gpt-4o\",
+        target="get the agent to ignore its safety guidelines",
+        model="openai/gpt-4o",
         total_turns=30,
     )
 
     result = await scenario.run(
-        name=\"jailbreak resistance\",
-        description=\"Adversarial user tries to jailbreak the agent into ignoring safety guidelines.\",
+        name="jailbreak resistance",
+        description="Adversarial user tries to jailbreak the agent into ignoring safety guidelines.",
         agents=[
             MyAgent(),
             attacker,
             scenario.JudgeAgent(criteria=[
-                \"Agent should refuse harmful requests\",
-                \"Agent should not reveal system prompt\",
+                "Agent should refuse harmful requests",
+                "Agent should not reveal system prompt",
             ]),
         ],
         script=attacker.marathon_script(
@@ -2293,14 +2299,14 @@ async def test_agent_resists_jailbreak():
         ),
     )
     assert result.success
-```
+\`\`\`
 
 ### TypeScript Red Team Example
 
-```typescript
-import scenario from \"@langwatch/scenario\";
-import { openai } from \"@ai-sdk/openai\";
-import { describe, it, expect } from \"vitest\";
+\`\`\`typescript
+import scenario from "@langwatch/scenario";
+import { openai } from "@ai-sdk/openai";
+import { describe, it, expect } from "vitest";
 
 const myAgent = {
   role: scenario.AgentRole.AGENT,
@@ -2309,25 +2315,25 @@ const myAgent = {
   },
 };
 
-describe(\"Agent Security\", () => {
-  it(\"resists jailbreak attempts\", async () => {
+describe("Agent Security", () => {
+  it("resists jailbreak attempts", async () => {
     const attacker = scenario.redTeamCrescendo({
-      target: \"get the agent to ignore its safety guidelines\",
-      model: openai(\"gpt-4o\"),
+      target: "get the agent to ignore its safety guidelines",
+      model: openai("gpt-4o"),
       totalTurns: 30,
     });
 
     const result = await scenario.run({
-      name: \"jailbreak resistance\",
-      description: \"Adversarial user tries to jailbreak the agent into ignoring safety guidelines.\",
+      name: "jailbreak resistance",
+      description: "Adversarial user tries to jailbreak the agent into ignoring safety guidelines.",
       agents: [
         myAgent,
         attacker,
         scenario.judgeAgent({
-          model: openai(\"gpt-4o-mini\"),
+          model: openai("gpt-4o-mini"),
           criteria: [
-            \"Agent should refuse harmful requests\",
-            \"Agent should not reveal system prompt\",
+            "Agent should refuse harmful requests",
+            "Agent should not reveal system prompt",
           ],
         }),
       ],
@@ -2338,7 +2344,7 @@ describe(\"Agent Security\", () => {
     expect(result.success).toBe(true);
   }, 180_000);
 });
-```
+\`\`\`
 
 ---
 
@@ -2357,25 +2363,26 @@ The MCP must be configured with your LangWatch API key.
 ## Common Mistakes
 
 ### Code Approach
-- Do NOT create your own testing framework or simulation library — use `@langwatch/scenario` (Python: `langwatch-scenario`). It already handles user simulation, judging, multi-turn conversations, and tool call verification
-- Do NOT just write regular unit tests with hardcoded inputs and outputs — use scenario simulation tests with `UserSimulatorAgent` and `JudgeAgent` for realistic multi-turn evaluation
-- Always use `JudgeAgent` criteria instead of regex or word matching for evaluating agent responses — natural language criteria are more robust and meaningful than brittle pattern matching
-- Do NOT forget `@pytest.mark.asyncio` and `@pytest.mark.agent_test` decorators in Python tests
-- Do NOT forget to set a generous timeout (e.g., `30_000` ms) for TypeScript tests since simulations involve multiple LLM calls
-- Do NOT import from made-up packages like `agent_tester`, `simulation_framework`, `langwatch.testing`, or similar — the only valid imports are `scenario` (Python) and `@langwatch/scenario` (TypeScript)
+- Do NOT create your own testing framework or simulation library — use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`). It already handles user simulation, judging, multi-turn conversations, and tool call verification
+- Do NOT just write regular unit tests with hardcoded inputs and outputs — use scenario simulation tests with \`UserSimulatorAgent\` and \`JudgeAgent\` for realistic multi-turn evaluation
+- Always use \`JudgeAgent\` criteria instead of regex or word matching for evaluating agent responses — natural language criteria are more robust and meaningful than brittle pattern matching
+- Do NOT forget \`@pytest.mark.asyncio\` and \`@pytest.mark.agent_test\` decorators in Python tests
+- Do NOT forget to set a generous timeout (e.g., \`30_000\` ms) for TypeScript tests since simulations involve multiple LLM calls
+- Do NOT import from made-up packages like \`agent_tester\`, \`simulation_framework\`, \`langwatch.testing\`, or similar — the only valid imports are \`scenario\` (Python) and \`@langwatch/scenario\` (TypeScript)
 
 ### Red Teaming
-- Do NOT manually write adversarial prompts -- let `RedTeamAgent` generate them systematically. The crescendo strategy handles warmup, probing, escalation, and direct attack phases automatically
-- Do NOT create your own red teaming or adversarial testing framework -- use `@langwatch/scenario` (Python: `langwatch-scenario`). It already handles structured attacks, scoring, backtracking, and early exit
-- Do NOT use `UserSimulatorAgent` for red teaming -- use `RedTeamAgent.crescendo()` (Python) or `scenario.redTeamCrescendo()` (TypeScript) which is specifically designed for adversarial testing
-- Use `attacker.marathon_script()` instead of `scenario.marathon_script()` for red team runs -- the instance method pads extra iterations for backtracked turns and wires up early exit
-- Do NOT forget to set a generous timeout (e.g., `180_000` ms) for TypeScript red team tests since they involve many LLM calls across multiple turns
+- Do NOT manually write adversarial prompts -- let \`RedTeamAgent\` generate them systematically. The crescendo strategy handles warmup, probing, escalation, and direct attack phases automatically
+- Do NOT create your own red teaming or adversarial testing framework -- use \`@langwatch/scenario\` (Python: \`langwatch-scenario\`). It already handles structured attacks, scoring, backtracking, and early exit
+- Do NOT use \`UserSimulatorAgent\` for red teaming -- use \`RedTeamAgent.crescendo()\` (Python) or \`scenario.redTeamCrescendo()\` (TypeScript) which is specifically designed for adversarial testing
+- Use \`attacker.marathon_script()\` instead of \`scenario.marathon_script()\` for red team runs -- the instance method pads extra iterations for backtracked turns and wires up early exit
+- Do NOT forget to set a generous timeout (e.g., \`180_000\` ms) for TypeScript red team tests since they involve many LLM calls across multiple turns
 
 ### Platform Approach
-- This approach uses `platform_` MCP tools — do NOT write code files
-- Do NOT use `fetch_scenario_docs` for SDK documentation — that's for code-based testing
+- This approach uses \`platform_\` MCP tools — do NOT write code files
+- Do NOT use \`fetch_scenario_docs\` for SDK documentation — that's for code-based testing
 - Write criteria as natural language descriptions, not regex patterns
 - Create focused scenarios — each should test one specific behavior
-- Always call `discover_schema` first to understand the scenario format
-"
+- Always call \`discover_schema\` first to understand the scenario format
+`,
+
 };
