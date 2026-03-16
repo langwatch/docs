@@ -6,23 +6,24 @@ sidebarTitle: "Recipes"
 
 import { CopyPrompt } from "/snippets/copy-prompt.jsx"
 import { SkillInstall } from "/snippets/skill-install.jsx"
+import { PROMPTS } from "/snippets/prompts-data.jsx"
 
 <Tabs>
   <Tab title="Prompts">
-    <CopyPrompt title="Debug my instrumentation and traces" prompt="Inspect my LangWatch traces and fix missing input/output, disconnected spans, and unlabeled traces. Use the LangWatch MCP to search_traces and get_trace to find issues, then suggest code fixes." />
-    <CopyPrompt title="What should I improve next?" prompt="Audit my codebase, git history, LangWatch traces, and existing evaluations/scenarios. Fix any low-hanging fruit, then suggest the top 2-3 most impactful improvements I should make next." />
-    <CopyPrompt title="Evaluate my multimodal agent" prompt="Set up evaluations for my agent that processes images, audio, PDFs, or other non-text inputs. Use LangWatch Scenario multimodal testing patterns and LangWatch experiments SDK." />
-    <CopyPrompt title="Generate an evaluation dataset from my RAG knowledge base" prompt="Analyze my RAG knowledge base and generate a diverse Q&A dataset with factual, multi-hop, comparison, edge case, and negative questions. Include relevant context per row. Export as DataFrame and CSV for LangWatch experiments." />
-    <CopyPrompt title="Test my agent stays compliant in regulated domains" prompt="Write scenario tests and red team tests to verify my agent stays observational and doesn't give prescriptive advice in regulated domains (healthcare, finance, legal). Use LangWatch Scenario with RedTeamAgent for adversarial testing." />
-    <CopyPrompt title="Test my CLI is usable by AI agents" prompt="Write scenario tests that verify my CLI tool works well when operated by AI agents. Check that all commands run non-interactively, output is parseable, and no stdin prompts hang the agent." />
+    <CopyPrompt title="Improve the LangWatch instrumentation of my agent" prompt={PROMPTS.recipe_debug_instrumentation} />
+    <CopyPrompt title="What should I do next to improve my agent?" prompt={PROMPTS.recipe_improve_setup} />
+    <CopyPrompt title="Evaluate my multimodal agent" prompt={PROMPTS.recipe_evaluate_multimodal} />
+    <CopyPrompt title="Generate an evaluation dataset from my RAG knowledge base" prompt={PROMPTS.recipe_generate_rag_dataset} />
+    <CopyPrompt title="Test that my agent stays observational and doesn't give prescriptive advice" prompt={PROMPTS.recipe_test_compliance} />
+    <CopyPrompt title="Test my CLI is well usable by AI agents" prompt={PROMPTS.recipe_test_cli_usability} />
   </Tab>
 
   <Tab title="Skills">
-    <SkillInstall skill="langwatch/recipes/debug-instrumentation" run="Debug my instrumentation and traces" />
-    <SkillInstall skill="langwatch/recipes/improve-setup" run="What should I improve next?" />
+    <SkillInstall skill="langwatch/recipes/debug-instrumentation" run="Improve the LangWatch instrumentation of my agent" />
+    <SkillInstall skill="langwatch/recipes/improve-setup" run="What should I do next to improve my agent?" />
     <SkillInstall skill="langwatch/recipes/evaluate-multimodal" run="Evaluate my multimodal agent" />
     <SkillInstall skill="langwatch/recipes/generate-rag-dataset" run="Generate an evaluation dataset from my RAG knowledge base" />
-    <SkillInstall skill="langwatch/recipes/test-compliance" run="Test my agent stays compliant" />
-    <SkillInstall skill="langwatch/recipes/test-cli-usability" run="Test my CLI is usable by AI agents" />
+    <SkillInstall skill="langwatch/recipes/test-compliance" run="Test that my agent stays observational and doesn't give prescriptive advice" />
+    <SkillInstall skill="langwatch/recipes/test-cli-usability" run="Test my CLI is well usable by AI agents" />
   </Tab>
 </Tabs>
