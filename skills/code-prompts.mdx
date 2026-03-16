@@ -1,13 +1,15 @@
 ---
 title: "Code Prompts"
-description: "Prompt Claude Code or Copilot to set up LangWatch — copy, paste, done."
+description: "Copy a prompt, paste it into your coding assistant, done."
 sidebarTitle: "Code Prompts"
 ---
 
 import { CopyPrompt } from "/snippets/copy-prompt.jsx"
+import { CopyLine } from "/snippets/copy-line.jsx"
+import { SkillInstall } from "/snippets/skill-install.jsx"
 import { PROMPTS } from "/snippets/prompts-data.jsx"
 
-Pick what you want to do. Copy a prompt, paste it into your coding assistant, done.
+Copy a prompt, paste it into your coding assistant, done.
 
 <Tabs>
   <Tab title="Prompts">
@@ -16,33 +18,65 @@ Pick what you want to do. Copy a prompt, paste it into your coding assistant, do
     <CopyPrompt title="Add scenario tests for my agent" prompt={PROMPTS.scenarios} />
     <CopyPrompt title="Version my prompts with LangWatch" prompt={PROMPTS.prompts} />
     <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.analytics} />
-    <CopyPrompt title="Take my agent to the next level" prompt={PROMPTS.level_up} />
+    <CopyPrompt title="⭐ Take my agent to the next level" prompt={PROMPTS.level_up} />
   </Tab>
-  <Tab title="Skills">
-    Install a skill, then just describe what you need:
 
-    ```bash
-    npx skills-add langwatch/tracing
-    npx skills-add langwatch/evaluations
-    npx skills-add langwatch/scenarios
-    npx skills-add langwatch/prompts
-    npx skills-add langwatch/analytics
-    npx skills-add langwatch/level-up
-    ```
+  <Tab title="Skills">
+    <SkillInstall skill="langwatch/tracing" run="Instrument my code with LangWatch" />
+    <SkillInstall skill="langwatch/evaluations" run="Set up evaluations for my agent" />
+    <SkillInstall skill="langwatch/scenarios" run="Add scenario tests for my agent" />
+    <SkillInstall skill="langwatch/prompts" run="Version my prompts with LangWatch" />
+    <SkillInstall skill="langwatch/analytics" run="How is my agent performing?" />
+    <SkillInstall skill="langwatch/level-up" run="Take my agent to the next level" />
   </Tab>
+
   <Tab title="MCP">
     Install the LangWatch MCP once:
 
-    ```bash
-    claude mcp add langwatch -- npx -y @langwatch/mcp-server
-    ```
+    <Tabs>
+      <Tab title="Claude Code">
+        ```bash
+        claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey your-api-key-here
+        ```
+      </Tab>
+      <Tab title="Cursor">
+        Open Cursor Settings → Tools and MCP, add:
+        ```json
+        {
+          "mcpServers": {
+            "langwatch": {
+              "command": "npx",
+              "args": ["-y", "@langwatch/mcp-server"],
+              "env": { "LANGWATCH_API_KEY": "your-api-key-here" }
+            }
+          }
+        }
+        ```
+      </Tab>
+      <Tab title="Other Editors">
+        Add to your editor's MCP settings:
+        ```json
+        {
+          "mcpServers": {
+            "langwatch": {
+              "command": "npx",
+              "args": ["-y", "@langwatch/mcp-server"],
+              "env": { "LANGWATCH_API_KEY": "your-api-key-here" }
+            }
+          }
+        }
+        ```
+      </Tab>
+    </Tabs>
 
-    Then just ask your agent what you need:
-    - *"Instrument my code with LangWatch"*
-    - *"Set up evaluations for my agent"*
-    - *"Add scenario tests"*
-    - *"Version my prompts"*
-    - *"How is my agent performing?"*
+    Ask your agent to:
+
+    <CopyLine text="Instrument my code with LangWatch" />
+    <CopyLine text="Set up evaluations for my agent" />
+    <CopyLine text="Add scenario tests for my agent" />
+    <CopyLine text="Version my prompts with LangWatch" />
+    <CopyLine text="How is my agent performing?" />
+    <CopyLine text="Take my agent to the next level" />
   </Tab>
 </Tabs>
 
