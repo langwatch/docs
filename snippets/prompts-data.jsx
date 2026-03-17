@@ -56,6 +56,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
+
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
@@ -309,6 +315,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
 
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
@@ -730,6 +742,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
+
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
@@ -1010,6 +1028,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
+
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 ### Step 2: Understand the Scenario Schema
@@ -1177,6 +1201,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
+
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
@@ -1316,6 +1346,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
+
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 ## Step 2: Discover Available Metrics
@@ -1429,6 +1465,12 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+## For ChatGPT, Claude Chat, or other web assistants
+Use the hosted remote MCP server:
+- URL: \`https://mcp.langwatch.ai/sse\`
+- Authentication: Bearer Token with your LangWatch API key
+- Get a key at https://app.langwatch.ai/authorize
 
 **Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
