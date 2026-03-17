@@ -4,7 +4,7 @@ export const SkillInstall = ({ skill, run }) => {
   const [copiedInstall, setCopiedInstall] = useState(false);
   const [copiedRun, setCopiedRun] = useState(false);
 
-  const installCmd = `npx skills-add ${skill}`;
+  const installCmd = `npx skills add ${skill}`;
 
   const handleCopyInstall = () => {
     navigator.clipboard.writeText(installCmd);
