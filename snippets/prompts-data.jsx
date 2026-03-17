@@ -1,7 +1,7 @@
 // Auto-generated from skills/_compiled/*.docs.txt
 
 export const PROMPTS = {
-  tracing: `Add LangWatch Tracing to Your Code
+  tracing: `Instrument my code with LangWatch
 
 You are using LangWatch for your AI agent project. Follow these instructions.
 
@@ -135,7 +135,7 @@ Run the application and check that traces appear in your LangWatch dashboard at 
 - Do NOT use \`platform_\` MCP tools — this skill is about adding code, not creating platform resources
 `,
 
-  evaluations: `Set Up Evaluations for Your Agent
+  evaluations: `Set up evaluations for my agent
 
 You are using LangWatch for your AI agent project. Follow these instructions.
 
@@ -545,7 +545,7 @@ Go to https://app.langwatch.ai and:
 - Do NOT create prompts with \`langwatch prompt create\` CLI when using the platform approach — that's for code-based projects
 `,
 
-  scenarios: `Test Your Agent with Scenarios
+  scenarios: `Add scenario tests for my agent
 
 You are using LangWatch for your AI agent project. Follow these instructions.
 
@@ -1076,7 +1076,7 @@ For TypeScript: \`npx vitest run\`
 - Always call \`discover_schema\` first to understand the scenario format
 `,
 
-  prompts: `Version Your Prompts with LangWatch Prompts CLI
+  prompts: `Version my prompts with LangWatch
 
 You are using LangWatch for your AI agent project. Follow these instructions.
 
@@ -1275,7 +1275,7 @@ Check that your prompts appear on https://app.langwatch.ai in the Prompts sectio
 - Do NOT skip \`langwatch prompt sync\` — prompts must be synced to the platform after creation
 `,
 
-  analytics: `Analyze Agent Performance with LangWatch
+  analytics: `How is my agent performing?
 
 You are using LangWatch for your AI agent project. Follow these instructions.
 
@@ -1375,7 +1375,7 @@ Summarize the data clearly for the user:
 - Do NOT present raw JSON to the user -- summarize the data in a clear, human-readable format
 `,
 
-  level_up: `Add LangWatch Tracing to Your Code
+  level_up: `Take my agent to the next level
 
 You are using LangWatch for your AI agent project. Follow these instructions.
 
@@ -2508,9 +2508,7 @@ Install the LangWatch MCP server:
 4. Use platform_get_evaluator and platform_update_evaluator to review and refine
 5. Then go to https://app.langwatch.ai to set up monitors using these evaluators`,
 
-  recipe_debug_instrumentation: `Debug Your LangWatch Instrumentation
-
-You are using LangWatch for your AI agent project. Follow these instructions.
+  recipe_debug_instrumentation: `You are using LangWatch for your AI agent project. Follow these instructions.
 
 IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
@@ -2571,9 +2569,7 @@ After fixes, compare before/after:
 | Traces from different calls merged | Missing \`langwatch.setup()\` or trace context not propagated | Ensure \`langwatch.setup()\` called at startup |
 `,
 
-  recipe_improve_setup: `Improve Your LangWatch Setup
-
-You are using LangWatch for your AI agent project. Follow these instructions.
+  recipe_improve_setup: `You are using LangWatch for your AI agent project. Follow these instructions.
 
 IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
@@ -2645,9 +2641,7 @@ After each improvement:
 - Do NOT skip running/verifying improvements
 `,
 
-  recipe_evaluate_multimodal: `Evaluate Your Multimodal Agent
-
-You are using LangWatch for your AI agent project. Follow these instructions.
+  recipe_evaluate_multimodal: `You are using LangWatch for your AI agent project. Follow these instructions.
 
 IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
@@ -2740,9 +2734,7 @@ Run the evaluation, review results, fix issues, re-run until quality is acceptab
 - Do NOT use generic test images — use domain-specific ones matching the agent's purpose
 `,
 
-  recipe_generate_rag_dataset: `Generate a RAG Evaluation Dataset
-
-You are using LangWatch for your AI agent project. Follow these instructions.
+  recipe_generate_rag_dataset: `You are using LangWatch for your AI agent project. Follow these instructions.
 
 IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
@@ -2845,9 +2837,7 @@ Before using the dataset:
 - Do NOT generate expected outputs that aren't actually in the knowledge base
 `,
 
-  recipe_test_compliance: `Test Your Agent's Compliance Boundaries
-
-You are using LangWatch for your AI agent project. Follow these instructions.
+  recipe_test_compliance: `You are using LangWatch for your AI agent project. Follow these instructions.
 
 IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
@@ -2983,9 +2973,7 @@ Create reusable criteria for your domain:
 - Do NOT forget to test the "empathetic but firm" response — the agent should show care while maintaining boundaries
 `,
 
-  recipe_test_cli_usability: `Test Your CLI's Agent Usability
-
-You are using LangWatch for your AI agent project. Follow these instructions.
+  recipe_test_cli_usability: `You are using LangWatch for your AI agent project. Follow these instructions.
 
 IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
