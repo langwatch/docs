@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export const CopyPrompt = ({ title, prompt }) => {
+export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
   const [copied, setCopied] = useState(false);
 
   if (!prompt) {
@@ -31,7 +31,9 @@ export const CopyPrompt = ({ title, prompt }) => {
       onMouseOver={(e) => { e.currentTarget.style.background = "var(--bg-hover, #f9fafb)"; }}
       onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
     >
-      <span style={{ fontWeight: 500, fontSize: "14px" }}>{title}</span>
+      <span style={{ fontSize: "14px" }}>
+        {boldPrefix ? <><strong>{boldPrefix}</strong> {title}</> : title}
+      </span>
       <button
         onClick={(e) => { e.stopPropagation(); handleCopy(); }}
         style={{
