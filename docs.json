@@ -17,7 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "banner": {
-    "content": "**[LangWatch MCP is live](https://langwatch.ai/docs/integration/mcp):** Your AI coding assistant can now build, version, and ship evals — no platform context-switching required.",
+    "content": "**[LangWatch MCP is live](https://langwatch.ai/docs/integration/mcp):** Your AI coding assistant can now build, version, and ship evals \u2014 no platform context-switching required.",
     "dismissible": true
   },
   "contextual": {
@@ -58,8 +58,17 @@
             "group": "Get Started",
             "pages": [
               "introduction",
-              "better-agents/overview",
-              "integration/mcp"
+              {
+                "group": "LangWatch Skills",
+                "pages": [
+                  "skills/directory",
+                  "skills/code-prompts",
+                  "skills/platform-prompts",
+                  "skills/recipes"
+                ]
+              },
+              "integration/mcp",
+              "better-agents/overview"
             ]
           },
           {
@@ -717,6 +726,26 @@
     {
       "source": "/hybrid-setup/sso-setup-langwatch",
       "destination": "/self-hosting/sso-setup-langwatch"
+    },
+    {
+      "source": "/skills/overview",
+      "destination": "/skills/directory"
+    },
+    {
+      "source": "/skills/developers",
+      "destination": "/skills/code-prompts"
+    },
+    {
+      "source": "/skills/teams",
+      "destination": "/skills/platform-prompts"
+    },
+    {
+      "source": "/skills/platform",
+      "destination": "/skills/platform-prompts"
+    },
+    {
+      "source": "/skills/manual",
+      "destination": "/integration/quick-start"
     }
   ]
 }

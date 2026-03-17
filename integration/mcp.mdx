@@ -26,27 +26,6 @@ Go to your LangWatch project **Settings** page and copy your API key. The API ke
 <Step title="Configure your MCP">
 
 <Tabs>
-<Tab title="Cursor">
-1. Open Cursor Settings
-2. Navigate to the **Tools and MCP** section in the sidebar
-3. Add the LangWatch MCP server:
-
-```json
-{
-  "mcpServers": {
-    "langwatch": {
-      "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server"],
-      "env": {
-        "LANGWATCH_API_KEY": "your-api-key-here"
-      }
-    }
-  }
-}
-```
-
-</Tab>
-
 <Tab title="Claude Code">
 Run this command to add the MCP server:
 
@@ -71,10 +50,64 @@ Or add it manually to your `~/.claude.json`:
 ```
 
 See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp#plugin-provided-mcp-servers) for more details.
-
 </Tab>
 
-<Tab title="Other Editors">
+<Tab title="Copilot">
+Add to `.vscode/mcp.json` in your project (or use **MCP: Add Server** from the Command Palette):
+
+```json
+{
+  "servers": {
+    "langwatch": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": { "LANGWATCH_API_KEY": "your-api-key-here" }
+    }
+  }
+}
+```
+</Tab>
+
+<Tab title="Cursor">
+1. Open Cursor Settings
+2. Navigate to the **Tools and MCP** section in the sidebar
+3. Add the LangWatch MCP server:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+</Tab>
+
+<Tab title="ChatGPT">
+1. Go to **Settings → Connectors**
+2. Click **Add connector**
+3. Enter the server URL: `https://mcp.langwatch.ai/sse`
+4. For authentication, select **Bearer Token** and enter your LangWatch API key (get one at [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize))
+
+*Requires a Plus or Team plan.*
+</Tab>
+
+<Tab title="Claude Chat">
+1. Go to **Settings → Connectors**
+2. Click **Add custom connector**
+3. Enter the server URL: `https://mcp.langwatch.ai/sse`
+4. Click **Advanced settings**, select **Bearer Token** auth, and enter your LangWatch API key (get one at [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize))
+
+*Requires a Pro or Max plan.*
+</Tab>
+
+<Tab title="Other">
 For other MCP-compatible editors, add the following configuration to your MCP settings file:
 
 ```json
@@ -108,6 +141,13 @@ Open your AI assistant chat (e.g., `Cmd/Ctrl + I` in Cursor, or `Cmd/Ctrl + Shif
 |---------------------|-------------|-------------|
 | `LANGWATCH_API_KEY` | `--apiKey` | API key for authentication |
 | `LANGWATCH_ENDPOINT` | `--endpoint` | API endpoint (default: `https://app.langwatch.ai`) |
+
+### Two Modes
+
+The MCP server runs in two modes:
+
+- **Local (stdio)**: Default. Runs as a subprocess of your coding assistant (Claude Code, Copilot, Cursor). API key set via `--apiKey` flag or `LANGWATCH_API_KEY` env var.
+- **Remote (HTTP/SSE)**: For web-based assistants (ChatGPT, Claude Chat). Hosted at `https://mcp.langwatch.ai`. API key sent as `Authorization: Bearer <key>` per session — each user brings their own key.
 
 ## Usage Examples
 
