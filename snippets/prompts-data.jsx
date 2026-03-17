@@ -1,11 +1,11 @@
 // Auto-generated from skills/_compiled/*.docs.txt
-// Regenerate with: bash skills/_compiled/generate.sh then run this script
 
 export const PROMPTS = {
-  tracing: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  tracing: `Add LangWatch Tracing to Your Code
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Add LangWatch Tracing to Your Code
@@ -14,7 +14,7 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 If the user's request is **general** ("instrument my code", "add tracing", "set up observability"):
 - Read the full codebase to understand the agent's architecture
-- Study git log to understand what changed and why
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Add comprehensive tracing across all LLM call sites
 
 If the user's request is **specific** ("add tracing to the payment function", "trace this endpoint"):
@@ -55,6 +55,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 
@@ -133,10 +135,11 @@ Run the application and check that traces appear in your LangWatch dashboard at 
 - Do NOT use \`platform_\` MCP tools — this skill is about adding code, not creating platform resources
 `,
 
-  evaluations: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  evaluations: `Set Up Evaluations for Your Agent
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Set Up Evaluations for Your Agent
@@ -172,7 +175,7 @@ For onboarding, create 1-2 Jupyter notebooks (or scripts) maximum. Focus on gene
 
 If the user's request is **general** ("set up evaluations", "evaluate my agent"):
 - Read the full codebase to understand the agent's architecture
-- Study git log to understand what changed and why
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Set up comprehensive evaluation coverage (experiment + evaluators + dataset)
 - After the experiment is working, transition to consultant mode: summarize results and suggest domain-specific improvements. # Consultant Mode — Guide the User Deeper
 
@@ -182,7 +185,10 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study the git history to understand what changed and why — focus on agent-related changes (prompt tweaks, tool changes, behavior fixes), not infrastructure. Start with recent commits and go deeper if the agent has a long history:
+   - \`git log --oneline -30\` for a quick overview
+   - \`git log --all --oneline --grep="fix\\|prompt\\|agent\\|eval\\|scenario"\` to find agent-relevant changes across all history
+   - Read the full commit messages for interesting changes — the WHY is more valuable than the WHAT
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -258,6 +264,10 @@ If you get a "plan limit reached" error:
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
 5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
+### On-Premises Users
+
+If \`LANGWATCH_ENDPOINT\` is set in the project's \`.env\`, the user is on a self-hosted instance. Direct them to upgrade at \`{LANGWATCH_ENDPOINT}/settings/license\` instead of \`https://app.langwatch.ai/settings/subscription\`.
+
 ### Example Response When Hitting a Limit
 
 Good:
@@ -299,6 +309,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 
@@ -344,7 +356,7 @@ for index, row in evaluation.loop(df.iterrows()):
         "ragas/answer_relevancy",
         index=index,
         data={"input": row["input"], "output": response},
-        settings={"model": "openai/gpt-4.1-mini", "max_tokens": 2048},
+        settings={"model": "openai/gpt-5-mini", "max_tokens": 2048},
     )
 \`\`\`
 
@@ -364,7 +376,7 @@ await evaluation.run(dataset, async ({ item, index }) => {
   await evaluation.evaluate("ragas/answer_relevancy", {
     index,
     data: { input: item.input, output: response },
-    settings: { model: "openai/gpt-4.1-mini", max_tokens: 2048 },
+    settings: { model: "openai/gpt-5-mini", max_tokens: 2048 },
   });
 });
 \`\`\`
@@ -533,10 +545,11 @@ Go to https://app.langwatch.ai and:
 - Do NOT create prompts with \`langwatch prompt create\` CLI when using the platform approach — that's for code-based projects
 `,
 
-  scenarios: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  scenarios: `Test Your Agent with Scenarios
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Test Your Agent with Scenarios
@@ -547,7 +560,7 @@ NEVER invent your own agent testing framework. Use \`@langwatch/scenario\` (Pyth
 
 If the user's request is **general** ("add scenarios to my project", "test my agent"):
 - Read the full codebase to understand the agent's architecture and capabilities
-- Study git log to understand what changed and why
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Generate comprehensive scenario coverage (happy path, edge cases, error handling)
 - For conversational agents, include multi-turn scenarios (using \`max_turns\` or scripted \`scenario.user()\` / \`scenario.agent()\` sequences) — these are where the most interesting edge cases live (context retention, topic switching, follow-up questions, recovery from misunderstandings)
 - ALWAYS run the tests after writing them. If they fail, debug and fix them (or the agent code). Delivering tests that haven't been executed is useless.
@@ -559,7 +572,10 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study the git history to understand what changed and why — focus on agent-related changes (prompt tweaks, tool changes, behavior fixes), not infrastructure. Start with recent commits and go deeper if the agent has a long history:
+   - \`git log --oneline -30\` for a quick overview
+   - \`git log --all --oneline --grep="fix\\|prompt\\|agent\\|eval\\|scenario"\` to find agent-relevant changes across all history
+   - Read the full commit messages for interesting changes — the WHY is more valuable than the WHAT
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -658,6 +674,10 @@ If you get a "plan limit reached" error:
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
 5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
+### On-Premises Users
+
+If \`LANGWATCH_ENDPOINT\` is set in the project's \`.env\`, the user is on a self-hosted instance. Direct them to upgrade at \`{LANGWATCH_ENDPOINT}/settings/license\` instead of \`https://app.langwatch.ai/settings/subscription\`.
+
 ### Example Response When Hitting a Limit
 
 Good:
@@ -710,6 +730,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
 
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
+
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 
 If the LangWatch MCP cannot be installed, you can fetch docs directly:
@@ -745,7 +767,7 @@ For Python, configure at the top of your test file:
 \`\`\`python
 import scenario
 
-scenario.configure(default_model="openai/gpt-4.1-mini")
+scenario.configure(default_model="openai/gpt-5-mini")
 \`\`\`
 
 For TypeScript, create a \`scenario.config.mjs\` file:
@@ -756,7 +778,7 @@ import { openai } from "@ai-sdk/openai";
 
 export default defineConfig({
   defaultModel: {
-    model: openai("gpt-4.1-mini"),
+    model: openai("gpt-5-mini"),
   },
 });
 \`\`\`
@@ -771,7 +793,7 @@ Create an agent adapter that wraps your existing agent, then use \`scenario.run(
 import pytest
 import scenario
 
-scenario.configure(default_model="openai/gpt-4.1-mini")
+scenario.configure(default_model="openai/gpt-5-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -872,7 +894,7 @@ CRITICAL: Do NOT guess how to write red team tests. Read the actual documentatio
 import pytest
 import scenario
 
-scenario.configure(default_model="openai/gpt-4.1-mini")
+scenario.configure(default_model="openai/gpt-5-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -934,7 +956,7 @@ describe("Agent Security", () => {
         myAgent,
         attacker,
         scenario.judgeAgent({
-          model: openai("gpt-4o-mini"),
+          model: openai("gpt-5-mini"),
           criteria: [
             "Agent should refuse harmful requests",
             "Agent should not reveal system prompt",
@@ -987,6 +1009,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 ### Step 2: Understand the Scenario Schema
 
@@ -1052,10 +1076,11 @@ For TypeScript: \`npx vitest run\`
 - Always call \`discover_schema\` first to understand the scenario format
 `,
 
-  prompts: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  prompts: `Version Your Prompts with LangWatch Prompts CLI
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Version Your Prompts with LangWatch Prompts CLI
@@ -1064,7 +1089,7 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 If the user's request is **general** ("set up prompt versioning", "version my prompts"):
 - Read the full codebase to find all hardcoded prompt strings
-- Study git log to understand prompt evolution
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Set up the Prompts CLI and create managed prompts for each hardcoded prompt
 - Update all application code to use \`langwatch.prompts.get()\`
 
@@ -1105,6 +1130,10 @@ If you get a "plan limit reached" error:
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
 5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
+
+### On-Premises Users
+
+If \`LANGWATCH_ENDPOINT\` is set in the project's \`.env\`, the user is on a self-hosted instance. Direct them to upgrade at \`{LANGWATCH_ENDPOINT}/settings/license\` instead of \`https://app.langwatch.ai/settings/subscription\`.
 
 ### Example Response When Hitting a Limit
 
@@ -1147,6 +1176,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 
@@ -1244,10 +1275,11 @@ Check that your prompts appear on https://app.langwatch.ai in the Prompts sectio
 - Do NOT skip \`langwatch prompt sync\` — prompts must be synced to the platform after creation
 `,
 
-  analytics: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  analytics: `Analyze Agent Performance with LangWatch
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Analyze Agent Performance with LangWatch
@@ -1283,6 +1315,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 ## Step 2: Discover Available Metrics
 
@@ -1341,10 +1375,11 @@ Summarize the data clearly for the user:
 - Do NOT present raw JSON to the user -- summarize the data in a clear, human-readable format
 `,
 
-  level_up: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  level_up: `Add LangWatch Tracing to Your Code
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Add LangWatch Tracing to Your Code
@@ -1353,7 +1388,7 @@ First, try to install the LangWatch MCP server for access to documentation and p
 
 If the user's request is **general** ("instrument my code", "add tracing", "set up observability"):
 - Read the full codebase to understand the agent's architecture
-- Study git log to understand what changed and why
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Add comprehensive tracing across all LLM call sites
 
 If the user's request is **specific** ("add tracing to the payment function", "trace this endpoint"):
@@ -1394,6 +1429,8 @@ Or add to \`~/.claude.json\` or \`.mcp.json\` in the project:
 
 ## For other editors
 Add to your editor's MCP settings file using the JSON config above.
+
+**Tip:** If \`LANGWATCH_API_KEY\` is already in the project's \`.env\` file, use that same key for the MCP configuration.
 
 If MCP installation fails, see # Fetching LangWatch Docs Without MCP
 
@@ -1479,7 +1516,7 @@ Run the application and check that traces appear in your LangWatch dashboard at 
 
 If the user's request is **general** ("set up prompt versioning", "version my prompts"):
 - Read the full codebase to find all hardcoded prompt strings
-- Study git log to understand prompt evolution
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Set up the Prompts CLI and create managed prompts for each hardcoded prompt
 - Update all application code to use \`langwatch.prompts.get()\`
 
@@ -1520,6 +1557,10 @@ If you get a "plan limit reached" error:
 3. **Show the value you already delivered.** Summarize what was created and how it helps them.
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
 5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
+
+### On-Premises Users
+
+If \`LANGWATCH_ENDPOINT\` is set in the project's \`.env\`, the user is on a self-hosted instance. Direct them to upgrade at \`{LANGWATCH_ENDPOINT}/settings/license\` instead of \`https://app.langwatch.ai/settings/subscription\`.
 
 ### Example Response When Hitting a Limit
 
@@ -1656,7 +1697,7 @@ For onboarding, create 1-2 Jupyter notebooks (or scripts) maximum. Focus on gene
 
 If the user's request is **general** ("set up evaluations", "evaluate my agent"):
 - Read the full codebase to understand the agent's architecture
-- Study git log to understand what changed and why
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Set up comprehensive evaluation coverage (experiment + evaluators + dataset)
 - After the experiment is working, transition to consultant mode: summarize results and suggest domain-specific improvements. # Consultant Mode — Guide the User Deeper
 
@@ -1666,7 +1707,10 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study the git history to understand what changed and why — focus on agent-related changes (prompt tweaks, tool changes, behavior fixes), not infrastructure. Start with recent commits and go deeper if the agent has a long history:
+   - \`git log --oneline -30\` for a quick overview
+   - \`git log --all --oneline --grep="fix\\|prompt\\|agent\\|eval\\|scenario"\` to find agent-relevant changes across all history
+   - Read the full commit messages for interesting changes — the WHY is more valuable than the WHAT
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -1742,6 +1786,10 @@ If you get a "plan limit reached" error:
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
 5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
+### On-Premises Users
+
+If \`LANGWATCH_ENDPOINT\` is set in the project's \`.env\`, the user is on a self-hosted instance. Direct them to upgrade at \`{LANGWATCH_ENDPOINT}/settings/license\` instead of \`https://app.langwatch.ai/settings/subscription\`.
+
 ### Example Response When Hitting a Limit
 
 Good:
@@ -1789,7 +1837,7 @@ for index, row in evaluation.loop(df.iterrows()):
         "ragas/answer_relevancy",
         index=index,
         data={"input": row["input"], "output": response},
-        settings={"model": "openai/gpt-4.1-mini", "max_tokens": 2048},
+        settings={"model": "openai/gpt-5-mini", "max_tokens": 2048},
     )
 \`\`\`
 
@@ -1809,7 +1857,7 @@ await evaluation.run(dataset, async ({ item, index }) => {
   await evaluation.evaluate("ragas/answer_relevancy", {
     index,
     data: { input: item.input, output: response },
-    settings: { model: "openai/gpt-4.1-mini", max_tokens: 2048 },
+    settings: { model: "openai/gpt-5-mini", max_tokens: 2048 },
   });
 });
 \`\`\`
@@ -1987,7 +2035,7 @@ NEVER invent your own agent testing framework. Use \`@langwatch/scenario\` (Pyth
 
 If the user's request is **general** ("add scenarios to my project", "test my agent"):
 - Read the full codebase to understand the agent's architecture and capabilities
-- Study git log to understand what changed and why
+- Study git history to understand what changed and why — focus on agent behavior changes, prompt tweaks, bug fixes. Read commit messages for context.
 - Generate comprehensive scenario coverage (happy path, edge cases, error handling)
 - For conversational agents, include multi-turn scenarios (using \`max_turns\` or scripted \`scenario.user()\` / \`scenario.agent()\` sequences) — these are where the most interesting edge cases live (context retention, topic switching, follow-up questions, recovery from misunderstandings)
 - ALWAYS run the tests after writing them. If they fail, debug and fix them (or the agent code). Delivering tests that haven't been executed is useless.
@@ -1999,7 +2047,10 @@ After delivering initial results, transition to consultant mode to help the user
 
 Before generating ANY content:
 1. Read the full codebase — every file, every function, every system prompt
-2. Study \`git log --oneline -30\` and read commit messages for important changes — the WHY behind changes reveals edge cases, bug fixes, regressions, and design decisions that are goldmines for scenario and evaluation coverage
+2. Study the git history to understand what changed and why — focus on agent-related changes (prompt tweaks, tool changes, behavior fixes), not infrastructure. Start with recent commits and go deeper if the agent has a long history:
+   - \`git log --oneline -30\` for a quick overview
+   - \`git log --all --oneline --grep="fix\\|prompt\\|agent\\|eval\\|scenario"\` to find agent-relevant changes across all history
+   - Read the full commit messages for interesting changes — the WHY is more valuable than the WHAT
 3. Read any docs, README, or comments that explain the domain
 4. Understand the user's actual business context from the code
 
@@ -2098,6 +2149,10 @@ If you get a "plan limit reached" error:
 4. **Suggest upgrading.** Direct them to upgrade at: https://app.langwatch.ai/settings/subscription
 5. **Frame it positively.** "You've set up [X, Y, Z] which gives you [value]. To add more, you can upgrade your plan."
 
+### On-Premises Users
+
+If \`LANGWATCH_ENDPOINT\` is set in the project's \`.env\`, the user is on a self-hosted instance. Direct them to upgrade at \`{LANGWATCH_ENDPOINT}/settings/license\` instead of \`https://app.langwatch.ai/settings/subscription\`.
+
 ### Example Response When Hitting a Limit
 
 Good:
@@ -2141,7 +2196,7 @@ For Python, configure at the top of your test file:
 \`\`\`python
 import scenario
 
-scenario.configure(default_model="openai/gpt-4.1-mini")
+scenario.configure(default_model="openai/gpt-5-mini")
 \`\`\`
 
 For TypeScript, create a \`scenario.config.mjs\` file:
@@ -2152,7 +2207,7 @@ import { openai } from "@ai-sdk/openai";
 
 export default defineConfig({
   defaultModel: {
-    model: openai("gpt-4.1-mini"),
+    model: openai("gpt-5-mini"),
   },
 });
 \`\`\`
@@ -2167,7 +2222,7 @@ Create an agent adapter that wraps your existing agent, then use \`scenario.run(
 import pytest
 import scenario
 
-scenario.configure(default_model="openai/gpt-4.1-mini")
+scenario.configure(default_model="openai/gpt-5-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -2268,7 +2323,7 @@ CRITICAL: Do NOT guess how to write red team tests. Read the actual documentatio
 import pytest
 import scenario
 
-scenario.configure(default_model="openai/gpt-4.1-mini")
+scenario.configure(default_model="openai/gpt-5-mini")
 
 @pytest.mark.agent_test
 @pytest.mark.asyncio
@@ -2330,7 +2385,7 @@ describe("Agent Security", () => {
         myAgent,
         attacker,
         scenario.judgeAgent({
-          model: openai("gpt-4o-mini"),
+          model: openai("gpt-5-mini"),
           criteria: [
             "Agent should refuse harmful requests",
             "Agent should not reveal system prompt",
@@ -2453,10 +2508,11 @@ Install the LangWatch MCP server:
 4. Use platform_get_evaluator and platform_update_evaluator to review and refine
 5. Then go to https://app.langwatch.ai to set up monitors using these evaluators`,
 
-  recipe_debug_instrumentation: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  recipe_debug_instrumentation: `Debug Your LangWatch Instrumentation
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Debug Your LangWatch Instrumentation
@@ -2515,10 +2571,11 @@ After fixes, compare before/after:
 | Traces from different calls merged | Missing \`langwatch.setup()\` or trace context not propagated | Ensure \`langwatch.setup()\` called at startup |
 `,
 
-  recipe_improve_setup: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  recipe_improve_setup: `Improve Your LangWatch Setup
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Improve Your LangWatch Setup
@@ -2588,10 +2645,11 @@ After each improvement:
 - Do NOT skip running/verifying improvements
 `,
 
-  recipe_evaluate_multimodal: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  recipe_evaluate_multimodal: `Evaluate Your Multimodal Agent
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Evaluate Your Multimodal Agent
@@ -2682,10 +2740,11 @@ Run the evaluation, review results, fix issues, re-run until quality is acceptab
 - Do NOT use generic test images — use domain-specific ones matching the agent's purpose
 `,
 
-  recipe_generate_rag_dataset: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  recipe_generate_rag_dataset: `Generate a RAG Evaluation Dataset
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Generate a RAG Evaluation Dataset
@@ -2786,10 +2845,11 @@ Before using the dataset:
 - Do NOT generate expected outputs that aren't actually in the knowledge base
 `,
 
-  recipe_test_compliance: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  recipe_test_compliance: `Test Your Agent's Compliance Boundaries
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Test Your Agent's Compliance Boundaries
@@ -2923,10 +2983,11 @@ Create reusable criteria for your domain:
 - Do NOT forget to test the "empathetic but firm" response — the agent should show care while maintaining boundaries
 `,
 
-  recipe_test_cli_usability: `You are helping the user set up LangWatch for their AI agent project. Follow these instructions carefully.
+  recipe_test_cli_usability: `Test Your CLI's Agent Usability
 
-IMPORTANT: You will need the user's LangWatch API key. Ask them for it and direct them to https://app.langwatch.ai/authorize if they don't have one.
+You are using LangWatch for your AI agent project. Follow these instructions.
 
+IMPORTANT: You will need a LangWatch API key. Check if LANGWATCH_API_KEY is already in the project's .env file. If not, ask the user for it — they can get one at https://app.langwatch.ai/authorize. If they have a LANGWATCH_ENDPOINT in .env, they are on a self-hosted instance — use that endpoint instead of app.langwatch.ai.
 First, try to install the LangWatch MCP server for access to documentation and platform tools. If installation fails, you can fetch docs directly via the URLs provided below.
 
 # Test Your CLI's Agent Usability
