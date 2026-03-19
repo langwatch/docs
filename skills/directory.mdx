@@ -4,20 +4,19 @@ description: "Get started with LangWatch in seconds. Copy a prompt, install a sk
 sidebarTitle: "Skills Directory"
 ---
 
+import { SkillInstall } from "/snippets/skill-install.jsx"
+
 Don't want to install skills? Copy a ready-to-paste prompt instead: [Code Prompts](/skills/code-prompts) | [Platform Prompts](/skills/platform-prompts)
 
 ## Available Skills
 
 Install any skill with a single command:
 
-| Skill | Install | What it does |
-|-------|---------|-------------|
-| `langwatch/tracing` | `npx skills add langwatch/skills/tracing` | Add LangWatch tracing to your code |
-| `langwatch/evaluations` | `npx skills add langwatch/skills/evaluations` | Set up experiments, evaluators, and monitoring |
-| `langwatch/scenarios` | `npx skills add langwatch/skills/scenarios` | Add agent simulation tests |
-| `langwatch/prompts` | `npx skills add langwatch/skills/prompts` | Version and manage your prompts |
-| `langwatch/analytics` | `npx skills add langwatch/skills/analytics` | Query your agent's performance |
-| `langwatch/level-up` | `npx skills add langwatch/skills/level-up` | All of the above in one go |
+<SkillInstall title="Instrument my agent with open telemetry" skill="langwatch/skills/tracing" slashCommand="/langwatch-tracing" />
+<SkillInstall title="Write evaluations for my agent" skill="langwatch/skills/evaluations" slashCommand="/langwatch-evaluations" />
+<SkillInstall title="Write scenario tests and a CI pipeline for my agent" skill="langwatch/skills/scenarios" slashCommand="/langwatch-scenarios" />
+<SkillInstall title="Version my prompts" skill="langwatch/skills/prompts" slashCommand="/langwatch-prompts" />
+<SkillInstall title="Do all of the above" skill="langwatch/skills/level-up" slashCommand="/langwatch-level-up" highlighted />
 
 <Tip>
   **Starting an agent from scratch?** Use [Better Agents](/better-agents/overview) to scaffold a production-ready project with all LangWatch features built in.
