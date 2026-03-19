@@ -19,11 +19,11 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
 
   return (
     <div style={{
-      border: highlighted ? "1px solid #f6ad55" : "1px solid var(--border-color, #e5e7eb)",
+      border: highlighted ? "1px solid rgba(225, 113, 0, 0.4)" : "1px solid var(--border-color, #e5e7eb)",
       borderRadius: "12px",
       padding: "20px 24px",
       marginBottom: "16px",
-      background: highlighted ? "linear-gradient(135deg, #fffaf0, #fff5eb)" : "transparent",
+      background: highlighted ? "rgba(225, 113, 0, 0.06)" : "transparent",
     }}>
       <div style={{
         display: "flex",
@@ -34,7 +34,6 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
         <span style={{
           fontSize: "16px",
           fontWeight: 700,
-          color: "var(--text-primary, inherit)",
         }}>{title}</span>
         <button
           onClick={handleCopy}
@@ -69,19 +68,18 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
         <code style={{
           fontSize: "13px",
           fontFamily: "var(--font-mono, monospace)",
-          color: "var(--text-primary, inherit)",
         }}>{installCmd}</code>
       </div>
 
       <div style={{
-        background: "var(--bg-muted, #f9fafb)",
+        background: highlighted ? "rgba(225, 113, 0, 0.08)" : "var(--border-color, rgba(0, 0, 0, 0.05))",
         borderRadius: "8px",
         padding: "10px 14px",
         fontSize: "13px",
-        color: "var(--text-secondary, #6b7280)",
+        color: "var(--text-muted, #6b7280)",
       }}>
         Then use <span style={{
-          color: "#ed8936",
+          color: "var(--colors-light, #fe9a00)",
           fontWeight: 600,
         }}>{slashCommand}</span> in your coding agent
       </div>
