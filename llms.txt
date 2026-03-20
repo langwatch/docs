@@ -40,7 +40,7 @@ Always navigate to docs links using the .md extension for better readability.
 - [Selected Text Events](https://langwatch.ai/docs/user-events/selected-text.md): Track selected text events in LangWatch to understand user behavior and improve LLM performance across AI agent evaluations.
 - [Custom Events](https://langwatch.ai/docs/user-events/custom.md): Track custom user events in your LLM application using LangWatch to support analytics, evaluations, and agent testing workflows.
 
-- [Triggers](https://langwatch.ai/docs/features/triggers.md)
+- [Alerts and Automations](https://langwatch.ai/docs/features/automations.md): Configure Alerts and Automations in LangWatch to detect regressions, notify teams, and enforce automated guardrails for AI agent testing.
 - [Exporting Analytics](https://langwatch.ai/docs/features/embedded-analytics.md): Export LangWatch analytics into your own dashboards to monitor LLM quality, agent testing metrics, and evaluation performance.
 
 # Integrations
@@ -340,9 +340,9 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [Add dataset entries programmatically using the LangWatch API to build evaluation sets for LLM testing and agent validation.](https://langwatch.ai/docs/api-reference/datasets/post-dataset-entries.md)
 
-## Triggers
+## Automations
 
-- [Create Slack Trigger](https://langwatch.ai/docs/api-reference/triggers/create-slack-trigger.md)
+- [Create Slack automation](https://langwatch.ai/docs/api-reference/automations/create-slack-automation.md)
 
 ## Scenarios
 

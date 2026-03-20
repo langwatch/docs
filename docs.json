@@ -98,7 +98,7 @@
                   "user-events/custom"
                 ]
               },
-              "features/triggers",
+              "features/automations",
               "features/embedded-analytics"
             ]
           },
@@ -504,9 +504,9 @@
             ]
           },
           {
-            "group": "Triggers",
+            "group": "Automations",
             "pages": [
-              "api-reference/triggers/create-slack-trigger"
+              "api-reference/automations/create-slack-automation"
             ]
           },
           {
