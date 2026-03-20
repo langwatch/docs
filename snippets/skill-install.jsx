@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+const { useState, useEffect } = React;
 
 const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
