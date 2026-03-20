@@ -4,7 +4,7 @@
 
 ---
 title: "LangWatch: The Complete LLMOps Platform"
-description: "Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub."
+description: "Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 3k stars on GitHub."
 sidebarTitle: Introduction
 keywords: langwatch, llm, ai, observability, evaluation, prompt optimization, llmops, open-source, github
 ---
@@ -17,60 +17,28 @@ keywords: langwatch, llm, ai, observability, evaluation, prompt optimization, ll
   />
 </Frame>
 
-## Quick Start
 
-Ready to start taking control of your LLM application quality? Quick start with observability or agent simulations right away:
+## Quick Start
 
 <CardGroup cols={2}>
   <Card
-    title="Observability Quick Start"
-    description="Track every LLM call, tool usage, and user interaction with detailed traces, spans, and metadata."
-    icon="chart-network"
-    href="/integration/quick-start"
-    arrow
-    horizontal
+    title="Using a Coding Assistant"
+    description="Prompt Claude Code or Copilot to instrument your agent, create evaluations, add simulation tests, version prompts..."
+    icon="terminal"
+    href="/skills/code-prompts"
   />
   <Card
-    title="Agent Simulation Testing"
-    description="Test and optimize agents with collaborative tools and A/B testing."
-    icon="masks-theater"
-    href="/agent-simulations/getting-started"
-    arrow
-    horizontal
-  />
-  <Card
-    title="LLM Evaluation"
-    description="Measure output quality with built-in evaluators, custom metrics, and human feedback integration."
-    icon="square-check"
-    href="/evaluations/overview"
-    arrow
-    horizontal
-  />
-  <Card
-    title="Prompt Management"
-    description="Version control, test, and optimize prompts with collaborative tools and A/B testing."
-    icon="code"
-    href="/prompt-management/overview"
-    arrow
-    horizontal
-  />
-  <Card
-    title="Cost & Performance Tracking"
-    description="Monitor token usage, costs, and performance metrics across all models and providers."
-    icon="chart-line"
-    href="/integration/python/tutorials/tracking-llm-costs"
-    arrow
-    horizontal
-  />
-  <Card
-    title="Alerts & Automations"
-    description="Set up alerts and automations for your LLM applications."
-    icon="bell"
-    href="/features/automations"
-    arrow
-    horizontal
+    title="Using a Chat Assistant"
+    description="Ask your chat assistant to check agent performance, set up evaluators, create scenarios on the platform..."
+    icon="messages"
+    href="/skills/platform-prompts"
   />
 </CardGroup>
+
+<Tip>
+  **Starting from scratch?** Use [Better Agents](/better-agents/overview) to scaffold a new agent project.
+  **Want to install skills?** Browse the [Skills Directory](/skills/directory).
+</Tip>
 
 ## What is LangWatch?
 
@@ -80,22 +48,14 @@ Building AI applications is hard. Developers spend weeks debugging issues, optim
 
 LangWatch provides the missing operations platform for AI applications. Every LLM call, tool usage, and user interaction is automatically tracked with detailed traces, spans, and metadata. See the full conversation flow, identify bottlenecks, and understand exactly how your AI applications behave in production.
 
+## What LangWatch Does
 
-## For Every Role
-
-LangWatch serves different needs across your organization, providing value to every team member working with AI applications.
-
-### For Developers
-
-Debug faster with detailed traces that show exactly what happened in each LLM call. Build datasets from production data, run batch evaluations, and continuously improve your AI applications with comprehensive debugging tools and performance insights.
-
-### For Domain Experts
-
-Easily sift through conversations, see topics being discussed, and annotate messages for improvement in a collaborative manner with the development team. Provide feedback on AI outputs and help guide quality improvements through intuitive interfaces.
-
-### For Business Teams
-
-Track conversation metrics, user analytics, and cost tracking with custom dashboards and reporting. Monitor AI application performance, understand user behavior, and make data-driven decisions about your AI investments.
+<CardGroup cols={2}>
+  <Card title="Observability" description="Track every LLM call, tool usage, and user interaction with detailed traces." icon="chart-network" href="/observability/overview" />
+  <Card title="Evaluations" description="Test quality with experiments, monitor production, guard against harm." icon="square-check" href="/evaluations/overview" />
+  <Card title="Agent Simulations" description="Validate agent behavior with realistic multi-turn conversations." icon="masks-theater" href="/agent-simulations/introduction" />
+  <Card title="Prompt Management" description="Version, test, and optimize prompts collaboratively." icon="code" href="/prompt-management/overview" />
+</CardGroup>
 
 ## Where to Start?
 
@@ -423,6 +383,7 @@ Use LangWatch to effortlessly integrate with popular AI model providers
 No-code agent builders and tools
 
 <CardGroup cols={3}>
+<Card title="OpenClaw" icon="/images/logos/openclaw.svg" href="/integration/openclaw" horizontal arrow />
 <Card title="n8n" icon="/images/logos/n8n.svg" href="/integration/n8n" horizontal arrow />
 <Card title="Flowise" icon="/images/logos/flowise.svg" href="/integration/flowise" horizontal arrow />
 <Card title="Langflow" icon="/images/logos/langflow.svg" href="/integration/langflow" horizontal arrow />
@@ -454,6 +415,10 @@ We use [GitHub Discussions](https://github.com/orgs/langwatch/discussions/new?ca
 title: Quick Start
 mode: "wide"
 ---
+
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
 
 LangWatch helps you understand every user interaction (**Thread**), each individual AI task (**Trace**), and all the underlying steps (**Span**) involved. We've made getting started super smooth.
 
@@ -869,6 +834,10 @@ icon: python
 keywords: langchain, instrumentation, callback, langwatch, python, tracing
 ---
 
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
+
 LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
 
 ## Installation
@@ -950,6 +919,10 @@ sidebarTitle: Agno
 description: Instrument Agno agents with LangWatch’s Python SDK to send traces, analyze behaviors, and strengthen AI agent testing and evaluations.
 keywords: agno, openinference, langwatch, python, tracing, observability
 ---
+
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
 
 LangWatch integrates with Agno through OpenInference instrumentation to capture traces from your Agno agents automatically.
 
@@ -2929,6 +2902,10 @@ icon: python
 keywords: langgraph, instrumentation, callback, langwatch, python, tracing
 ---
 
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
+
 LangWatch integrates with LangGraph to provide detailed observability into your graph-based agents, LLM calls, and tool usage.
 
 ## Installation
@@ -3772,6 +3749,10 @@ description: Instrument OpenAI API calls with the LangWatch Python SDK to captur
 icon: python
 keywords: openai, instrumentation, autotrack, langwatch, python
 ---
+
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
 
 LangWatch integrates with OpenAI to automatically capture detailed information about your LLM calls.
 
@@ -5601,6 +5582,10 @@ icon: square-js
 keywords: langchain, instrumentation, callback, langwatch, typescript, tracing
 ---
 
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
+
 LangWatch integrates with Langchain to provide detailed observability into your chains, agents, LLM calls, and tool usage.
 
 ## Installation
@@ -5669,6 +5654,10 @@ description: Integrate the Vercel AI SDK with LangWatch for TypeScript-based tra
 sidebarTitle: Vercel AI SDK
 keywords: vercel ai sdk, langwatch, tracing, observability, vercel, ai, sdk
 ---
+
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
 
 <div className="not-prose" style={{display: "flex", gap: "8px", padding: "0"}}>
   <div>
@@ -6074,6 +6063,10 @@ description: Learn how to integrate Mastra, a TypeScript agent framework, with L
 sidebarTitle: Mastra
 keywords: mastra, langwatch, tracing, observability, typescript, agent framework, ai agents
 ---
+
+<Tip>
+  **Quick setup?** Instead of following these steps manually, [copy a prompt](/skills/code-prompts#instrument-my-code) into your coding agent and it will set this up for you automatically.
+</Tip>
 
 LangWatch integrates with Mastra through OpenTelemetry to capture traces from your Mastra agents automatically.
 
@@ -6932,7 +6925,7 @@ span.setType("llm");
 span.setAttributes({
   "langwatch.user.id": "user-123",
   "langwatch.thread.id": "thread-456",
-  "langwatch.streaming": false,
+  "langwatch.gen_ai.streaming": false,
 });
 ```
 
@@ -6957,7 +6950,7 @@ await tracer.withActiveSpan("llm-operation", async (span) => {
     "langwatch.span.type": "llm",
     "langwatch.user.id": "user-123",
     "langwatch.thread.id": "thread-456",
-    "langwatch.streaming": false,
+    "langwatch.gen_ai.streaming": false,
     // ... more attributes with autocomplete
   });
 });
@@ -6992,11 +6985,11 @@ LangWatch provides a comprehensive set of custom attributes for LLM-specific obs
 | `langwatch.user.id` | string | User identifier | `"user-123"` |
 | `langwatch.thread.id` | string | Conversation thread identifier | `"thread-456"` |
 | `langwatch.customer.id` | string | Customer identifier | `"customer-789"` |
-| `langwatch.streaming` | boolean | Whether the operation involves streaming | `true`, `false` |
+| `langwatch.gen_ai.streaming` | boolean | Whether the operation involves streaming | `true`, `false` |
 | `langwatch.input` | string/object | Input data for the span | `"Hello, how are you?"` |
 | `langwatch.output` | string/object | Output data from the span | `"I'm doing well, thank you!"` |
 | `langwatch.contexts` | array | RAG contexts for retrieval-augmented generation | Array of document contexts |
-| `langwatch.tags` | array | Tags for categorizing spans | `["chat", "greeting"]` |
+| `langwatch.labels` | array | Labels for categorizing spans | `["chat", "greeting"]` |
 | `langwatch.params` | object | Parameter data for operations | `{ temperature: 0.7 }` |
 | `langwatch.metrics` | object | Custom metrics data | `{ response_time: 1250 }` |
 | `langwatch.timestamps` | object | Timing information for events | `{ start: 1234567890 }` |
@@ -7034,6 +7027,90 @@ LangWatch provides a comprehensive set of custom attributes for LLM-specific obs
 | `langwatch.langchain.run.tags` | array | Run-specific tags | `["production", "chain"]` |
 | `langwatch.langchain.tags` | array | LangChain operation tags | `["langchain", "llm"]` |
 
+### Using SDK Constants
+
+Instead of using raw attribute strings, both SDKs provide typed constants you can import:
+
+<CodeGroup>
+
+```typescript TypeScript
+import { attributes } from "langwatch";
+
+span.setAttributes({
+  [attributes.ATTR_LANGWATCH_SPAN_TYPE]: "llm",
+  [attributes.ATTR_LANGWATCH_USER_ID]: "user-123",
+  [attributes.ATTR_LANGWATCH_THREAD_ID]: "thread-456",
+  [attributes.ATTR_LANGWATCH_LABELS]: ["chat", "greeting"],
+  [attributes.ATTR_LANGWATCH_STREAMING]: false,
+});
+```
+
+```python Python
+from langwatch.attributes import AttributeKey
+
+span.set_attribute(AttributeKey.LangWatchSpanType, "llm")
+span.set_attribute(AttributeKey.LangWatchCustomerId, "customer-789")
+span.set_attribute(AttributeKey.LangWatchThreadId, "thread-456")
+span.set_attribute(AttributeKey.LangWatchPromptHandle, "customer-support-greeting")
+```
+
+</CodeGroup>
+
+<Accordion title="Full list of SDK constants">
+
+**TypeScript** — `import { attributes } from "langwatch"`
+
+| Constant | Value |
+|----------|-------|
+| `ATTR_LANGWATCH_INPUT` | `langwatch.input` |
+| `ATTR_LANGWATCH_OUTPUT` | `langwatch.output` |
+| `ATTR_LANGWATCH_SPAN_TYPE` | `langwatch.span.type` |
+| `ATTR_LANGWATCH_RAG_CONTEXTS` | `langwatch.contexts` |
+| `ATTR_LANGWATCH_METRICS` | `langwatch.metrics` |
+| `ATTR_LANGWATCH_SDK_VERSION` | `langwatch.sdk.version` |
+| `ATTR_LANGWATCH_SDK_NAME` | `langwatch.sdk.name` |
+| `ATTR_LANGWATCH_SDK_LANGUAGE` | `langwatch.sdk.language` |
+| `ATTR_LANGWATCH_TIMESTAMPS` | `langwatch.timestamps` |
+| `ATTR_LANGWATCH_EVALUATION_CUSTOM` | `langwatch.evaluation.custom` |
+| `ATTR_LANGWATCH_PARAMS` | `langwatch.params` |
+| `ATTR_LANGWATCH_CUSTOMER_ID` | `langwatch.customer.id` |
+| `ATTR_LANGWATCH_THREAD_ID` | `langwatch.thread.id` |
+| `ATTR_LANGWATCH_USER_ID` | `langwatch.user.id` |
+| `ATTR_LANGWATCH_LABELS` | `langwatch.labels` |
+| `ATTR_LANGWATCH_STREAMING` | `langwatch.gen_ai.streaming` |
+| `ATTR_LANGWATCH_PROMPT_ID` | `langwatch.prompt.id` |
+| `ATTR_LANGWATCH_PROMPT_HANDLE` | `langwatch.prompt.handle` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_ID` | `langwatch.prompt.version.id` |
+| `ATTR_LANGWATCH_PROMPT_VERSION_NUMBER` | `langwatch.prompt.version.number` |
+| `ATTR_LANGWATCH_PROMPT_SELECTED_ID` | `langwatch.prompt.selected.id` |
+| `ATTR_LANGWATCH_PROMPT_VARIABLES` | `langwatch.prompt.variables` |
+
+**Python** — `from langwatch.attributes import AttributeKey`
+
+| Constant | Value |
+|----------|-------|
+| `AttributeKey.LangWatchInput` | `langwatch.input` |
+| `AttributeKey.LangWatchOutput` | `langwatch.output` |
+| `AttributeKey.LangWatchSpanType` | `langwatch.span.type` |
+| `AttributeKey.LangWatchRAGContexts` | `langwatch.rag_contexts` |
+| `AttributeKey.LangWatchMetrics` | `langwatch.metrics` |
+| `AttributeKey.LangWatchSDKVersion` | `langwatch.sdk.version` |
+| `AttributeKey.LangWatchSDKName` | `langwatch.sdk.name` |
+| `AttributeKey.LangWatchSDKLanguage` | `langwatch.sdk.language` |
+| `AttributeKey.LangWatchTimestamps` | `langwatch.timestamps` |
+| `AttributeKey.LangWatchEventEvaluationCustom` | `langwatch.evaluation.custom` |
+| `AttributeKey.LangWatchParams` | `langwatch.params` |
+| `AttributeKey.LangWatchCustomerId` | `langwatch.customer.id` |
+| `AttributeKey.LangWatchThreadId` | `langwatch.thread.id` |
+| `AttributeKey.LangWatchPromptId` | `langwatch.prompt.id` |
+| `AttributeKey.LangWatchPromptHandle` | `langwatch.prompt.handle` |
+| `AttributeKey.LangWatchPromptVersionId` | `langwatch.prompt.version.id` |
+| `AttributeKey.LangWatchPromptVersionNumber` | `langwatch.prompt.version.number` |
+| `AttributeKey.LangWatchPromptSelectedId` | `langwatch.prompt.selected.id` |
+| `AttributeKey.LangWatchPromptVariables` | `langwatch.prompt.variables` |
+
+</Accordion>
+
 ## Best Practices
 
 ### Attribute Naming
@@ -7062,15 +7139,15 @@ Use appropriate data types and formats:
 ```typescript
 // ✅ Good: Proper data types
 span.setAttributes({
-  "langwatch.streaming": false, // boolean
+  "langwatch.gen_ai.streaming": false, // boolean
   "langwatch.user.id": "user-123", // string
   "langwatch.prompt.version.number": 2, // number
-  "langwatch.tags": ["chat", "greeting"], // array
+  "langwatch.labels": ["chat", "greeting"], // array
 });
 
 // ❌ Avoid: Inconsistent data types
 span.setAttributes({
-  "langwatch.streaming": "false", // string instead of boolean
+  "langwatch.gen_ai.streaming": "false", // string instead of boolean
   "langwatch.prompt.version.number": "2", // string instead of number
 });
 ```
@@ -11196,26 +11273,6 @@ Go to your LangWatch project **Settings** page and copy your API key. The API ke
 <Step title="Configure your MCP">
 
 
-### Cursor
-
-1. Open Cursor Settings
-2. Navigate to the **Tools and MCP** section in the sidebar
-3. Add the LangWatch MCP server:
-
-```json
-{
-  "mcpServers": {
-    "langwatch": {
-      "command": "npx",
-      "args": ["-y", "@langwatch/mcp-server"],
-      "env": {
-        "LANGWATCH_API_KEY": "your-api-key-here"
-      }
-    }
-  }
-}
-```
-
 ### Claude Code
 
 Run this command to add the MCP server:
@@ -11242,7 +11299,67 @@ Or add it manually to your `~/.claude.json`:
 
 See the [Claude Code MCP documentation](https://code.claude.com/docs/en/mcp#plugin-provided-mcp-servers) for more details.
 
-### Other Editors
+
+### Copilot
+
+Add to `.vscode/mcp.json` in your project (or use **MCP: Add Server** from the Command Palette):
+
+```json
+{
+  "servers": {
+    "langwatch": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": { "LANGWATCH_API_KEY": "your-api-key-here" }
+    }
+  }
+}
+```
+
+
+### Cursor
+
+1. Open Cursor Settings
+2. Navigate to the **Tools and MCP** section in the sidebar
+3. Add the LangWatch MCP server:
+
+```json
+{
+  "mcpServers": {
+    "langwatch": {
+      "command": "npx",
+      "args": ["-y", "@langwatch/mcp-server"],
+      "env": {
+        "LANGWATCH_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
+
+### ChatGPT
+
+1. Go to **Settings → Connectors**
+2. Click **Add connector**
+3. Enter the server URL: `https://mcp.langwatch.ai/sse`
+4. For authentication, select **Bearer Token** and enter your LangWatch API key (get one at [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize))
+
+*Requires a Plus or Team plan.*
+
+
+### Claude Chat
+
+1. Go to **Settings → Connectors**
+2. Click **Add custom connector**
+3. Enter the server URL: `https://mcp.langwatch.ai/sse`
+4. Click **Advanced settings**, select **Bearer Token** auth, and enter your LangWatch API key (get one at [app.langwatch.ai/authorize](https://app.langwatch.ai/authorize))
+
+*Requires a Pro or Max plan.*
+
+
+### Other
 
 For other MCP-compatible editors, add the following configuration to your MCP settings file:
 
@@ -11275,6 +11392,13 @@ Open your AI assistant chat (e.g., `Cmd/Ctrl + I` in Cursor, or `Cmd/Ctrl + Shif
 |---------------------|-------------|-------------|
 | `LANGWATCH_API_KEY` | `--apiKey` | API key for authentication |
 | `LANGWATCH_ENDPOINT` | `--endpoint` | API endpoint (default: `https://app.langwatch.ai`) |
+
+### Two Modes
+
+The MCP server runs in two modes:
+
+- **Local (stdio)**: Default. Runs as a subprocess of your coding assistant (Claude Code, Copilot, Cursor). API key set via `--apiKey` flag or `LANGWATCH_API_KEY` env var.
+- **Remote (HTTP/SSE)**: For web-based assistants (ChatGPT, Claude Chat). Hosted at `https://mcp.langwatch.ai`. API key sent as `Authorization: Bearer <key>` per session — each user brings their own key.
 
 ## Usage Examples
 
@@ -13049,6 +13173,10 @@ sidebarTitle: Introduction
 keywords: langwatch, agent simulations, agent testing, agent development, agent development, agent testing
 ---
 
+<Tip>
+  **Quick setup?** [Copy the scenarios prompt](/skills/code-prompts#add-scenario-tests) into your coding agent to add simulation tests automatically.
+</Tip>
+
 # What are Agent Simulations?
 
 Agent simulations are a powerful approach to testing AI agents that goes beyond traditional evaluation methods. Unlike static input-output testing, simulations test your agent's behavior in realistic, multi-turn conversations that mimic how real users would interact with your system.
@@ -13160,6 +13288,10 @@ The rest of this documentation will show you how to use LangWatch's simulation v
 ---
 title: Getting Started
 ---
+
+<Tip>
+  **Quick setup?** [Copy the scenarios prompt](/skills/code-prompts#add-scenario-tests) into your coding agent to add simulation tests automatically.
+</Tip>
 
 This guide will walk you through the basic setup required to run your first simulation and see the results in LangWatch.
 
@@ -13446,525 +13578,6 @@ From here, you can click on a set to view its detailed history of batch runs.
 
 ---
 
-# FILE: ./llm-evaluation/offline/platform/ci-cd-execution.mdx
-
----
-title: Run Evaluations from CI/CD
-sidebarTitle: CI/CD Execution
-description: Execute platform-configured evaluations from your CI/CD pipelines using the LangWatch SDKs or REST API.
----
-
-Run evaluations that you've configured in the LangWatch platform directly from your CI/CD pipelines. This enables automated quality gates for your LLM applications.
-
-## Overview
-
-After configuring an evaluation in LangWatch (setting up targets, evaluators, and datasets), you can trigger it programmatically using:
-
-- **Python SDK**: `langwatch.experiment.run("your-slug")`
-- **TypeScript SDK**: `langwatch.experiments.run("your-slug")`
-- **REST API**: `POST /api/evaluations/v3/{slug}/run`
-
-The execution uses the configuration saved in LangWatch, so you don't need to specify targets, evaluators, or datasets in your CI/CD script.
-
-## Quickstart
-
-### 1. Find Your Evaluation Slug
-
-Your evaluation slug is visible in the URL when viewing your evaluation:
-```
-https://app.langwatch.ai/your-project/evaluations/v3/your-evaluation-slug
-                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
-```
-
-You can also find it by clicking the **CI/CD** button in the evaluation toolbar.
-
-### 2. Run from Your Pipeline
-
-
-  ### Python
-
-```python
-import langwatch
-
-result = langwatch.experiment.run("your-evaluation-slug")
-result.print_summary()
-```
-
-  ### TypeScript
-
-```typescript
-import { LangWatch } from "langwatch";
-
-const langwatch = new LangWatch();
-
-const result = await langwatch.experiments.run("your-evaluation-slug");
-result.printSummary();
-```
-
-  ### curl
-
-```bash
-# Start the evaluation run
-RUN_RESPONSE=$(curl -s -X POST "https://app.langwatch.ai/api/evaluations/v3/your-evaluation-slug/run" \
-  -H "X-Auth-Token: ${LANGWATCH_API_KEY}")
-
-RUN_ID=$(echo $RUN_RESPONSE | jq -r '.runId')
-echo "Started run: $RUN_ID"
-
-# Poll for completion
-while true; do
-  STATUS_RESPONSE=$(curl -s "https://app.langwatch.ai/api/evaluations/v3/runs/$RUN_ID" \
-    -H "X-Auth-Token: ${LANGWATCH_API_KEY}")
-
-  STATUS=$(echo $STATUS_RESPONSE | jq -r '.status')
-  PROGRESS=$(echo $STATUS_RESPONSE | jq -r '.progress')
-  TOTAL=$(echo $STATUS_RESPONSE | jq -r '.total')
-
-  echo "Progress: $PROGRESS/$TOTAL"
-
-  if [ "$STATUS" = "completed" ] || [ "$STATUS" = "failed" ]; then
-    break
-  fi
-
-  sleep 2
-done
-
-# Show summary and exit
-echo $STATUS_RESPONSE | jq '.summary'
-
-if [ "$STATUS" = "failed" ]; then
-  exit 1
-fi
-```
-
-
-
-<Info>
-Set the `LANGWATCH_API_KEY` environment variable with your project API key.
-You can find it in your [project settings](/project/setup).
-</Info>
-
-## CI/CD Integration Examples
-
-### GitHub Actions
-
-```yaml
-name: LLM Evaluation
-
-on:
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  evaluate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: pip install langwatch
-
-      - name: Run evaluation
-        env:
-          LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
-        run: |
-          python -c "
-          import langwatch
-
-          result = langwatch.experiment.run('my-evaluation')
-          result.print_summary()
-          "
-```
-
-### GitLab CI
-
-```yaml
-evaluate:
-  stage: test
-  image: python:3.11
-  script:
-    - pip install langwatch
-    - |
-      python -c "
-      import langwatch
-
-      result = langwatch.experiment.run('my-evaluation')
-      result.print_summary()
-      "
-  variables:
-    LANGWATCH_API_KEY: $LANGWATCH_API_KEY
-```
-
-### CircleCI
-
-```yaml
-version: 2.1
-
-jobs:
-  evaluate:
-    docker:
-      - image: python:3.11
-    steps:
-      - checkout
-      - run:
-          name: Run evaluation
-          command: |
-            pip install langwatch
-            python -c "
-            import langwatch
-
-            result = langwatch.experiment.run('my-evaluation')
-            result.print_summary()
-            "
-```
-
-## Options
-
-### Progress Callback
-
-Track progress during long-running evaluations:
-
-
-  ### Python
-
-```python
-result = langwatch.experiment.run(
-    "my-evaluation",
-    on_progress=lambda completed, total: print(f"Progress: {completed}/{total}")
-)
-result.print_summary()
-```
-
-  ### TypeScript
-
-```typescript
-const result = await langwatch.experiments.run("my-evaluation", {
-  onProgress: (completed, total) => {
-    console.log(`Progress: ${completed}/${total}`);
-  }
-});
-result.printSummary();
-```
-
-
-
-### Timeout
-
-Set a maximum time to wait for completion:
-
-
-  ### Python
-
-```python
-result = langwatch.experiment.run(
-    "my-evaluation",
-    timeout=300.0  # 5 minutes (default: 600 seconds)
-)
-result.print_summary()
-```
-
-  ### TypeScript
-
-```typescript
-const result = await langwatch.experiments.run("my-evaluation", {
-  timeout: 300000  // 5 minutes in ms (default: 600000)
-});
-result.printSummary();
-```
-
-
-
-### Poll Interval
-
-Adjust how frequently to check for completion:
-
-
-  ### Python
-
-```python
-result = langwatch.experiment.run(
-    "my-evaluation",
-    poll_interval=5.0  # Check every 5 seconds (default: 2 seconds)
-)
-result.print_summary()
-```
-
-  ### TypeScript
-
-```typescript
-const result = await langwatch.experiments.run("my-evaluation", {
-  pollInterval: 5000  // Check every 5 seconds in ms (default: 2000)
-});
-result.printSummary();
-```
-
-
-
-### Exit on Failure
-
-By default, `print_summary()` / `printSummary()` exits with code 1 when there are failures. You can disable this:
-
-
-  ### Python
-
-```python
-result = langwatch.experiment.run("my-evaluation")
-result.print_summary(exit_on_failure=False)  # Don't exit automatically
-
-# Handle failures manually
-if result.failed > 0:
-    print(f"Warning: {result.failed} failures, but continuing...")
-```
-
-  ### TypeScript
-
-```typescript
-const result = await langwatch.experiments.run("my-evaluation");
-result.printSummary(false);  // Don't exit automatically
-
-// Handle failures manually
-if (result.failed > 0) {
-  console.log(`Warning: ${result.failed} failures, but continuing...`);
-}
-```
-
-
-
-## Results Summary
-
-The `print_summary()` / `printSummary()` method outputs a CI-friendly summary:
-
-```
-════════════════════════════════════════════════════════════
-  EVALUATION RESULTS
-════════════════════════════════════════════════════════════
-  Run ID:     run_abc123
-  Status:     COMPLETED
-  Duration:   45.2s
-────────────────────────────────────────────────────────────
-  Passed:     42
-  Failed:     3
-  Pass Rate:  93.3%
-────────────────────────────────────────────────────────────
-  TARGETS:
-    GPT-4o: 20 passed, 2 failed
-      Avg latency: 1250ms
-      Total cost: $0.0125
-    Claude 3.5: 22 passed, 1 failed
-      Avg latency: 980ms
-      Total cost: $0.0098
-────────────────────────────────────────────────────────────
-  EVALUATORS:
-    Exact Match: 85.0% pass rate
-    Faithfulness: 95.0% pass rate
-      Avg score: 0.87
-────────────────────────────────────────────────────────────
-  View details: https://app.langwatch.ai/project/experiments/my-eval?runId=run_abc123
-════════════════════════════════════════════════════════════
-```
-
-## Result Object
-
-The result object contains detailed information about the run:
-
-
-  ### Python
-
-```python
-result = langwatch.experiment.run("my-evaluation")
-
-# Basic metrics
-result.run_id        # Unique run identifier
-result.status        # "completed", "failed", or "stopped"
-result.passed        # Number of passed evaluations
-result.failed        # Number of failed evaluations
-result.pass_rate     # Percentage passed (0-100)
-result.duration      # Total duration in milliseconds
-result.run_url       # URL to view in LangWatch
-
-# Detailed summary
-result.summary.total_cells      # Total cells executed
-result.summary.completed_cells  # Successfully completed
-result.summary.failed_cells     # Failed executions
-result.summary.targets          # Per-target statistics
-result.summary.evaluators       # Per-evaluator statistics
-
-# Print and exit on failure
-result.print_summary()
-```
-
-  ### TypeScript
-
-```typescript
-const result = await langwatch.experiments.run("my-evaluation");
-
-// Basic metrics
-result.runId        // Unique run identifier
-result.status       // "completed" | "failed" | "stopped"
-result.passed       // Number of passed evaluations
-result.failed       // Number of failed evaluations
-result.passRate     // Percentage passed (0-100)
-result.duration     // Total duration in milliseconds
-result.runUrl       // URL to view in LangWatch
-
-// Detailed summary
-result.summary.totalCells      // Total cells executed
-result.summary.completedCells  // Successfully completed
-result.summary.failedCells     // Failed executions
-result.summary.targets         // Per-target statistics
-result.summary.evaluators      // Per-evaluator statistics
-
-// Print and exit on failure
-result.printSummary();
-```
-
-
-
-## Error Handling
-
-
-  ### Python
-
-```python
-from langwatch.evaluation import (
-    EvaluationNotFoundError,
-    EvaluationTimeoutError,
-    EvaluationRunFailedError,
-    EvaluationsApiError,
-)
-
-try:
-    result = langwatch.experiment.run("my-evaluation", timeout=300)
-    result.print_summary()
-except EvaluationNotFoundError:
-    print("Evaluation slug not found")
-    exit(1)
-except EvaluationTimeoutError as e:
-    print(f"Timeout: {e.progress}/{e.total} completed")
-    exit(1)
-except EvaluationRunFailedError as e:
-    print(f"Run failed: {e.error_message}")
-    exit(1)
-except EvaluationsApiError as e:
-    print(f"API error: {e} (status: {e.status_code})")
-    exit(1)
-```
-
-  ### TypeScript
-
-```typescript
-import {
-  EvaluationNotFoundError,
-  EvaluationTimeoutError,
-  EvaluationRunFailedError,
-  EvaluationsApiError,
-} from "langwatch";
-
-try {
-  const result = await langwatch.experiments.run("my-evaluation", { timeout: 300000 });
-  result.printSummary();
-} catch (error) {
-  if (error instanceof EvaluationNotFoundError) {
-    console.error("Evaluation slug not found");
-  } else if (error instanceof EvaluationTimeoutError) {
-    console.error(`Timeout: ${error.progress}/${error.total} completed`);
-  } else if (error instanceof EvaluationRunFailedError) {
-    console.error(`Run failed: ${error.errorMessage}`);
-  } else if (error instanceof EvaluationsApiError) {
-    console.error(`API error: ${error.message} (status: ${error.statusCode})`);
-  }
-  process.exit(1);
-}
-```
-
-
-
-## REST API Reference
-
-### Start a Run
-
-```
-POST /api/evaluations/v3/{slug}/run
-```
-
-**Headers:**
-- `X-Auth-Token: your-api-key` or `Authorization: Bearer your-api-key`
-
-**Response:**
-```json
-{
-  "runId": "run_abc123",
-  "status": "running",
-  "total": 45,
-  "runUrl": "https://app.langwatch.ai/project/experiments/my-eval?runId=run_abc123"
-}
-```
-
-### Get Run Status
-
-```
-GET /api/evaluations/v3/runs/{runId}
-```
-
-**Headers:**
-- `X-Auth-Token: your-api-key` or `Authorization: Bearer your-api-key`
-
-**Response (running):**
-```json
-{
-  "runId": "run_abc123",
-  "status": "running",
-  "progress": 20,
-  "total": 45,
-  "startedAt": 1702500000000
-}
-```
-
-**Response (completed):**
-```json
-{
-  "runId": "run_abc123",
-  "status": "completed",
-  "progress": 45,
-  "total": 45,
-  "startedAt": 1702500000000,
-  "finishedAt": 1702500045000,
-  "summary": {
-    "runId": "run_abc123",
-    "totalCells": 45,
-    "completedCells": 45,
-    "failedCells": 3,
-    "duration": 45000,
-    "runUrl": "https://app.langwatch.ai/project/experiments/my-eval?runId=run_abc123"
-  }
-}
-```
-
-## What's Next?
-
-<CardGroup cols={2}>
-  <Card title="Create an Evaluation" icon="flask" href="/llm-evaluation/offline/platform/answer-correctness">
-    Configure your first evaluation in LangWatch
-  </Card>
-  <Card title="SDK Evaluations" icon="code" href="/llm-evaluation/offline/code/evaluation-api">
-    Write evaluations directly in code
-  </Card>
-  <Card title="Built-in Evaluators" icon="list" href="/llm-evaluation/list">
-    Browse available evaluation metrics
-  </Card>
-  <Card title="Datasets" icon="table" href="/datasets/overview">
-    Learn about dataset management
-  </Card>
-</CardGroup>
-
----
-
 # FILE: ./datasets/ai-dataset-generation.mdx
 
 ---
@@ -14001,13 +13614,13 @@ description: Automatically build datasets from real-time traces to power LLM eva
 
 You can keep continously populating the dataset with new data arriving from production by using **Automations**, mapping trace fields to any dataset columns you prefer.
 
-Simply go to the Messages page and select a filter (for example, by model), the Add Trigger button will be enabled:
+Simply go to the Messages page and select a filter (for example, by model), the Add Automation button will be enabled:
 
 <div style={{ display: "flex", justifyContent: "center" }}>
-  <Frame caption="Add Trigger" style={{ maxWidth: "300px" }}>
+  <Frame caption="Add Automation" style={{ maxWidth: "300px" }}>
     <img
       className="block"
-      src="/images/add-trigger.png"
+      src="/images/add-automation-filter.png"
       alt="LangWatch"
     />
   </Frame>
@@ -14017,11 +13630,11 @@ For Action, select **Add To Dataset**, and chose the right fields to map from th
 <Frame caption="Add To Dataset">
 <img
   className="block"
-  src="/images/add-to-dataset-trigger.png"
+  src="/images/add-to-dataset-automation.png"
   alt="LangWatch"
 />
 </Frame>
-Hit save, and that's it! Now every time a new message matches the filter, the trigger will be fired and the dataset will be populated with the new row.
+Hit save, and that's it! Now every time a new message matches the filter, the automation will be fired and the dataset will be populated with the new row.
 
 ---
 
@@ -14032,6 +13645,10 @@ title: Datasets
 sidebarTitle: Overview
 description: Create and manage datasets in LangWatch to build evaluation sets for LLMs and structured AI agent testing.
 ---
+
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
 
 ## Create datasets
 
@@ -14122,7 +13739,7 @@ With the your images column type set to type set to `image (URL)`, you will be a
 Below is an example of on how to set the column type to `image (URL)` in the screenshot below, you can also set this type when creating a new dataset.
 
 <div style={{ display: "flex", justifyContent: "center" }}>
-  <Frame caption="Add Trigger" style={{ maxWidth: "300px" }}>
+  <Frame caption="Image column type" style={{ maxWidth: "300px" }}>
     <img
       className="block"
       src="/images/dataset-image-select.png"
@@ -14382,7 +13999,7 @@ This creates a `prompts.json` file:
 
 ```bash
 # Fetch and materialize all prompts locally
-langwatch prompt sync
+langwatch prompt pull
 ```
 
 This creates materialized YAML files:
@@ -14519,7 +14136,7 @@ For completely air-gapped environments:
 
 ```bash
 # On development machine with internet access
-langwatch prompt sync
+langwatch prompt pull
 
 # Verify all prompts are materialized
 ls prompts/.materialized/
@@ -14642,7 +14259,7 @@ jobs:
       - name: Materialize prompts
         env:
           LANGWATCH_API_KEY: ${{ secrets.LANGWATCH_API_KEY }}
-        run: langwatch prompt sync
+        run: langwatch prompt pull
 
       - name: Build application
         run: npm run build
@@ -15431,8 +15048,8 @@ langwatch prompt create features/user-onboarding
 # Edit the prompt file
 vim prompts/features/user-onboarding.prompt.yaml
 
-# Sync to LangWatch platform
-langwatch prompt sync
+# Push to LangWatch platform
+langwatch prompt push
 ```
 
 Commit your prompt files:
@@ -16222,6 +15839,10 @@ sidebarTitle: Overview
 description: Continuously score and monitor your LLM's production traffic for quality and safety with online evaluation.
 ---
 
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
+
 Online evaluation lets you continuously score your LLM's production traffic. Unlike [experiments](/evaluations/experiments/overview) which test before deployment, online evaluation monitors your live application to catch quality issues, detect regressions, and ensure safety.
 
 <Info>
@@ -16327,7 +15948,7 @@ trace.end();
 Once enabled, scores will appear on:
 - **Traces** - Individual trace scores visible in trace details
 - **Analytics** - Aggregate metrics over time
-- **Alerts** - Configure triggers for low scores
+- **Alerts** - Configure automations for low scores
 
 ## Adding Scores via Code
 
@@ -16419,6 +16040,10 @@ title: Guardrails Overview
 sidebarTitle: Overview
 description: Block or modify harmful LLM responses in real-time to enforce safety and policy constraints.
 ---
+
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
 
 Guardrails are evaluators that run in real-time and **act** on the results - blocking, modifying, or rejecting responses that violate your safety or policy rules. Unlike [monitors](/evaluations/online-evaluation/overview) which only measure and alert, guardrails actively prevent harmful content from reaching users.
 
@@ -16648,6 +16273,10 @@ title: Guardrails Code Integration
 sidebarTitle: Code Integration
 description: Add guardrails to your LLM application to block harmful content in real-time.
 ---
+
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
 
 This guide shows how to integrate guardrails into your application using the LangWatch SDK. Guardrails run evaluators synchronously and return results you can act on immediately.
 
@@ -17101,6 +16730,10 @@ sidebarTitle: Overview
 description: Ensure quality and safety for your LLM applications with experiments, online evaluation, guardrails, and evaluators.
 ---
 
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
+
 LangWatch provides comprehensive evaluations tools for your LLM applications. Whether you're evaluating before deployment or monitoring in production, we have you covered.
 
 ## The Agent Evaluation Lifecycle
@@ -17250,6 +16883,10 @@ title: Experiments via SDK
 sidebarTitle: Via SDK
 description: Run experiments programmatically from notebooks or scripts to batch test your LLM applications.
 ---
+
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
 
 LangWatch makes it easy to run experiments from code.
 Just add a few lines to start tracking your experiments.
@@ -18218,6 +17855,10 @@ sidebarTitle: Overview
 description: Run batch tests on your LLM applications to measure quality, compare configurations, and catch regressions before production.
 ---
 
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
+
 Experiments let you systematically test your LLM applications before deploying to production. Run your prompts, models, or agents against datasets and measure quality with evaluators.
 
 ## What is an Experiment?
@@ -18381,6 +18022,312 @@ Learn more about [CI/CD integration](/evaluations/experiments/ci-cd).
     description="Create and manage test datasets."
     icon="table"
     href="/datasets/overview"
+  />
+</CardGroup>
+
+---
+
+# FILE: ./evaluations/experiments/multimodal-evaluation.mdx
+
+---
+title: Multimodal Evaluation — Images, PDFs, and Vision
+sidebarTitle: Multimodal Evaluation
+description: Evaluate image generation, document parsing, and other multimodal AI pipelines with LLM-as-a-Judge vision models.
+---
+
+LangWatch supports multimodal evaluation out of the box. You can evaluate image inputs and outputs using any vision-capable model (GPT-4o, GPT-5.2, Claude Sonnet, Gemini, etc.) through the built-in LLM-as-a-Judge evaluators — no custom code required.
+
+This covers common multimodal use cases:
+- **Image generation quality** — score outputs of image generation models
+- **Document parsing** — evaluate extracted metadata from PDFs and scanned documents
+- **Content moderation** — detect NSFW or low-quality uploaded images
+- **Visual QA** — evaluate answers to questions about images
+- **Image comparison** — compare generated outputs against reference images
+
+<Info>
+**Image support works with all three LLM-as-a-Judge evaluator types:**
+- **Boolean** — pass/fail evaluation (e.g. "Is the generated image photorealistic?")
+- **Score** — numeric score evaluation (e.g. "Rate image quality from 1-5")
+- **Category** — classification evaluation (e.g. "Classify the image as: excellent / good / poor")
+
+**See also:**
+- [Dataset Images](/datasets/dataset-images) — Setting up image columns in datasets
+- [Saved Evaluators](/evaluations/evaluators/saved-evaluators) — Reuse evaluators via API
+</Info>
+
+## Supported Image Formats
+
+Images can be provided in any of these formats:
+
+| Format | Example |
+|--------|---------|
+| **Image URL** | `https://example.com/photo.png` |
+| **Base64 data URI** | `data:image/png;base64,iVBORw0KGgo...` |
+| **Markdown image** | `![alt text](https://example.com/photo.png)` |
+
+Supported extensions: `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`, `.bmp`, `.tiff`
+
+<Note>
+Image detection is strict by design — a field is treated as an image only when the **entire value** is an image URL or base64 string. Mixed text-and-image content is sent as plain text. This prevents unintended multipart content when a field happens to contain an image URL as part of a longer string.
+</Note>
+
+## Evaluating Images via UI
+
+### Step 1: Create a Dataset with Image Columns
+
+1. Go to **Evaluations** → **New Evaluation** → **Create Experiment**
+2. Click **+** next to the Datasets header to create a new dataset
+3. Add columns and set their type to **image** using the column type dropdown
+
+<div style={{ display: "flex", justifyContent: "center" }}>
+  <Frame caption="Set column type to image" style={{ maxWidth: "300px" }}>
+    <img src="/images/dataset-image-select.png" alt="Column type selector showing image option" />
+  </Frame>
+</div>
+
+4. Paste image URLs or base64 data URIs into the cells — the workbench renders them inline with click-to-expand
+
+### Step 2: Add an LLM-as-a-Judge Evaluator
+
+1. Click **+ Add evaluator** on a row in the evaluators section
+2. Select an **LLM-as-a-Judge** evaluator (Boolean, Score, or Category)
+3. Choose a **vision-capable model** (e.g. `gpt-5.2`, `claude-sonnet-4-5-20250929`)
+4. Write a prompt that references the image fields — map dataset columns to the evaluator's `input`, `output`, `contexts`, or `expected_output` variables
+
+The evaluator automatically detects image values and sends them as multipart content to the vision model. No special configuration needed.
+
+<Frame caption="Image evaluation workbench — LLM-as-a-Judge scoring virtual try-on quality with three image columns mapped to evaluator variables">
+  <img src="/images/evaluations/multimodal-image-evaluation-workbench.png" alt="LangWatch experiments workbench showing image evaluation with LLM-as-a-Judge score evaluator" />
+</Frame>
+
+In this example, a virtual try-on pipeline is evaluated with three image columns:
+- **original** → mapped to `contexts` (the person's photo)
+- **request** → mapped to `input` (the clothing item)
+- **generated** → mapped to `output` (the try-on result)
+
+The LLM-as-a-Judge prompt instructs the model to evaluate all three images and score the quality of the generated output.
+
+### Step 3: Run and Iterate
+
+Click the **play button** to run the evaluator. The model receives all images as vision content and returns structured results (score, pass/fail, or category) with detailed reasoning.
+
+Use this workflow to **iterate on your evaluator prompt** until you have reliable evaluation criteria, then save it for reuse across experiments and CI/CD pipelines.
+
+## Custom Workflow Evaluators for Complex Logic
+
+For more advanced evaluation pipelines, you can create a **Custom Workflow Evaluator** in the Evaluators page. This gives you a visual workflow builder where you can chain multiple LLM nodes, add image variables to prompts, and build multi-step evaluation logic.
+
+<Frame caption="Custom workflow evaluator with image variables mapped to prompt template fields">
+  <img src="/images/evaluations/multimodal-custom-workflow-evaluator.png" alt="LangWatch custom workflow evaluator showing image variables in prompt template" />
+</Frame>
+
+In the workflow builder:
+1. Add **image-typed variables** to your prompt node inputs
+2. Use `{{ "{{variable_name}}" }}` syntax to reference images in the prompt template
+3. Map dataset columns to the image variables in the entry node
+4. The workflow handles multipart content assembly automatically
+
+This is useful when you need to split evaluation into multiple steps, use different models for different aspects, or combine vision evaluation with text-based checks.
+
+## Evaluating Images via SDK
+
+For programmatic evaluation from notebooks or CI/CD, use the Python or TypeScript SDK with a [saved evaluator](/evaluations/evaluators/saved-evaluators).
+
+### Using a Saved Evaluator
+
+After iterating on your evaluator in the UI, save it and call it from code:
+
+<CodeGroup>
+```python Python
+import langwatch
+
+df = langwatch.datasets.get_dataset("my-image-dataset").to_pandas()
+
+experiment = langwatch.experiment.init("image-quality-evaluation")
+
+for index, row in experiment.loop(df.iterrows()):
+    # Use your saved image evaluator
+    experiment.evaluate(
+        "evaluators/image-quality-scorer",  # Your saved evaluator slug
+        index=index,
+        data={
+            "input": row["request_image"],      # Image URL or base64
+            "output": row["generated_image"],    # Image URL or base64
+            "contexts": [row["original_photo"]], # List of context images
+        },
+    )
+```
+
+```typescript TypeScript
+import { LangWatch } from "langwatch";
+
+const langwatch = new LangWatch();
+
+const dataset = await langwatch.datasets.get("my-image-dataset");
+const experiment = await langwatch.experiments.init("image-quality-evaluation");
+
+await experiment.run(
+  dataset.entries.map((e) => e.entry),
+  async ({ item, index }) => {
+    // Use your saved image evaluator
+    await experiment.evaluate("evaluators/image-quality-scorer", {
+      index,
+      data: {
+        input: item.request_image,       // Image URL or base64
+        output: item.generated_image,    // Image URL or base64
+        contexts: [item.original_photo], // List of context images
+      },
+    });
+  },
+  { concurrency: 4 }
+);
+```
+</CodeGroup>
+
+### Custom Scoring with Vision Models
+
+You can also call vision models directly and log custom scores:
+
+```python
+import langwatch
+import litellm
+
+experiment = langwatch.experiment.init("custom-image-evaluation")
+
+for index, row in experiment.loop(df.iterrows()):
+    # Call a vision model directly
+    response = litellm.completion(
+        model="gpt-4o",
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Rate this generated image quality from 1 to 5. Return only the number."},
+                {"type": "image_url", "image_url": {"url": row["generated_image"]}},
+            ],
+        }],
+    )
+
+    score = int(response.choices[0].message.content.strip())
+
+    experiment.log(
+        "image_quality",
+        index=index,
+        data={"output": row["generated_image"]},
+        score=score / 5.0,
+        passed=score >= 3,
+        details=f"Image quality score: {score}/5",
+    )
+```
+
+## Evaluating Document Parsing (PDFs)
+
+Multimodal evaluation also covers document-based pipelines. Here is an example of evaluating a PDF parsing pipeline that extracts metadata from academic papers:
+
+```python
+import langwatch
+import pandas as pd
+from unstructured.partition.pdf import partition_pdf
+from unstructured.staging.base import elements_to_text
+import dspy
+
+dspy.configure(lm=dspy.LM("openai/gpt-4o-mini"))
+
+# Dataset of PDFs with ground truth metadata
+df = pd.DataFrame([
+    {
+        "file": "paper1.pdf",
+        "expected_title": "Vibe Coding vs. Agentic Coding",
+        "expected_authors": "Ranjan Sapkota, Konstantinos I. Roumeliotis, Manoj Karkee",
+    },
+    # ... more rows
+])
+
+@langwatch.trace()
+def extract_pdf_info(filename):
+    langwatch.get_current_trace().autotrack_dspy()
+    elements = partition_pdf(filename=filename)
+    pdf = elements_to_text(elements=elements)
+    return dspy.Predict(
+        "pdf -> title: str, author_names: str, github_link: Optional[str]"
+    )(pdf=pdf)
+
+# Run the evaluation
+evaluation = langwatch.experiment.init("pdf-parsing-evaluation")
+
+for index, row in evaluation.loop(df.iterrows()):
+    response = extract_pdf_info(row["file"])
+
+    evaluation.log(
+        "author_names_accuracy",
+        index=index,
+        passed=response.author_names == row["expected_authors"],
+        details=f"Expected: {row['expected_authors']}, Got: {response.author_names}",
+    )
+```
+
+## Using Evaluators via API
+
+Once you have a reliable image evaluator, you can call it directly via REST API for integration into any pipeline:
+
+```bash
+curl -X POST "https://app.langwatch.ai/api/evaluations/evaluators/image-quality-scorer/evaluate" \
+     -H "X-Auth-Token: $LANGWATCH_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d @- <<EOF
+{
+  "data": {
+    "input": "https://example.com/clothing-item.jpg",
+    "output": "https://example.com/tryon-result.jpg",
+    "contexts": ["https://example.com/original-photo.jpg"]
+  }
+}
+EOF
+```
+
+<Warning>
+Base64 image payloads can be large. The evaluator API supports request bodies up to **30 MB**. If you are working with many high-resolution images, prefer using image URLs over base64 encoding.
+</Warning>
+
+## Model Compatibility
+
+Image evaluation requires a **vision-capable model**. Any model supported by [litellm](https://docs.litellm.ai/docs/providers) with vision capabilities works, including:
+
+| Provider | Models |
+|----------|--------|
+| OpenAI | `gpt-4o`, `gpt-4o-mini`, `gpt-5.2` |
+| Anthropic | `claude-sonnet-4-5-20250929`, `claude-opus-4-6` |
+| Google | `gemini-2.0-flash`, `gemini-2.5-pro` |
+
+<Note>
+If a non-vision model is selected, the evaluator falls back to sending plain text descriptions. For accurate image evaluation, always select a vision-capable model.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Dataset Images"
+    description="Set up image columns in your datasets."
+    icon="image"
+    href="/datasets/dataset-images"
+  />
+  <Card
+    title="Saved Evaluators"
+    description="Save and reuse your image evaluators via API."
+    icon="bookmark"
+    href="/evaluations/evaluators/saved-evaluators"
+  />
+  <Card
+    title="Experiments via SDK"
+    description="Run batch image evaluations from notebooks."
+    icon="flask"
+    href="/evaluations/experiments/sdk"
+  />
+  <Card
+    title="CI/CD Integration"
+    description="Automate image evaluations in your pipeline."
+    icon="gear"
+    href="/evaluations/experiments/ci-cd"
   />
 </CardGroup>
 
@@ -19096,6 +19043,10 @@ sidebarTitle: Overview
 description: Understand evaluators - the scoring functions that assess your LLM outputs for quality, safety, and correctness.
 ---
 
+<Tip>
+  **Let your agent set this up.** [Copy the evaluations prompt](/skills/code-prompts#set-up-evaluations) into your coding agent to get started automatically.
+</Tip>
+
 Evaluators are scoring functions that assess the quality of your LLM's outputs. They're the building blocks for [experiments](/evaluations/experiments/overview), [online evaluation](/evaluations/online-evaluation/overview), and [guardrails](/evaluations/guardrails/overview).
 
 ## Choose Your Approach
@@ -19652,10 +19603,10 @@ Custom scores appear in:
     href="/evaluations/experiments/overview"
   />
   <Card
-    title="Analytics"
+    title="Evaluations Overview"
     description="View and analyze your evaluation results."
     icon="chart-line"
-    href="/features/analytics"
+    href="/evaluations/overview"
   />
 </CardGroup>
 
@@ -19693,9 +19644,7 @@ Saved evaluators are pre-configured evaluation setups that you create on the Lan
 4. Configure the settings (model, prompt, thresholds, etc.)
 5. Give it a descriptive name and save
 
-<Frame>
-  <img src="/images/evaluators/saved-evaluator-create.png" alt="Creating a saved evaluator" />
-</Frame>
+{/* TODO: Add screenshot of saved evaluator creation UI */}
 
 ### Via the Evaluators Page
 
@@ -23715,7 +23664,7 @@ LangWatch is composed of a few core components:
 - **LangWatch App**: The main application and user interface for the platform.
 - **LangEvals**: The evaluation service for LangWatch built-in evaluators.
 - **LangWatch NLP**: The service the runs workflows and custom built evaluators in the platform.
-- **LangWatch Workers**: The background workers running inside the app, processing traces, triggering alerts, real-time evaluations and so on.
+- **LangWatch Workers**: Background workers that process traces, trigger alerts, run real-time evaluations and so on. By default, workers are deployed as a separate pod for independent scaling.
 - **Redis**: A redis queue that coordinates and add resiliency for the traces to be processed.
 - **Elasticsearch/OpenSearch**: The main database for the platform, storing traces and evaluation results.
 - **PostgreSQL**: The core database for the platform, storing user accounts, teams, and other metadata.
@@ -23906,7 +23855,7 @@ The primary LangWatch application that provides the web interface and core funct
 - API endpoints for trace collection and management
 - User authentication and session management
 - Dashboard and analytics interface
-- Background workers for processing traces and evaluations
+- Background workers for processing traces and evaluations (deployed as a separate pod in Helm by default)
 
 **Key Features:**
 - Trace collection and storage
@@ -24110,8 +24059,16 @@ app:
         secretKeyRef:
           name: langwatch-secrets
           key: metricsApiKey
-    sentry:
-      enabled: false
+
+workers:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
 
 ingress:
   enabled: true
@@ -24187,8 +24144,6 @@ app:
     skipEnvValidation: true
   telemetry:
     metrics:
-      enabled: false
-    sentry:
       enabled: false
   resources:
     requests:
@@ -24282,6 +24237,16 @@ app:
         secretKeyRef:
           name: langwatch-secrets
           key: metricsApiKey
+
+workers:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
 
 ingress:
   enabled: true
@@ -24546,7 +24511,7 @@ If you want to use SSO with our Cloud version, contact our team with the require
 
 | Configuration      | Value                                                                                       |
 | ------------------ | ------------------------------------------------------------------------------------------- |
-| Required Variables | `AZURE_AD_CLIENT_ID`<br />`AZURE_AD_CLIENT_SECRET`<br />`AZURE_AD_TENANT_ID` |
+| Required Variables | `AZURE_AD_CLIENT_ID`<br />`AZURE_AD_CLIENT_SECRET`<br />`AZURE_AD_TENANT_ID`<br/>`AZURE_AD_DOMAIN` |
 | Redirect URL       | `https://langwatch.eu.auth0.com/login/callback`                                             |
 
 ### Google Workspace
@@ -25520,6 +25485,58 @@ title: 'Patch single annotation'
 openapi: 'PATCH /api/annotations/{id}'
 ---
 
+
+---
+
+# FILE: ./api-reference/saved-evaluators/overview.mdx
+
+---
+title: "Overview"
+description: "Manage saved evaluator configurations for your project"
+---
+
+## Intro
+
+The Saved Evaluators API lets you manage reusable evaluator configurations for your project. You can list, retrieve, and create saved evaluators that can then be used for online evaluations, guardrails, and experiments.
+
+Each saved evaluator stores a name, an evaluator type (e.g. `langevals/exact_match`), and its settings configuration.
+
+## Authentication
+
+To make a call to the Saved Evaluators API, you will need to pass through your LangWatch API key in the header as `X-Auth-Token`. Your API key can be found on the setup page under settings.
+
+#### Allowed Methods
+
+- `GET /api/evaluators` - List all saved evaluators for a project
+- `GET /api/evaluators/:idOrSlug` - Get a specific evaluator by ID or slug
+- `POST /api/evaluators` - Create a new saved evaluator
+
+---
+
+# FILE: ./api-reference/saved-evaluators/create-evaluator.mdx
+
+---
+title: "Create evaluator"
+openapi: "POST /api/evaluators"
+---
+
+---
+
+# FILE: ./api-reference/saved-evaluators/get-evaluators.mdx
+
+---
+title: "List evaluators"
+openapi: "GET /api/evaluators"
+---
+
+---
+
+# FILE: ./api-reference/saved-evaluators/get-evaluator.mdx
+
+---
+title: "Get evaluator"
+openapi: "GET /api/evaluators/{idOrSlug}"
+---
 
 ---
 

@@ -98,7 +98,7 @@
                   "user-events/custom"
                 ]
               },
-              "features/triggers",
+              "features/automations",
               "features/embedded-analytics"
             ]
           },
@@ -465,9 +465,9 @@
             "group": "Traces",
             "pages": [
               "api-reference/traces/overview",
-              "api-reference/traces/get-trace-details",
+              "api-reference/traces/get-trace",
               "api-reference/traces/get-thread-details",
-              "api-reference/traces/search-traces",
+              "api-reference/traces/search",
               "api-reference/traces/create-public-trace-path",
               "api-reference/traces/delete-public-trace-path"
             ]
@@ -504,9 +504,9 @@
             ]
           },
           {
-            "group": "Triggers",
+            "group": "Automations",
             "pages": [
-              "api-reference/triggers/create-slack-trigger"
+              "api-reference/automations/create-slack-automation"
             ]
           },
           {
@@ -612,6 +612,11 @@
   "integrations": {
     "gtm": {
       "tagId": "GTM-KJ4S6Z9C"
+    }
+  },
+  "analytics": {
+    "posthog": {
+      "apiKey": "phc_oOlj3H19T2JlGbFXmrGrjSLbDPDNyPKYdIFaTdrkXOY"
     }
   },
   "redirects": [

@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+const { useState } = React;
+
+const trackEvent = (name, props) => {
+  try { window.posthog?.capture(name, props); } catch {}
+};
 
 export const CopyLine = ({ text }) => {
   const [copied, setCopied] = useState(false);
@@ -6,26 +10,14 @@ export const CopyLine = ({ text }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
     setCopied(true);
+    trackEvent("docs_copy_line", { text });
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div
-      style={{
-        border: "1px solid var(--border-color, #e5e7eb)",
-        borderRadius: "12px",
-        padding: "10px 16px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "12px",
-        cursor: "pointer",
-        transition: "background 0.15s",
-        marginBottom: "8px",
-      }}
+      className="lw-copy-prompt"
       onClick={handleCopy}
-      onMouseOver={(e) => { e.currentTarget.style.background = "var(--bg-hover, #f9fafb)"; }}
-      onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
     >
       <span style={{ fontSize: "14px" }}>"{text}"</span>
       <button
@@ -33,8 +25,8 @@ export const CopyLine = ({ text }) => {
         style={{
           display: "flex", alignItems: "center", padding: "4px",
           border: "none", background: "transparent",
-          color: copied ? "var(--success-text, #059669)" : "var(--text-muted, #9ca3af)",
-          cursor: "pointer", transition: "all 0.15s",
+          color: copied ? "#059669" : "#9ca3af",
+          cursor: "pointer",
         }}
       >
         {copied ? (

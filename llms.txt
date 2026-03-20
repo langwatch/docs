@@ -5,9 +5,17 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Get Started
 
-- [LangWatch: The Complete LLMOps Platform](https://langwatch.ai/docs/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub.
-- [Better Agents](https://langwatch.ai/docs/better-agents/overview.md): Build reliable, testable, production-grade AI agents with Better Agents CLI - the reliability layer for agent development
+- [LangWatch: The Complete LLMOps Platform](https://langwatch.ai/docs/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 3k stars on GitHub.
+
+### LangWatch Skills
+
+- [Skills Directory](https://langwatch.ai/docs/skills/directory.md): Get started with LangWatch in seconds. Copy a prompt, install a skill, or set up the MCP — your AI agent does the rest.
+- [Code Prompts](https://langwatch.ai/docs/skills/code-prompts.md): Copy a prompt, paste it into your coding assistant, done.
+- [Platform Prompts](https://langwatch.ai/docs/skills/platform-prompts.md): Ask your chat assistant to query performance, set up evaluators, and create scenarios.
+- [Prompt Recipes](https://langwatch.ai/docs/skills/recipes.md): Domain-specific, actionable recipes for improving your AI agent.
+
 - [LangWatch MCP Server](https://langwatch.ai/docs/integration/mcp.md): Use the LangWatch MCP Server to extend your coding assistant with deep LangWatch insights for tracing, testing, and agent evaluations.
+- [Better Agents](https://langwatch.ai/docs/better-agents/overview.md): Build reliable, testable, production-grade AI agents with Better Agents CLI - the reliability layer for agent development
 
 ## Agent Simulations
 
@@ -81,11 +89,6 @@ Always navigate to docs links using the .md extension for better readability.
 
 - [Capturing Metadata and Attributes](https://langwatch.ai/docs/integration/python/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch Python SDK.
 - [Capturing Metadata and Attributes](https://langwatch.ai/docs/integration/typescript/tutorials/capturing-metadata.md): Learn how to enrich your traces and spans with custom metadata and attributes using the LangWatch TypeScript SDK.
-
-#### Tracking Conversations
-
-- [Tracking Conversations](https://langwatch.ai/docs/integration/python/tutorials/tracking-conversations.md): Group related traces into conversations using thread_id so you can view and evaluate entire chat sessions in LangWatch.
-- [Tracking Conversations](https://langwatch.ai/docs/integration/typescript/tutorials/tracking-conversations.md): Group related traces into conversations using thread_id so you can view and evaluate entire chat sessions in LangWatch.
 
 #### Tracking LLM Costs
 
@@ -306,9 +309,9 @@ Always navigate to docs links using the .md extension for better readability.
 ## Traces
 
 - [Overview](https://langwatch.ai/docs/api-reference/traces/overview.md): Search, retrieve, and share LangWatch traces via the REST API. Traces capture the full execution of your LLM pipelines including all spans, evaluations, and metadata.
-- [Search traces](https://langwatch.ai/docs/api-reference/traces/search.md)
-- [Get trace details](https://langwatch.ai/docs/api-reference/traces/get-trace.md)
+- [Get Trace Details](https://langwatch.ai/docs/api-reference/traces/get-trace-details.md)
 - [Get thread details](https://langwatch.ai/docs/api-reference/traces/get-thread-details.md)
+- [Search Traces](https://langwatch.ai/docs/api-reference/traces/search-traces.md)
 - [Create public path for single trace](https://langwatch.ai/docs/api-reference/traces/create-public-trace-path.md)
 - [Delete an existing public path for a trace](https://langwatch.ai/docs/api-reference/traces/delete-public-trace-path.md)
 
