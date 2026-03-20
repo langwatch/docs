@@ -10,9 +10,9 @@ import { PROMPTS } from "/snippets/prompts-data.jsx"
 
 <Tabs>
   <Tab title="Prompts">
-    <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.platform_analytics} />
-    <CopyPrompt title="Create scenario tests for my agent" prompt={PROMPTS.platform_scenarios} />
-    <CopyPrompt title="Set up evaluators for my agent" prompt={PROMPTS.platform_evaluators} />
+    <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.platform_analytics} skill="platform-analytics" />
+    <CopyPrompt title="Create scenario tests for my agent" prompt={PROMPTS.platform_scenarios} skill="platform-scenarios" />
+    <CopyPrompt title="Set up evaluators for my agent" prompt={PROMPTS.platform_evaluators} skill="platform-evaluators" />
   </Tab>
 
   <Tab title="MCP">

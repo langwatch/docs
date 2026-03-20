@@ -11,12 +11,12 @@ import { PROMPTS } from "/snippets/prompts-data.jsx"
 
 <Tabs>
   <Tab title="Prompts">
-    <CopyPrompt title="Instrument my code with LangWatch" prompt={PROMPTS.tracing} />
-    <CopyPrompt title="Set up evaluations for my agent" prompt={PROMPTS.evaluations} />
-    <CopyPrompt title="Add scenario tests for my agent" prompt={PROMPTS.scenarios} />
-    <CopyPrompt title="Version my prompts with LangWatch" prompt={PROMPTS.prompts} />
-    <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.analytics} />
-    <CopyPrompt boldPrefix="⭐ All of the above:" title="Take my agent to the next level" prompt={PROMPTS.level_up} />
+    <CopyPrompt title="Instrument my code with LangWatch" prompt={PROMPTS.tracing} skill="tracing" />
+    <CopyPrompt title="Set up evaluations for my agent" prompt={PROMPTS.evaluations} skill="evaluations" />
+    <CopyPrompt title="Add scenario tests for my agent" prompt={PROMPTS.scenarios} skill="scenarios" />
+    <CopyPrompt title="Version my prompts with LangWatch" prompt={PROMPTS.prompts} skill="prompts" />
+    <CopyPrompt title="How is my agent performing?" prompt={PROMPTS.analytics} skill="analytics" />
+    <CopyPrompt boldPrefix="⭐ All of the above:" title="Take my agent to the next level" prompt={PROMPTS.level_up} skill="level-up" />
   </Tab>
 
   <Tab title="Skills">

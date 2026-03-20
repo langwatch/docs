@@ -4,7 +4,7 @@ const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
-export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
+export const CopyPrompt = ({ title, prompt, boldPrefix, skill }) => {
   const [copied, setCopied] = useState(false);
 
   if (!prompt) {
@@ -22,6 +22,7 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
     <div
       className="lw-copy-prompt"
       data-track="docs_copy_prompt"
+      data-track-skill={skill}
       data-track-title={boldPrefix ? `${boldPrefix} ${title}` : title}
       onClick={handleCopy}
     >
