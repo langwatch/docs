@@ -138,15 +138,11 @@ code {
 }
 .lw-copy-prompt:hover {
   background: #f9fafb;
-  border-color: #9ca3af;
 }
 
 .lw-copy-btn {
   border: 1px solid #e5e7eb;
   transition: all 0.15s;
-}
-.lw-copy-prompt:hover .lw-copy-btn {
-  border-color: #9ca3af;
 }
 
 /* Dark mode overrides */
