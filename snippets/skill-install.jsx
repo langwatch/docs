@@ -1,24 +1,16 @@
-const { useState, useEffect } = React;
+const { useState } = React;
 
 const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
-const useIsDark = () => {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const check = () => setDark(document.documentElement.classList.contains("dark"));
-    check();
-    const obs = new MutationObserver(check);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
-  return dark;
+const isDark = () => {
+  try { return document.documentElement.classList.contains("dark"); } catch { return false; }
 };
 
 export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
   const [copied, setCopied] = useState(false);
-  const dark = useIsDark();
+  const dark = isDark();
 
   const installCmd = `npx skills add ${skill}`;
 

@@ -1,25 +1,17 @@
-const { useState, useEffect } = React;
+const { useState } = React;
 
 const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
-const useIsDark = () => {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const check = () => setDark(document.documentElement.classList.contains("dark"));
-    check();
-    const obs = new MutationObserver(check);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
-  return dark;
+const isDark = () => {
+  try { return document.documentElement.classList.contains("dark"); } catch { return false; }
 };
 
 export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const dark = useIsDark();
+  const dark = isDark();
 
   if (!prompt) {
     return <div style={{ padding: "12px", color: "red" }}>Error: prompt data not loaded</div>;
