@@ -27,7 +27,7 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
         {boldPrefix ? <><strong>{boldPrefix}</strong> {title}</> : title}
       </span>
       <button
-        className="lw-copy-btn"
+        className={copied ? "lw-copy-btn lw-copy-btn-copied" : "lw-copy-btn"}
         onClick={(e) => { e.stopPropagation(); handleCopy(); }}
         style={{
           display: "flex", alignItems: "center", gap: "6px",

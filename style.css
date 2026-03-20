@@ -164,6 +164,10 @@ code {
   border-color: #6b7280;
   color: #f9fafb;
 }
+.dark .lw-copy-btn-copied {
+  background: rgba(5, 150, 105, 0.15) !important;
+  border-color: rgba(5, 150, 105, 0.4) !important;
+}
 
 /* SkillInstall card */
 .lw-skill-install {
