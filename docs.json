@@ -616,7 +616,8 @@
   },
   "analytics": {
     "posthog": {
-      "apiKey": "phc_oOlj3H19T2JlGbFXmrGrjSLbDPDNyPKYdIFaTdrkXOY"
+      "apiKey": "phc_oOlj3H19T2JlGbFXmrGrjSLbDPDNyPKYdIFaTdrkXOY",
+      "apiHost": "https://eu.i.posthog.com"
     }
   },
   "redirects": [
