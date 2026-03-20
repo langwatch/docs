@@ -181,23 +181,28 @@ code {
   background: rgba(225, 113, 0, 0.06);
 }
 
-.lw-skill-footer {
-  background: rgba(0, 0, 0, 0.03);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 13px;
-  color: #6b7280;
-}
-.lw-skill-highlighted .lw-skill-footer {
-  background: rgba(225, 113, 0, 0.08);
-}
-
 .dark .lw-skill-install {
   border-color: #374151;
 }
 .dark .lw-skill-install.lw-skill-highlighted {
   border-color: rgba(225, 113, 0, 0.4);
 }
-.dark .lw-skill-footer {
-  background: rgba(55, 65, 81, 0.3);
+
+/* Inline copy button (next to install cmd and slash command) */
+.lw-inline-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.15s;
+  vertical-align: middle;
+}
+.lw-inline-copy-btn:hover {
+  color: #6b7280;
+}
+.dark .lw-inline-copy-btn:hover {
+  color: #d1d5db;
 }
