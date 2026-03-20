@@ -3002,6 +3002,77 @@ Write scenarios where the agent makes a mistake and must recover:
 - Do NOT output errors without actionable guidance (the agent needs to know how to fix it)
 - DO make \`--help\` comprehensive on every subcommand
 - DO use non-zero exit codes for failures (agents check exit codes)
-- DO output structured information (the agent can parse it)`,
+- DO output structured information (the agent can parse it)`,,
+
+  platform_analytics: `You are helping me analyze my AI agent's performance using LangWatch.
+
+IMPORTANT: You will need my LangWatch API key. Ask me for it and direct me to https://app.langwatch.ai/authorize if I don't have one.
+
+## Setup
+
+Install the LangWatch MCP server:
+  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <API_KEY>
+
+## What to do
+
+1. Call discover_schema with category "all" to learn available metrics
+2. Call get_analytics to query:
+   - Total LLM cost (last 7 days)
+   - P95 latency trends
+   - Token usage over time
+   - Error rates
+3. Use search_traces to find traces with errors or high latency
+4. Present the findings clearly with key numbers and anomalies`,
+
+
+  platform_scenarios: `You are helping me create scenario tests for my AI agent on the LangWatch platform.
+
+IMPORTANT: You will need my LangWatch API key. Ask me for it and direct me to https://app.langwatch.ai/authorize if I don't have one.
+
+## Setup
+
+Install the LangWatch MCP server:
+  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <API_KEY>
+
+## What to do
+
+1. Call discover_schema with category "scenarios" to understand the format
+2. Create scenarios using platform_create_scenario for:
+   - Happy path: normal, expected interactions
+   - Edge cases: unusual inputs, unclear requests
+   - Error handling: when things go wrong
+
+For each scenario, define:
+  - name: A descriptive name for the test case
+  - situation: The context and user behavior to simulate
+  - criteria: What the agent should do (list of success criteria)
+  - labels: Tags for organization (optional)
+
+3. Use platform_list_scenarios to review all scenarios
+4. Use platform_update_scenario to refine them
+
+Write criteria as natural language descriptions, not regex patterns.
+Each scenario should test one specific behavior.`,
+
+
+  platform_evaluators: `You are helping me set up evaluators for my AI agent on the LangWatch platform.
+
+IMPORTANT: You will need my LangWatch API key. Ask me for it and direct me to https://app.langwatch.ai/authorize if I don't have one.
+
+## Setup
+
+Install the LangWatch MCP server:
+  claude mcp add langwatch -- npx -y @langwatch/mcp-server --apiKey <API_KEY>
+
+## What to do
+
+1. Call discover_schema with category "evaluators" to see available types
+2. Use platform_list_evaluators to see existing evaluators
+3. Create evaluators using platform_create_evaluator:
+   - LLM-as-judge evaluators for quality assessment
+   - Specific evaluator types matching your use case
+4. Use platform_get_evaluator and platform_update_evaluator to review and refine
+5. Then go to https://app.langwatch.ai to set up monitors using these evaluators`,
+
 
 };
