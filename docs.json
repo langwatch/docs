@@ -17,7 +17,7 @@
   },
   "favicon": "/favicon.svg",
   "banner": {
-    "content": "**[LangWatch MCP is live](https://langwatch.ai/docs/integration/mcp):** Your AI coding assistant can now build, version, and ship evals — no platform context-switching required.",
+    "content": "**[Get started with LangWatch Skills in seconds](https://langwatch.ai/docs/skills/directory):** Set up evals, scenario tests, and tracing just by asking your AI coding assistant.",
     "dismissible": true
   },
   "contextual": {
