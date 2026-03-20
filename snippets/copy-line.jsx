@@ -1,18 +1,24 @@
 import React, { useState } from "react";
 
+const trackEvent = (name, props) => {
+  try { window.posthog?.capture(name, props); } catch {}
+};
+
 export const CopyLine = ({ text }) => {
   const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
     setCopied(true);
+    trackEvent("docs_copy_line", { text });
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div
       style={{
-        border: "1px solid var(--border-color, #e5e7eb)",
+        border: `1px solid ${hovered ? "var(--tw-prose-td-borders, #d1d5db)" : "var(--tw-prose-hr, #e5e7eb)"}`,
         borderRadius: "12px",
         padding: "10px 16px",
         display: "flex",
@@ -20,14 +26,18 @@ export const CopyLine = ({ text }) => {
         justifyContent: "space-between",
         gap: "12px",
         cursor: "pointer",
-        transition: "background 0.15s",
+        transition: "all 0.15s",
         marginBottom: "8px",
       }}
       onClick={handleCopy}
-      onMouseOver={(e) => { e.currentTarget.style.background = "var(--bg-hover, #f9fafb)"; }}
-      onMouseOut={(e) => { e.currentTarget.style.background = "transparent"; }}
+      onMouseOver={() => setHovered(true)}
+      onMouseOut={() => setHovered(false)}
     >
-      <span style={{ fontSize: "14px" }}>"{text}"</span>
+      <span style={{
+        fontSize: "14px",
+        color: hovered ? "var(--tw-prose-headings, #fff)" : "inherit",
+        transition: "color 0.15s",
+      }}>"{text}"</span>
       <button
         onClick={(e) => { e.stopPropagation(); handleCopy(); }}
         style={{

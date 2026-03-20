@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+const trackEvent = (name, props) => {
+  try { window.posthog?.capture(name, props); } catch {}
+};
+
 export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
   const [copied, setCopied] = useState(false);
 
@@ -8,6 +12,7 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(installCmd);
     setCopied(true);
+    trackEvent("docs_copy_skill_install", { title, skill });
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -19,7 +24,7 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
 
   return (
     <div style={{
-      border: highlighted ? "1px solid rgba(225, 113, 0, 0.4)" : "1px solid var(--border-color, #e5e7eb)",
+      border: highlighted ? "1px solid rgba(225, 113, 0, 0.4)" : "1px solid var(--tw-prose-hr, #e5e7eb)",
       borderRadius: "12px",
       padding: "20px 24px",
       marginBottom: "16px",
@@ -72,7 +77,7 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
       </div>
 
       <div style={{
-        background: highlighted ? "rgba(225, 113, 0, 0.08)" : "var(--border-color, rgba(0, 0, 0, 0.05))",
+        background: highlighted ? "rgba(225, 113, 0, 0.08)" : "var(--tw-prose-hr, rgba(0, 0, 0, 0.05))",
         borderRadius: "8px",
         padding: "10px 14px",
         fontSize: "13px",
