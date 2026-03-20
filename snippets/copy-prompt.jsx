@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
+const useIsDark = () => {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const check = () => setDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return dark;
+};
+
 export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const dark = useIsDark();
 
   if (!prompt) {
     return <div style={{ padding: "12px", color: "red" }}>Error: prompt data not loaded</div>;
@@ -19,10 +32,16 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const border = dark
+    ? (hovered ? "1px solid #6b7280" : "1px solid #374151")
+    : (hovered ? "1px solid #9ca3af" : "1px solid #e5e7eb");
+
+  const hoverText = dark ? "#f9fafb" : "#111827";
+
   return (
     <div
       style={{
-        border: hovered ? "1px solid #6b7280" : "1px solid #374151",
+        border,
         borderRadius: "12px",
         padding: "12px 16px",
         display: "flex",
@@ -32,6 +51,7 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
         cursor: "pointer",
         transition: "all 0.15s",
         marginBottom: "8px",
+        background: !dark && hovered ? "#f9fafb" : "transparent",
       }}
       onClick={handleCopy}
       onMouseOver={() => setHovered(true)}
@@ -39,7 +59,7 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
     >
       <span style={{
         fontSize: "14px",
-        color: hovered ? "#f9fafb" : undefined,
+        color: hovered ? hoverText : undefined,
         transition: "color 0.15s",
       }}>
         {boldPrefix ? <><strong>{boldPrefix}</strong> {title}</> : title}
@@ -49,9 +69,13 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
         style={{
           display: "flex", alignItems: "center", gap: "6px",
           padding: "6px 12px", borderRadius: "8px",
-          border: copied ? "1px solid #059669" : hovered ? "1px solid #6b7280" : "1px solid #374151",
-          background: copied ? "rgba(5, 150, 105, 0.1)" : "transparent",
-          color: copied ? "#059669" : hovered ? "#f9fafb" : undefined,
+          border: copied
+            ? "1px solid #059669"
+            : dark
+              ? (hovered ? "1px solid #6b7280" : "1px solid #374151")
+              : (hovered ? "1px solid #9ca3af" : "1px solid #e5e7eb"),
+          background: copied ? (dark ? "rgba(5, 150, 105, 0.1)" : "#ecfdf5") : "transparent",
+          color: copied ? "#059669" : hovered ? hoverText : undefined,
           cursor: "pointer", fontSize: "13px", fontWeight: 500,
           transition: "all 0.15s", whiteSpace: "nowrap",
         }}

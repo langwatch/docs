@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
+const useIsDark = () => {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const check = () => setDark(document.documentElement.classList.contains("dark"));
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return dark;
+};
+
 export const CopyLine = ({ text }) => {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const dark = useIsDark();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
@@ -15,10 +28,14 @@ export const CopyLine = ({ text }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const border = dark
+    ? (hovered ? "1px solid #6b7280" : "1px solid #374151")
+    : (hovered ? "1px solid #9ca3af" : "1px solid #e5e7eb");
+
   return (
     <div
       style={{
-        border: hovered ? "1px solid #6b7280" : "1px solid #374151",
+        border,
         borderRadius: "12px",
         padding: "10px 16px",
         display: "flex",
@@ -28,16 +45,13 @@ export const CopyLine = ({ text }) => {
         cursor: "pointer",
         transition: "all 0.15s",
         marginBottom: "8px",
+        background: !dark && hovered ? "#f9fafb" : "transparent",
       }}
       onClick={handleCopy}
       onMouseOver={() => setHovered(true)}
       onMouseOut={() => setHovered(false)}
     >
-      <span style={{
-        fontSize: "14px",
-        color: hovered ? "#f9fafb" : undefined,
-        transition: "color 0.15s",
-      }}>"{text}"</span>
+      <span style={{ fontSize: "14px" }}>"{text}"</span>
       <button
         onClick={(e) => { e.stopPropagation(); handleCopy(); }}
         style={{
