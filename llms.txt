@@ -5,7 +5,7 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Get Started
 
-- [LangWatch: The Complete LLMOps Platform](https://langwatch.ai/docs/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 2.5k stars on GitHub.
+- [LangWatch: The Complete LLMOps Platform](https://langwatch.ai/docs/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 3k stars on GitHub.
 - [Better Agents](https://langwatch.ai/docs/better-agents/overview.md): Build reliable, testable, production-grade AI agents with Better Agents CLI - the reliability layer for agent development
 - [LangWatch MCP Server](https://langwatch.ai/docs/integration/mcp.md): Use the LangWatch MCP Server to extend your coding assistant with deep LangWatch insights for tracing, testing, and agent evaluations.
 
