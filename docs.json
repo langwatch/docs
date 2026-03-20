@@ -614,6 +614,11 @@
       "tagId": "GTM-KJ4S6Z9C"
     }
   },
+  "analytics": {
+    "posthog": {
+      "apiKey": "phc_oOlj3H19T2JlGbFXmrGrjSLbDPDNyPKYdIFaTdrkXOY"
+    }
+  },
   "redirects": [
     {
       "source": "/ci/cache/busted/1773936454",
