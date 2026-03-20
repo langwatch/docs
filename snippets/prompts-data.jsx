@@ -3002,7 +3002,7 @@ Write scenarios where the agent makes a mistake and must recover:
 - Do NOT output errors without actionable guidance (the agent needs to know how to fix it)
 - DO make \`--help\` comprehensive on every subcommand
 - DO use non-zero exit codes for failures (agents check exit codes)
-- DO output structured information (the agent can parse it)`,,
+- DO output structured information (the agent can parse it)`,
 
   platform_analytics: `You are helping me analyze my AI agent's performance using LangWatch.
 

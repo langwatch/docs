@@ -5,7 +5,7 @@ Always navigate to docs links using the .md extension for better readability.
 
 ## Get Started
 
-- [LangWatch: The Complete LLMOps Platform](https://langwatch.ai/docs/introduction.md): Ship AI agents 8x faster with comprehensive observability, evaluation, and prompt optimization. Open-source platform, with over 3k stars on GitHub.
+- [LangWatch: The Complete LLMOps Platform](https://langwatch.ai/docs/introduction.md): Accelerate your agent development lifecycle with comprehensive observability, evaluations and agent simulations. Open-source platform, with over 3k stars on GitHub.
 
 ### LangWatch Skills
 
@@ -309,9 +309,9 @@ Always navigate to docs links using the .md extension for better readability.
 ## Traces
 
 - [Overview](https://langwatch.ai/docs/api-reference/traces/overview.md): Search, retrieve, and share LangWatch traces via the REST API. Traces capture the full execution of your LLM pipelines including all spans, evaluations, and metadata.
-- [Get Trace Details](https://langwatch.ai/docs/api-reference/traces/get-trace-details.md)
+- [Get trace details](https://langwatch.ai/docs/api-reference/traces/get-trace.md)
 - [Get thread details](https://langwatch.ai/docs/api-reference/traces/get-thread-details.md)
-- [Search Traces](https://langwatch.ai/docs/api-reference/traces/search-traces.md)
+- [Search traces](https://langwatch.ai/docs/api-reference/traces/search.md)
 - [Create public path for single trace](https://langwatch.ai/docs/api-reference/traces/create-public-trace-path.md)
 - [Delete an existing public path for a trace](https://langwatch.ai/docs/api-reference/traces/delete-public-trace-path.md)
 
