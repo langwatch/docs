@@ -4,14 +4,8 @@ const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
-const isDark = () => {
-  try { return document.documentElement.classList.contains("dark"); } catch { return false; }
-};
-
 export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
   const [copied, setCopied] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const dark = isDark();
 
   if (!prompt) {
     return <div style={{ padding: "12px", color: "red" }}>Error: prompt data not loaded</div>;
@@ -24,52 +18,24 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const border = dark
-    ? (hovered ? "1px solid #6b7280" : "1px solid #374151")
-    : (hovered ? "1px solid #9ca3af" : "1px solid #e5e7eb");
-
-  const hoverText = dark ? "#f9fafb" : "#111827";
-
   return (
     <div
-      style={{
-        border,
-        borderRadius: "12px",
-        padding: "12px 16px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "12px",
-        cursor: "pointer",
-        transition: "all 0.15s",
-        marginBottom: "8px",
-        background: !dark && hovered ? "#f9fafb" : "transparent",
-      }}
+      className="lw-copy-prompt"
       onClick={handleCopy}
-      onMouseOver={() => setHovered(true)}
-      onMouseOut={() => setHovered(false)}
     >
-      <span style={{
-        fontSize: "14px",
-        color: hovered ? hoverText : undefined,
-        transition: "color 0.15s",
-      }}>
+      <span style={{ fontSize: "14px" }}>
         {boldPrefix ? <><strong>{boldPrefix}</strong> {title}</> : title}
       </span>
       <button
+        className="lw-copy-btn"
         onClick={(e) => { e.stopPropagation(); handleCopy(); }}
         style={{
           display: "flex", alignItems: "center", gap: "6px",
           padding: "6px 12px", borderRadius: "8px",
-          border: copied
-            ? "1px solid #059669"
-            : dark
-              ? (hovered ? "1px solid #6b7280" : "1px solid #374151")
-              : (hovered ? "1px solid #9ca3af" : "1px solid #e5e7eb"),
-          background: copied ? (dark ? "rgba(5, 150, 105, 0.1)" : "#ecfdf5") : "transparent",
-          color: copied ? "#059669" : hovered ? hoverText : undefined,
+          background: copied ? "#ecfdf5" : "transparent",
+          color: copied ? "#059669" : undefined,
           cursor: "pointer", fontSize: "13px", fontWeight: 500,
-          transition: "all 0.15s", whiteSpace: "nowrap",
+          whiteSpace: "nowrap",
         }}
       >
         {copied ? (

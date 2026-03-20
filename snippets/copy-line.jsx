@@ -4,14 +4,8 @@ const trackEvent = (name, props) => {
   try { window.posthog?.capture(name, props); } catch {}
 };
 
-const isDark = () => {
-  try { return document.documentElement.classList.contains("dark"); } catch { return false; }
-};
-
 export const CopyLine = ({ text }) => {
   const [copied, setCopied] = useState(false);
-  const [hovered, setHovered] = useState(false);
-  const dark = isDark();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
@@ -20,28 +14,10 @@ export const CopyLine = ({ text }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const border = dark
-    ? (hovered ? "1px solid #6b7280" : "1px solid #374151")
-    : (hovered ? "1px solid #9ca3af" : "1px solid #e5e7eb");
-
   return (
     <div
-      style={{
-        border,
-        borderRadius: "12px",
-        padding: "10px 16px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "12px",
-        cursor: "pointer",
-        transition: "all 0.15s",
-        marginBottom: "8px",
-        background: !dark && hovered ? "#f9fafb" : "transparent",
-      }}
+      className="lw-copy-prompt"
       onClick={handleCopy}
-      onMouseOver={() => setHovered(true)}
-      onMouseOut={() => setHovered(false)}
     >
       <span style={{ fontSize: "14px" }}>"{text}"</span>
       <button
@@ -50,7 +26,7 @@ export const CopyLine = ({ text }) => {
           display: "flex", alignItems: "center", padding: "4px",
           border: "none", background: "transparent",
           color: copied ? "#059669" : "#9ca3af",
-          cursor: "pointer", transition: "all 0.15s",
+          cursor: "pointer",
         }}
       >
         {copied ? (

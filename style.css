@@ -120,3 +120,84 @@ code {
   max-width: 100%;
   overflow-x: auto;
 }
+
+/* ── LangWatch custom components ── */
+
+/* CopyPrompt / CopyLine shared card */
+.lw-copy-prompt {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 8px;
+}
+.lw-copy-prompt:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.lw-copy-btn {
+  border: 1px solid #e5e7eb;
+  transition: all 0.15s;
+}
+.lw-copy-prompt:hover .lw-copy-btn {
+  border-color: #9ca3af;
+}
+
+/* Dark mode overrides */
+.dark .lw-copy-prompt {
+  border-color: #374151;
+}
+.dark .lw-copy-prompt:hover {
+  background: transparent;
+  border-color: #6b7280;
+}
+.dark .lw-copy-prompt:hover span {
+  color: #f9fafb;
+}
+
+.dark .lw-copy-btn {
+  border-color: #374151;
+}
+.dark .lw-copy-prompt:hover .lw-copy-btn {
+  border-color: #6b7280;
+  color: #f9fafb;
+}
+
+/* SkillInstall card */
+.lw-skill-install {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.lw-skill-install.lw-skill-highlighted {
+  border-color: rgba(225, 113, 0, 0.4);
+  background: rgba(225, 113, 0, 0.06);
+}
+
+.lw-skill-footer {
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #6b7280;
+}
+.lw-skill-highlighted .lw-skill-footer {
+  background: rgba(225, 113, 0, 0.08);
+}
+
+.dark .lw-skill-install {
+  border-color: #374151;
+}
+.dark .lw-skill-install.lw-skill-highlighted {
+  border-color: rgba(225, 113, 0, 0.4);
+}
+.dark .lw-skill-footer {
+  background: rgba(55, 65, 81, 0.3);
+}
