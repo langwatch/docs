@@ -24,7 +24,7 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
 
   return (
     <div style={{
-      border: highlighted ? "1px solid rgba(225, 113, 0, 0.4)" : "1px solid var(--tw-prose-hr, #e5e7eb)",
+      border: highlighted ? "1px solid rgba(225, 113, 0, 0.4)" : "1px solid #374151",
       borderRadius: "12px",
       padding: "20px 24px",
       marginBottom: "16px",
@@ -48,7 +48,7 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
             padding: "4px",
             border: "none",
             background: "transparent",
-            color: copied ? "var(--success-text, #059669)" : "var(--text-muted, #9ca3af)",
+            color: copied ? "#059669" : "#9ca3af",
             cursor: "pointer",
             transition: "all 0.15s",
             flexShrink: 0,
@@ -67,7 +67,7 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
       }}>
         <span style={{
           fontSize: "13px",
-          color: "var(--text-muted, #6b7280)",
+          color: "#6b7280",
           fontFamily: "var(--font-mono, monospace)",
         }}>&gt;_</span>
         <code style={{
@@ -77,14 +77,14 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
       </div>
 
       <div style={{
-        background: highlighted ? "rgba(225, 113, 0, 0.08)" : "var(--tw-prose-hr, rgba(0, 0, 0, 0.05))",
+        background: highlighted ? "rgba(225, 113, 0, 0.08)" : "rgba(55, 65, 81, 0.3)",
         borderRadius: "8px",
         padding: "10px 14px",
         fontSize: "13px",
-        color: "var(--text-muted, #6b7280)",
+        color: "#9ca3af",
       }}>
         Then use <span style={{
-          color: "var(--colors-light, #fe9a00)",
+          color: "#fe9a00",
           fontWeight: 600,
         }}>{slashCommand}</span> in your coding agent
       </div>

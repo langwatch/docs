@@ -22,7 +22,7 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
   return (
     <div
       style={{
-        border: `1px solid ${hovered ? "var(--tw-prose-td-borders, #d1d5db)" : "var(--tw-prose-hr, #e5e7eb)"}`,
+        border: hovered ? "1px solid #6b7280" : "1px solid #374151",
         borderRadius: "12px",
         padding: "12px 16px",
         display: "flex",
@@ -39,7 +39,7 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
     >
       <span style={{
         fontSize: "14px",
-        color: hovered ? "var(--tw-prose-headings, #fff)" : "inherit",
+        color: hovered ? "#f9fafb" : undefined,
         transition: "color 0.15s",
       }}>
         {boldPrefix ? <><strong>{boldPrefix}</strong> {title}</> : title}
@@ -49,9 +49,9 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
         style={{
           display: "flex", alignItems: "center", gap: "6px",
           padding: "6px 12px", borderRadius: "8px",
-          border: `1px solid ${copied ? "var(--success-text, #059669)" : hovered ? "var(--tw-prose-td-borders, #d1d5db)" : "var(--tw-prose-hr, #e5e7eb)"}`,
-          background: copied ? "var(--success-bg, #ecfdf5)" : "transparent",
-          color: copied ? "var(--success-text, #059669)" : hovered ? "var(--tw-prose-headings, #fff)" : "inherit",
+          border: copied ? "1px solid #059669" : hovered ? "1px solid #6b7280" : "1px solid #374151",
+          background: copied ? "rgba(5, 150, 105, 0.1)" : "transparent",
+          color: copied ? "#059669" : hovered ? "#f9fafb" : undefined,
           cursor: "pointer", fontSize: "13px", fontWeight: 500,
           transition: "all 0.15s", whiteSpace: "nowrap",
         }}

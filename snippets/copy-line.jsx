@@ -18,7 +18,7 @@ export const CopyLine = ({ text }) => {
   return (
     <div
       style={{
-        border: `1px solid ${hovered ? "var(--tw-prose-td-borders, #d1d5db)" : "var(--tw-prose-hr, #e5e7eb)"}`,
+        border: hovered ? "1px solid #6b7280" : "1px solid #374151",
         borderRadius: "12px",
         padding: "10px 16px",
         display: "flex",
@@ -35,7 +35,7 @@ export const CopyLine = ({ text }) => {
     >
       <span style={{
         fontSize: "14px",
-        color: hovered ? "var(--tw-prose-headings, #fff)" : "inherit",
+        color: hovered ? "#f9fafb" : undefined,
         transition: "color 0.15s",
       }}>"{text}"</span>
       <button
@@ -43,7 +43,7 @@ export const CopyLine = ({ text }) => {
         style={{
           display: "flex", alignItems: "center", padding: "4px",
           border: "none", background: "transparent",
-          color: copied ? "var(--success-text, #059669)" : "var(--text-muted, #9ca3af)",
+          color: copied ? "#059669" : "#9ca3af",
           cursor: "pointer", transition: "all 0.15s",
         }}
       >
