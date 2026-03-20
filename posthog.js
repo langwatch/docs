@@ -5,18 +5,32 @@ posthog.init('phc_oOlj3H19T2JlGbFXmrGrjSLbDPDNyPKYdIFaTdrkXOY', {
   person_profiles: 'always',
 });
 
-// Track clicks on elements with data-track attribute (event delegation)
+// Handle all click interactions for custom components (event delegation)
+// Mintlify RSC doesn't hydrate React onClick/useState/setTimeout,
+// so everything runs from this global script via data attributes.
 document.addEventListener('click', function(e) {
-  var el = e.target.closest('[data-track]');
-  if (!el || !window.posthog) return;
+  // --- Copy to clipboard (data-copy) ---
+  var copyEl = e.target.closest('[data-copy]');
+  if (copyEl) {
+    navigator.clipboard.writeText(copyEl.getAttribute('data-copy'));
 
-  var event = el.getAttribute('data-track');
-  var props = {};
-  Array.from(el.attributes).forEach(function(attr) {
-    if (attr.name.startsWith('data-track-')) {
-      props[attr.name.replace('data-track-', '')] = attr.value;
-    }
-  });
+    // Show "Copied!" state via data-copied on the button or the card
+    var btn = copyEl.querySelector('.lw-copy-btn');
+    var target = btn || copyEl;
+    target.setAttribute('data-copied', 'true');
+    setTimeout(function() { target.removeAttribute('data-copied'); }, 2000);
+  }
 
-  window.posthog.capture(event, props);
+  // --- PostHog tracking (data-track) ---
+  var trackEl = e.target.closest('[data-track]');
+  if (trackEl && window.posthog) {
+    var event = trackEl.getAttribute('data-track');
+    var props = {};
+    Array.from(trackEl.attributes).forEach(function(attr) {
+      if (attr.name.startsWith('data-track-')) {
+        props[attr.name.replace('data-track-', '')] = attr.value;
+      }
+    });
+    window.posthog.capture(event, props);
+  }
 });
