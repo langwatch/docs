@@ -17,6 +17,8 @@ export const CopyLine = ({ text }) => {
   return (
     <div
       className="lw-copy-prompt"
+      data-track="docs_copy_line"
+      data-track-text={text}
       onClick={handleCopy}
     >
       <span style={{ fontSize: "14px" }}>"{text}"</span>

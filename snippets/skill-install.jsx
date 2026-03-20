@@ -46,6 +46,9 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
         <button
           onClick={handleCopyInstall}
           className="lw-inline-copy-btn"
+          data-track="docs_copy_skill_install"
+          data-track-title={title}
+          data-track-skill={skill}
           title="Copy install command"
         >
           {installCopied ? <CheckIcon /> : <CopyIcon />}
@@ -59,6 +62,9 @@ export const SkillInstall = ({ title, skill, slashCommand, highlighted }) => {
         <button
           onClick={handleCopyCmd}
           className="lw-inline-copy-btn"
+          data-track="docs_copy_slash_command"
+          data-track-title={title}
+          data-track-command={slashCommand}
           title={`Copy ${slashCommand}`}
         >
           {cmdCopied ? <CheckIcon /> : <CopyIcon />}

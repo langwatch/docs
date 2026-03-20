@@ -21,6 +21,8 @@ export const CopyPrompt = ({ title, prompt, boldPrefix }) => {
   return (
     <div
       className="lw-copy-prompt"
+      data-track="docs_copy_prompt"
+      data-track-title={boldPrefix ? `${boldPrefix} ${title}` : title}
       onClick={handleCopy}
     >
       <span style={{ fontSize: "14px" }}>

@@ -4,3 +4,21 @@ posthog.init('phc_oOlj3H19T2JlGbFXmrGrjSLbDPDNyPKYdIFaTdrkXOY', {
   api_host: 'https://eu.i.posthog.com',
   person_profiles: 'identified_only',
 });
+
+// Track clicks on elements with data-track attribute (event delegation)
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-track]');
+  if (!el || !window.posthog) return;
+
+  var event = el.getAttribute('data-track');
+  var props = {};
+  // Collect all data-track-* attributes as event properties
+  Array.from(el.attributes).forEach(function(attr) {
+    if (attr.name.startsWith('data-track-')) {
+      var key = attr.name.replace('data-track-', '');
+      props[key] = attr.value;
+    }
+  });
+
+  window.posthog.capture(event, props);
+});
